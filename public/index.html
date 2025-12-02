@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Poppins:wght@700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
+  <script src="main.js" defer></script>
 </head>
 <body>
   <header class="site-header">
@@ -15,25 +16,32 @@
     <nav class="nav">
       <a href="#hero">Home</a>
       <a href="#why">Why IGATES</a>
-      <a href="#intelligence">Intelligence Engine</a>
-      <a href="#investors">Investors</a>
-      <a href="#managers">Managers</a>
-      <a href="#compliance">Compliance</a>
+      <a href="#funds">Featured Funds</a>
+      <a href="#intelligence">Intelligence</a>
+      <a href="#insights">Insights</a>
+      <a href="#contact">Contact</a>
     </nav>
-    <button class="btn btn-secondary">Request Demo</button>
+    <a class="btn btn-secondary" href="#contact">Request Demo</a>
   </header>
 
   <main>
     <section id="hero" class="hero">
       <div class="container grid hero-grid">
         <div class="hero-text">
+          <p class="eyebrow">Institutional Access</p>
           <h1>Where High-Performing Managers Meet Global Capital.</h1>
           <p>
-            Institutional-grade connectivity built for elite fund managers and qualified investors. Curated intelligence, verified data, and frictionless access to performance.
+            Institutional-grade connectivity built for elite fund managers and qualified investors. Curated intelligence,
+            verified data, and frictionless access to performance.
           </p>
           <div class="cta-group">
-            <button class="btn btn-primary">Request Investor Access</button>
-            <button class="btn btn-secondary">Apply</button>
+            <a class="btn btn-primary" href="#funds">Request Investor Access</a>
+            <a class="btn btn-secondary" href="#contact">Apply as a Manager</a>
+          </div>
+          <div class="trust-bar">
+            <span>Real-time fund telemetry</span>
+            <span>Pre-built compliance controls</span>
+            <span>LP-ready reporting</span>
           </div>
         </div>
         <div class="hero-dashboard">
@@ -83,6 +91,19 @@
       </div>
     </section>
 
+    <section id="funds" class="featured-funds">
+      <div class="container">
+        <div class="section-header">
+          <p class="eyebrow">Live Universe</p>
+          <h2>Featured Fund Programs</h2>
+          <p class="lead">Signal-rich profiles backed by daily reconciled data, ready for allocator review.</p>
+        </div>
+        <div class="fund-grid" id="fundGrid">
+          <div class="loading">Loading verified funds...</div>
+        </div>
+      </div>
+    </section>
+
     <section id="intelligence" class="intelligence">
       <div class="container grid intelligence-grid">
         <div class="intelligence-copy">
@@ -94,6 +115,11 @@
             <div class="bullet">Exposure heatmaps with anomaly detection</div>
             <div class="bullet">LP-ready reporting with compliance presets</div>
           </div>
+          <div class="badge-list" id="intelligenceBadges">
+            <span class="badge">API Connected</span>
+            <span class="badge">24/7 Monitoring</span>
+            <span class="badge">SOC2 Ready</span>
+          </div>
         </div>
         <div class="intelligence-visual">
           <div class="chart-line"></div>
@@ -103,6 +129,19 @@
             <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
           </div>
           <div class="chart-scatter"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="insights" class="insights">
+      <div class="container">
+        <div class="section-header">
+          <p class="eyebrow">Signals</p>
+          <h2>Market & Platform Insights</h2>
+          <p class="lead">Short intelligence bursts designed for investment committees and risk partners.</p>
+        </div>
+        <div class="insight-list" id="insightList">
+          <div class="loading">Loading intelligence feed...</div>
         </div>
       </div>
     </section>
@@ -161,6 +200,55 @@
         </div>
       </div>
     </section>
+
+    <section id="contact" class="contact">
+      <div class="container grid contact-grid">
+        <div class="contact-copy">
+          <p class="eyebrow">Talk To Us</p>
+          <h2>Start your access process.</h2>
+          <p class="lead">Tell us about your mandate or strategy. Our team will coordinate data rooms, diligence requests, and secure access.</p>
+          <div class="contact-meta">
+            <div>
+              <p class="small">Response time</p>
+              <p class="metric">&lt; 24 hours</p>
+            </div>
+            <div>
+              <p class="small">Coverage</p>
+              <p class="metric">Global allocators</p>
+            </div>
+            <div>
+              <p class="small">Security</p>
+              <p class="metric">SOC2-ready</p>
+            </div>
+          </div>
+        </div>
+        <form id="contactForm" class="contact-form">
+          <label>
+            Name
+            <input type="text" name="name" placeholder="Your full name" required />
+          </label>
+          <label>
+            Email
+            <input type="email" name="email" placeholder="you@firm.com" required />
+          </label>
+          <label>
+            Role
+            <select name="role" required>
+              <option value="">Select your role</option>
+              <option value="allocator">Allocator / Investor</option>
+              <option value="manager">Fund Manager</option>
+              <option value="ops">Operations / Compliance</option>
+            </select>
+          </label>
+          <label>
+            Notes
+            <textarea name="message" rows="3" placeholder="Mandate size, strategies, timing"></textarea>
+          </label>
+          <button class="btn btn-primary" type="submit">Request Demo</button>
+          <p class="form-status" id="formStatus" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
   </main>
 
   <footer class="footer">
@@ -172,20 +260,20 @@
       <div>
         <h5>Platform</h5>
         <a href="#hero">Overview</a>
+        <a href="#funds">Featured Funds</a>
         <a href="#intelligence">Intelligence</a>
-        <a href="#investors">Investors</a>
       </div>
       <div>
         <h5>Company</h5>
         <a href="#why">About</a>
         <a href="#compliance">Compliance</a>
-        <a href="#">Careers</a>
+        <a href="#contact">Careers</a>
       </div>
       <div>
         <h5>Contact</h5>
         <a href="mailto:connect@igates.com">connect@igates.com</a>
-        <a href="#">LinkedIn</a>
-        <a href="#">Request a Call</a>
+        <a href="#contact">Request a Call</a>
+        <a href="#contact">Investor Relations</a>
       </div>
     </div>
     <div class="footer-line"></div>
