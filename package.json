@@ -1,0 +1,14 @@
+{
+  "name": "fund_connect",
+  "version": "1.0.0",
+  "description": "IGATES landing page with basic backend and frontend plumbing",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=18"
+  }
+}
