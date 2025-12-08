@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IGATES | For Managers</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Poppins:wght@700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="main.js" defer></script>
+</head>
+<body class="manager-page-container">
+  <header class="site-header">
+    <div class="logo">IGATES</div>
+    <nav class="nav">
+      <a href="index.html#hero" data-i18n="navHome">Home</a>
+      <a href="index.html#why" data-i18n="navWhy">Why IGATES</a>
+      <a href="index.html#funds" data-i18n="navFunds">Featured Funds</a>
+      <a href="index.html#intelligence" data-i18n="navIntelligence">Intelligence</a>
+      <a href="index.html#insights" data-i18n="navInsights">Insights</a>
+      <a href="for-managers.html" data-i18n="navManagers">For Managers</a>
+      <a href="family-offices.html" data-i18n="navFamily">Family Offices</a>
+      <a href="index.html#contact" data-i18n="navContact">Contact</a>
+    </nav>
+    <div class="header-actions">
+      <div class="language-switcher">
+        <button class="language-toggle" id="languageToggle" aria-haspopup="listbox" aria-expanded="false" aria-label="Select language">EN ▾</button>
+        <ul class="language-menu" id="languageMenu" role="listbox" aria-label="Language options">
+          <li role="option" data-lang="en" aria-selected="true">English</li>
+          <li role="option" data-lang="pt" aria-selected="false">Português</li>
+          <li role="option" data-lang="es" aria-selected="false">Español</li>
+          <li role="option" data-lang="it" aria-selected="false">Italiano</li>
+          <li role="option" data-lang="zh" aria-selected="false">中文（简体）</li>
+        </ul>
+      </div>
+      <a class="btn btn-secondary" href="index.html#contact" data-i18n="navRequestDemo">Request Demo</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero hero-large">
+      <div class="container grid hero-grid">
+        <div class="hero-text">
+          <p class="eyebrow" data-i18n="managersHeroEyebrow">For Managers</p>
+          <h1 data-i18n="managersHeroTitle">Purpose-built distribution for elite strategies.</h1>
+          <p class="hero-tagline" data-i18n="managersHeroLead">Connect with verified global allocators using IGATES’ institutional infrastructure.</p>
+          <div class="cta-group">
+            <a class="btn btn-primary" href="#apply" data-i18n="managersHeroCta">Apply as a Manager</a>
+          </div>
+          <div class="trust-bar">
+            <span data-i18n="managersHeroTrust1">Allocator coverage across macro, credit, digital assets</span>
+            <span data-i18n="managersHeroTrust2">SOC2-ready data exchange</span>
+          </div>
+        </div>
+        <div class="hero-dashboard">
+          <div class="dashboard-card">
+            <div class="card-label" data-i18n="managersCardLabel1">Live mandates</div>
+            <div class="card-value">32</div>
+            <p class="subcopy" data-i18n="managersCardCopy1">Qualified allocators seeking differentiated strategies.</p>
+          </div>
+          <div class="dashboard-card">
+            <div class="card-label" data-i18n="managersCardLabel2">Avg. review time</div>
+            <div class="card-value positive">&lt; 72h</div>
+            <p class="subcopy" data-i18n="managersCardCopy2">Automated compliance cuts through admin drag.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="featured-funds">
+      <div class="container">
+        <div class="section-header">
+          <p class="eyebrow" data-i18n="managersBenefitsEyebrow">Platform Benefits</p>
+          <h2 data-i18n="managersBenefitsTitle">Everything you need to scale allocator pipelines.</h2>
+        </div>
+        <div class="card-grid">
+          <article class="info-card">
+            <div class="icon-circle">⇄</div>
+            <h3 data-i18n="managersBenefit1Title">Access curated allocators</h3>
+            <p data-i18n="managersBenefit1Body">Targeted introductions to qualified LPs actively allocating to your strategy class.</p>
+          </article>
+          <article class="info-card">
+            <div class="icon-circle">🔒</div>
+            <h3 data-i18n="managersBenefit2Title">Secure data rooms</h3>
+            <p data-i18n="managersBenefit2Body">Permissioned vaults with watermarking and activity visibility for every data room.</p>
+          </article>
+          <article class="info-card">
+            <div class="icon-circle">✔</div>
+            <h3 data-i18n="managersBenefit3Title">Compliance workflows</h3>
+            <p data-i18n="managersBenefit3Body">Built-in KYC, KYB, and governance checks keep diligence moving without bottlenecks.</p>
+          </article>
+          <article class="info-card">
+            <div class="icon-circle">📈</div>
+            <h3 data-i18n="managersBenefit4Title">Embedded performance intelligence</h3>
+            <p data-i18n="managersBenefit4Body">Automated telemetry streams performance, risk corridors, and factor drift to LPs.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="intelligence">
+      <div class="container">
+        <div class="section-header">
+          <p class="eyebrow" data-i18n="managersOnboardingEyebrow">Onboarding</p>
+          <h2 data-i18n="managersOnboardingTitle">Institutional distribution in four steps.</h2>
+        </div>
+        <div class="onboarding-steps">
+          <div class="onboarding-step" data-i18n="managersStep1">Submit strategy profile</div>
+          <div class="onboarding-step" data-i18n="managersStep2">Verification &amp; compliance</div>
+          <div class="onboarding-step" data-i18n="managersStep3">Data integration &amp; risk mapping</div>
+          <div class="onboarding-step" data-i18n="managersStep4">Go live to allocator marketplace</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="apply" class="contact">
+      <div class="container grid contact-grid">
+        <div class="contact-copy">
+          <p class="eyebrow" data-i18n="managersFormEyebrow">Manager Applications</p>
+          <h2 data-i18n="managersFormTitle">Apply to distribute on IGATES.</h2>
+          <p class="lead" data-i18n="managersFormLead">Provide your strategy details and our team will coordinate diligence and onboarding.</p>
+          <div class="contact-meta">
+            <div>
+              <p class="small" data-i18n="managersFormResponseLabel">Response time</p>
+              <p class="metric" data-i18n="managersFormResponseMetric">&lt; 48 hours</p>
+            </div>
+            <div>
+              <p class="small" data-i18n="managersFormSecurityLabel">Security</p>
+              <p class="metric" data-i18n="managersFormSecurityMetric">Compliance-first</p>
+            </div>
+            <div>
+              <p class="small" data-i18n="managersFormCoverageLabel">Coverage</p>
+              <p class="metric" data-i18n="managersFormCoverageMetric">Global allocators</p>
+            </div>
+          </div>
+        </div>
+        <form id="managerForm" class="contact-form">
+          <label>
+            <span data-i18n="formNameLabel">Name</span>
+            <input type="text" name="name" placeholder="Your full name" required />
+          </label>
+          <label>
+            <span data-i18n="formFirmLabel">Firm</span>
+            <input type="text" name="firm" placeholder="Firm name" required />
+          </label>
+          <label>
+            <span data-i18n="formStrategyLabel">Strategy Type</span>
+            <input type="text" name="strategy" placeholder="Credit, Macro, Digital Assets..." required />
+          </label>
+          <label>
+            <span data-i18n="formAumLabel">AUM</span>
+            <input type="text" name="aum" placeholder="$250M" required />
+          </label>
+          <label>
+            <span data-i18n="formEmailLabel">Email</span>
+            <input type="email" name="email" placeholder="you@firm.com" required />
+          </label>
+          <label>
+            <span data-i18n="formNotesLabel">Notes</span>
+            <textarea name="notes" rows="3" placeholder="Mandate focus, timelines, targets"></textarea>
+          </label>
+          <button class="btn btn-primary" type="submit" data-i18n="formSubmit">Apply as a Manager</button>
+          <p class="form-status" id="managerStatus" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div>
+        <div class="logo">IGATES</div>
+        <p class="small silver" data-i18n="footerTagline">Elite connectivity for fund managers and qualified capital.</p>
+      </div>
+      <div>
+        <h5 data-i18n="footerPlatform">Platform</h5>
+        <a href="index.html#hero" data-i18n="footerOverview">Overview</a>
+        <a href="index.html#funds" data-i18n="footerFeaturedFunds">Featured Funds</a>
+        <a href="index.html#intelligence" data-i18n="footerIntelligence">Intelligence</a>
+      </div>
+      <div>
+        <h5 data-i18n="footerCompany">Company</h5>
+        <a href="index.html#why" data-i18n="footerAbout">About</a>
+        <a href="index.html#compliance" data-i18n="footerCompliance">Compliance</a>
+        <a href="index.html#contact" data-i18n="footerCareers">Careers</a>
+      </div>
+      <div>
+        <h5 data-i18n="footerContact">Contact</h5>
+        <a href="mailto:connect@igates.com">connect@igates.com</a>
+        <a href="index.html#contact" data-i18n="footerRequestCall">Request a Call</a>
+        <a href="index.html#contact" data-i18n="footerInvestorRelations">Investor Relations</a>
+      </div>
+    </div>
+    <div class="footer-line"></div>
+    <div class="container footer-meta">
+      <span class="small silver" data-i18n="footerRights">© 2024 IGATES. All rights reserved.</span>
+      <span class="small silver" data-i18n="footerPrivacy">Privacy & Security</span>
+    </div>
+  </footer>
+</body>
+</html>
