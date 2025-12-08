@@ -796,6 +796,48 @@ a:hover {
   resize: vertical;
 }
 
+.hero-large {
+  margin-top: 10px;
+  padding: 90px 0 96px;
+}
+
+.hero-tagline {
+  font-size: 20px;
+  color: var(--silver-mist);
+  margin-bottom: 32px;
+  max-width: 560px;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 22px;
+}
+
+.onboarding-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.onboarding-step {
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: rgba(15, 15, 20, 0.75);
+  border: 1px solid rgba(142, 61, 255, 0.25);
+  color: var(--white-crystal);
+  text-align: center;
+  box-shadow: var(--shadow-soft);
+}
+
+.manager-page-container,
+.family-page-container {
+  background: radial-gradient(120% 120% at 80% 0%, rgba(142, 61, 255, 0.2), transparent 45%),
+    linear-gradient(135deg, rgba(58, 15, 99, 0.6), rgba(142, 61, 255, 0.15)),
+    var(--black-obsidian);
+}
+
 .contact-form input:focus,
 .contact-form select:focus,
 .contact-form textarea:focus {
