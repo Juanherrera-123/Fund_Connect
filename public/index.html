@@ -14,51 +14,63 @@
   <header class="site-header">
     <div class="logo">IGATES</div>
     <nav class="nav">
-      <a href="#hero">Home</a>
-      <a href="#why">Why IGATES</a>
-      <a href="#funds">Featured Funds</a>
-      <a href="#intelligence">Intelligence</a>
-      <a href="#insights">Insights</a>
-      <a href="#contact">Contact</a>
+      <a href="#hero" data-i18n="navHome">Home</a>
+      <a href="#why" data-i18n="navWhy">Why IGATES</a>
+      <a href="#funds" data-i18n="navFunds">Featured Funds</a>
+      <a href="#intelligence" data-i18n="navIntelligence">Intelligence</a>
+      <a href="#insights" data-i18n="navInsights">Insights</a>
+      <a href="#contact" data-i18n="navContact">Contact</a>
     </nav>
-    <a class="btn btn-secondary" href="#contact">Request Demo</a>
+    <div class="header-actions">
+      <div class="language-switcher">
+        <button class="language-toggle" id="languageToggle" aria-haspopup="listbox" aria-expanded="false" aria-label="Select language">EN ▾</button>
+        <ul class="language-menu" id="languageMenu" role="listbox" aria-label="Language options">
+          <li role="option" data-lang="en" aria-selected="true">English</li>
+          <li role="option" data-lang="pt" aria-selected="false">Português</li>
+          <li role="option" data-lang="es" aria-selected="false">Español</li>
+          <li role="option" data-lang="it" aria-selected="false">Italiano</li>
+          <li role="option" data-lang="zh" aria-selected="false">中文（简体）</li>
+        </ul>
+      </div>
+      <a class="btn btn-secondary" href="#contact" data-i18n="navRequestDemo">Request Demo</a>
+    </div>
   </header>
 
   <main>
     <section id="hero" class="hero">
       <div class="container grid hero-grid">
         <div class="hero-text">
-          <p class="eyebrow">Institutional Access</p>
-          <h1>Where High-Performing Managers Meet Global Capital.</h1>
-          <p>
+          <p class="eyebrow" data-i18n="heroEyebrow">Institutional Access</p>
+          <h1 data-i18n="heroTitle">Where High-Performing Managers Meet Global Capital.</h1>
+          <p data-i18n="heroLead">
             Institutional-grade connectivity built for elite fund managers and qualified investors. Curated intelligence,
             verified data, and frictionless access to performance.
           </p>
           <div class="cta-group">
-            <a class="btn btn-primary" href="#funds">Request Investor Access</a>
-            <a class="btn btn-secondary" href="#contact">Apply as a Manager</a>
+            <a class="btn btn-primary" href="#funds" data-i18n="heroCtaInvestor">Request Investor Access</a>
+            <a class="btn btn-secondary" href="#contact" data-i18n="heroCtaManager">Apply as a Manager</a>
           </div>
           <div class="trust-bar">
-            <span>Real-time fund telemetry</span>
-            <span>Pre-built compliance controls</span>
-            <span>LP-ready reporting</span>
+            <span data-i18n="heroTrust1">Real-time fund telemetry</span>
+            <span data-i18n="heroTrust2">Pre-built compliance controls</span>
+            <span data-i18n="heroTrust3">LP-ready reporting</span>
           </div>
         </div>
         <div class="hero-dashboard">
           <div class="dashboard-card">
-            <div class="card-label">Fund Performance</div>
+            <div class="card-label" data-i18n="dashboardPerformanceLabel">Fund Performance</div>
             <div class="card-value positive">+14.8% YTD</div>
             <div class="mini-line"></div>
           </div>
           <div class="dashboard-card">
-            <div class="card-label">Risk Profile</div>
-            <div class="metric-row"><span>Volatility</span><span>Medium-Low</span></div>
-            <div class="metric-row"><span>Max Drawdown</span><span>-3.1%</span></div>
+            <div class="card-label" data-i18n="dashboardRiskLabel">Risk Profile</div>
+            <div class="metric-row"><span data-i18n="dashboardVolatility">Volatility</span><span data-i18n="dashboardRiskLevel">Medium-Low</span></div>
+            <div class="metric-row"><span data-i18n="dashboardDrawdown">Max Drawdown</span><span>-3.1%</span></div>
           </div>
           <div class="dashboard-card">
-            <div class="card-label">Verified AUM Connected</div>
+            <div class="card-label" data-i18n="dashboardAUMLabel">Verified AUM Connected</div>
             <div class="card-value">$212M</div>
-            <p class="subcopy">Across 10 Managers</p>
+            <p class="subcopy" data-i18n="dashboardAUMSub">Across 10 Managers</p>
           </div>
         </div>
       </div>
@@ -67,25 +79,25 @@
     <section id="why" class="why">
       <div class="container">
         <div class="section-header">
-          <p class="eyebrow">Strategic Purpose</p>
-          <h2>Why IGATES Exists</h2>
-          <p class="lead">A curated bridge between qualified capital and the managers shaping the future of global markets.</p>
+          <p class="eyebrow" data-i18n="whyEyebrow">Strategic Purpose</p>
+          <h2 data-i18n="whyTitle">Why IGATES Exists</h2>
+          <p class="lead" data-i18n="whyLead">A curated bridge between qualified capital and the managers shaping the future of global markets.</p>
         </div>
         <div class="card-row">
           <article class="info-card">
             <div class="icon-circle">✓</div>
-            <h3>Verified Data</h3>
-            <p>Institutional-grade datasets, reconciled across custodians, administrators, and audited filings.</p>
+            <h3 data-i18n="whyCard1Title">Verified Data</h3>
+            <p data-i18n="whyCard1Body">Institutional-grade datasets, reconciled across custodians, administrators, and audited filings.</p>
           </article>
           <article class="info-card">
             <div class="icon-circle">⚡</div>
-            <h3>Due Diligence Engine</h3>
-            <p>Automated governance, risk, and compliance screening that streamlines onboarding and monitoring.</p>
+            <h3 data-i18n="whyCard2Title">Due Diligence Engine</h3>
+            <p data-i18n="whyCard2Body">Automated governance, risk, and compliance screening that streamlines onboarding and monitoring.</p>
           </article>
           <article class="info-card">
             <div class="icon-circle">⇄</div>
-            <h3>Strategy Marketplace</h3>
-            <p>Discover and engage with curated managers across credit, macro, digital assets, and differentiated alts.</p>
+            <h3 data-i18n="whyCard3Title">Strategy Marketplace</h3>
+            <p data-i18n="whyCard3Body">Discover and engage with curated managers across credit, macro, digital assets, and differentiated alts.</p>
           </article>
         </div>
       </div>
@@ -94,12 +106,12 @@
     <section id="funds" class="featured-funds">
       <div class="container">
         <div class="section-header">
-          <p class="eyebrow">Live Universe</p>
-          <h2>Featured Fund Programs</h2>
-          <p class="lead">Signal-rich profiles backed by daily reconciled data, ready for allocator review.</p>
+          <p class="eyebrow" data-i18n="fundsEyebrow">Live Universe</p>
+          <h2 data-i18n="fundsTitle">Featured Fund Programs</h2>
+          <p class="lead" data-i18n="fundsLead">Signal-rich profiles backed by daily reconciled data, ready for allocator review.</p>
         </div>
         <div class="fund-grid" id="fundGrid">
-          <div class="loading">Loading verified funds...</div>
+          <div class="loading" data-i18n="fundsLoading">Loading verified funds...</div>
         </div>
       </div>
     </section>
@@ -107,18 +119,18 @@
     <section id="intelligence" class="intelligence">
       <div class="container grid intelligence-grid">
         <div class="intelligence-copy">
-          <p class="eyebrow">Data Fabric</p>
-          <h2>IGATES Intelligence Engine</h2>
-          <p class="lead">Real-time analytics across performance, factor exposures, risk corridors, and capital deployment readiness.</p>
+          <p class="eyebrow" data-i18n="intelligenceEyebrow">Data Fabric</p>
+          <h2 data-i18n="intelligenceTitle">IGATES Intelligence Engine</h2>
+          <p class="lead" data-i18n="intelligenceLead">Real-time analytics across performance, factor exposures, risk corridors, and capital deployment readiness.</p>
           <div class="bullet-list">
-            <div class="bullet">Dynamic liquidity mapping</div>
-            <div class="bullet">Exposure heatmaps with anomaly detection</div>
-            <div class="bullet">LP-ready reporting with compliance presets</div>
+            <div class="bullet" data-i18n="intelligenceBullet1">Dynamic liquidity mapping</div>
+            <div class="bullet" data-i18n="intelligenceBullet2">Exposure heatmaps with anomaly detection</div>
+            <div class="bullet" data-i18n="intelligenceBullet3">LP-ready reporting with compliance presets</div>
           </div>
           <div class="badge-list" id="intelligenceBadges">
-            <span class="badge">API Connected</span>
-            <span class="badge">24/7 Monitoring</span>
-            <span class="badge">SOC2 Ready</span>
+            <span class="badge" data-i18n="intelligenceBadge1">API Connected</span>
+            <span class="badge" data-i18n="intelligenceBadge2">24/7 Monitoring</span>
+            <span class="badge" data-i18n="intelligenceBadge3">SOC2 Ready</span>
           </div>
         </div>
         <div class="intelligence-visual">
@@ -136,12 +148,12 @@
     <section id="insights" class="insights">
       <div class="container">
         <div class="section-header">
-          <p class="eyebrow">Signals</p>
-          <h2>Market & Platform Insights</h2>
-          <p class="lead">Short intelligence bursts designed for investment committees and risk partners.</p>
+          <p class="eyebrow" data-i18n="insightsEyebrow">Signals</p>
+          <h2 data-i18n="insightsTitle">Market & Platform Insights</h2>
+          <p class="lead" data-i18n="insightsLead">Short intelligence bursts designed for investment committees and risk partners.</p>
         </div>
         <div class="insight-list" id="insightList">
-          <div class="loading">Loading intelligence feed...</div>
+          <div class="loading" data-i18n="insightsLoading">Loading intelligence feed...</div>
         </div>
       </div>
     </section>
@@ -150,12 +162,12 @@
       <div class="container grid split-grid">
         <div class="visual globe"></div>
         <div class="split-copy">
-          <p class="eyebrow">For Investors</p>
-          <h2>Global access to institutional talent.</h2>
+          <p class="eyebrow" data-i18n="investorsEyebrow">For Investors</p>
+          <h2 data-i18n="investorsTitle">Global access to institutional talent.</h2>
           <ul>
-            <li>Curated mandates with verified AUM and audited track records.</li>
-            <li>Structured comparables and risk analytics for faster IC approvals.</li>
-            <li>Private access workflows and co-investment visibility.</li>
+            <li data-i18n="investorsItem1">Curated mandates with verified AUM and audited track records.</li>
+            <li data-i18n="investorsItem2">Structured comparables and risk analytics for faster IC approvals.</li>
+            <li data-i18n="investorsItem3">Private access workflows and co-investment visibility.</li>
           </ul>
         </div>
       </div>
@@ -164,12 +176,12 @@
     <section id="managers" class="split managers">
       <div class="container grid split-grid reverse">
         <div class="split-copy">
-          <p class="eyebrow">For Managers</p>
-          <h2>Purpose-built distribution for elite strategies.</h2>
+          <p class="eyebrow" data-i18n="managersEyebrow">For Managers</p>
+          <h2 data-i18n="managersTitle">Purpose-built distribution for elite strategies.</h2>
           <ul>
-            <li>Engage verified allocators globally with embedded compliance.</li>
-            <li>Share data securely with granular permissions and watermarking.</li>
-            <li>Pipeline intelligence that prioritizes the right capital.</li>
+            <li data-i18n="managersItem1">Engage verified allocators globally with embedded compliance.</li>
+            <li data-i18n="managersItem2">Share data securely with granular permissions and watermarking.</li>
+            <li data-i18n="managersItem3">Pipeline intelligence that prioritizes the right capital.</li>
           </ul>
         </div>
         <div class="visual wave"></div>
@@ -179,23 +191,23 @@
     <section id="compliance" class="compliance">
       <div class="container">
         <div class="section-header">
-          <p class="eyebrow">Compliance First</p>
-          <h2>Regulatory-grade controls at every step.</h2>
-          <p class="small">SOC2-ready infrastructure, geo-fenced data residency, and layered permissions keep sensitive information protected.</p>
+          <p class="eyebrow" data-i18n="complianceEyebrow">Compliance First</p>
+          <h2 data-i18n="complianceTitle">Regulatory-grade controls at every step.</h2>
+          <p class="small" data-i18n="complianceBody">SOC2-ready infrastructure, geo-fenced data residency, and layered permissions keep sensitive information protected.</p>
         </div>
         <div class="compliance-line"></div>
         <div class="compliance-grid">
           <div>
-            <h4>Identity & Access</h4>
-            <p class="small">Multi-factor auth, SSO/SAML, and secure vaulting for documents and NDAs.</p>
+            <h4 data-i18n="complianceIdentityTitle">Identity & Access</h4>
+            <p class="small" data-i18n="complianceIdentityBody">Multi-factor auth, SSO/SAML, and secure vaulting for documents and NDAs.</p>
           </div>
           <div>
-            <h4>Monitoring</h4>
-            <p class="small">Automated audit trails, threshold alerts, and encryption in transit and at rest.</p>
+            <h4 data-i18n="complianceMonitoringTitle">Monitoring</h4>
+            <p class="small" data-i18n="complianceMonitoringBody">Automated audit trails, threshold alerts, and encryption in transit and at rest.</p>
           </div>
           <div>
-            <h4>Governance</h4>
-            <p class="small">Pre-configured policies aligned to institutional due diligence standards.</p>
+            <h4 data-i18n="complianceGovernanceTitle">Governance</h4>
+            <p class="small" data-i18n="complianceGovernanceBody">Pre-configured policies aligned to institutional due diligence standards.</p>
           </div>
         </div>
       </div>
@@ -204,47 +216,47 @@
     <section id="contact" class="contact">
       <div class="container grid contact-grid">
         <div class="contact-copy">
-          <p class="eyebrow">Talk To Us</p>
-          <h2>Start your access process.</h2>
-          <p class="lead">Tell us about your mandate or strategy. Our team will coordinate data rooms, diligence requests, and secure access.</p>
+          <p class="eyebrow" data-i18n="contactEyebrow">Talk To Us</p>
+          <h2 data-i18n="contactTitle">Start your access process.</h2>
+          <p class="lead" data-i18n="contactLead">Tell us about your mandate or strategy. Our team will coordinate data rooms, diligence requests, and secure access.</p>
           <div class="contact-meta">
             <div>
-              <p class="small">Response time</p>
-              <p class="metric">&lt; 24 hours</p>
+              <p class="small" data-i18n="contactResponseLabel">Response time</p>
+              <p class="metric" data-i18n="contactResponseMetric">&lt; 24 hours</p>
             </div>
             <div>
-              <p class="small">Coverage</p>
-              <p class="metric">Global allocators</p>
+              <p class="small" data-i18n="contactCoverageLabel">Coverage</p>
+              <p class="metric" data-i18n="contactCoverageMetric">Global allocators</p>
             </div>
             <div>
-              <p class="small">Security</p>
-              <p class="metric">SOC2-ready</p>
+              <p class="small" data-i18n="contactSecurityLabel">Security</p>
+              <p class="metric" data-i18n="contactSecurityMetric">SOC2-ready</p>
             </div>
           </div>
         </div>
         <form id="contactForm" class="contact-form">
           <label>
-            Name
-            <input type="text" name="name" placeholder="Your full name" required />
+            <span data-i18n="contactNameLabel">Name</span>
+            <input type="text" name="name" placeholder="Your full name" required data-i18n="contactNamePlaceholder" data-i18n-attr="placeholder" />
           </label>
           <label>
-            Email
-            <input type="email" name="email" placeholder="you@firm.com" required />
+            <span data-i18n="contactEmailLabel">Email</span>
+            <input type="email" name="email" placeholder="you@firm.com" required data-i18n="contactEmailPlaceholder" data-i18n-attr="placeholder" />
           </label>
           <label>
-            Role
+            <span data-i18n="contactRoleLabel">Role</span>
             <select name="role" required>
-              <option value="">Select your role</option>
-              <option value="allocator">Allocator / Investor</option>
-              <option value="manager">Fund Manager</option>
-              <option value="ops">Operations / Compliance</option>
+              <option value="" data-i18n="contactRolePlaceholder">Select your role</option>
+              <option value="allocator" data-i18n="contactRoleAllocator">Allocator / Investor</option>
+              <option value="manager" data-i18n="contactRoleManager">Fund Manager</option>
+              <option value="ops" data-i18n="contactRoleOps">Operations / Compliance</option>
             </select>
           </label>
           <label>
-            Notes
-            <textarea name="message" rows="3" placeholder="Mandate size, strategies, timing"></textarea>
+            <span data-i18n="contactNotesLabel">Notes</span>
+            <textarea name="message" rows="3" placeholder="Mandate size, strategies, timing" data-i18n="contactNotesPlaceholder" data-i18n-attr="placeholder"></textarea>
           </label>
-          <button class="btn btn-primary" type="submit">Request Demo</button>
+          <button class="btn btn-primary" type="submit" data-i18n="contactSubmit">Request Demo</button>
           <p class="form-status" id="formStatus" aria-live="polite"></p>
         </form>
       </div>
@@ -255,31 +267,31 @@
     <div class="container footer-grid">
       <div>
         <div class="logo">IGATES</div>
-        <p class="small silver">Elite connectivity for fund managers and qualified capital.</p>
+        <p class="small silver" data-i18n="footerTagline">Elite connectivity for fund managers and qualified capital.</p>
       </div>
       <div>
-        <h5>Platform</h5>
-        <a href="#hero">Overview</a>
-        <a href="#funds">Featured Funds</a>
-        <a href="#intelligence">Intelligence</a>
+        <h5 data-i18n="footerPlatform">Platform</h5>
+        <a href="#hero" data-i18n="footerOverview">Overview</a>
+        <a href="#funds" data-i18n="footerFeaturedFunds">Featured Funds</a>
+        <a href="#intelligence" data-i18n="footerIntelligence">Intelligence</a>
       </div>
       <div>
-        <h5>Company</h5>
-        <a href="#why">About</a>
-        <a href="#compliance">Compliance</a>
-        <a href="#contact">Careers</a>
+        <h5 data-i18n="footerCompany">Company</h5>
+        <a href="#why" data-i18n="footerAbout">About</a>
+        <a href="#compliance" data-i18n="footerCompliance">Compliance</a>
+        <a href="#contact" data-i18n="footerCareers">Careers</a>
       </div>
       <div>
-        <h5>Contact</h5>
+        <h5 data-i18n="footerContact">Contact</h5>
         <a href="mailto:connect@igates.com">connect@igates.com</a>
-        <a href="#contact">Request a Call</a>
-        <a href="#contact">Investor Relations</a>
+        <a href="#contact" data-i18n="footerRequestCall">Request a Call</a>
+        <a href="#contact" data-i18n="footerInvestorRelations">Investor Relations</a>
       </div>
     </div>
     <div class="footer-line"></div>
     <div class="container footer-meta">
-      <span class="small silver">© 2024 IGATES. All rights reserved.</span>
-      <span class="small silver">Privacy & Security</span>
+      <span class="small silver" data-i18n="footerRights">© 2024 IGATES. All rights reserved.</span>
+      <span class="small silver" data-i18n="footerPrivacy">Privacy & Security</span>
     </div>
   </footer>
 </body>
