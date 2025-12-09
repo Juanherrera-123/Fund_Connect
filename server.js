@@ -103,8 +103,6 @@ function serveStatic(res, pathname) {
       '.css': 'text/css',
       '.js': 'application/javascript',
       '.json': 'application/json',
-      '.svg': 'image/svg+xml',
-      '.png': 'image/png',
     };
     res.writeHead(200, { 'Content-Type': mimeTypes[ext] || 'text/plain' });
     res.end(data);

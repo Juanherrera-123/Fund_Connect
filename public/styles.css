@@ -185,21 +185,6 @@ a:hover {
     var(--black-obsidian);
   border-radius: 28px;
   box-shadow: var(--shadow-glow-purple);
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-}
-
-.hero::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: url('hero-network-map.svg') center/cover no-repeat;
-  opacity: 0.9;
-  mix-blend-mode: screen;
-  mask-image: radial-gradient(circle at center, rgba(255, 255, 255, 0.95) 40%, rgba(255, 255, 255, 0.75) 52%, rgba(255, 255, 255, 0.35) 64%, transparent 78%);
-  pointer-events: none;
-  z-index: 0;
 }
 
 .hero-grid {
@@ -258,13 +243,13 @@ a:hover {
   position: absolute;
   inset: -18px;
   background:
-    radial-gradient(80% 80% at 55% 12%, rgba(155, 85, 255, 0.22), transparent 65%),
-    url('hero-network-map.svg');
+    radial-gradient(80% 80% at 55% 12%, rgba(155, 85, 255, 0.26), transparent 65%),
+    url('worldmap-Igates.png');
   background-repeat: no-repeat;
-  background-size: 170% 170%, cover;
+  background-size: 140% 140%, contain;
   background-position: center 0, center;
-  opacity: 0.52;
-  filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.45));
+  opacity: 0.45;
+  filter: saturate(1.15) drop-shadow(0 18px 28px rgba(0, 0, 0, 0.45));
   pointer-events: none;
   z-index: 0;
 }
