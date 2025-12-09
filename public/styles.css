@@ -65,10 +65,19 @@ a:hover {
 }
 
 .logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   font-family: 'Poppins', 'Inter', sans-serif;
   font-weight: 800;
   letter-spacing: 0.08em;
   color: var(--white-crystal);
+}
+
+.logo img {
+  height: 56px;
+  width: auto;
+  display: block;
 }
 
 .nav {

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 280" role="img" aria-labelledby="title desc">
+  <title id="title">IGATES Fund Intelligence</title>
+  <desc id="desc">IGATES wordmark with a stylized gate icon and subtitle Fund Intelligence</desc>
+  <defs>
+    <linearGradient id="textGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c8c3ff" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#7f6ccf" stop-opacity="0.95"/>
+    </linearGradient>
+    <linearGradient id="iconFill" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#d5d0ff" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#7f6ccf" stop-opacity="0.8"/>
+    </linearGradient>
+    <filter id="softGlow" x="-15%" y="-15%" width="130%" height="130%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="820" height="280" rx="28" fill="url(#textGlow)" opacity="0.04"/>
+  <g filter="url(#softGlow)" transform="translate(80 70)">
+    <path d="M0 0h130v26H30v162H0V0Z" fill="none" stroke="url(#iconFill)" stroke-width="10" stroke-linejoin="round"/>
+    <path d="M160 0h28v188h-28z" fill="none" stroke="url(#iconFill)" stroke-width="10"/>
+    <text x="220" y="60" font-family="Poppins, Inter, Arial, sans-serif" font-size="88" font-weight="800" fill="none" stroke="url(#textGlow)" stroke-width="3" stroke-linejoin="round">IGATES</text>
+    <text x="226" y="140" font-family="Inter, Arial, sans-serif" font-size="44" font-weight="500" fill="url(#textGlow)" opacity="0.82">Fund Intelligence</text>
+  </g>
+</svg>
