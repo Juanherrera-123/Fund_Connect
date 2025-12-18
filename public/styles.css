@@ -173,7 +173,8 @@ a:hover {
   padding: 14px 28px;
   border-radius: 8px;
   border: none;
-  font-weight: 500;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-weight: 600;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
 }
@@ -202,7 +203,12 @@ a:hover {
 }
 
 .btn-primary:hover {
-  background: var(--brand-gradient-strong);
+  background-image: linear-gradient(#ffffff, #ffffff), var(--brand-gradient-strong);
+  background-clip: padding-box, text;
+  -webkit-background-clip: padding-box, text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  border-color: rgba(37, 99, 235, 0.15);
 }
 
 .btn-secondary:hover {
@@ -387,15 +393,24 @@ a:hover {
   font-family: 'Poppins', 'Inter', sans-serif;
   font-size: 24px;
   font-weight: 700;
-  color: var(--text-primary);
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
 }
 
 .stat-value.positive {
-  color: var(--brand-blue);
+  background: var(--brand-gradient-strong);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .stat-value.negative {
+  background: none;
   color: #b91c1c;
+  -webkit-text-fill-color: #b91c1c;
 }
 
 .stat-sparkline {
