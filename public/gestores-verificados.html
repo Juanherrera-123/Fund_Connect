@@ -68,37 +68,28 @@
             <div class="filter-control">
               <label for="yearProfit" class="small label">Year Total Profit (%)</label>
               <div class="input-combo">
-                <select id="yearProfitCondition" aria-label="Condición de rentabilidad anual">
-                  <option value="above">Above</option>
-                  <option value="below">Below</option>
-                </select>
                 <input type="number" id="yearProfit" placeholder="Ej: 10" aria-label="Valor de Year Total Profit" />
               </div>
             </div>
             <div class="filter-control">
               <label for="drawdown" class="small label">Max Drawdown (%)</label>
               <div class="input-combo">
-                <select id="drawdownCondition" aria-label="Condición de drawdown">
-                  <option value="below" selected>Below</option>
-                </select>
                 <input type="number" id="drawdown" placeholder="Ej: 12" aria-label="Valor de Max Drawdown" />
               </div>
             </div>
             <div class="filter-control">
-              <label for="riskLevel" class="small label">Level of Risk</label>
-              <select id="riskLevel" aria-label="Seleccionar nivel de riesgo">
+              <label for="countryFilter" class="small label">País</label>
+              <select id="countryFilter" aria-label="Seleccionar país">
                 <option value="">Cualquiera</option>
-                <option value="Conservador">Conservador</option>
-                <option value="Moderado">Moderado</option>
-                <option value="Agresivo">Agresivo</option>
+                <option value="EU">EU</option>
+                <option value="US">US</option>
+                <option value="Global">Global</option>
+                <option value="LATAM">LATAM</option>
               </select>
             </div>
             <div class="filter-control">
               <label for="winRate" class="small label">Win Rate (%)</label>
               <div class="input-combo">
-                <select id="winRateCondition" aria-label="Condición de win rate">
-                  <option value="above">Above</option>
-                </select>
                 <input type="number" id="winRate" placeholder="Ej: 55" aria-label="Valor de Win Rate" />
               </div>
             </div>
