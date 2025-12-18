@@ -9,6 +9,9 @@
   --brand-blue: #2563eb;
   --brand-cyan: #38bdf8;
 
+  --brand-gradient: linear-gradient(135deg, #2563eb 0%, #4f46e5 45%, #38bdf8 100%);
+  --brand-gradient-strong: linear-gradient(135deg, #1d4ed8 0%, #4338ca 50%, #22d3ee 100%);
+
   --cta-primary: #4f46e5;
   --cta-primary-hover: #4338ca;
 
@@ -167,15 +170,21 @@ a:hover {
 }
 
 .btn-primary {
-  background: var(--cta-primary);
+  background: var(--brand-gradient);
   color: #ffffff;
   box-shadow: var(--shadow-card);
+  border: 1px solid transparent;
+  background-origin: border-box;
+  background-clip: padding-box;
 }
 
 .btn-secondary {
-  border: 1px solid rgba(37, 99, 235, 0.5);
-  background: var(--bg-secondary);
   color: var(--brand-blue-dark);
+  border: 1px solid transparent;
+  background-image: linear-gradient(#ffffff, #ffffff), var(--brand-gradient);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  box-shadow: var(--shadow-soft);
 }
 
 .btn:hover {
@@ -184,7 +193,12 @@ a:hover {
 }
 
 .btn-primary:hover {
-  background: var(--cta-primary-hover);
+  background: var(--brand-gradient-strong);
+}
+
+.btn-secondary:hover {
+  background-image: linear-gradient(#f8fafc, #f8fafc), var(--brand-gradient-strong);
+  color: var(--brand-blue-dark);
 }
 
 .hero {
