@@ -105,8 +105,14 @@
           <h2>Fondos verificados listos para diligencia</h2>
           <p class="lead compact">Selecciona un fondo para ver el detalle curado.</p>
         </div>
-        <div class="fund-carousel" id="fundCarousel" aria-live="polite">
-          <div class="loading">Cargando gestores...</div>
+        <div class="fund-carousel-shell">
+          <button class="carousel-control prev" id="carouselPrev" type="button" aria-label="Ver fondo anterior">‹</button>
+          <div class="fund-carousel" id="fundCarousel" aria-live="polite">
+            <div class="fund-carousel-track" id="fundCarouselTrack">
+              <div class="loading">Cargando gestores...</div>
+            </div>
+          </div>
+          <button class="carousel-control next" id="carouselNext" type="button" aria-label="Ver fondo siguiente">›</button>
         </div>
       </div>
     </section>
@@ -115,10 +121,6 @@
       <div class="container">
         <div class="detail-card" id="detailCard">
           <div class="empty-state">Selecciona un fondo para ver el detalle.</div>
-        </div>
-        <div class="cta-panel">
-          <button class="btn btn-primary" id="ctaInfo">Quiero más información</button>
-          <p class="muted small">Accede a documentación, estructura operativa y proceso de inversión.</p>
         </div>
       </div>
     </section>
