@@ -1111,6 +1111,11 @@ a:hover {
   z-index: 1;
 }
 
+.hero-text {
+  position: relative;
+  z-index: 1;
+}
+
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
