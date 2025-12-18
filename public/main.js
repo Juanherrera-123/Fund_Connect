@@ -12,7 +12,6 @@ const translations = {
   en: {
     navHome: 'Home',
     navWhy: 'Why IGATES',
-    navFunds: 'Trending',
     navIntelligence: 'Intelligence',
     navInsights: 'Insights',
     navContact: 'Contact',
@@ -227,7 +226,6 @@ const translations = {
   pt: {
     navHome: 'Início',
     navWhy: 'Por que a IGATES',
-    navFunds: 'Destaques',
     navIntelligence: 'Inteligência',
     navInsights: 'Insights',
     navContact: 'Contato',
@@ -442,7 +440,6 @@ const translations = {
   es: {
     navHome: 'Inicio',
     navWhy: 'Por qué IGATES',
-    navFunds: 'Destacados',
     navIntelligence: 'Inteligencia',
     navInsights: 'Insights',
     navContact: 'Contacto',
@@ -657,7 +654,6 @@ const translations = {
   it: {
     navHome: 'Home',
     navWhy: 'Perché IGATES',
-    navFunds: 'In Tendenza',
     navIntelligence: 'Intelligence',
     navInsights: 'Insights',
     navContact: 'Contatti',
@@ -872,7 +868,6 @@ const translations = {
   zh: {
     navHome: '首页',
     navWhy: '为什么选择 IGATES',
-    navFunds: '热门',
     navIntelligence: '智能引擎',
     navInsights: '洞察',
     navContact: '联系',
