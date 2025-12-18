@@ -223,14 +223,12 @@ a:hover {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(80% 80% at 55% 12%, rgba(37, 99, 235, 0.12), transparent 65%), url('worldmap-Igates.png');
+  background: radial-gradient(80% 80% at 55% 12%, rgba(37, 99, 235, 0.14), transparent 60%), url('worldmap-Igates.png');
   background-repeat: no-repeat;
-  background-size: 140% 140%, cover;
-  background-position: center 10%, center;
-
-  opacity: 0.28;
-
-  filter: saturate(1.05);
+  background-size: 130% 130%, cover;
+  background-position: center 8%, center;
+  opacity: 0.45;
+  filter: saturate(1.08);
   pointer-events: none;
   z-index: 0;
 }
@@ -239,7 +237,7 @@ a:hover {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(245, 247, 250, 0.95) 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.78) 0%, rgba(245, 247, 250, 0.82) 100%);
   pointer-events: none;
   z-index: 0;
 }
@@ -282,8 +280,6 @@ a:hover {
   background-clip: text;
   -webkit-text-fill-color: transparent;
   color: var(--brand-blue-dark);
-  text-shadow: 0 10px 28px rgba(127, 96, 249, 0.28), 0 2px 12px rgba(15, 23, 42, 0.25);
-  filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.45));
 }
 
 .hero-text p {
@@ -335,7 +331,7 @@ a:hover {
 
 .hero-dashboard {
   display: grid;
-  gap: 16px;
+  gap: 12px;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   justify-items: flex-start;
   position: relative;
@@ -367,6 +363,88 @@ a:hover {
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.metric-inline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.metric-chip.compact {
+  padding: 10px 12px;
+  border-radius: 14px;
+  gap: 8px;
+  flex: 1 1 160px;
+}
+
+.chip-text.inline {
+  flex-direction: row;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.metric-chip.subtle {
+  background: rgba(255, 255, 255, 0.68);
+  border-color: rgba(148, 163, 184, 0.2);
+}
+
+.stat-cta-card {
+  position: relative;
+  width: 100%;
+  min-width: 240px;
+  max-width: 320px;
+  padding: 18px;
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+}
+
+.stat-cta-button {
+  width: 100%;
+  display: inline-flex;
+  justify-content: center;
+}
+
+.stat-ghost-card {
+  position: absolute;
+  inset: auto 12px 12px auto;
+  width: 72%;
+  height: 70%;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(14, 165, 233, 0.14));
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.14);
+  transform: translate(10%, 8%);
+  display: grid;
+  place-content: center;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.stat-ghost-card .ghost-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.35);
+}
+
+.stat-ghost-card .ghost-line {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.2);
+}
+
+.stat-ghost-card .ghost-line.short {
+  width: 60%;
+}
+
+.stat-ghost-card .ghost-line.long {
+  width: 80%;
 }
 
 .card-label {
@@ -1212,8 +1290,6 @@ a:hover {
 
   .hero-title-premium {
     background: linear-gradient(90deg, #8cd9ff 0%, #9b83fb 50%, #f5c4ff 100%);
-    text-shadow: 0 6px 16px rgba(127, 96, 249, 0.2), 0 1px 8px rgba(15, 23, 42, 0.18);
-    filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.3));
   }
 
   .hero-text p {
