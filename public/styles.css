@@ -242,6 +242,16 @@ a:hover {
   margin-bottom: 24px;
 }
 
+.hero-title-premium {
+  background: linear-gradient(90deg, #6ddcff 0%, #7f60f9 50%, #f3a6ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--brand-blue-dark);
+  text-shadow: 0 10px 28px rgba(127, 96, 249, 0.28), 0 2px 12px rgba(15, 23, 42, 0.25);
+  filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.45));
+}
+
 .hero-text p {
   max-width: 540px;
   color: var(--text-secondary);
@@ -1054,6 +1064,12 @@ a:hover {
 
   .hero-text h1 {
     font-size: 40px;
+  }
+
+  .hero-title-premium {
+    background: linear-gradient(90deg, #8cd9ff 0%, #9b83fb 50%, #f5c4ff 100%);
+    text-shadow: 0 6px 16px rgba(127, 96, 249, 0.2), 0 1px 8px rgba(15, 23, 42, 0.18);
+    filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.3));
   }
 
   .hero-text p {
