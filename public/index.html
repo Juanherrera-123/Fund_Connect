@@ -43,7 +43,7 @@
         <div class="container grid hero-grid">
           <div class="hero-text">
             <p class="eyebrow" data-i18n="heroEyebrow">Acceso institucional</p>
-            <h1 data-i18n="heroTitle">Conectando capital con gestores verificados</h1>
+            <h1 class="hero-title-premium" data-i18n="heroTitle">Conectando capital con gestores verificados</h1>
             <p class="hero-tagline" data-i18n="heroLead">Infraestructura institucional para acceder a fondos gestionados con estándares profesionales.</p>
           <div class="cta-group">
             <a class="btn btn-primary" href="#funds" data-i18n="heroCtaInvestor">Solicitar asesoría de inversión</a>
@@ -58,17 +58,51 @@
         <div class="hero-dashboard">
           <div class="dashboard-card">
             <div class="card-label" data-i18n="dashboardPerformanceLabel">Fund Performance</div>
-            <div class="card-value positive">+14.8% YTD</div>
-            <div class="mini-line"></div>
+            <div class="metric-chip emphasis" aria-label="Year to date performance">
+              <span class="chip-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 15.5 12 8l7 7.5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                  <path d="M16 15.5h3.5V12" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </span>
+              <div class="chip-text">
+                <span class="chip-title">YTD</span>
+                <span class="chip-value positive">+14.8%</span>
+              </div>
+            </div>
+            <div class="mini-line" aria-hidden="true"></div>
           </div>
           <div class="dashboard-card">
             <div class="card-label" data-i18n="dashboardRiskLabel">Risk Profile</div>
-            <div class="metric-row"><span data-i18n="dashboardVolatility">Volatility</span><span data-i18n="dashboardRiskLevel">Medium-Low</span></div>
-            <div class="metric-row"><span data-i18n="dashboardDrawdown">Max Drawdown</span><span>-3.1%</span></div>
+            <div class="metric-stack" aria-label="Risk metrics">
+              <div class="metric-chip">
+                <div class="chip-text">
+                  <span class="chip-title" data-i18n="dashboardVolatility">Volatility</span>
+                  <span class="chip-value" data-i18n="dashboardRiskLevel">Medium-Low</span>
+                </div>
+              </div>
+              <div class="metric-chip">
+                <div class="chip-text">
+                  <span class="chip-title" data-i18n="dashboardDrawdown">Max Drawdown</span>
+                  <span class="chip-value">-3.1%</span>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="dashboard-card">
             <div class="card-label" data-i18n="dashboardAUMLabel">Verified AUM Connected</div>
-            <div class="card-value">$212M</div>
+            <div class="metric-chip emphasis" aria-label="Verified assets under management">
+              <span class="chip-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 4 5 7v5c0 4 3 7 7 8 4-1 7-4 7-8V7l-7-3Z" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                  <path d="m9 12 2 2 4-4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </span>
+              <div class="chip-text">
+                <span class="chip-title">Verified</span>
+                <span class="chip-value">$212M</span>
+              </div>
+            </div>
             <p class="subcopy" data-i18n="dashboardAUMSub">Across 10 Managers</p>
           </div>
         </div>
