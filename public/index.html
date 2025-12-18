@@ -72,20 +72,26 @@
             </div>
             <div class="mini-line" aria-hidden="true"></div>
           </div>
-          <div class="dashboard-card">
+          <div class="dashboard-card risk-card">
             <div class="card-label" data-i18n="dashboardRiskLabel">Risk Profile</div>
-            <div class="metric-stack" aria-label="Risk metrics">
-              <div class="metric-chip">
-                <div class="chip-text">
+            <div class="metric-inline" aria-label="Risk metrics">
+              <div class="metric-chip compact">
+                <div class="chip-text inline">
                   <span class="chip-title" data-i18n="dashboardVolatility">Volatility</span>
+                  <span class="chip-value">12.4%</span>
+                </div>
+              </div>
+              <div class="metric-chip compact">
+                <div class="chip-text inline">
+                  <span class="chip-title">Risk Profile</span>
                   <span class="chip-value" data-i18n="dashboardRiskLevel">Medium-Low</span>
                 </div>
               </div>
-              <div class="metric-chip">
-                <div class="chip-text">
-                  <span class="chip-title" data-i18n="dashboardDrawdown">Max Drawdown</span>
-                  <span class="chip-value">-3.1%</span>
-                </div>
+            </div>
+            <div class="metric-chip subtle">
+              <div class="chip-text">
+                <span class="chip-title" data-i18n="dashboardDrawdown">Max Drawdown</span>
+                <span class="chip-value">-3.1%</span>
               </div>
             </div>
           </div>
@@ -104,6 +110,14 @@
               </div>
             </div>
             <p class="subcopy" data-i18n="dashboardAUMSub">Across 10 Managers</p>
+          </div>
+          <div class="stat-cta-card">
+            <button class="btn btn-primary stat-cta-button">Revisar estadísticas de desempeño</button>
+            <div class="stat-ghost-card" aria-hidden="true">
+              <div class="ghost-dot"></div>
+              <div class="ghost-line long"></div>
+              <div class="ghost-line short"></div>
+            </div>
           </div>
         </div>
       </div>
