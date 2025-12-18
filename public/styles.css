@@ -744,6 +744,19 @@ a:hover {
   line-height: 1.6;
 }
 
+.purpose-visual {
+  margin-top: 14px;
+}
+
+.purpose-visual img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(226, 232, 240, 0.35);
+}
+
 .purpose-badge {
   display: inline-flex;
   align-items: center;
