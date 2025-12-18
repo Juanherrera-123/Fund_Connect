@@ -2,7 +2,10 @@
   --bg-primary: #f5f7fa;
   --bg-secondary: #ffffff;
   --text-primary: #0f172a;
-  --text-secondary: #475569;
+  --text-secondary: #1e293b;
+  --text-hero-secondary: #0f172a;
+  --hero-chip-surface: rgba(255, 255, 255, 0.86);
+  --hero-chip-border: rgba(148, 163, 184, 0.45);
   --text-muted: #64748b;
 
   --brand-blue-dark: #1e3a8a;
@@ -234,6 +237,13 @@ a:hover {
   align-items: center;
 }
 
+.hero .eyebrow {
+  color: var(--text-hero-secondary);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
 .hero-text h1 {
   font-family: 'Poppins', 'Inter', sans-serif;
   font-size: clamp(48px, 5vw, 64px);
@@ -244,9 +254,10 @@ a:hover {
 
 .hero-text p {
   max-width: 540px;
-  color: var(--text-secondary);
-  font-size: 18px;
-  margin-bottom: 32px;
+  color: var(--text-hero-secondary);
+  font-size: 19px;
+  font-weight: 500;
+  margin-bottom: 36px;
 }
 
 .cta-group {
@@ -260,20 +271,21 @@ a:hover {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  color: var(--text-muted);
-  font-size: 13px;
+  color: var(--text-hero-secondary);
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .trust-bar span {
   position: relative;
-  padding: 8px 12px;
+  padding: 10px 14px;
   border-radius: 999px;
-  border: 1px solid rgba(148, 163, 184, 0.3);
-  background-image: linear-gradient(120deg, #d7dde5 0%, #7fb3ff 50%, #c6d2e0 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-weight: 600;
+  border: 1px solid var(--hero-chip-border);
+  background: var(--hero-chip-surface);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12);
+  color: var(--text-primary);
+  font-weight: 700;
   z-index: 0;
 }
 
@@ -282,7 +294,7 @@ a:hover {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: rgba(226, 232, 240, 0.6);
+  background: linear-gradient(135deg, rgba(226, 232, 240, 0.8), rgba(255, 255, 255, 0.6));
   z-index: -1;
 }
 
@@ -1057,11 +1069,18 @@ a:hover {
   }
 
   .hero-text p {
-    font-size: 16px;
+    font-size: 17px;
   }
 
   .trust-bar {
     flex-direction: column;
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+  .trust-bar span {
+    width: 100%;
+    text-align: center;
   }
 
   .btn {
