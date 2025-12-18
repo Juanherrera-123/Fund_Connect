@@ -5,20 +5,14 @@ const verifiedFunds = [
     region: 'EU',
     strategy: 'Macro',
     riskProfile: 'Moderado',
-    drawdownBucket: '<10%',
-    aumBucket: '+25M',
-    trackRecord: '+36 meses',
-    ytd: '+9.4%',
-    drawdown: '-6.2%',
-    volatility: '6.8%',
+    yearProfit: 9.4,
+    maxDrawdown: 6.2,
+    winRate: 58,
+    volatility: 6.8,
     aum: '€85M',
-    riskScore: 42,
-    reporting: 'Mensual',
-    custody: 'BNP Paribas • CSSF',
-    access: 'Mínimo €1M • Lock-up 6 meses',
-    riskPolicy:
-      'Cobertura dinámica con límites diarios y recortes semanales cuando la volatilidad supera el 12%.',
-    performance: ['+0.8%', '+1.1%', '+0.4%', '+1.9%', '+1.2%', '+0.6%'],
+    highlight: '+9.4% YTD',
+    description: 'Estrategia macro discrecional con coberturas dinámicas y disciplina de riesgo diaria.',
+    tags: ['Macro', 'Multi-asset', 'Europa'],
   },
   {
     id: 'summit-fx',
@@ -26,20 +20,14 @@ const verifiedFunds = [
     region: 'US',
     strategy: 'FX',
     riskProfile: 'Conservador',
-    drawdownBucket: '<5%',
-    aumBucket: '+100M',
-    trackRecord: '+24 meses',
-    ytd: '+5.2%',
-    drawdown: '-3.4%',
-    volatility: '4.1%',
+    yearProfit: 5.2,
+    maxDrawdown: 3.4,
+    winRate: 62,
+    volatility: 4.1,
     aum: '$240M',
-    riskScore: 28,
-    reporting: 'Mensual',
-    custody: 'State Street • CFTC',
-    access: 'Mínimo $5M • Liquidez mensual',
-    riskPolicy:
-      'Modelo cuantitativo con stops de VaR intradía y rebalanceo automático ante gaps superiores al 1.2%.',
-    performance: ['+0.4%', '+0.6%', '+0.2%', '+0.8%', '+0.7%', '+0.5%'],
+    highlight: '+5.2% YTD',
+    description: 'Modelo cuantitativo FX con stops de VaR intradía y rebalanceo automático.',
+    tags: ['FX', 'Sistemático', 'USD base'],
   },
   {
     id: 'helix-digital',
@@ -47,20 +35,14 @@ const verifiedFunds = [
     region: 'Global',
     strategy: 'Digital Assets',
     riskProfile: 'Moderado',
-    drawdownBucket: '<15%',
-    aumBucket: '+25M',
-    trackRecord: '+24 meses',
-    ytd: '+14.2%',
-    drawdown: '-9.8%',
-    volatility: '9.9%',
+    yearProfit: 14.2,
+    maxDrawdown: 9.8,
+    winRate: 55,
+    volatility: 9.9,
     aum: '$110M',
-    riskScore: 58,
-    reporting: 'Semanal',
-    custody: 'Coinbase Custody • SOC2',
-    access: 'Mínimo $1M • Lock-up 3 meses',
-    riskPolicy:
-      'Coberturas delta-neutrales con límites de exposición a exchanges y contraparte multi-firma.',
-    performance: ['+1.2%', '+2.3%', '+0.9%', '+3.1%', '+2.7%', '+1.1%'],
+    highlight: '+14.2% YTD',
+    description: 'Enfoque delta neutral con límites de exposición a contraparte y cobertura continua.',
+    tags: ['Digital Assets', 'Neutral', 'Custodia institucional'],
   },
   {
     id: 'atlantic-credit',
@@ -68,20 +50,14 @@ const verifiedFunds = [
     region: 'LATAM',
     strategy: 'Crédito',
     riskProfile: 'Moderado',
-    drawdownBucket: '<10%',
-    aumBucket: '+100M',
-    trackRecord: '+36 meses',
-    ytd: '+8.1%',
-    drawdown: '-7.4%',
-    volatility: '5.5%',
+    yearProfit: 8.1,
+    maxDrawdown: 7.4,
+    winRate: 60,
+    volatility: 5.5,
     aum: '$320M',
-    riskScore: 45,
-    reporting: 'Trimestral',
-    custody: 'Citi • Regulado CNV',
-    access: 'Mínimo $10M • Liquidez trimestral',
-    riskPolicy:
-      'Cartera con coberturas por tramos y límites de concentración por emisor y jurisdicción.',
-    performance: ['+0.7%', '+1.3%', '+0.5%', '+1.6%', '+1.4%', '+0.9%'],
+    highlight: '+8.1% YTD',
+    description: 'Cartera de crédito estructurado con coberturas por tramos y límites de concentración.',
+    tags: ['Crédito', 'Estructurado', 'LATAM'],
   },
   {
     id: 'latitude-multi',
@@ -89,336 +65,195 @@ const verifiedFunds = [
     region: 'Global',
     strategy: 'Multi-Strategy',
     riskProfile: 'Agresivo',
-    drawdownBucket: '<15%',
-    aumBucket: '+25M',
-    trackRecord: '+12 meses',
-    ytd: '+16.5%',
-    drawdown: '-12.1%',
-    volatility: '11.3%',
+    yearProfit: 16.5,
+    maxDrawdown: 12.1,
+    winRate: 53,
+    volatility: 11.3,
     aum: '$95M',
-    riskScore: 67,
-    reporting: 'Mensual',
-    custody: 'Northern Trust • FCA',
-    access: 'Mínimo $2M • Lock-up 9 meses',
-    riskPolicy:
-      'Asignación táctica con límites por bucket y fricciones controladas para evitar solapamiento de riesgos.',
-    performance: ['+1.4%', '+2.1%', '+1.2%', '+3.4%', '+2.9%', '+1.8%'],
+    highlight: '+16.5% YTD',
+    description: 'Asignación táctica multi-estrategia con control de solapamiento y liquidez escalonada.',
+    tags: ['Multi-Strategy', 'Táctico', 'Global'],
   },
 ];
 
-const filterState = {
-  strategy: new Set(),
-  risk: new Set(),
-  drawdown: new Set(),
-  aum: new Set(),
-  track: new Set(),
-};
+let filteredFunds = [...verifiedFunds];
+let selectedFund = null;
 
-const comparisonSelection = new Set();
-
-function toggleFilter(button, group) {
-  const value = button.dataset.value;
-  if (filterState[group].has(value)) {
-    filterState[group].delete(value);
-    button.classList.remove('active');
-  } else {
-    filterState[group].add(value);
-    button.classList.add('active');
-  }
-  renderManagers();
+function formatPercent(value) {
+  if (value === null || value === undefined || Number.isNaN(value)) return '—';
+  const sign = value > 0 ? '+' : '';
+  return `${sign}${value.toFixed(1)}%`;
 }
 
-function fundMatchesFilters(fund) {
-  const checks = [
-    !filterState.strategy.size || filterState.strategy.has(fund.strategy),
-    !filterState.risk.size || filterState.risk.has(fund.riskProfile),
-    !filterState.drawdown.size || filterState.drawdown.has(fund.drawdownBucket),
-    !filterState.aum.size || filterState.aum.has(fund.aumBucket),
-    !filterState.track.size || filterState.track.has(fund.trackRecord),
+function renderCarousel() {
+  const carousel = document.getElementById('fundCarousel');
+  if (!carousel) return;
+
+  carousel.innerHTML = '';
+
+  if (!filteredFunds.length) {
+    carousel.innerHTML = '<div class="empty-state">No hay fondos con estos criterios.</div>';
+    renderDetail(null);
+    return;
+  }
+
+  filteredFunds.forEach((fund) => {
+    const card = document.createElement('button');
+    card.className = `fund-pill ${selectedFund?.id === fund.id ? 'active' : ''}`;
+    card.setAttribute('type', 'button');
+    card.setAttribute('aria-label', `Ver detalle de ${fund.name}`);
+    card.innerHTML = `
+      <div class="fund-pill__top">
+        <div>
+          <p class="fund-name">${fund.name}</p>
+          <div class="fund-meta">
+            <span class="badge success">Verificado</span>
+            <span class="tag">${fund.strategy}</span>
+            <span class="tag subtle">${fund.region}</span>
+          </div>
+        </div>
+        <div class="fund-highlight">${fund.highlight}</div>
+      </div>
+      <div class="fund-pill__meta">
+        <span>${fund.strategy}</span>
+        <span class="divider">•</span>
+        <span>${fund.region}</span>
+        <span class="divider">•</span>
+        <span>${fund.riskProfile}</span>
+      </div>
+    `;
+
+    card.addEventListener('click', () => setSelectedFund(fund));
+    carousel.appendChild(card);
+  });
+
+  if (!selectedFund || !filteredFunds.find((fund) => fund.id === selectedFund.id)) {
+    setSelectedFund(filteredFunds[0]);
+  }
+}
+
+function renderDetail(fund) {
+  const detailCard = document.getElementById('detailCard');
+  if (!detailCard) return;
+
+  if (!fund) {
+    detailCard.innerHTML = '<div class="empty-state">Selecciona un fondo para ver el detalle.</div>';
+    selectedFund = null;
+    return;
+  }
+
+  selectedFund = fund;
+
+  const stats = [
+    { label: 'Year Total Profit', value: formatPercent(fund.yearProfit) },
+    { label: 'Max Drawdown', value: `-${fund.maxDrawdown.toFixed(1)}%` },
+    { label: 'Win Rate', value: `${fund.winRate}%` },
+    { label: 'Volatilidad', value: `${fund.volatility.toFixed(1)}%` },
+    { label: 'AUM aprox.', value: fund.aum || '—' },
   ];
-  return checks.every(Boolean);
-}
 
-function renderRiskBar(score) {
-  return `<div class="risk-bar"><span style="width:${score}%"></span></div>`;
-}
+  const tags = fund.tags
+    .map((tag) => `<span class="tag subtle">${tag}</span>`)
+    .join('');
 
-function renderManagerCard(fund) {
-  const card = document.createElement('article');
-  card.className = 'fund-card manager-card';
-
-  const isChecked = comparisonSelection.has(fund.id) ? 'checked' : '';
-
-  card.innerHTML = `
-    <header class="manager-card__header">
-      <div>
-        <div class="fund-name">${fund.name}</div>
-        <div class="fund-meta">
-          <span class="badge success">✔ Verificado</span>
-          <span class="tag">${fund.region}</span>
-          <span class="tag subtle">${fund.strategy}</span>
-        </div>
-      </div>
-      <label class="compare-toggle">
-        <input type="checkbox" data-compare="${fund.id}" ${isChecked} aria-label="Comparar ${fund.name}" />
-        <span>Comparar</span>
-      </label>
-    </header>
-    <div class="metrics-grid">
-      <div class="metric-tile">
-        <p class="label">Rentabilidad YTD</p>
-        <p class="value positive">${fund.ytd}</p>
-      </div>
-      <div class="metric-tile">
-        <p class="label">Máx. Drawdown</p>
-        <p class="value">${fund.drawdown}</p>
-      </div>
-      <div class="metric-tile">
-        <p class="label">Volatilidad</p>
-        <p class="value">${fund.volatility}</p>
-      </div>
-      <div class="metric-tile">
-        <p class="label">AUM gestionado</p>
-        <p class="value">${fund.aum}</p>
-      </div>
-    </div>
-    <div class="risk-row">
-      <div>
-        <p class="label">Perfil de riesgo</p>
-        <p class="value">${fund.riskProfile}</p>
-      </div>
-      ${renderRiskBar(fund.riskScore)}
-    </div>
-    <div class="card-actions">
-      <button class="btn btn-primary btn-compact" data-details="${fund.id}">Ver detalles</button>
-      <button class="btn btn-secondary btn-compact" data-report="${fund.id}">Ver reporte</button>
-      <button class="btn btn-secondary btn-compact" data-advisory="${fund.id}">Solicitar asesoría</button>
-    </div>
-  `;
-  return card;
-}
-
-function renderManagers() {
-  const grid = document.getElementById('managerGrid');
-  if (!grid) return;
-  grid.innerHTML = '';
-
-  const filtered = verifiedFunds.filter(fundMatchesFilters);
-
-  if (!filtered.length) {
-    grid.innerHTML = '<p class="loading">No hay gestores con esos criterios.</p>';
-    return;
-  }
-
-  filtered.forEach((fund) => grid.appendChild(renderManagerCard(fund)));
-  attachCardEvents();
-}
-
-function attachFilterEvents() {
-  document.querySelectorAll('.filter-group').forEach((group) => {
-    const groupName = group.dataset.filterGroup;
-    group.querySelectorAll('.filter-chip').forEach((chip) => {
-      chip.addEventListener('click', () => toggleFilter(chip, groupName));
-    });
-  });
-}
-
-function attachCardEvents() {
-  document.querySelectorAll('[data-details]').forEach((button) => {
-    button.addEventListener('click', () => openDetail(button.dataset.details));
-  });
-
-  document.querySelectorAll('[data-report]').forEach((button) => {
-    button.addEventListener('click', () => openDetail(button.dataset.report));
-  });
-
-  document.querySelectorAll('[data-advisory]').forEach((button) => {
-    button.addEventListener('click', () => openDetail(button.dataset.advisory));
-  });
-
-  document.querySelectorAll('[data-compare]').forEach((checkbox) => {
-    checkbox.addEventListener('change', (event) => toggleComparison(event.target.dataset.compare, event.target.checked));
-  });
-}
-
-function renderComparison() {
-  const panel = document.getElementById('comparisonBody');
-  const headerButton = document.getElementById('resetComparison');
-  if (!panel) return;
-
-  if (!comparisonSelection.size) {
-    panel.innerHTML = '<p class="muted">Marca “Comparar” en los fondos para visualizar diferencias clave.</p>';
-    headerButton.disabled = true;
-    headerButton.classList.add('disabled');
-    return;
-  }
-
-  headerButton.disabled = false;
-  headerButton.classList.remove('disabled');
-
-  const selectedFunds = verifiedFunds.filter((fund) => comparisonSelection.has(fund.id));
-  const rows = selectedFunds
+  const statsGrid = stats
     .map(
-      (fund) => `
-        <div class="comparison-row">
-          <div>
-            <p class="label">${fund.name}</p>
-            <p class="muted small">${fund.strategy} • ${fund.region}</p>
-          </div>
-          <div class="comparison-metric"><span class="label">YTD</span><strong>${fund.ytd}</strong></div>
-          <div class="comparison-metric"><span class="label">Drawdown</span><strong>${fund.drawdown}</strong></div>
-          <div class="comparison-metric"><span class="label">Volatilidad</span><strong>${fund.volatility}</strong></div>
-          <div class="comparison-metric"><span class="label">AUM</span><strong>${fund.aum}</strong></div>
+      (stat) => `
+        <div class="stat-tile">
+          <p class="label">${stat.label}</p>
+          <p class="value">${stat.value}</p>
         </div>
-      `
+      `,
     )
     .join('');
 
-  panel.innerHTML = `
-    <div class="comparison-grid">${rows}</div>
-  `;
-}
-
-function toggleComparison(fundId, checked) {
-  if (checked) {
-    if (comparisonSelection.size >= 3) {
-      alert('Solo puedes comparar hasta 3 fondos a la vez.');
-      const checkbox = document.querySelector(`input[data-compare="${fundId}"]`);
-      if (checkbox) checkbox.checked = false;
-      return;
-    }
-    comparisonSelection.add(fundId);
-  } else {
-    comparisonSelection.delete(fundId);
-  }
-  renderComparison();
-}
-
-function openDetail(fundId) {
-  const modal = document.getElementById('fundDetailModal');
-  const fund = verifiedFunds.find((item) => item.id === fundId);
-  if (!modal || !fund) return;
-
-  document.getElementById('modalRegion').textContent = `${fund.region} • ${fund.reporting}`;
-  document.getElementById('modalTitle').textContent = fund.name;
-  document.getElementById('modalStrategy').textContent = `${fund.strategy} | ${fund.riskProfile}`;
-
-  const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'];
-  const tableRows = months
-    .map(
-      (month, index) => `
-        <tr>
-          <td>${month}</td>
-          <td>${fund.performance[index]}</td>
-        </tr>
-      `
-    )
-    .join('');
-
-  document.getElementById('modalBody').innerHTML = `
-    <div class="detail-grid">
+  detailCard.innerHTML = `
+    <div class="detail-columns">
       <div>
-        <p class="label">Curva de equity (placeholder)</p>
-        <div class="placeholder-chart" role="img" aria-label="Curva de equity placeholder">
-          <div class="placeholder-bars">
-            <span style="height: 40%"></span>
-            <span style="height: 60%"></span>
-            <span style="height: 75%"></span>
-            <span style="height: 55%"></span>
-            <span style="height: 80%"></span>
-          </div>
-        </div>
+        <p class="eyebrow">Fondo seleccionado</p>
+        <h3 class="detail-title">${fund.name}</h3>
+        <p class="muted">${fund.description}</p>
+        <div class="tag-row">${tags}</div>
       </div>
-      <div>
-        <p class="label">Desempeño mensual</p>
-        <table class="performance-table">
-          <thead>
-            <tr><th>Mes</th><th>Retorno</th></tr>
-          </thead>
-          <tbody>${tableRows}</tbody>
-        </table>
-      </div>
-    </div>
-    <div class="detail-meta">
-      <div>
-        <p class="label">Política de riesgo</p>
-        <p class="muted">${fund.riskPolicy}</p>
-      </div>
-      <div class="detail-columns">
-        <div>
-          <p class="label">Custodia / Broker / Regulación</p>
-          <p class="value">${fund.custody}</p>
-        </div>
-        <div>
-          <p class="label">Frecuencia de reporte</p>
-          <p class="value">${fund.reporting}</p>
-        </div>
-        <div>
-          <p class="label">Condiciones de acceso</p>
-          <p class="value">${fund.access}</p>
-        </div>
-      </div>
+      <div class="stats-grid">${statsGrid}</div>
     </div>
   `;
 
-  modal.removeAttribute('aria-hidden');
-  modal.classList.add('open');
-}
-
-function closeDetail() {
-  const modal = document.getElementById('fundDetailModal');
-  if (!modal) return;
-  modal.classList.remove('open');
-  modal.setAttribute('aria-hidden', 'true');
-}
-
-function attachModalEvents() {
-  const modal = document.getElementById('fundDetailModal');
-  const close = document.getElementById('closeModal');
-  if (!modal || !close) return;
-
-  close.addEventListener('click', closeDetail);
-  modal.addEventListener('click', (event) => {
-    if (event.target.classList.contains('modal-backdrop')) {
-      closeDetail();
-    }
-  });
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && modal.classList.contains('open')) {
-      closeDetail();
-    }
+  document.querySelectorAll('.fund-pill').forEach((pill) => {
+    pill.classList.toggle('active', pill.querySelector('.fund-name').textContent === fund.name);
   });
 }
 
-function attachFiltersToggle() {
-  const toggle = document.getElementById('filtersToggle');
-  const grid = document.getElementById('filtersGrid');
-  if (!toggle || !grid) return;
+function parseValue(inputId) {
+  const value = document.getElementById(inputId)?.value;
+  const numeric = value ? parseFloat(value) : null;
+  return Number.isFinite(numeric) ? numeric : null;
+}
 
-  toggle.addEventListener('click', () => {
-    const isHidden = grid.classList.toggle('collapsed');
-    toggle.textContent = isHidden ? 'Mostrar' : 'Ocultar';
-    toggle.setAttribute('aria-expanded', String(!isHidden));
+function applyFilters() {
+  const yearProfitValue = parseValue('yearProfit');
+  const yearProfitCondition = document.getElementById('yearProfitCondition')?.value || 'above';
+  const drawdownValue = parseValue('drawdown');
+  const drawdownCondition = document.getElementById('drawdownCondition')?.value || 'below';
+  const riskLevel = document.getElementById('riskLevel')?.value || '';
+  const winRateValue = parseValue('winRate');
+  const winRateCondition = document.getElementById('winRateCondition')?.value || 'above';
+
+  filteredFunds = verifiedFunds.filter((fund) => {
+    const matchesProfit =
+      yearProfitValue === null ||
+      (yearProfitCondition === 'above' ? fund.yearProfit >= yearProfitValue : fund.yearProfit <= yearProfitValue);
+
+    const matchesDrawdown =
+      drawdownValue === null ||
+      (drawdownCondition === 'below' ? fund.maxDrawdown <= drawdownValue : fund.maxDrawdown >= drawdownValue);
+
+    const matchesRisk = !riskLevel || fund.riskProfile === riskLevel;
+
+    const matchesWinRate =
+      winRateValue === null ||
+      (winRateCondition === 'above' ? fund.winRate >= winRateValue : fund.winRate <= winRateValue);
+
+    return matchesProfit && matchesDrawdown && matchesRisk && matchesWinRate;
+  });
+
+  renderCarousel();
+  renderDetail(filteredFunds[0]);
+}
+
+function resetFilters() {
+  document.getElementById('yearProfit').value = '';
+  document.getElementById('yearProfitCondition').value = 'above';
+  document.getElementById('drawdown').value = '';
+  document.getElementById('drawdownCondition').value = 'below';
+  document.getElementById('riskLevel').value = '';
+  document.getElementById('winRate').value = '';
+  document.getElementById('winRateCondition').value = 'above';
+
+  filteredFunds = [...verifiedFunds];
+  setSelectedFund(filteredFunds[0]);
+  renderCarousel();
+}
+
+function setSelectedFund(fund) {
+  renderDetail(fund);
+  document.querySelectorAll('.fund-pill').forEach((pill) => {
+    const name = pill.querySelector('.fund-name')?.textContent;
+    pill.classList.toggle('active', fund ? name === fund.name : false);
   });
 }
 
-function attachResetComparison() {
-  const reset = document.getElementById('resetComparison');
-  if (!reset) return;
-  reset.addEventListener('click', () => {
-    comparisonSelection.clear();
-    document.querySelectorAll('[data-compare]').forEach((checkbox) => {
-      checkbox.checked = false;
-    });
-    renderComparison();
+function attachEvents() {
+  document.getElementById('applyFilters')?.addEventListener('click', applyFilters);
+  document.getElementById('resetFilters')?.addEventListener('click', resetFilters);
+  document.getElementById('ctaInfo')?.addEventListener('click', () => {
+    window.location.href = 'index.html#contact';
   });
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  renderManagers();
-  attachFilterEvents();
-  attachModalEvents();
-  attachFiltersToggle();
-  attachResetComparison();
-  renderComparison();
+  setSelectedFund(verifiedFunds[0]);
+  renderCarousel();
+  attachEvents();
+  renderDetail(selectedFund);
 });
