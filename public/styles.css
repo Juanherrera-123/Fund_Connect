@@ -68,6 +68,8 @@ a:hover {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 16px;
   padding: 20px 0;
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(10px);
@@ -93,6 +95,8 @@ a:hover {
 .nav {
   display: flex;
   gap: 20px;
+  flex-wrap: wrap;
+  row-gap: 8px;
   font-size: 14px;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -102,6 +106,7 @@ a:hover {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 .language-switcher {
@@ -114,6 +119,7 @@ a:hover {
   color: var(--text-primary);
   padding: 10px 14px;
   border-radius: 10px;
+  min-width: 140px;
   cursor: pointer;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -217,12 +223,21 @@ a:hover {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(80% 80% at 55% 12%, rgba(37, 99, 235, 0.15), transparent 65%), url('worldmap-Igates.png');
+  background: radial-gradient(80% 80% at 55% 12%, rgba(37, 99, 235, 0.12), transparent 65%), url('worldmap-Igates.png');
   background-repeat: no-repeat;
   background-size: 140% 140%, cover;
   background-position: center 10%, center;
-  opacity: 0.35;
+  opacity: 0.28;
   filter: saturate(1.05);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(245, 247, 250, 0.95) 100%);
   pointer-events: none;
   z-index: 0;
 }
@@ -235,6 +250,7 @@ a:hover {
 .hero-grid {
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   align-items: center;
+  gap: 26px;
 }
 
 .hero .eyebrow {
@@ -1075,6 +1091,11 @@ a:hover {
   max-width: 560px;
 }
 
+.hero-text {
+  position: relative;
+  z-index: 1;
+}
+
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -1118,6 +1139,28 @@ a:hover {
 
 .silver {
   color: var(--text-muted);
+}
+
+@media (max-width: 768px) {
+  .hero {
+    padding: 54px 0 64px;
+  }
+
+  .hero-text {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    border-radius: 18px;
+    padding: 18px 16px;
+    box-shadow: 0 14px 38px rgba(15, 23, 42, 0.12);
+  }
+
+  .hero-text h1 {
+    font-size: clamp(34px, 8vw, 42px);
+  }
+
+  .hero-tagline {
+    font-size: 18px;
+  }
 }
 
 @media (max-width: 1024px) {
