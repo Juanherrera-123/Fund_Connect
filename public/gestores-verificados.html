@@ -40,68 +40,66 @@
   </header>
 
   <main>
-    <section class="page-header minimal">
+    <section class="page-header minimal compact-hero">
       <div class="container">
         <p class="eyebrow">Selección institucional</p>
         <div class="page-title-row">
-          <h1>Gestores Verificados</h1>
+          <h1>Gestores verificados</h1>
           <div class="micro-tag">Vista curada</div>
         </div>
-        <p class="lead compact">Explora fondos privados con historial auditado, capital real y gestión profesional.</p>
+        <p class="lead compact">Explora fondos privados con capital real, track record auditado y gestión profesional.</p>
       </div>
     </section>
 
-    <section class="filters-section">
+    <section class="filters-section institutional" aria-labelledby="filtersTitle">
       <div class="container">
-        <div class="filters-card" id="filtersPanel">
-          <div class="filters-header">
+        <div class="filters-bar" id="filtersPanel">
+          <div class="filters-bar__header">
             <div>
-              <p class="eyebrow">Filtros</p>
-              <p class="small muted">Refina la búsqueda por estrategia, riesgo y requisitos de acceso.</p>
+              <p class="eyebrow" id="filtersTitle">Search settings</p>
+              <p class="muted small">Ajusta umbrales mínimos y riesgo objetivo.</p>
             </div>
-            <button class="filters-toggle" id="filtersToggle" aria-expanded="true" aria-controls="filtersGrid">Ocultar</button>
+            <div class="filters-actions">
+              <button class="btn btn-secondary btn-compact" id="resetFilters">Reset</button>
+              <button class="btn btn-primary btn-compact" id="applyFilters">Apply filters</button>
+            </div>
           </div>
-          <div class="filters-grid" id="filtersGrid">
-            <div class="filter-group" data-filter-group="strategy">
-              <p class="small label">Tipo de Estrategia</p>
-              <div class="chip-row">
-                <button class="filter-chip" data-value="Macro">Macro</button>
-                <button class="filter-chip" data-value="FX">FX</button>
-                <button class="filter-chip" data-value="Crédito">Crédito</button>
-                <button class="filter-chip" data-value="Digital Assets">Digital Assets</button>
-                <button class="filter-chip" data-value="Multi-Strategy">Multi-Strategy</button>
+          <div class="filters-bar__grid" id="filtersGrid">
+            <div class="filter-control">
+              <label for="yearProfit" class="small label">Year Total Profit (%)</label>
+              <div class="input-combo">
+                <select id="yearProfitCondition" aria-label="Condición de rentabilidad anual">
+                  <option value="above">Above</option>
+                  <option value="below">Below</option>
+                </select>
+                <input type="number" id="yearProfit" placeholder="Ej: 10" aria-label="Valor de Year Total Profit" />
               </div>
             </div>
-            <div class="filter-group" data-filter-group="risk">
-              <p class="small label">Perfil de Riesgo</p>
-              <div class="chip-row">
-                <button class="filter-chip" data-value="Conservador">Conservador</button>
-                <button class="filter-chip" data-value="Moderado">Moderado</button>
-                <button class="filter-chip" data-value="Agresivo">Agresivo</button>
+            <div class="filter-control">
+              <label for="drawdown" class="small label">Max Drawdown (%)</label>
+              <div class="input-combo">
+                <select id="drawdownCondition" aria-label="Condición de drawdown">
+                  <option value="below" selected>Below</option>
+                </select>
+                <input type="number" id="drawdown" placeholder="Ej: 12" aria-label="Valor de Max Drawdown" />
               </div>
             </div>
-            <div class="filter-group" data-filter-group="drawdown">
-              <p class="small label">Máx. Drawdown</p>
-              <div class="chip-row">
-                <button class="filter-chip" data-value="<5%">&lt;5%</button>
-                <button class="filter-chip" data-value="<10%">&lt;10%</button>
-                <button class="filter-chip" data-value="<15%">&lt;15%</button>
-              </div>
+            <div class="filter-control">
+              <label for="riskLevel" class="small label">Level of Risk</label>
+              <select id="riskLevel" aria-label="Seleccionar nivel de riesgo">
+                <option value="">Cualquiera</option>
+                <option value="Conservador">Conservador</option>
+                <option value="Moderado">Moderado</option>
+                <option value="Agresivo">Agresivo</option>
+              </select>
             </div>
-            <div class="filter-group" data-filter-group="aum">
-              <p class="small label">AUM mínimo</p>
-              <div class="chip-row">
-                <button class="filter-chip" data-value="+5M">+5M</button>
-                <button class="filter-chip" data-value="+25M">+25M</button>
-                <button class="filter-chip" data-value="+100M">+100M</button>
-              </div>
-            </div>
-            <div class="filter-group" data-filter-group="track">
-              <p class="small label">Track Record</p>
-              <div class="chip-row">
-                <button class="filter-chip" data-value="+12 meses">+12 meses</button>
-                <button class="filter-chip" data-value="+24 meses">+24 meses</button>
-                <button class="filter-chip" data-value="+36 meses">+36 meses</button>
+            <div class="filter-control">
+              <label for="winRate" class="small label">Win Rate (%)</label>
+              <div class="input-combo">
+                <select id="winRateCondition" aria-label="Condición de win rate">
+                  <option value="above">Above</option>
+                </select>
+                <input type="number" id="winRate" placeholder="Ej: 55" aria-label="Valor de Win Rate" />
               </div>
             </div>
           </div>
@@ -109,51 +107,31 @@
       </div>
     </section>
 
-    <section class="verified-funds" id="asesoria">
+    <section class="verified-funds carousel-section" id="asesoria">
       <div class="container">
-        <div class="section-header">
+        <div class="section-header compact">
           <p class="eyebrow">Panel de gestores</p>
           <h2>Fondos verificados listos para diligencia</h2>
-          <p class="lead compact">Selecciona estrategias alineadas a tu mandato y solicita acompañamiento personalizado.</p>
+          <p class="lead compact">Selecciona un fondo para ver el detalle curado.</p>
         </div>
-        <div class="fund-grid manager-grid" id="managerGrid">
+        <div class="fund-carousel" id="fundCarousel" aria-live="polite">
           <div class="loading">Cargando gestores...</div>
         </div>
       </div>
     </section>
 
-    <section class="comparison-section">
+    <section class="fund-detail" aria-live="polite">
       <div class="container">
-        <div class="comparison-card" id="comparisonPanel">
-          <div class="comparison-header">
-            <div>
-              <p class="eyebrow">Comparación rápida</p>
-              <h3>Selecciona hasta 3 fondos</h3>
-            </div>
-            <button class="btn btn-secondary btn-compact" id="resetComparison">Limpiar</button>
-          </div>
-          <div class="comparison-body" id="comparisonBody">
-            <p class="muted">Marca “Comparar” en los fondos para ver rentabilidad, drawdown, volatilidad y AUM lado a lado.</p>
-          </div>
+        <div class="detail-card" id="detailCard">
+          <div class="empty-state">Selecciona un fondo para ver el detalle.</div>
+        </div>
+        <div class="cta-panel">
+          <button class="btn btn-primary" id="ctaInfo">Quiero más información</button>
+          <p class="muted small">Accede a documentación, estructura operativa y proceso de inversión.</p>
         </div>
       </div>
     </section>
   </main>
-
-  <div class="modal" id="fundDetailModal" aria-hidden="true" role="dialog" aria-modal="true">
-    <div class="modal-backdrop"></div>
-    <div class="modal-content" role="document">
-      <header class="modal-header">
-        <div>
-          <p class="eyebrow" id="modalRegion"></p>
-          <h3 id="modalTitle"></h3>
-          <p class="muted small" id="modalStrategy"></p>
-        </div>
-        <button class="modal-close" id="closeModal" aria-label="Cerrar">×</button>
-      </header>
-      <div class="modal-body" id="modalBody"></div>
-    </div>
-  </div>
 
   <footer class="footer">
     <div class="container footer-grid">
