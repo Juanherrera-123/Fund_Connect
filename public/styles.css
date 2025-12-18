@@ -265,10 +265,25 @@ a:hover {
 }
 
 .trust-bar span {
+  position: relative;
   padding: 8px 12px;
   border-radius: 999px;
-  background: rgba(226, 232, 240, 0.6);
   border: 1px solid rgba(148, 163, 184, 0.3);
+  background-image: linear-gradient(120deg, #d7dde5 0%, #7fb3ff 50%, #c6d2e0 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 600;
+  z-index: 0;
+}
+
+.trust-bar span::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(226, 232, 240, 0.6);
+  z-index: -1;
 }
 
 .hero-dashboard {
