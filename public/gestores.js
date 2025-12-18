@@ -192,29 +192,20 @@ function parseValue(inputId) {
 
 function applyFilters() {
   const yearProfitValue = parseValue('yearProfit');
-  const yearProfitCondition = document.getElementById('yearProfitCondition')?.value || 'above';
   const drawdownValue = parseValue('drawdown');
-  const drawdownCondition = document.getElementById('drawdownCondition')?.value || 'below';
-  const riskLevel = document.getElementById('riskLevel')?.value || '';
+  const countryFilter = document.getElementById('countryFilter')?.value || '';
   const winRateValue = parseValue('winRate');
-  const winRateCondition = document.getElementById('winRateCondition')?.value || 'above';
 
   filteredFunds = verifiedFunds.filter((fund) => {
-    const matchesProfit =
-      yearProfitValue === null ||
-      (yearProfitCondition === 'above' ? fund.yearProfit >= yearProfitValue : fund.yearProfit <= yearProfitValue);
+    const matchesProfit = yearProfitValue === null || fund.yearProfit >= yearProfitValue;
 
-    const matchesDrawdown =
-      drawdownValue === null ||
-      (drawdownCondition === 'below' ? fund.maxDrawdown <= drawdownValue : fund.maxDrawdown >= drawdownValue);
+    const matchesDrawdown = drawdownValue === null || fund.maxDrawdown <= drawdownValue;
 
-    const matchesRisk = !riskLevel || fund.riskProfile === riskLevel;
+    const matchesCountry = !countryFilter || fund.region === countryFilter;
 
-    const matchesWinRate =
-      winRateValue === null ||
-      (winRateCondition === 'above' ? fund.winRate >= winRateValue : fund.winRate <= winRateValue);
+    const matchesWinRate = winRateValue === null || fund.winRate >= winRateValue;
 
-    return matchesProfit && matchesDrawdown && matchesRisk && matchesWinRate;
+    return matchesProfit && matchesDrawdown && matchesCountry && matchesWinRate;
   });
 
   renderCarousel();
@@ -223,12 +214,9 @@ function applyFilters() {
 
 function resetFilters() {
   document.getElementById('yearProfit').value = '';
-  document.getElementById('yearProfitCondition').value = 'above';
   document.getElementById('drawdown').value = '';
-  document.getElementById('drawdownCondition').value = 'below';
-  document.getElementById('riskLevel').value = '';
+  document.getElementById('countryFilter').value = '';
   document.getElementById('winRate').value = '';
-  document.getElementById('winRateCondition').value = 'above';
 
   filteredFunds = [...verifiedFunds];
   setSelectedFund(filteredFunds[0]);
