@@ -56,68 +56,50 @@
           </div>
         </div>
         <div class="hero-dashboard">
-          <div class="dashboard-card">
-            <div class="card-label" data-i18n="dashboardPerformanceLabel">Fund Performance</div>
-            <div class="metric-chip emphasis" aria-label="Year to date performance">
-              <span class="chip-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M5 15.5 12 8l7 7.5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
-                  <path d="M16 15.5h3.5V12" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-              </span>
-              <div class="chip-text">
-                <span class="chip-title">YTD</span>
-                <span class="chip-value positive">+14.8%</span>
-              </div>
+          <div class="dashboard-card compact-card performance-card">
+            <div class="stat-header">
+              <span class="card-label">Rendimiento YTD</span>
+              <span class="stat-value positive">+14.8%</span>
             </div>
-            <div class="mini-line" aria-hidden="true"></div>
+            <div class="stat-sparkline" aria-hidden="true"></div>
           </div>
-          <div class="dashboard-card risk-card">
-            <div class="card-label" data-i18n="dashboardRiskLabel">Risk Profile</div>
-            <div class="metric-inline" aria-label="Risk metrics">
-              <div class="metric-chip compact">
-                <div class="chip-text inline">
-                  <span class="chip-title" data-i18n="dashboardVolatility">Volatility</span>
-                  <span class="chip-value">12.4%</span>
-                </div>
+          <div class="dashboard-card compact-card risk-card">
+            <div class="stat-list" aria-label="Risk metrics">
+              <div class="stat-row">
+                <span class="stat-label">Volatilidad</span>
+                <span class="stat-value">12.4%</span>
               </div>
-              <div class="metric-chip compact">
-                <div class="chip-text inline">
-                  <span class="chip-title">Risk Profile</span>
-                  <span class="chip-value" data-i18n="dashboardRiskLevel">Medium-Low</span>
-                </div>
+              <div class="stat-row">
+                <span class="stat-label">Máx. caída</span>
+                <span class="stat-value negative">-3.1%</span>
               </div>
-            </div>
-            <div class="metric-chip subtle">
-              <div class="chip-text">
-                <span class="chip-title" data-i18n="dashboardDrawdown">Max Drawdown</span>
-                <span class="chip-value">-3.1%</span>
+              <div class="stat-row">
+                <span class="stat-label">Riesgo</span>
+                <span class="stat-badge">Medio-Bajo</span>
               </div>
             </div>
           </div>
-          <div class="dashboard-card">
-            <div class="card-label" data-i18n="dashboardAUMLabel">Verified AUM Connected</div>
-            <div class="metric-chip emphasis" aria-label="Verified assets under management">
-              <span class="chip-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 4 5 7v5c0 4 3 7 7 8 4-1 7-4 7-8V7l-7-3Z" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
-                  <path d="m9 12 2 2 4-4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-              </span>
-              <div class="chip-text">
-                <span class="chip-title">Verified</span>
-                <span class="chip-value">$212M</span>
-              </div>
-            </div>
-            <p class="subcopy" data-i18n="dashboardAUMSub">Across 10 Managers</p>
+          <div class="dashboard-card compact-card aum-card">
+            <div class="card-label">AUM verificado</div>
+            <div class="stat-value">$212M</div>
+            <p class="stat-subtext">Con 10 gestores</p>
           </div>
           <div class="stat-cta-card">
-            <button class="btn btn-primary stat-cta-button">Revisar estadísticas de desempeño</button>
-            <div class="stat-ghost-card" aria-hidden="true">
-              <div class="ghost-dot"></div>
-              <div class="ghost-line long"></div>
-              <div class="ghost-line short"></div>
+            <div class="stat-cta-overlay" aria-hidden="true">
+              <div class="overlay-grid">
+                <span class="grid-line"></span>
+                <span class="grid-line"></span>
+                <span class="grid-line"></span>
+                <span class="grid-line"></span>
+              </div>
+              <div class="overlay-chart">
+                <span class="overlay-bar short"></span>
+                <span class="overlay-bar"></span>
+                <span class="overlay-bar tall"></span>
+                <span class="overlay-bar"></span>
+              </div>
             </div>
+            <button class="btn btn-primary stat-cta-button">Ver estadísticas completas</button>
           </div>
         </div>
       </div>
