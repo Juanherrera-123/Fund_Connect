@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IGATES | Pending Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Poppins:wght@700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="main.js" defer></script>
+</head>
+<body class="profile-page">
+  <header class="site-header">
+    <a class="logo" href="index.html" aria-label="IGATES home">
+      <img src="IGATESLOGO.png" alt="IGATES Fund Intelligence logo" />
+    </a>
+    <nav class="nav">
+      <a href="index.html#why" data-i18n="navWhy">Why IGATES</a>
+      <a href="gestores-verificados.html">Gestores Verificados</a>
+      <a href="for-managers.html" data-i18n="navManagers">Fund Manager</a>
+      <a href="family-offices.html" data-i18n="navFamily">Family Offices</a>
+      <a href="index.html#learn" data-i18n="navLearn">Learn</a>
+      <a href="index.html#contact" data-i18n="navContact">Contact</a>
+    </nav>
+    <div class="header-actions">
+      <div class="language-switcher">
+        <button class="language-toggle" id="languageToggle" aria-haspopup="listbox" aria-expanded="false" aria-label="Select language">EN ▾</button>
+        <ul class="language-menu" id="languageMenu" role="listbox" aria-label="Language options">
+          <li role="option" data-lang="en" aria-selected="true">English</li>
+          <li role="option" data-lang="pt" aria-selected="false">Português</li>
+          <li role="option" data-lang="es" aria-selected="false">Español</li>
+          <li role="option" data-lang="it" aria-selected="false">Italiano</li>
+          <li role="option" data-lang="zh" aria-selected="false">中文（简体）</li>
+        </ul>
+      </div>
+      <a class="btn btn-secondary" href="index.html#contact" data-i18n="navRequestDemo">Request Demo</a>
+      <a class="btn btn-primary auth-link" href="auth.html" data-i18n="navAuth">Sign Up / Log In</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-header minimal compact-hero">
+      <div class="container">
+        <p class="eyebrow">Fund Manager</p>
+        <div class="page-title-row">
+          <h1>Estado de revisión</h1>
+          <div class="micro-tag">Pending Review</div>
+        </div>
+        <p class="lead compact">Tu solicitud está en revisión por el MasterUser. Te avisaremos cuando esté aprobada.</p>
+      </div>
+    </section>
+
+    <section class="profile-section">
+      <div class="container" id="pendingReviewContent"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div>
+        <a class="logo" href="index.html" aria-label="IGATES home">
+          <img src="IGATESLOGO.png" alt="IGATES Fund Intelligence logo" />
+        </a>
+        <p class="small">Elite connectivity for fund managers and qualified capital.</p>
+      </div>
+      <div>
+        <p class="footer-heading">Platform</p>
+        <a href="index.html">Overview</a>
+        <a href="index.html#funds">Featured Funds</a>
+        <a href="index.html#intelligence">Intelligence</a>
+      </div>
+      <div>
+        <p class="footer-heading">Company</p>
+        <a href="index.html#why">About</a>
+        <a href="index.html#contact">Contact</a>
+        <a href="for-managers.html">Manager Access</a>
+      </div>
+      <div>
+        <p class="footer-heading">Get in touch</p>
+        <a href="mailto:info@igates.io">info@igates.io</a>
+        <a href="index.html#contact">Request Advisory</a>
+      </div>
+    </div>
+    <p class="footer-rights">© 2024 IGATES. All rights reserved.</p>
+  </footer>
+</body>
+</html>

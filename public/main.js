@@ -19,6 +19,7 @@ const translations = {
     navFamily: 'Family Offices',
     navLearn: 'Learn',
     navRequestDemo: 'Request Advisory',
+    navAuth: 'Sign Up / Log In',
     heroEyebrow: 'Institutional Access',
     heroTitle: 'Connecting capital with verified Hedge funds.',
     heroLead: 'Intelligence that moves capital.',
@@ -233,6 +234,7 @@ const translations = {
     navFamily: 'Family Offices',
     navLearn: 'Aprender',
     navRequestDemo: 'Solicitar Assessoria',
+    navAuth: 'Cadastro / Login',
     heroEyebrow: 'Acesso Institucional',
     heroTitle: 'Conectando capital a gestores verificados.',
     heroLead: 'Inteligência que move capital.',
@@ -447,6 +449,7 @@ const translations = {
     navFamily: 'Family Offices',
     navLearn: 'Foro',
     navRequestDemo: 'Solicitar Asesoria',
+    navAuth: 'Registro / Ingreso',
     heroEyebrow: 'Acceso Institucional',
     heroTitle: 'Conectando capital con gestores verificados.',
     heroLead: 'Inteligencia que mueve capital.',
@@ -661,6 +664,7 @@ const translations = {
     navFamily: 'Family Offices',
     navLearn: 'Forum',
     navRequestDemo: 'Richiedi Consulenza',
+    navAuth: 'Registrati / Accedi',
     heroEyebrow: 'Accesso Istituzionale',
     heroTitle: 'Collegare il capitale con gestori verificati.',
     heroLead: 'Intelligenza che muove il capitale.',
@@ -875,6 +879,7 @@ const translations = {
     navFamily: '家族办公室',
     navLearn: '学习',
     navRequestDemo: '申请咨询',
+    navAuth: '注册 / 登录',
     heroEyebrow: '机构级接入',
     heroTitle: '连接资本与经核验的对冲基金。',
     heroLead: '让智能驱动资本流向。',
@@ -1342,6 +1347,1076 @@ function enableSmoothAnchors() {
   });
 }
 
+
+
+const MASTER_USER = {
+  username: 'Sebastian_ACY',
+  password: 'dB9(NP1O',
+  role: 'MasterUser',
+};
+
+const STRATEGY_OPTIONS = [
+  { label: 'Forex', value: 'FOREX' },
+  { label: 'Indices & Macro', value: 'INDICES_MACRO' },
+  { label: 'Commodities & Metales', value: 'COMMODITIES_METALES' },
+  { label: 'Equities CFDs', value: 'EQUITIES_CFD' },
+  { label: 'Crypto Assets', value: 'CRYPTO_ASSETS' },
+  { label: 'Multi-Assets', value: 'MULTI_ASSETS' },
+];
+
+const SURVEY_DEFINITIONS = {
+  Investor: [
+    {
+      id: 'objective',
+      label: 'Investment Objective',
+      type: 'single',
+      options: [
+        { label: 'Preservación de capital', value: 'Preservación de capital' },
+        { label: 'Crecimiento moderado', value: 'Crecimiento moderado' },
+        { label: 'Crecimiento agresivo', value: 'Crecimiento agresivo' },
+        { label: 'Diversificación patrimonial', value: 'Diversificación patrimonial' },
+        { label: 'Generación de ingresos', value: 'Generación de ingresos' },
+      ],
+    },
+    {
+      id: 'horizon',
+      label: 'Investment Horizon',
+      type: 'single',
+      options: [
+        { label: 'Menos de 6 meses', value: 'Menos de 6 meses' },
+        { label: 'Entre 6 meses y 1 año', value: 'Entre 6 meses y 1 año' },
+        { label: '1 a 3 años', value: '1 a 3 años' },
+        { label: 'Más de 3 años', value: 'Más de 3 años' },
+      ],
+    },
+    {
+      id: 'riskLevel',
+      label: 'Risk Tolerance',
+      type: 'single',
+      options: [
+        { label: 'Conservador', value: 'Conservador' },
+        { label: 'Moderado', value: 'Moderado' },
+        { label: 'Balanceado', value: 'Balanceado' },
+        { label: 'Agresivo', value: 'Agresivo' },
+      ],
+    },
+    {
+      id: 'strategyPreferences',
+      label: 'Preferred Strategy / Assets',
+      type: 'multi',
+      options: STRATEGY_OPTIONS,
+    },
+    {
+      id: 'reportingFrequency',
+      label: 'Reporting Frequency',
+      type: 'single',
+      options: [
+        { label: 'Mensual', value: 'Mensual' },
+        { label: 'Trimestral', value: 'Trimestral' },
+        { label: 'Solo eventos relevantes', value: 'Solo eventos relevantes' },
+      ],
+    },
+  ],
+  'Fund Manager': [
+    {
+      id: 'strategyType',
+      label: 'Primary Strategy / Assets',
+      type: 'single',
+      options: STRATEGY_OPTIONS,
+    },
+    {
+      id: 'capitalStatus',
+      label: 'Capital Status',
+      type: 'single',
+      options: [
+        { label: 'Opero con capital propio', value: 'Opero con capital propio' },
+        { label: 'Opero con capital de terceros', value: 'Opero con capital de terceros' },
+        { label: 'En transición hacia capital de terceros', value: 'En transición hacia capital de terceros' },
+        { label: 'Track record en desarrollo', value: 'Track record en desarrollo' },
+      ],
+    },
+    {
+      id: 'trackRecordLength',
+      label: 'Verifiable Track Record Length',
+      type: 'single',
+      options: [
+        { label: 'Menos de 12 meses', value: 'Menos de 12 meses' },
+        { label: '12 – 24 meses', value: '12 – 24 meses' },
+        { label: '24 – 36 meses', value: '24 – 36 meses' },
+        { label: 'Más de 36 meses', value: 'Más de 36 meses' },
+      ],
+    },
+    {
+      id: 'operatingStructure',
+      label: 'Operating Structure',
+      type: 'single',
+      options: [
+        { label: 'Cuenta segregada', value: 'Cuenta segregada' },
+        { label: 'Managed Account (MAM / PAMM)', value: 'Managed Account (MAM / PAMM)' },
+        { label: 'Vehículo privado (SPV / fondo privado)', value: 'Vehículo privado (SPV / fondo privado)' },
+        { label: 'En proceso de estructuración', value: 'En proceso de estructuración' },
+      ],
+    },
+    {
+      id: 'strategyDescription',
+      label: 'Strategy Description',
+      type: 'text',
+      prompt:
+        'Describe tu estrategia en 2–4 líneas. Incluye instrumentos operados, horizonte típico y cómo gestionas el riesgo.',
+    },
+  ],
+  'Family Office': [
+    {
+      id: 'managementRole',
+      label: 'Desired Role in Investment Management',
+      type: 'single',
+      options: [
+        { label: 'Supervisión estratégica', value: 'Supervisión estratégica' },
+        { label: 'Selección activa de gestores', value: 'Selección activa de gestores' },
+        { label: 'Delegación con reporting periódico', value: 'Delegación con reporting periódico' },
+      ],
+    },
+    {
+      id: 'diversificationLevel',
+      label: 'Desired Diversification Level',
+      type: 'single',
+      options: [
+        { label: '1–2 fondos', value: '1–2 fondos' },
+        { label: '3–5 fondos', value: '3–5 fondos' },
+        { label: 'Más de 5 fondos', value: 'Más de 5 fondos' },
+      ],
+    },
+    {
+      id: 'strategyPreferences',
+      label: 'Preferred Strategy / Assets',
+      type: 'multi',
+      options: STRATEGY_OPTIONS,
+    },
+    {
+      id: 'interactionLevel',
+      label: 'Interaction Level with Managers',
+      type: 'single',
+      options: [
+        { label: 'Reportes únicamente', value: 'Reportes únicamente' },
+        { label: 'Comunicación ocasional', value: 'Comunicación ocasional' },
+        { label: 'Acceso directo y recurrente', value: 'Acceso directo y recurrente' },
+      ],
+    },
+    {
+      id: 'reportingCustomization',
+      label: 'Reporting Customization Level',
+      type: 'single',
+      options: [
+        { label: 'Básico', value: 'Básico' },
+        { label: 'Personalizado', value: 'Personalizado' },
+        { label: 'Totalmente a medida', value: 'Totalmente a medida' },
+      ],
+    },
+  ],
+};
+
+const STORAGE_KEYS = {
+  profiles: 'igatesUserProfiles',
+  session: 'igatesCurrentSession',
+  notifications: 'igatesMasterNotifications',
+  fundApplications: 'igatesFundApplications',
+};
+
+function getStrategyLabel(value) {
+  return STRATEGY_OPTIONS.find((option) => option.value === value)?.label || value;
+}
+
+function readStorage(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch (error) {
+    console.error(`Unable to read ${key}`, error);
+    return fallback;
+  }
+}
+
+function writeStorage(key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
+}
+
+function getStoredProfiles() {
+  return readStorage(STORAGE_KEYS.profiles, []);
+}
+
+function saveStoredProfiles(profiles) {
+  writeStorage(STORAGE_KEYS.profiles, profiles);
+}
+
+function getSession() {
+  return readStorage(STORAGE_KEYS.session, null);
+}
+
+function setSession(session) {
+  writeStorage(STORAGE_KEYS.session, session);
+}
+
+function clearSession() {
+  localStorage.removeItem(STORAGE_KEYS.session);
+}
+
+function getCurrentProfile() {
+  const session = getSession();
+  if (!session || session.role === 'MasterUser') return null;
+  const profiles = getStoredProfiles();
+  return profiles.find((profile) => profile.id === session.id) || null;
+}
+
+function updateProfile(updatedProfile) {
+  const profiles = getStoredProfiles();
+  const nextProfiles = profiles.map((profile) =>
+    profile.id === updatedProfile.id ? updatedProfile : profile,
+  );
+  saveStoredProfiles(nextProfiles);
+  return updatedProfile;
+}
+
+function addMasterNotification(notification) {
+  const notifications = readStorage(STORAGE_KEYS.notifications, []);
+  notifications.unshift(notification);
+  writeStorage(STORAGE_KEYS.notifications, notifications);
+}
+
+function updateAuthLinks() {
+  const session = getSession();
+  document.querySelectorAll('.auth-link').forEach((link) => {
+    if (!session) {
+      link.textContent = 'Sign Up / Log In';
+      link.href = 'auth.html';
+      return;
+    }
+
+    if (session.role === 'MasterUser') {
+      link.textContent = 'Master Dashboard';
+      link.href = 'master-dashboard.html';
+      return;
+    }
+
+    link.textContent = 'My Profile';
+    link.href = 'profile.html';
+  });
+}
+
+function buildSurveySteps(questions) {
+  const groups = [];
+  for (let index = 0; index < questions.length; index += 2) {
+    groups.push(questions.slice(index, index + 2));
+  }
+  return groups;
+}
+
+function renderQuestion(question, value) {
+  const optionsMarkup =
+    question.type === 'text'
+      ? `<textarea name="${question.id}" rows="3" placeholder="${question.prompt}">${value || ''}</textarea>`
+      : `<div class="choice-grid">${question.options
+          .map((option) => {
+            const isMulti = question.type === 'multi';
+            const inputType = isMulti ? 'checkbox' : 'radio';
+            const isChecked = isMulti
+              ? Array.isArray(value) && value.includes(option.value)
+              : value === option.value;
+            return `
+              <label class="choice-card">
+                <input type="${inputType}" name="${question.id}" value="${option.value}" ${
+              isChecked ? 'checked' : ''
+            } />
+                <span>${option.label}</span>
+              </label>
+            `;
+          })
+          .join('')}</div>`;
+
+  return `
+    <div class="question-block">
+      <span class="question-label">${question.label}</span>
+      ${question.type === 'text' ? `<p class="small">${question.prompt}</p>` : ''}
+      ${optionsMarkup}
+    </div>
+  `;
+}
+
+function initAuthPage() {
+  const signupForm = document.getElementById('signupForm');
+  if (!signupForm) return;
+
+  const signupPanel = document.getElementById('signupPanel');
+  const loginPanel = document.getElementById('loginPanel');
+  const signupProgress = document.getElementById('signupProgress');
+  const signupActions = document.getElementById('signupActions');
+  const signupStatus = document.getElementById('signupStatus');
+  const loginForm = document.getElementById('loginForm');
+  const loginStatus = document.getElementById('loginStatus');
+
+  document.querySelectorAll('[data-auth-tab]').forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const target = tab.dataset.authTab;
+      document.querySelectorAll('[data-auth-tab]').forEach((item) => {
+        item.classList.toggle('is-active', item === tab);
+        item.setAttribute('aria-selected', item === tab ? 'true' : 'false');
+      });
+      signupPanel.classList.toggle('is-hidden', target !== 'signup');
+      loginPanel.classList.toggle('is-hidden', target !== 'login');
+    });
+  });
+
+  const signupState = {
+    stepIndex: 0,
+    role: null,
+    steps: [],
+    answers: {
+      kyc: {},
+      survey: {},
+    },
+  };
+
+  function buildSteps() {
+    const role = signupState.role;
+    const surveyQuestions = role ? SURVEY_DEFINITIONS[role] : [];
+    signupState.steps = [
+      { type: 'kyc' },
+      ...buildSurveySteps(surveyQuestions).map((group) => ({ type: 'survey', questions: group })),
+    ];
+  }
+
+  function renderKycStep() {
+    const { kyc } = signupState.answers;
+    signupForm.innerHTML = `
+      <label>
+        <span>Nombre completo</span>
+        <input type="text" name="fullName" placeholder="Nombre y apellido" value="${
+          kyc.fullName || ''
+        }" required />
+      </label>
+      <label>
+        <span>Email</span>
+        <input type="email" name="email" placeholder="tu@email.com" value="${
+          kyc.email || ''
+        }" required />
+      </label>
+      <label>
+        <span>Teléfono</span>
+        <input type="tel" name="phone" placeholder="+34 600 000 000" value="${
+          kyc.phone || ''
+        }" required />
+      </label>
+      <label>
+        <span>País</span>
+        <input type="text" name="country" placeholder="País" value="${
+          kyc.country || ''
+        }" required />
+      </label>
+      <label>
+        <span>Tipo de perfil</span>
+        <select name="role" required>
+          <option value="">Selecciona un perfil</option>
+          ${Object.keys(SURVEY_DEFINITIONS)
+            .map(
+              (roleOption) =>
+                `<option value="${roleOption}" ${
+                  signupState.role === roleOption ? 'selected' : ''
+                }>${roleOption}</option>`,
+            )
+            .join('')}
+        </select>
+      </label>
+      <label>
+        <span>Contraseña</span>
+        <input type="password" name="password" placeholder="Crea una contraseña" value="${
+          kyc.password || ''
+        }" required />
+      </label>
+    `;
+  }
+
+  function renderSurveyStep(questions) {
+    const { survey } = signupState.answers;
+    signupForm.innerHTML = questions.map((question) => renderQuestion(question, survey[question.id])).join('');
+  }
+
+  function renderStep() {
+    if (!signupState.steps.length) buildSteps();
+    const currentStep = signupState.steps[signupState.stepIndex];
+    const totalSteps = signupState.role ? signupState.steps.length : 4;
+    signupProgress.textContent = `Step ${signupState.stepIndex + 1} of ${totalSteps}`;
+    signupStatus.textContent = '';
+
+    if (currentStep.type === 'kyc') {
+      renderKycStep();
+    } else {
+      renderSurveyStep(currentStep.questions);
+    }
+
+    signupActions.innerHTML = '';
+    const backButton = document.createElement('button');
+    backButton.type = 'button';
+    backButton.className = 'btn btn-secondary';
+    backButton.textContent = 'Back';
+    backButton.disabled = signupState.stepIndex === 0;
+
+    const nextButton = document.createElement('button');
+    nextButton.type = 'button';
+    nextButton.className = 'btn btn-primary';
+    nextButton.textContent =
+      signupState.stepIndex === signupState.steps.length - 1 ? 'Complete onboarding' : 'Next';
+
+    signupActions.appendChild(backButton);
+    signupActions.appendChild(nextButton);
+
+    backButton.addEventListener('click', () => {
+      signupState.stepIndex = Math.max(0, signupState.stepIndex - 1);
+      renderStep();
+    });
+
+    nextButton.addEventListener('click', () => {
+      if (!collectStepAnswers(currentStep)) return;
+      if (signupState.stepIndex === signupState.steps.length - 1) {
+        completeSignup();
+        return;
+      }
+      signupState.stepIndex += 1;
+      renderStep();
+    });
+  }
+
+  function collectStepAnswers(step) {
+    if (step.type === 'kyc') {
+      const formData = new FormData(signupForm);
+      const payload = Object.fromEntries(formData.entries());
+      const requiredFields = ['fullName', 'email', 'phone', 'country', 'role', 'password'];
+      const missing = requiredFields.filter((field) => !payload[field]);
+      if (missing.length) {
+        signupStatus.textContent = 'Completa todos los campos para continuar.';
+        return false;
+      }
+      signupState.answers.kyc = payload;
+      signupState.role = payload.role;
+      buildSteps();
+      return true;
+    }
+
+    const answers = { ...signupState.answers.survey };
+    let isValid = true;
+    step.questions.forEach((question) => {
+      if (question.type === 'multi') {
+        const selections = [...signupForm.querySelectorAll(`input[name="${question.id}"]:checked`)].map(
+          (input) => input.value,
+        );
+        answers[question.id] = selections;
+        if (!selections.length) isValid = false;
+        return;
+      }
+
+      if (question.type === 'text') {
+        const value = signupForm.querySelector(`textarea[name="${question.id}"]`)?.value.trim() || '';
+        answers[question.id] = value;
+        if (!value) isValid = false;
+        return;
+      }
+
+      const value = signupForm.querySelector(`input[name="${question.id}"]:checked`)?.value;
+      answers[question.id] = value || '';
+      if (!value) isValid = false;
+    });
+
+    if (!isValid) {
+      signupStatus.textContent = 'Responde todas las preguntas para continuar.';
+      return false;
+    }
+
+    signupState.answers.survey = answers;
+    return true;
+  }
+
+  function completeSignup() {
+    const profiles = getStoredProfiles();
+    const { kyc, survey } = signupState.answers;
+
+    if (profiles.some((profile) => profile.email.toLowerCase() === kyc.email.toLowerCase())) {
+      signupStatus.textContent = 'Este email ya está registrado.';
+      return;
+    }
+
+    const profileId = `profile-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
+    const baseProfile = {
+      id: profileId,
+      fullName: kyc.fullName,
+      email: kyc.email,
+      phone: kyc.phone,
+      country: kyc.country,
+      role: signupState.role,
+      password: kyc.password,
+      onboarding: {
+        role: signupState.role,
+        completedAt: new Date().toISOString(),
+      },
+    };
+
+    if (signupState.role === 'Investor') {
+      const preferences = {
+        objective: survey.objective,
+        horizon: survey.horizon,
+        riskLevel: survey.riskLevel,
+        strategyPreferences: survey.strategyPreferences,
+        reportingFrequency: survey.reportingFrequency,
+      };
+      baseProfile.investorPreferences = preferences;
+      baseProfile.onboarding.investorPreferences = preferences;
+      baseProfile.waitlistFunds = [];
+    }
+
+    if (signupState.role === 'Fund Manager') {
+      const managerProfile = {
+        strategyType: survey.strategyType,
+        strategyTypeLabel: getStrategyLabel(survey.strategyType),
+        capitalStatus: survey.capitalStatus,
+        trackRecordLength: survey.trackRecordLength,
+        operatingStructure: survey.operatingStructure,
+        strategyDescription: survey.strategyDescription,
+        status: 'pending-review',
+      };
+      baseProfile.fundManagerProfile = managerProfile;
+      baseProfile.onboarding.fundManagerProfile = managerProfile;
+      addMasterNotification({
+        id: `notif-${Date.now()}`,
+        type: 'fund-manager-profile',
+        title: 'Nuevo gestor pendiente',
+        message: `${baseProfile.fullName} envió su perfil de gestor.`,
+        createdAt: new Date().toISOString(),
+      });
+    }
+
+    if (signupState.role === 'Family Office') {
+      const familyPreferences = {
+        managementRole: survey.managementRole,
+        diversificationLevel: survey.diversificationLevel,
+        strategyPreferences: survey.strategyPreferences,
+        interactionLevel: survey.interactionLevel,
+        reportingCustomization: survey.reportingCustomization,
+      };
+      baseProfile.familyOfficePreferences = familyPreferences;
+      baseProfile.onboarding.familyOfficePreferences = familyPreferences;
+    }
+
+    saveStoredProfiles([...profiles, baseProfile]);
+    setSession({ id: profileId, role: baseProfile.role });
+
+    if (baseProfile.role === 'Investor') {
+      window.location.href = 'funds-explore.html';
+      return;
+    }
+
+    if (baseProfile.role === 'Fund Manager') {
+      window.location.href = 'pending-review.html';
+      return;
+    }
+
+    if (baseProfile.role === 'Family Office') {
+      window.location.href = 'family-dashboard.html';
+    }
+  }
+
+  renderStep();
+
+  loginForm?.addEventListener('submit', (event) => {
+    event.preventDefault();
+    loginStatus.textContent = '';
+    const formData = new FormData(loginForm);
+    const identifier = String(formData.get('identifier') || '').trim();
+    const password = String(formData.get('password') || '').trim();
+
+    if (!identifier || !password) {
+      loginStatus.textContent = 'Ingresa tus credenciales.';
+      return;
+    }
+
+    if (identifier === MASTER_USER.username && password === MASTER_USER.password) {
+      setSession({ role: 'MasterUser', username: MASTER_USER.username });
+      window.location.href = 'master-dashboard.html';
+      return;
+    }
+
+    const profiles = getStoredProfiles();
+    const match = profiles.find(
+      (profile) => profile.email.toLowerCase() === identifier.toLowerCase() && profile.password === password,
+    );
+
+    if (!match) {
+      loginStatus.textContent = 'Credenciales inválidas.';
+      return;
+    }
+
+    setSession({ id: match.id, role: match.role });
+    window.location.href = 'profile.html';
+  });
+}
+
+function formatStrategyList(values) {
+  if (!values || !values.length) return '—';
+  return values.map((value) => getStrategyLabel(value)).join(', ');
+}
+
+function initProfilePage() {
+  const profileContent = document.getElementById('profileContent');
+  const profileOverview = document.getElementById('profileOverview');
+  if (!profileContent || !profileOverview) return;
+
+  const profile = getCurrentProfile();
+  if (!profile) {
+    profileContent.innerHTML = '<div class="status-banner">Inicia sesión para ver tu perfil.</div>';
+    return;
+  }
+
+  document.getElementById('profileName').textContent = profile.fullName;
+  document.getElementById('profileRole').textContent = profile.role;
+  document.getElementById('profileSubtitle').textContent = profile.email;
+
+  profileOverview.innerHTML = `
+    <div class="profile-card">
+      <p class="small">Email</p>
+      <p><strong>${profile.email}</strong></p>
+    </div>
+    <div class="profile-card">
+      <p class="small">Teléfono</p>
+      <p><strong>${profile.phone}</strong></p>
+    </div>
+    <div class="profile-card">
+      <p class="small">País</p>
+      <p><strong>${profile.country}</strong></p>
+    </div>
+    <div class="profile-card">
+      <p class="small">Estado</p>
+      <span class="status-pill ${profile.role === 'Fund Manager' ? 'warning' : 'success'}">${
+        profile.role === 'Fund Manager' ? profile.fundManagerProfile?.status || 'Pendiente' : 'Activo'
+      }</span>
+    </div>
+  `;
+
+  const actions = `
+    <div class="profile-actions">
+      <a class="btn btn-secondary" href="index.html">Volver al inicio</a>
+      <button class="btn btn-primary" type="button" id="logoutButton">Cerrar sesión</button>
+    </div>
+  `;
+
+  if (profile.role === 'Investor') {
+    profileContent.innerHTML = `
+      <div class="profile-card">
+        <h3>Preferencias del inversionista</h3>
+        <div class="data-list">
+          <span><strong>Objetivo:</strong> ${profile.investorPreferences?.objective || '—'}</span>
+          <span><strong>Horizonte:</strong> ${profile.investorPreferences?.horizon || '—'}</span>
+          <span><strong>Riesgo:</strong> ${profile.investorPreferences?.riskLevel || '—'}</span>
+          <span><strong>Estrategias:</strong> ${formatStrategyList(
+            profile.investorPreferences?.strategyPreferences,
+          )}</span>
+          <span><strong>Reporting:</strong> ${profile.investorPreferences?.reportingFrequency || '—'}</span>
+        </div>
+      </div>
+      <div class="profile-card">
+        <h3>Lista de espera</h3>
+        <div class="data-list">
+          ${(profile.waitlistFunds || []).length ? profile.waitlistFunds.map((fund) => `<span>• ${fund}</span>`).join('') : '<span>Sin fondos aún.</span>'}
+        </div>
+        <div class="profile-actions">
+          <a class="btn btn-primary" href="funds-explore.html">Explorar fondos</a>
+        </div>
+      </div>
+      ${actions}
+    `;
+  }
+
+  if (profile.role === 'Fund Manager') {
+    profileContent.innerHTML = `
+      <div class="profile-card">
+        <h3>Perfil del gestor</h3>
+        <div class="data-list">
+          <span><strong>Estrategia:</strong> ${profile.fundManagerProfile?.strategyTypeLabel || '—'}</span>
+          <span><strong>Capital:</strong> ${profile.fundManagerProfile?.capitalStatus || '—'}</span>
+          <span><strong>Track record:</strong> ${profile.fundManagerProfile?.trackRecordLength || '—'}</span>
+          <span><strong>Estructura:</strong> ${profile.fundManagerProfile?.operatingStructure || '—'}</span>
+          <span><strong>Descripción:</strong> ${profile.fundManagerProfile?.strategyDescription || '—'}</span>
+        </div>
+      </div>
+      <div class="profile-card">
+        <h3>Registrar fondo</h3>
+        <form class="inline-form" id="fundRegistrationForm">
+          <label>
+            <span>Nombre del fondo</span>
+            <input type="text" name="fundName" placeholder="Nombre del fondo" required />
+          </label>
+          <label>
+            <span>País</span>
+            <input type="text" name="country" placeholder="País" required />
+          </label>
+          <label>
+            <span>Región</span>
+            <input type="text" name="region" placeholder="LatAm, EU, Global" required />
+          </label>
+          <label>
+            <span>AUM estimado</span>
+            <input type="text" name="aum" placeholder="$250M" required />
+          </label>
+          <label>
+            <span>Estrategia principal</span>
+            <select name="strategy" required>
+              <option value="">Selecciona una estrategia</option>
+              ${STRATEGY_OPTIONS.map((option) => `<option value="${option.value}">${option.label}</option>`).join('')}
+            </select>
+          </label>
+          <label>
+            <span>Descripción breve</span>
+            <textarea name="description" rows="3" placeholder="Resumen del fondo y foco operativo" required></textarea>
+          </label>
+          <button class="btn btn-primary" type="submit">Enviar a revisión</button>
+          <p class="form-status" id="fundRegistrationStatus" aria-live="polite"></p>
+        </form>
+      </div>
+      ${actions}
+    `;
+
+    const fundForm = document.getElementById('fundRegistrationForm');
+    const fundStatus = document.getElementById('fundRegistrationStatus');
+    fundForm?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      fundStatus.textContent = '';
+      const formData = new FormData(fundForm);
+      const payload = Object.fromEntries(formData.entries());
+      if (!payload.fundName || !payload.country || !payload.region || !payload.aum || !payload.strategy) {
+        fundStatus.textContent = 'Completa todos los campos requeridos.';
+        return;
+      }
+      const applications = readStorage(STORAGE_KEYS.fundApplications, []);
+      const application = {
+        id: `fund-${Date.now()}`,
+        fundName: payload.fundName,
+        country: payload.country,
+        region: payload.region,
+        aum: payload.aum,
+        strategy: payload.strategy,
+        strategyLabel: getStrategyLabel(payload.strategy),
+        description: payload.description,
+        status: 'pending',
+        managerId: profile.id,
+        submittedAt: new Date().toISOString(),
+      };
+      applications.unshift(application);
+      writeStorage(STORAGE_KEYS.fundApplications, applications);
+      addMasterNotification({
+        id: `notif-${Date.now()}`,
+        type: 'fund-registration',
+        title: 'Nuevo fondo en revisión',
+        message: `${profile.fullName} registró ${payload.fundName}.`,
+        createdAt: new Date().toISOString(),
+      });
+      fundStatus.textContent = 'Fondo enviado a revisión.';
+      fundForm.reset();
+    });
+  }
+
+  if (profile.role === 'Family Office') {
+    profileContent.innerHTML = `
+      <div class="profile-card">
+        <h3>Preferencias Family Office</h3>
+        <div class="data-list">
+          <span><strong>Rol:</strong> ${profile.familyOfficePreferences?.managementRole || '—'}</span>
+          <span><strong>Diversificación:</strong> ${profile.familyOfficePreferences?.diversificationLevel || '—'}</span>
+          <span><strong>Estrategias:</strong> ${formatStrategyList(
+            profile.familyOfficePreferences?.strategyPreferences,
+          )}</span>
+          <span><strong>Interacción:</strong> ${profile.familyOfficePreferences?.interactionLevel || '—'}</span>
+          <span><strong>Reporting:</strong> ${profile.familyOfficePreferences?.reportingCustomization || '—'}</span>
+        </div>
+      </div>
+      <div class="profile-card">
+        <h3>Acceso directo</h3>
+        <div class="data-list">
+          <span>• Chat directo con gestores verificados</span>
+          <span>• Canal preferente con MasterUser</span>
+          <span>• Informes personalizados por fondo</span>
+        </div>
+        <div class="profile-actions">
+          <a class="btn btn-primary" href="family-dashboard.html">Ir al dashboard</a>
+        </div>
+      </div>
+      ${actions}
+    `;
+  }
+
+  const logoutButton = document.getElementById('logoutButton');
+  logoutButton?.addEventListener('click', () => {
+    clearSession();
+    window.location.href = 'auth.html';
+  });
+}
+
+function initPendingReviewPage() {
+  const container = document.getElementById('pendingReviewContent');
+  if (!container) return;
+  const profile = getCurrentProfile();
+  if (!profile || profile.role !== 'Fund Manager') {
+    container.innerHTML = '<div class="status-banner">Inicia sesión como gestor para ver este panel.</div>';
+    return;
+  }
+
+  const applications = readStorage(STORAGE_KEYS.fundApplications, []);
+  const myApplications = applications.filter((item) => item.managerId === profile.id);
+  container.innerHTML = `
+    <div class="profile-grid">
+      <div class="profile-card">
+        <h3>Perfil</h3>
+        <p class="small">Estado de onboarding</p>
+        <span class="status-pill warning">${profile.fundManagerProfile?.status || 'Pendiente'}</span>
+        <p class="small">Revisión por MasterUser.</p>
+      </div>
+      <div class="profile-card">
+        <h3>Fondos registrados</h3>
+        <div class="data-list">
+          ${myApplications.length ? myApplications.map((item) => `<span>• ${item.fundName} (${item.status})</span>`).join('') : '<span>No hay fondos registrados.</span>'}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+async function initFundsExplorePage() {
+  const grid = document.getElementById('exploreFundGrid');
+  if (!grid) return;
+  const profile = getCurrentProfile();
+  if (!profile || profile.role !== 'Investor') {
+    grid.innerHTML = '<div class="status-banner">Inicia sesión como inversionista para ver los fondos.</div>';
+    return;
+  }
+
+  try {
+    const funds = await fetchJson('/funds');
+    grid.innerHTML = '';
+    funds.forEach((fund) => {
+      const card = document.createElement('div');
+      card.className = 'fund-card';
+      const isWaitlisted = profile.waitlistFunds?.includes(fund.name);
+      card.innerHTML = `
+        <div class="fund-card__header">
+          <div>
+            <p class="fund-card__name">${fund.name}</p>
+            <div class="fund-card__meta">
+              <span class="badge">${fund.strategy}</span>
+              <span class="badge">${fund.domicile}</span>
+            </div>
+          </div>
+          <span class="badge">${fund.status}</span>
+        </div>
+        <p class="fund-card__description">${fund.summary}</p>
+        <div class="fund-card__tags">
+          <span class="tag subtle">AUM ${fund.aum}</span>
+          <span class="tag subtle">${fund.performance}</span>
+        </div>
+        <div class="profile-actions">
+          <button class="btn btn-primary" type="button" data-fund-name="${fund.name}">
+            ${isWaitlisted ? 'En waitlist' : 'Unirse a waitlist'}
+          </button>
+        </div>
+      `;
+      const button = card.querySelector('button');
+      button.addEventListener('click', () => {
+        const waitlist = new Set(profile.waitlistFunds || []);
+        if (waitlist.has(fund.name)) {
+          waitlist.delete(fund.name);
+        } else {
+          waitlist.add(fund.name);
+        }
+        profile.waitlistFunds = Array.from(waitlist);
+        updateProfile(profile);
+        button.textContent = waitlist.has(fund.name) ? 'En waitlist' : 'Unirse a waitlist';
+      });
+      grid.appendChild(card);
+    });
+  } catch (error) {
+    console.error(error);
+    grid.innerHTML = '<div class="status-banner">No se pudieron cargar los fondos.</div>';
+  }
+}
+
+function initFamilyDashboardPage() {
+  const container = document.getElementById('familyDashboardContent');
+  if (!container) return;
+  const profile = getCurrentProfile();
+  if (!profile || profile.role !== 'Family Office') {
+    container.innerHTML = '<div class="status-banner">Inicia sesión como Family Office.</div>';
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="profile-grid">
+      <div class="profile-card">
+        <h3>Mandato activo</h3>
+        <div class="data-list">
+          <span><strong>Rol:</strong> ${profile.familyOfficePreferences?.managementRole || '—'}</span>
+          <span><strong>Diversificación:</strong> ${profile.familyOfficePreferences?.diversificationLevel || '—'}</span>
+          <span><strong>Estrategias:</strong> ${formatStrategyList(
+            profile.familyOfficePreferences?.strategyPreferences,
+          )}</span>
+        </div>
+      </div>
+      <div class="profile-card">
+        <h3>Interacción y reporting</h3>
+        <div class="data-list">
+          <span><strong>Nivel de interacción:</strong> ${profile.familyOfficePreferences?.interactionLevel || '—'}</span>
+          <span><strong>Reporting:</strong> ${profile.familyOfficePreferences?.reportingCustomization || '—'}</span>
+          <span>Acceso directo con gestores y MasterUser activo.</span>
+        </div>
+      </div>
+      <div class="profile-card">
+        <h3>Acciones rápidas</h3>
+        <div class="profile-actions">
+          <a class="btn btn-primary" href="gestores-verificados.html">Ver gestores verificados</a>
+          <a class="btn btn-secondary" href="profile.html">Ver perfil</a>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function initMasterDashboard() {
+  const pendingContainer = document.getElementById('masterPendingApplications');
+  const summaryContainer = document.getElementById('masterSurveySummaries');
+  const notificationsContainer = document.getElementById('masterNotifications');
+  if (!pendingContainer || !summaryContainer || !notificationsContainer) return;
+
+  const session = getSession();
+  if (!session || session.role !== 'MasterUser') {
+    notificationsContainer.innerHTML = '<div class="status-banner">Acceso exclusivo para MasterUser.</div>';
+    return;
+  }
+
+  const notifications = readStorage(STORAGE_KEYS.notifications, []);
+  notificationsContainer.innerHTML = notifications.length
+    ? `
+      <div class="profile-grid">
+        ${notifications
+          .slice(0, 4)
+          .map(
+            (note) => `
+          <div class="profile-card">
+            <p class="small">${new Date(note.createdAt).toLocaleString()}</p>
+            <h3>${note.title}</h3>
+            <p class="small">${note.message}</p>
+          </div>
+        `,
+          )
+          .join('')}
+      </div>
+    `
+    : '<div class="status-banner">Sin notificaciones pendientes.</div>';
+
+  const profiles = getStoredProfiles();
+  const pendingManagers = profiles.filter(
+    (profile) => profile.role === 'Fund Manager' && profile.fundManagerProfile?.status === 'pending-review',
+  );
+  const fundApplications = readStorage(STORAGE_KEYS.fundApplications, []);
+  const pendingFunds = fundApplications.filter((item) => item.status === 'pending');
+
+  pendingContainer.innerHTML = [
+    ...pendingManagers.map(
+      (manager) => `
+        <div class="dashboard-card">
+          <span class="status-pill warning">Gestor pendiente</span>
+          <h3>${manager.fullName}</h3>
+          <p class="small">${manager.email}</p>
+          <p class="small">${manager.fundManagerProfile?.strategyTypeLabel}</p>
+          <button class="btn btn-primary" type="button" data-approve-manager="${manager.id}">Aprobar perfil</button>
+        </div>
+      `,
+    ),
+    ...pendingFunds.map(
+      (fund) => `
+        <div class="dashboard-card">
+          <span class="status-pill warning">Fondo pendiente</span>
+          <h3>${fund.fundName}</h3>
+          <p class="small">${fund.strategyLabel} · ${fund.region}</p>
+          <button class="btn btn-primary" type="button" data-approve-fund="${fund.id}">Aprobar fondo</button>
+        </div>
+      `,
+    ),
+  ].join('');
+
+  pendingContainer.querySelectorAll('[data-approve-manager]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const managerId = button.dataset.approveManager;
+      const updatedProfiles = profiles.map((profile) => {
+        if (profile.id !== managerId) return profile;
+        return {
+          ...profile,
+          fundManagerProfile: {
+            ...profile.fundManagerProfile,
+            status: 'verified',
+          },
+        };
+      });
+      saveStoredProfiles(updatedProfiles);
+      addMasterNotification({
+        id: `notif-${Date.now()}`,
+        type: 'manager-approved',
+        title: 'Perfil aprobado',
+        message: 'Un gestor fue aprobado por MasterUser.',
+        createdAt: new Date().toISOString(),
+      });
+      initMasterDashboard();
+    });
+  });
+
+  pendingContainer.querySelectorAll('[data-approve-fund]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const fundId = button.dataset.approveFund;
+      const updatedApplications = fundApplications.map((application) =>
+        application.id === fundId ? { ...application, status: 'verified' } : application,
+      );
+      writeStorage(STORAGE_KEYS.fundApplications, updatedApplications);
+      addMasterNotification({
+        id: `notif-${Date.now()}`,
+        type: 'fund-approved',
+        title: 'Fondo aprobado',
+        message: 'Un fondo fue aprobado para gestores verificados.',
+        createdAt: new Date().toISOString(),
+      });
+      initMasterDashboard();
+    });
+  });
+
+  summaryContainer.innerHTML = profiles.length
+    ? profiles
+        .map((profile) => {
+          const isInvestor = profile.role === 'Investor';
+          const isManager = profile.role === 'Fund Manager';
+          const isFamily = profile.role === 'Family Office';
+          const summary = isInvestor
+            ? `Objetivo: ${profile.investorPreferences?.objective || '—'}<br />Riesgo: ${
+                profile.investorPreferences?.riskLevel || '—'
+              }<br />Estrategias: ${formatStrategyList(profile.investorPreferences?.strategyPreferences)}`
+            : isManager
+              ? `Estrategia: ${profile.fundManagerProfile?.strategyTypeLabel || '—'}<br />Capital: ${
+                  profile.fundManagerProfile?.capitalStatus || '—'
+                }<br />Track record: ${profile.fundManagerProfile?.trackRecordLength || '—'}`
+              : `Rol: ${profile.familyOfficePreferences?.managementRole || '—'}<br />Diversificación: ${
+                  profile.familyOfficePreferences?.diversificationLevel || '—'
+                }<br />Estrategias: ${formatStrategyList(profile.familyOfficePreferences?.strategyPreferences)}`;
+          return `
+            <div class="dashboard-card">
+              <span class="status-pill success">${profile.role}</span>
+              <h3>${profile.fullName}</h3>
+              <p class="small">${profile.email}</p>
+              <p class="small">${summary}</p>
+            </div>
+          `;
+        })
+        .join('')
+    : '<div class="status-banner">No hay perfiles registrados aún.</div>';
+}
 window.addEventListener('DOMContentLoaded', () => {
   initLanguageSwitcher();
   enableSmoothAnchors();
@@ -1349,4 +2424,11 @@ window.addEventListener('DOMContentLoaded', () => {
   attachContactForm();
   handleFormSubmission('managerForm', 'managerStatus', '/manager-apply');
   handleFormSubmission('familyForm', 'familyStatus', '/request-access');
+  updateAuthLinks();
+  initAuthPage();
+  initProfilePage();
+  initPendingReviewPage();
+  initFundsExplorePage();
+  initFamilyDashboardPage();
+  initMasterDashboard();
 });

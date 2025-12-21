@@ -1,4 +1,4 @@
-const verifiedFunds = [
+const baseVerifiedFunds = [
   {
     id: 'brenna-funding',
     name: 'Brenna Funding',
@@ -76,6 +76,51 @@ const verifiedFunds = [
   },
 ];
 
+const storageKeys = {
+  fundApplications: 'igatesFundApplications',
+};
+
+function getStoredFundApplications() {
+  try {
+    const raw = localStorage.getItem(storageKeys.fundApplications);
+    return raw ? JSON.parse(raw) : [];
+  } catch (error) {
+    console.error('Unable to read fund applications', error);
+    return [];
+  }
+}
+
+function getFundLogoLabel(name = '') {
+  return name
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0].toUpperCase())
+    .join('');
+}
+
+function getVerifiedFundsFromStorage() {
+  return getStoredFundApplications()
+    .filter((application) => application.status === 'verified')
+    .map((application) => ({
+      id: application.id,
+      name: application.fundName,
+      country: application.country || 'Global',
+      logoLabel: getFundLogoLabel(application.fundName),
+      region: application.region || 'Global',
+      strategy: application.strategyLabel || 'Multi-Strategy',
+      riskLevel: application.riskLevel || 'En revisión',
+      yearProfit: application.yearProfit ?? null,
+      maxDrawdown: application.maxDrawdown ?? null,
+      winRate: application.winRate ?? null,
+      volatility: application.volatility ?? null,
+      aum: application.aum || 'N/A',
+      description: application.description || 'Gestor en proceso de verificación.',
+    }));
+}
+
+const verifiedFunds = [...baseVerifiedFunds, ...getVerifiedFundsFromStorage()];
+
 let filteredFunds = [...verifiedFunds];
 let currentIndex = 0;
 
@@ -83,6 +128,13 @@ function formatPercent(value) {
   if (value === null || value === undefined || Number.isNaN(value)) return '—';
   const sign = value > 0 ? '+' : '';
   return `${sign}${value.toFixed(1)}%`;
+}
+
+function formatNumber(value, suffix = '%', decimals = 1) {
+  if (value === null || value === undefined || Number.isNaN(value)) return '—';
+  const numeric = Number(value);
+  const formatted = Number.isInteger(numeric) ? numeric.toString() : numeric.toFixed(decimals);
+  return `${formatted}${suffix}`;
 }
 
 function renderCarousel() {
@@ -165,11 +217,11 @@ function renderDetail(fund) {
         </div>
         <div class="fund-stat-card primary">
           <p class="label">Max Drawdown</p>
-          <p class="value">-${fund.maxDrawdown.toFixed(1)}%</p>
+          <p class="value">${formatNumber(fund.maxDrawdown === null ? null : -Math.abs(fund.maxDrawdown), '%')}</p>
         </div>
         <div class="fund-stat-card primary">
           <p class="label">Win Rate</p>
-          <p class="value">${fund.winRate}%</p>
+          <p class="value">${formatNumber(fund.winRate, '%', 0)}</p>
         </div>
         <div class="fund-stat-card primary">
           <p class="label">Nivel de Riesgo</p>
@@ -177,7 +229,7 @@ function renderDetail(fund) {
         </div>
       </div>
       <div class="fund-stats secondary">
-        <div class="stat-chip">Volatilidad <strong>${fund.volatility.toFixed(1)}%</strong></div>
+        <div class="stat-chip">Volatilidad <strong>${formatNumber(fund.volatility, '%')}</strong></div>
         <div class="stat-chip">AUM aprox. <strong>${fund.aum}</strong></div>
         <div class="stat-chip">Estrategia <strong>${fund.strategy}</strong></div>
         <div class="stat-chip">Región <strong>${fund.region}</strong></div>
