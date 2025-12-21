@@ -1669,6 +1669,27 @@ a:hover {
   font-size: 13px;
   padding: 4px 8px;
   border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.country-flag {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  line-height: 1;
+  background: #ffffff;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.08);
+}
+
+.country-name {
+  display: inline-block;
 }
 
 .fund-card__description {

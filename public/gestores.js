@@ -124,17 +124,26 @@ const verifiedFunds = [...baseVerifiedFunds, ...getVerifiedFundsFromStorage()];
 let filteredFunds = [...verifiedFunds];
 let currentIndex = 0;
 
+const countryFlags = {
+  Portugal: '🇵🇹',
+  Suiza: '🇨🇭',
+  Argentina: '🇦🇷',
+  México: '🇲🇽',
+  Colombia: '🇨🇴',
+};
+
 function formatPercent(value) {
   if (value === null || value === undefined || Number.isNaN(value)) return '—';
   const sign = value > 0 ? '+' : '';
   return `${sign}${value.toFixed(1)}%`;
 }
 
-function formatNumber(value, suffix = '%', decimals = 1) {
-  if (value === null || value === undefined || Number.isNaN(value)) return '—';
-  const numeric = Number(value);
-  const formatted = Number.isInteger(numeric) ? numeric.toString() : numeric.toFixed(decimals);
-  return `${formatted}${suffix}`;
+function renderCountryBadge(country) {
+  const flag = countryFlags[country] || '🌍';
+  return `
+    <span class="country-flag" role="img" aria-label="${country}">${flag}</span>
+    <span class="country-name">${country}</span>
+  `;
 }
 
 function renderCarousel() {
@@ -163,7 +172,7 @@ function renderCarousel() {
         <div>
           <p class="fund-card__name">${fund.name}</p>
           <div class="fund-card__meta">
-            <span class="badge country">${fund.country}</span>
+            <span class="badge country">${renderCountryBadge(fund.country)}</span>
             <span class="badge success">✅ Verificado</span>
           </div>
         </div>
@@ -204,7 +213,7 @@ function renderDetail(fund) {
         <div>
           <div class="fund-detail-title-row">
             <h3>${fund.name}</h3>
-            <span class="badge country">${fund.country}</span>
+            <span class="badge country">${renderCountryBadge(fund.country)}</span>
             <span class="badge success">✅ Verificado</span>
           </div>
           <p class="fund-detail-description">${fund.description}</p>
@@ -303,9 +312,42 @@ function parseValue(inputId) {
   return Number.isFinite(numeric) ? numeric : null;
 }
 
+function populateFilters() {
+  const regionSelect = document.getElementById('regionFilter');
+  const countrySelect = document.getElementById('countryFilter');
+
+  if (regionSelect) {
+    const regions = Array.from(new Set(verifiedFunds.map((fund) => fund.region))).sort((a, b) =>
+      a.localeCompare(b),
+    );
+    regionSelect.innerHTML = '<option value="">Cualquiera</option>';
+    regions.forEach((region) => {
+      const option = document.createElement('option');
+      option.value = region;
+      option.textContent = region;
+      regionSelect.appendChild(option);
+    });
+  }
+
+  if (countrySelect) {
+    const countries = Array.from(new Set(verifiedFunds.map((fund) => fund.country))).sort((a, b) =>
+      a.localeCompare(b),
+    );
+    countrySelect.innerHTML = '<option value="">Cualquiera</option>';
+    countries.forEach((country) => {
+      const option = document.createElement('option');
+      const flag = countryFlags[country] || '🌍';
+      option.value = country;
+      option.textContent = `${flag} ${country}`;
+      countrySelect.appendChild(option);
+    });
+  }
+}
+
 function applyFilters() {
   const yearProfitValue = parseValue('yearProfit');
   const drawdownValue = parseValue('drawdown');
+  const regionFilter = document.getElementById('regionFilter')?.value || '';
   const countryFilter = document.getElementById('countryFilter')?.value || '';
   const winRateValue = parseValue('winRate');
 
@@ -314,11 +356,13 @@ function applyFilters() {
 
     const matchesDrawdown = drawdownValue === null || fund.maxDrawdown <= drawdownValue;
 
-    const matchesCountry = !countryFilter || fund.region === countryFilter;
+    const matchesRegion = !regionFilter || fund.region === regionFilter;
+
+    const matchesCountry = !countryFilter || fund.country === countryFilter;
 
     const matchesWinRate = winRateValue === null || fund.winRate >= winRateValue;
 
-    return matchesProfit && matchesDrawdown && matchesCountry && matchesWinRate;
+    return matchesProfit && matchesDrawdown && matchesRegion && matchesCountry && matchesWinRate;
   });
 
   currentIndex = 0;
@@ -328,6 +372,7 @@ function applyFilters() {
 function resetFilters() {
   document.getElementById('yearProfit').value = '';
   document.getElementById('drawdown').value = '';
+  document.getElementById('regionFilter').value = '';
   document.getElementById('countryFilter').value = '';
   document.getElementById('winRate').value = '';
 
@@ -381,6 +426,7 @@ function attachEvents() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+  populateFilters();
   renderCarousel();
   attachEvents();
 });
