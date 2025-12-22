@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
+import { ManagerApplyForm } from "@/components/forms/ManagerApplyForm";
 
 export default function ForManagersPage() {
   return (
@@ -174,41 +175,7 @@ export default function ForManagersPage() {
                 </div>
               </div>
             </div>
-            <form id="managerForm" className="contact-form">
-              <label>
-                <span data-i18n="formNameLabel">Name</span>
-                <input type="text" name="name" placeholder="Your full name" required />
-              </label>
-              <label>
-                <span data-i18n="formFirmLabel">Firm</span>
-                <input type="text" name="firm" placeholder="Firm name" required />
-              </label>
-              <label>
-                <span data-i18n="formStrategyLabel">Strategy Type</span>
-                <input
-                  type="text"
-                  name="strategy"
-                  placeholder="Credit, Macro, Digital Assets..."
-                  required
-                />
-              </label>
-              <label>
-                <span data-i18n="formAumLabel">AUM</span>
-                <input type="text" name="aum" placeholder="$250M" required />
-              </label>
-              <label>
-                <span data-i18n="formEmailLabel">Email</span>
-                <input type="email" name="email" placeholder="you@firm.com" required />
-              </label>
-              <label>
-                <span data-i18n="formNotesLabel">Notes</span>
-                <textarea name="notes" rows={3} placeholder="Mandate focus, timelines, targets"></textarea>
-              </label>
-              <button className="btn btn-primary" type="submit" data-i18n="formSubmit">
-                Apply as a Manager
-              </button>
-              <p className="form-status" id="managerStatus" aria-live="polite"></p>
-            </form>
+            <ManagerApplyForm />
           </div>
         </section>
       </main>

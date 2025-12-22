@@ -1,5 +1,7 @@
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
+import { ProfileHeader } from "@/components/ProfileHeader";
+import { ProfileView } from "@/components/ProfileView";
 
 export default function ProfilePage() {
   return (
@@ -8,27 +10,14 @@ export default function ProfilePage() {
       <main>
         <section className="page-header minimal compact-hero">
           <div className="container">
-            <p className="eyebrow">Profile</p>
-            <div className="page-title-row">
-              <h1 id="profileName">Tu perfil</h1>
-              <div className="micro-tag" id="profileRole">
-                —
-              </div>
-            </div>
-            <p className="lead compact" id="profileSubtitle">
-              Resumen de tu perfil y preferencias.
-            </p>
+            <ProfileHeader />
           </div>
         </section>
 
         <section className="profile-section">
           <div className="container">
-            <div className="profile-grid" id="profileOverview"></div>
+            <ProfileView />
           </div>
-        </section>
-
-        <section className="profile-section">
-          <div className="container" id="profileContent"></div>
         </section>
       </main>
       <Footer />
