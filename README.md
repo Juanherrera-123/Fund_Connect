@@ -1,26 +1,33 @@
 # Fund_Connect
 
-Static landing page concept for **IGATES**, an institutional fintech bridge between fund managers and qualified investors. The design leans on a black + royal purple gradient palette, glassmorphism cards, and typography that pairs **Poppins** (headings) with **Inter** (body).
+IGATES platform built with Next.js, Tailwind CSS, and a Firebase-ready architecture for connecting fund managers with qualified investors.
 
-## Run the full experience
+## Run the app locally
 
-1. Start the backend + static server (no external dependencies required):
+1. Install dependencies:
    ```bash
-   npm start
+   npm install
    ```
-2. Visit http://localhost:4000 to browse the site. Featured funds, insights, and the contact form all talk to the API under `/api/*`.
+2. Start the development server:
+   ```bash
+   npm run dev
+   ```
+3. Visit http://localhost:3000.
 
-> If you only want the static page, open `public/index.html` directly in your browser.
+## Production build
+
+```bash
+npm run build
+npm start
+```
 
 ## Available endpoints
 
 - `GET /api/health` – simple service status.
-- `GET /api/funds` – sample curated fund universe for the cards on the homepage.
+- `GET /api/funds` – sample curated fund universe for featured cards.
 - `GET /api/insights` – market and platform intelligence feed.
-- `POST /api/contact` – accepts `{ name, email, role, message }` and stores the request in-memory.
 
 ## Development notes
 
-- Static assets live in `/public` and are served by the built-in Node HTTP server.
-- `/public/main.js` fetches API data and handles the contact form submission UX.
-- Styling lives in `/public/styles.css` and follows the gradient + glassmorphism system used across the layout.
+- Static assets live in `/public` and are served by Next.js.
+- Tailwind styles are configured via `tailwind.config.js` and applied in `src/styles/globals.css`.
