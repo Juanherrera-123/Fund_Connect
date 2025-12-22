@@ -2,6 +2,9 @@ import Link from "next/link";
 
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
+import { FeaturedFunds } from "@/components/FeaturedFunds";
+import { InsightsFeed } from "@/components/InsightsFeed";
+import { ContactForm } from "@/components/forms/ContactForm";
 
 export default function HomePage() {
   return (
@@ -201,11 +204,7 @@ export default function HomePage() {
                 Signal-rich profiles backed by daily reconciled data, ready for allocator review.
               </p>
             </div>
-            <div className="fund-grid" id="fundGrid">
-              <div className="loading" data-i18n="fundsLoading">
-                Loading verified funds...
-              </div>
-            </div>
+            <FeaturedFunds />
           </div>
         </section>
 
@@ -287,11 +286,7 @@ export default function HomePage() {
                 Short intelligence bursts designed for investment committees and risk partners.
               </p>
             </div>
-            <div className="insight-list" id="insightList">
-              <div className="loading" data-i18n="insightsLoading">
-                Loading intelligence feed...
-              </div>
-            </div>
+            <InsightsFeed />
           </div>
         </section>
 
@@ -472,61 +467,7 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
-            <form id="contactForm" className="contact-form">
-              <label>
-                <span data-i18n="contactNameLabel">Name</span>
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Your full name"
-                  required
-                  data-i18n="contactNamePlaceholder"
-                  data-i18n-attr="placeholder"
-                />
-              </label>
-              <label>
-                <span data-i18n="contactEmailLabel">Email</span>
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="you@firm.com"
-                  required
-                  data-i18n="contactEmailPlaceholder"
-                  data-i18n-attr="placeholder"
-                />
-              </label>
-              <label>
-                <span data-i18n="contactRoleLabel">Role</span>
-                <select name="role" required>
-                  <option value="" data-i18n="contactRolePlaceholder">
-                    Select your role
-                  </option>
-                  <option value="allocator" data-i18n="contactRoleAllocator">
-                    Allocator / Investor
-                  </option>
-                  <option value="manager" data-i18n="contactRoleManager">
-                    Fund Manager
-                  </option>
-                  <option value="ops" data-i18n="contactRoleOps">
-                    Operations / Compliance
-                  </option>
-                </select>
-              </label>
-              <label>
-                <span data-i18n="contactNotesLabel">Notes</span>
-                <textarea
-                  name="message"
-                  rows={3}
-                  placeholder="Mandate size, strategies, timing"
-                  data-i18n="contactNotesPlaceholder"
-                  data-i18n-attr="placeholder"
-                ></textarea>
-              </label>
-              <button className="btn btn-primary" type="submit" data-i18n="contactSubmit">
-                Request Demo
-              </button>
-              <p className="form-status" id="formStatus" aria-live="polite"></p>
-            </form>
+            <ContactForm />
           </div>
         </section>
       </main>

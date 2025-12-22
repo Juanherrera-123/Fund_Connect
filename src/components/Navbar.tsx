@@ -1,6 +1,27 @@
+"use client";
+
 import Link from "next/link";
 
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { STORAGE_KEYS } from "@/lib/igatesData";
+import { useLocalStorage } from "@/lib/useLocalStorage";
+import type { Session } from "@/lib/types";
+
 export function Navbar() {
+  const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
+
+  const authLink = (() => {
+    if (!session) {
+      return { label: "Sign Up / Log In", href: "/auth" };
+    }
+
+    if (session.role === "MasterUser") {
+      return { label: "Master Dashboard", href: "/master-dashboard" };
+    }
+
+    return { label: "My Profile", href: "/profile" };
+  })();
+
   return (
     <header className="site-header">
       <Link className="logo" href="/" aria-label="IGATES home">
@@ -25,39 +46,12 @@ export function Navbar() {
         </Link>
       </nav>
       <div className="header-actions">
-        <div className="language-switcher">
-          <button
-            className="language-toggle"
-            id="languageToggle"
-            aria-haspopup="listbox"
-            aria-expanded="false"
-            aria-label="Select language"
-          >
-            EN ▾
-          </button>
-          <ul className="language-menu" id="languageMenu" role="listbox" aria-label="Language options">
-            <li role="option" data-lang="en" aria-selected="true">
-              English
-            </li>
-            <li role="option" data-lang="pt" aria-selected="false">
-              Português
-            </li>
-            <li role="option" data-lang="es" aria-selected="false">
-              Español
-            </li>
-            <li role="option" data-lang="it" aria-selected="false">
-              Italiano
-            </li>
-            <li role="option" data-lang="zh" aria-selected="false">
-              中文（简体）
-            </li>
-          </ul>
-        </div>
+        <LanguageSwitcher />
         <Link className="btn btn-secondary" href="/#contact" data-i18n="navRequestDemo">
           Request Demo
         </Link>
-        <Link className="btn btn-primary auth-link" href="/auth" data-i18n="navAuth">
-          Sign Up / Log In
+        <Link className="btn btn-primary auth-link" href={authLink.href} data-i18n="navAuth">
+          {authLink.label}
         </Link>
       </div>
     </header>

@@ -1,5 +1,6 @@
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
+import { FamilyDashboardContent } from "@/components/FamilyDashboardContent";
 
 export default function FamilyDashboardPage() {
   return (
@@ -20,7 +21,9 @@ export default function FamilyDashboardPage() {
         </section>
 
         <section className="profile-section">
-          <div className="container" id="familyDashboardContent"></div>
+          <div className="container">
+            <FamilyDashboardContent />
+          </div>
         </section>
       </main>
       <Footer />

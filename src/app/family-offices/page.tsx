@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
+import { FamilyAccessForm } from "@/components/forms/FamilyAccessForm";
 
 export default function FamilyOfficesPage() {
   return (
@@ -186,45 +187,7 @@ export default function FamilyOfficesPage() {
                 </div>
               </div>
             </div>
-            <form id="familyForm" className="contact-form">
-              <label>
-                <span data-i18n="formNameLabel">Name</span>
-                <input type="text" name="name" placeholder="Your full name" required />
-              </label>
-              <label>
-                <span data-i18n="formFirmLabel">Firm</span>
-                <input type="text" name="firm" placeholder="Family office name" required />
-              </label>
-              <label>
-                <span data-i18n="formStrategyLabel">Strategy Type</span>
-                <input
-                  type="text"
-                  name="strategy"
-                  placeholder="Macro, Credit, Digital Assets..."
-                  required
-                />
-              </label>
-              <label>
-                <span data-i18n="formAumLabel">AUM</span>
-                <input type="text" name="aum" placeholder="$500M" required />
-              </label>
-              <label>
-                <span data-i18n="formEmailLabel">Email</span>
-                <input type="email" name="email" placeholder="you@office.com" required />
-              </label>
-              <label>
-                <span data-i18n="formNotesLabel">Notes</span>
-                <textarea
-                  name="notes"
-                  rows={3}
-                  placeholder="Mandate size, target strategies, timelines"
-                ></textarea>
-              </label>
-              <button className="btn btn-primary" type="submit" data-i18n="familyFormSubmit">
-                Request Access
-              </button>
-              <p className="form-status" id="familyStatus" aria-live="polite"></p>
-            </form>
+            <FamilyAccessForm />
           </div>
         </section>
       </main>

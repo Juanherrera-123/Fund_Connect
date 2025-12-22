@@ -1,5 +1,6 @@
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
+import { MasterDashboardView } from "@/components/MasterDashboardView";
 
 export default function MasterDashboardPage() {
   return (
@@ -20,26 +21,8 @@ export default function MasterDashboardPage() {
         </section>
 
         <section className="profile-section">
-          <div className="container" id="masterNotifications"></div>
-        </section>
-
-        <section className="profile-section">
           <div className="container">
-            <div className="section-header compact">
-              <h2>Solicitudes pendientes</h2>
-              <p className="lead compact">Fondos y perfiles en revisión para aprobación.</p>
-            </div>
-            <div className="dashboard-grid" id="masterPendingApplications"></div>
-          </div>
-        </section>
-
-        <section className="profile-section">
-          <div className="container">
-            <div className="section-header compact">
-              <h2>Resúmenes de onboarding</h2>
-              <p className="lead compact">Visión rápida para decisiones de advisory.</p>
-            </div>
-            <div className="dashboard-grid" id="masterSurveySummaries"></div>
+            <MasterDashboardView />
           </div>
         </section>
       </main>

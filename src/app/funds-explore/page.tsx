@@ -1,5 +1,6 @@
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
+import { FundsExploreGrid } from "@/components/FundsExploreGrid";
 
 export default function FundsExplorePage() {
   return (
@@ -21,9 +22,7 @@ export default function FundsExplorePage() {
 
         <section className="profile-section">
           <div className="container">
-            <div className="fund-grid" id="exploreFundGrid">
-              <div className="loading">Cargando fondos...</div>
-            </div>
+            <FundsExploreGrid />
           </div>
         </section>
       </main>

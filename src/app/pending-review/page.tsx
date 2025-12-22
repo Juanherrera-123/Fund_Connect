@@ -1,5 +1,6 @@
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
+import { PendingReviewView } from "@/components/PendingReviewView";
 
 export default function PendingReviewPage() {
   return (
@@ -20,7 +21,9 @@ export default function PendingReviewPage() {
         </section>
 
         <section className="profile-section">
-          <div className="container" id="pendingReviewContent"></div>
+          <div className="container">
+            <PendingReviewView />
+          </div>
         </section>
       </main>
       <Footer />
