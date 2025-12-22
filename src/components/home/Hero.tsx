@@ -14,7 +14,7 @@ export function Hero() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(90,75,255,0.25),_transparent_50%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,_rgba(255,255,255,0.08),_transparent_40%)]" />
         <Image
-          src="/worldmap-igates.png"
+          src="/worldmap-Igates.png"
           alt="World map"
           fill
           className="object-contain opacity-20"
