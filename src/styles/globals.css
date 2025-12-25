@@ -208,10 +208,9 @@ a:hover {
 
 .btn-primary:hover {
   background-image: linear-gradient(#ffffff, #ffffff), var(--brand-gradient-strong);
-  background-clip: padding-box, text;
-  -webkit-background-clip: padding-box, text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
+  background-clip: padding-box;
+  -webkit-background-clip: padding-box;
+  color: var(--brand-blue-dark);
   border-color: rgba(37, 99, 235, 0.15);
 }
 
