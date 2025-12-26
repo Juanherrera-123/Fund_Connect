@@ -4,7 +4,7 @@ const iconClass = "h-4 w-4";
 
 const kpis = [
   {
-    label: "Approved Funds",
+    label: "Active Funds",
     value: "128",
     trend: "+6%",
     icon: (
@@ -26,7 +26,7 @@ const kpis = [
     ),
   },
   {
-    label: "Assets Under Review",
+    label: "Pending Assets",
     value: "$2.4B",
     trend: "+2.1%",
     icon: (
@@ -42,7 +42,7 @@ const kpis = [
     ),
   },
   {
-    label: "Active Requests",
+    label: "On waitlist",
     value: "46",
     icon: (
       <svg viewBox="0 0 20 20" className={iconClass} aria-hidden>
