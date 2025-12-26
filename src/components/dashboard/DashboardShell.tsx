@@ -15,17 +15,25 @@ const navItems = [
 const actionIconClass =
   "flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-600 transition hover:border-slate-300 hover:text-slate-900";
 
+const roleMap: Record<string, string> = {
+  "/dashboard/master": "MasterUser",
+  "/dashboard/fund-manager": "Fund Manager",
+  "/dashboard/investor": "Investor",
+  "/dashboard/family-office": "Family Office",
+};
+
 export default function DashboardShell({
-  role,
   children,
 }: {
-  role: string;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const role =
+    Object.entries(roleMap).find(([href]) => pathname?.startsWith(href))?.[1] ??
+    "Dashboard User";
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900">
+    <div className="relative h-screen bg-slate-100 text-slate-900">
       <aside className="fixed inset-y-0 left-0 hidden w-60 flex-col border-r border-slate-200 bg-white px-5 py-6 md:flex">
         <div className="flex h-12 items-center text-xs font-semibold uppercase tracking-[0.4em] text-slate-500">
           IGATES
@@ -51,8 +59,8 @@ export default function DashboardShell({
         </nav>
       </aside>
 
-      <div className="flex min-h-screen flex-col md:ml-60">
-        <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b border-slate-200 bg-white px-6">
+      <div className="flex h-screen flex-col md:ml-60">
+        <header className="fixed left-0 right-0 top-0 z-20 flex h-16 items-center gap-4 border-b border-slate-200 bg-white px-6 md:left-60">
           <div className="flex flex-1 items-center gap-3">
             <input
               className="h-10 w-full max-w-xl rounded-lg border border-slate-200 bg-slate-50 px-4 text-sm text-slate-700 placeholder:text-slate-400 focus:border-slate-300 focus:outline-none"
@@ -86,7 +94,7 @@ export default function DashboardShell({
           </div>
         </header>
 
-        <main className="flex-1 px-6 py-6">
+        <main className="flex-1 overflow-y-auto px-6 pb-6 pt-24">
           <div className="mx-auto flex w-full max-w-7xl flex-col gap-6">{children}</div>
         </main>
       </div>
