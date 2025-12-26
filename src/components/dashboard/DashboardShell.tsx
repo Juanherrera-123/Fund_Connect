@@ -58,7 +58,7 @@ const navItems = [
   },
   {
     label: "Messages",
-    href: "/dashboard/master",
+    href: "/dashboard/messages",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
         <path
@@ -71,7 +71,7 @@ const navItems = [
   },
   {
     label: "Settings",
-    href: "/dashboard/master",
+    href: "/dashboard/settings",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
         <path
@@ -92,6 +92,8 @@ const roleMap: Record<string, string> = {
   "/dashboard/fund-manager": "Fund Manager",
   "/dashboard/investor": "Investor",
   "/dashboard/family-office": "Family Office",
+  "/dashboard/messages": "MasterUser",
+  "/dashboard/settings": "MasterUser",
 };
 
 export default function DashboardShell({
