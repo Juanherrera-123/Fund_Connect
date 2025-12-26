@@ -4,12 +4,11 @@ import KpiCard, { KpiCardProps } from "@/components/dashboard/KpiCard";
 import type { Role } from "@/lib/types";
 
 const lineLegend = [
-  { label: "Approved", color: "bg-emerald-500" },
-  { label: "Review", color: "bg-slate-400" },
+  { label: "Active assets", color: "bg-emerald-500" },
+  { label: "Unassigned assets", color: "bg-slate-400" },
 ];
 
 const donutLegend = [
-  { label: "MasterUser", color: "bg-slate-800" },
   { label: "Investors", color: "bg-emerald-500" },
   { label: "Managers", color: "bg-amber-400" },
   { label: "Family Office", color: "bg-slate-400" },
@@ -60,7 +59,7 @@ export default function DashboardOverview({
         <section className="flex flex-col gap-3">
           <h2 className="text-sm font-semibold text-slate-700">Analytics</h2>
           <div className="grid gap-4 lg:grid-cols-2">
-            <ChartCard title="Request throughput" legend={lineLegend}>
+            <ChartCard title="Assets Curve" legend={lineLegend}>
               <svg viewBox="0 0 260 120" className="h-32 w-full">
                 <polyline
                   points="10,90 60,70 110,75 160,40 210,30 250,20"
@@ -79,47 +78,46 @@ export default function DashboardOverview({
               </svg>
             </ChartCard>
 
-            <ChartCard title="Users by role" legend={donutLegend}>
+            <ChartCard title="Users per role" legend={donutLegend}>
               <svg viewBox="0 0 120 120" className="h-32 w-32">
-                <circle
-                  cx="60"
-                  cy="60"
-                  r="40"
-                  stroke="#0f172a"
-                  strokeWidth="12"
-                  fill="none"
-                  strokeDasharray="90 250"
-                />
-                <circle
-                  cx="60"
-                  cy="60"
-                  r="40"
-                  stroke="#10b981"
-                  strokeWidth="12"
-                  fill="none"
-                  strokeDasharray="70 250"
-                  strokeDashoffset="-90"
-                />
-                <circle
-                  cx="60"
-                  cy="60"
-                  r="40"
-                  stroke="#fbbf24"
-                  strokeWidth="12"
-                  fill="none"
-                  strokeDasharray="50 250"
-                  strokeDashoffset="-160"
-                />
-                <circle
-                  cx="60"
-                  cy="60"
-                  r="40"
-                  stroke="#94a3b8"
-                  strokeWidth="12"
-                  fill="none"
-                  strokeDasharray="40 250"
-                  strokeDashoffset="-210"
-                />
+                <g>
+                  <title>Investors: 128</title>
+                  <circle
+                    cx="60"
+                    cy="60"
+                    r="40"
+                    stroke="#10b981"
+                    strokeWidth="12"
+                    fill="none"
+                    strokeDasharray="110 250"
+                  />
+                </g>
+                <g>
+                  <title>Managers: 42</title>
+                  <circle
+                    cx="60"
+                    cy="60"
+                    r="40"
+                    stroke="#fbbf24"
+                    strokeWidth="12"
+                    fill="none"
+                    strokeDasharray="60 250"
+                    strokeDashoffset="-110"
+                  />
+                </g>
+                <g>
+                  <title>Family Office: 24</title>
+                  <circle
+                    cx="60"
+                    cy="60"
+                    r="40"
+                    stroke="#94a3b8"
+                    strokeWidth="12"
+                    fill="none"
+                    strokeDasharray="50 250"
+                    strokeDashoffset="-170"
+                  />
+                </g>
               </svg>
             </ChartCard>
           </div>
@@ -161,30 +159,46 @@ export default function DashboardOverview({
             />
 
             <DataTable
-              title="Waitlists"
+              title="Waitlist"
               actionLabel="Review"
               columns={[
                 { key: "name", label: "Name" },
-                { key: "segment", label: "Segment" },
+                { key: "amount", label: "Amount" },
+                { key: "fund", label: "Fund" },
+                { key: "time", label: "Time" },
                 { key: "status", label: "Status" },
               ]}
               rows={[
                 {
                   id: "wait-1",
                   name: "Kline Family Office",
-                  segment: "Family Office",
-                  status: <StatusCell label="Verification" tone="warning" />,
+                  amount: "$1.2M",
+                  fund: "Atlas Macro",
+                  time: "24 months",
+                  status: <StatusCell label="Incomplete" tone="warning" />,
                 },
                 {
                   id: "wait-2",
                   name: "Summit Holdings",
-                  segment: "Investor",
-                  status: <StatusCell label="KYC" tone="neutral" />,
+                  amount: "$450K",
+                  fund: "NorthBridge Credit",
+                  time: "18 months",
+                  status: <StatusCell label="Information" tone="neutral" />,
                 },
                 {
                   id: "wait-3",
                   name: "Granite Ventures",
-                  segment: "Fund Manager",
+                  amount: "$900K",
+                  fund: "Cobalt Growth",
+                  time: "12 months",
+                  status: <StatusCell label="Assigned" tone="warning" />,
+                },
+                {
+                  id: "wait-4",
+                  name: "Rivergate Partners",
+                  amount: "$2.8M",
+                  fund: "Summit Infra",
+                  time: "36 months",
                   status: <StatusCell label="Ready" tone="success" />,
                 },
               ]}
