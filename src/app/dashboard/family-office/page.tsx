@@ -64,6 +64,6 @@ const kpis = [
 
 export default function FamilyOfficeDashboard() {
   return (
-    <DashboardOverview title="Family Office Dashboard" kpis={kpis} />
+    <DashboardOverview title="Family Office Dashboard" kpis={kpis} role="Family Office" />
   );
 }

@@ -63,6 +63,6 @@ const kpis = [
 
 export default function FundManagerDashboard() {
   return (
-    <DashboardOverview title="Fund Manager Dashboard" kpis={kpis} />
+    <DashboardOverview title="Fund Manager Dashboard" kpis={kpis} role="Fund Manager" />
   );
 }

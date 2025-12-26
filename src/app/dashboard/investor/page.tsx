@@ -64,6 +64,6 @@ const kpis = [
 
 export default function InvestorDashboard() {
   return (
-    <DashboardOverview title="Investor Dashboard" kpis={kpis} />
+    <DashboardOverview title="Investor Dashboard" kpis={kpis} role="Investor" />
   );
 }
