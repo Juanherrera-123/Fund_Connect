@@ -1,5 +1,4 @@
 import DashboardOverview from "@/components/dashboard/DashboardOverview";
-import DashboardShell from "@/components/dashboard/DashboardShell";
 
 const kpis = [
   { label: "Approved Funds", value: "32", trend: "+4%" },
@@ -9,8 +8,6 @@ const kpis = [
 
 export default function InvestorDashboard() {
   return (
-    <DashboardShell role="Investor">
-      <DashboardOverview title="Investor Dashboard" kpis={kpis} />
-    </DashboardShell>
+    <DashboardOverview title="Investor Dashboard" kpis={kpis} />
   );
 }
