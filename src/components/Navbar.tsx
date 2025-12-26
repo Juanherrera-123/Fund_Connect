@@ -16,7 +16,7 @@ export function Navbar() {
     }
 
     if (session.role === "MasterUser") {
-      return { label: "Master Dashboard", href: "/master-dashboard" };
+      return { label: "Master Dashboard", href: "/dashboard/master" };
     }
 
     return { label: "My Profile", href: "/profile" };
