@@ -129,10 +129,7 @@ export default function DashboardShell({
   return (
     <div className="relative h-screen bg-slate-100 text-slate-900">
       <aside className="fixed inset-y-0 left-0 hidden w-56 flex-col border-r border-slate-200 bg-white px-4 py-5 md:flex">
-        <div className="flex h-12 items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-slate-500">
-          <span className="flex h-6 w-6 items-center justify-center rounded-full border border-slate-200 text-[10px] text-slate-700">
-            IG
-          </span>
+        <div className="flex h-12 items-center text-[10px] font-semibold uppercase tracking-[0.3em] text-slate-500">
           <span>IGATES</span>
         </div>
         <nav className="mt-4 flex flex-1 flex-col gap-1 text-xs font-medium">
