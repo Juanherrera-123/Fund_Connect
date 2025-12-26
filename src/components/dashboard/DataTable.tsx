@@ -36,8 +36,8 @@ export default function DataTable({
         </button>
       </div>
       <div className="overflow-x-auto">
-        <table className="w-full text-left text-sm">
-          <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+        <table className="w-full text-left text-xs">
+          <thead className="bg-slate-50 text-[0.7rem] uppercase tracking-wide text-slate-500">
             <tr>
               {columns.map((column) => (
                 <th key={column.key} className={`px-4 py-2 ${column.className ?? ""}`}>
@@ -48,23 +48,34 @@ export default function DataTable({
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {rows.map((row) => (
-              <tr key={row.id} className="text-slate-700">
-                {columns.map((column) => (
-                  <td key={`${row.id}-${column.key}`} className="px-4 py-3">
-                    {row[column.key]}
+            {rows.length > 0 ? (
+              rows.map((row) => (
+                <tr key={row.id} className="text-slate-700">
+                  {columns.map((column) => (
+                    <td key={`${row.id}-${column.key}`} className="px-4 py-2">
+                      {row[column.key]}
+                    </td>
+                  ))}
+                  <td className="px-4 py-2 text-right">
+                    <button
+                      type="button"
+                      className="rounded-md border border-slate-200 px-3 py-1 text-[0.7rem] font-semibold text-slate-700 hover:border-slate-300 hover:text-slate-900"
+                    >
+                      {actionLabel}
+                    </button>
                   </td>
-                ))}
-                <td className="px-4 py-3 text-right">
-                  <button
-                    type="button"
-                    className="rounded-md border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-700 hover:border-slate-300 hover:text-slate-900"
-                  >
-                    {actionLabel}
-                  </button>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan={columns.length + 1}
+                  className="px-4 py-6 text-center text-xs font-medium text-slate-500"
+                >
+                  No pending requests
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
