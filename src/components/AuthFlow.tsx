@@ -209,7 +209,7 @@ export function AuthFlow() {
 
     if (identifier === MASTER_USER.username && password === MASTER_USER.password) {
       setSession({ role: "MasterUser", username: MASTER_USER.username });
-      router.push("/master-dashboard");
+      router.push("/dashboard/master");
       return;
     }
 
