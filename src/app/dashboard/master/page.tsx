@@ -85,6 +85,6 @@ const kpis = [
 
 export default function MasterDashboard() {
   return (
-    <DashboardOverview title="Master Dashboard" kpis={kpis} />
+    <DashboardOverview title="Master Dashboard" kpis={kpis} role="MasterUser" />
   );
 }
