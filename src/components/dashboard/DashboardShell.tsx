@@ -4,6 +4,10 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
+import { STORAGE_KEYS } from "@/lib/igatesData";
+import { useLocalStorage } from "@/lib/useLocalStorage";
+import type { Session } from "@/lib/types";
+
 const navItems = [
   {
     label: "Overview",
@@ -104,6 +108,7 @@ export default function DashboardShell({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const [, setSession] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const role =
     Object.entries(roleMap).find(([href]) => pathname?.startsWith(href))?.[1] ??
     "Dashboard User";
@@ -123,7 +128,8 @@ export default function DashboardShell({
 
   const handleLogout = () => {
     setIsMenuOpen(false);
-    router.push("/#funds");
+    setSession(null);
+    router.push("/");
   };
 
   return (
