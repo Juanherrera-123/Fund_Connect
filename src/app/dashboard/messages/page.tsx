@@ -2,26 +2,55 @@
 
 import { useMemo } from "react";
 
-import { STORAGE_KEYS } from "@/lib/igatesData";
+import { STORAGE_KEYS, baseVerifiedFunds } from "@/lib/igatesData";
 import { useLocalStorage } from "@/lib/useLocalStorage";
-import type { MasterNotification } from "@/lib/types";
+import type { FundApplication, UserProfile } from "@/lib/types";
 
 export default function MessagesDashboard() {
-  const [notifications] = useLocalStorage<MasterNotification[]>(STORAGE_KEYS.notifications, []);
+  const [profiles] = useLocalStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
+  const [fundApplications] = useLocalStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
 
   const columns = useMemo(() => {
-    const fundNotifications = notifications.filter((note) => note.type === "fund-registration");
-    const managerNotifications = notifications.filter((note) => note.type === "fund-manager-profile");
-    const otherNotifications = notifications.filter(
-      (note) => note.type !== "fund-registration" && note.type !== "fund-manager-profile"
+    const verifiedFundApplications = fundApplications.filter(
+      (application) => application.status === "verified"
     );
+    const funds = [
+      ...baseVerifiedFunds.map((fund) => ({
+        id: fund.id,
+        title: fund.name,
+        subtitle: `${fund.strategy} · ${fund.country}`,
+      })),
+      ...verifiedFundApplications.map((application) => ({
+        id: application.id,
+        title: application.fundName,
+        subtitle: `${application.strategyLabel || application.strategy || "Multi-Strategy"} · ${
+          application.country || "Global"
+        }`,
+      })),
+    ];
+
+    const investors = profiles
+      .filter((profile) => profile.role === "Investor")
+      .map((profile) => ({
+        id: profile.id,
+        title: profile.fullName,
+        subtitle: profile.country,
+      }));
+
+    const familyOffices = profiles
+      .filter((profile) => profile.role === "Family Office")
+      .map((profile) => ({
+        id: profile.id,
+        title: profile.fullName,
+        subtitle: profile.country,
+      }));
 
     return [
-      { title: "Fondos", items: fundNotifications },
-      { title: "Gestores", items: managerNotifications },
-      { title: "Otros", items: otherNotifications },
+      { title: "Fondos", items: funds },
+      { title: "Inversionistas", items: investors },
+      { title: "Family offices", items: familyOffices },
     ];
-  }, [notifications]);
+  }, [fundApplications, profiles]);
 
   return (
     <>
@@ -39,16 +68,13 @@ export default function MessagesDashboard() {
               <h2 className="text-sm font-semibold text-slate-900">{column.title}</h2>
               <ul className="mt-3 space-y-2 text-sm text-slate-600">
                 {column.items.length ? (
-                  column.items.map((note) => (
+                  column.items.map((item) => (
                     <li
-                      key={note.id}
+                      key={item.id}
                       className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2"
                     >
-                      <p className="text-xs font-semibold text-slate-900">{note.title}</p>
-                      <p className="text-xs text-slate-500">{note.message}</p>
-                      <p className="mt-1 text-[0.7rem] text-slate-400">
-                        {new Date(note.createdAt).toLocaleDateString("es-ES")}
-                      </p>
+                      <p className="text-xs font-semibold text-slate-900">{item.title}</p>
+                      <p className="text-xs text-slate-500">{item.subtitle}</p>
                     </li>
                   ))
                 ) : (
