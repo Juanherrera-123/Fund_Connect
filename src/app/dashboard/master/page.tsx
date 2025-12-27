@@ -3,14 +3,22 @@
 import { useMemo } from "react";
 
 import DashboardOverview from "@/components/dashboard/DashboardOverview";
-import { STORAGE_KEYS, baseVerifiedFunds, getFundLogoLabel } from "@/lib/igatesData";
+import {
+  DEFAULT_FUND_MANAGER_PROFILES,
+  STORAGE_KEYS,
+  baseVerifiedFunds,
+  getFundLogoLabel,
+} from "@/lib/igatesData";
 import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { FundApplication, MasterNotification, UserProfile } from "@/lib/types";
 
 const iconClass = "h-4 w-4";
 
 export default function MasterDashboard() {
-  const [profiles] = useLocalStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
+  const [profiles] = useLocalStorage<UserProfile[]>(
+    STORAGE_KEYS.profiles,
+    DEFAULT_FUND_MANAGER_PROFILES
+  );
   const [fundApplications] = useLocalStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
   const [notifications] = useLocalStorage<MasterNotification[]>(STORAGE_KEYS.notifications, []);
 

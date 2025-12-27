@@ -3,13 +3,13 @@
 import Link from "next/link";
 import { useMemo } from "react";
 
-import { STORAGE_KEYS, formatStrategyList } from "@/lib/igatesData";
+import { DEFAULT_FUND_MANAGER_PROFILES, STORAGE_KEYS, formatStrategyList } from "@/lib/igatesData";
 import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { Session, UserProfile } from "@/lib/types";
 
 export function FamilyDashboardContent() {
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
-  const [profiles] = useLocalStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
+  const [profiles] = useLocalStorage<UserProfile[]>(STORAGE_KEYS.profiles, DEFAULT_FUND_MANAGER_PROFILES);
 
   const profile = useMemo(() => {
     if (!session || session.role !== "Family Office") return null;

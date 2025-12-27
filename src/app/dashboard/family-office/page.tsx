@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 
 import ChartCard from "@/components/dashboard/ChartCard";
-import { STORAGE_KEYS, baseVerifiedFunds } from "@/lib/igatesData";
+import { DEFAULT_FUND_MANAGER_PROFILES, STORAGE_KEYS, baseVerifiedFunds } from "@/lib/igatesData";
 import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { FundApplication, UserProfile } from "@/lib/types";
 
@@ -34,7 +34,7 @@ const getBarHeight = (value: number, max: number) => {
 };
 
 export default function FamilyOfficeDashboard() {
-  const [profiles] = useLocalStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
+  const [profiles] = useLocalStorage<UserProfile[]>(STORAGE_KEYS.profiles, DEFAULT_FUND_MANAGER_PROFILES);
   const [fundApplications] = useLocalStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
 
   const data = useMemo(() => {

@@ -3,7 +3,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { MASTER_USER, STORAGE_KEYS, SURVEY_DEFINITIONS, getStrategyLabel } from "@/lib/igatesData";
+import {
+  DEFAULT_FUND_MANAGER_PROFILES,
+  MASTER_USER,
+  STORAGE_KEYS,
+  SURVEY_DEFINITIONS,
+  getStrategyLabel,
+} from "@/lib/igatesData";
 import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { MasterNotification, Session, SurveyAnswer, UserProfile } from "@/lib/types";
 
@@ -24,7 +30,10 @@ export function AuthFlow() {
   const [kycAnswers, setKycAnswers] = useState<Record<string, string>>({});
   const [surveyAnswers, setSurveyAnswers] = useState<Record<string, SurveyAnswer>>({});
 
-  const [profiles, setProfiles] = useLocalStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
+  const [profiles, setProfiles] = useLocalStorage<UserProfile[]>(
+    STORAGE_KEYS.profiles,
+    DEFAULT_FUND_MANAGER_PROFILES
+  );
   const [, setSession] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const [notifications, setNotifications] = useLocalStorage<MasterNotification[]>(
     STORAGE_KEYS.notifications,

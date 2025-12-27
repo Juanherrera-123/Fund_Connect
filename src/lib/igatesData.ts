@@ -1,3 +1,5 @@
+import type { UserProfile } from "@/lib/types";
+
 export const apiBase = "/api";
 
 export const languageOptions = {
@@ -313,6 +315,37 @@ export const baseVerifiedFunds = [
     description: "Estrategia de activos reales con flujo estable y estructura institucional.",
   },
 ];
+
+const seedCompletedAt = "2024-05-01T12:00:00.000Z";
+
+export const DEFAULT_FUND_MANAGER_PROFILES: UserProfile[] = baseVerifiedFunds.map((fund, index) => {
+  const managerProfile = {
+    strategyType: fund.strategy,
+    strategyTypeLabel: fund.strategy,
+    capitalStatus: "Opero con capital de terceros",
+    trackRecordLength: "Más de 36 meses",
+    operatingStructure: "Vehículo privado (SPV / fondo privado)",
+    strategyDescription: fund.description,
+    status: "verified" as const,
+  };
+
+  return {
+    id: `fund-manager-${fund.id}`,
+    fullName: `${fund.name} Management`,
+    email: `manager+${fund.id}@igatesfunds.com`,
+    phone: "+00 000 000 000",
+    country: fund.country,
+    role: "Fund Manager",
+    password: `Fund${index + 1}!IGATES`,
+    onboarding: {
+      role: "Fund Manager",
+      completedAt: seedCompletedAt,
+      fundManagerProfile: managerProfile,
+      fundId: fund.id,
+    },
+    fundManagerProfile: managerProfile,
+  };
+});
 
 export const countryFlags: Record<string, string> = {
   Portugal: "🇵🇹",

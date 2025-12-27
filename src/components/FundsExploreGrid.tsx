@@ -2,13 +2,16 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import { apiBase, STORAGE_KEYS } from "@/lib/igatesData";
+import { DEFAULT_FUND_MANAGER_PROFILES, apiBase, STORAGE_KEYS } from "@/lib/igatesData";
 import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { FundSummary, Session, UserProfile } from "@/lib/types";
 
 export function FundsExploreGrid() {
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
-  const [profiles, setProfiles] = useLocalStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
+  const [profiles, setProfiles] = useLocalStorage<UserProfile[]>(
+    STORAGE_KEYS.profiles,
+    DEFAULT_FUND_MANAGER_PROFILES
+  );
   const [funds, setFunds] = useState<FundSummary[]>([]);
   const [status, setStatus] = useState("Cargando fondos...");
 

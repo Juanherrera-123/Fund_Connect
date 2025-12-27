@@ -4,7 +4,7 @@ import { useMemo } from "react";
 
 import DataTable, { StatusCell } from "@/components/dashboard/DataTable";
 import KpiCard from "@/components/dashboard/KpiCard";
-import { STORAGE_KEYS, baseVerifiedFunds } from "@/lib/igatesData";
+import { DEFAULT_FUND_MANAGER_PROFILES, STORAGE_KEYS, baseVerifiedFunds } from "@/lib/igatesData";
 import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { FundApplication, UserProfile } from "@/lib/types";
 
@@ -12,7 +12,7 @@ const iconClass = "h-4 w-4";
 
 export default function FundManagerDashboard() {
   const [fundApplications] = useLocalStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
-  const [profiles] = useLocalStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
+  const [profiles] = useLocalStorage<UserProfile[]>(STORAGE_KEYS.profiles, DEFAULT_FUND_MANAGER_PROFILES);
 
   const data = useMemo(() => {
     const pendingFunds = fundApplications.filter((application) => application.status === "pending");
