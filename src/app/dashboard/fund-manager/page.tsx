@@ -1,73 +1,106 @@
+"use client";
+
+import { useMemo } from "react";
+
 import DataTable, { StatusCell } from "@/components/dashboard/DataTable";
 import KpiCard from "@/components/dashboard/KpiCard";
+import { STORAGE_KEYS, baseVerifiedFunds } from "@/lib/igatesData";
+import { useLocalStorage } from "@/lib/useLocalStorage";
+import type { FundApplication, UserProfile } from "@/lib/types";
 
 const iconClass = "h-4 w-4";
 
-const fundKpis = [
-  {
-    label: "Total funds",
-    value: "214",
-    icon: (
-      <svg viewBox="0 0 20 20" className={iconClass} aria-hidden>
-        <path
-          d="M4 6h12v9H4z"
-          fill="currentColor"
-          opacity="0.2"
-        />
-        <path
-          d="M7 6V4h6v2"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-        />
-      </svg>
-    ),
-  },
-  {
-    label: "Inactive funds",
-    value: "58",
-    icon: (
-      <svg viewBox="0 0 20 20" className={iconClass} aria-hidden>
-        <path
-          d="M5 5h10v10H5z"
-          fill="currentColor"
-          opacity="0.2"
-        />
-        <path
-          d="M7 7l6 6"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-        />
-      </svg>
-    ),
-  },
-  {
-    label: "Active funds",
-    value: "156",
-    icon: (
-      <svg viewBox="0 0 20 20" className={iconClass} aria-hidden>
-        <path
-          d="M10 3l7 4v6l-7 4-7-4V7l7-4z"
-          fill="currentColor"
-          opacity="0.25"
-        />
-        <path
-          d="M7.5 10.5l1.5 1.5 3.5-3.5"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    ),
-  },
-];
-
 export default function FundManagerDashboard() {
+  const [fundApplications] = useLocalStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
+  const [profiles] = useLocalStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
+
+  const data = useMemo(() => {
+    const pendingFunds = fundApplications.filter((application) => application.status === "pending");
+    const verifiedFromApplications = fundApplications.filter(
+      (application) => application.status === "verified"
+    );
+    const managerNameById = new Map(
+      profiles.map((profile) => [profile.id, profile.fullName])
+    );
+
+    const verifiedFunds = [
+      ...baseVerifiedFunds.map((fund) => ({
+        id: fund.id,
+        name: fund.name,
+        manager: "Equipo IGATES",
+        status: "Verificado",
+      })),
+      ...verifiedFromApplications.map((application) => ({
+        id: application.id,
+        name: application.fundName,
+        manager: managerNameById.get(application.managerId) ?? "Gestor registrado",
+        status: "Verificado",
+      })),
+    ];
+
+    return {
+      pendingFunds,
+      verifiedFunds,
+      managerNameById,
+    };
+  }, [fundApplications, profiles]);
+
+  const fundKpis = [
+    {
+      label: "Total funds",
+      value: `${data.pendingFunds.length + data.verifiedFunds.length}`,
+      icon: (
+        <svg viewBox="0 0 20 20" className={iconClass} aria-hidden>
+          <path d="M4 6h12v9H4z" fill="currentColor" opacity="0.2" />
+          <path
+            d="M7 6V4h6v2"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+          />
+        </svg>
+      ),
+    },
+    {
+      label: "Inactive funds",
+      value: `${data.pendingFunds.length}`,
+      icon: (
+        <svg viewBox="0 0 20 20" className={iconClass} aria-hidden>
+          <path d="M5 5h10v10H5z" fill="currentColor" opacity="0.2" />
+          <path
+            d="M7 7l6 6"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+          />
+        </svg>
+      ),
+    },
+    {
+      label: "Active funds",
+      value: `${data.verifiedFunds.length}`,
+      icon: (
+        <svg viewBox="0 0 20 20" className={iconClass} aria-hidden>
+          <path
+            d="M10 3l7 4v6l-7 4-7-4V7l7-4z"
+            fill="currentColor"
+            opacity="0.25"
+          />
+          <path
+            d="M7.5 10.5l1.5 1.5 3.5-3.5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      ),
+    },
+  ];
+
   return (
     <>
       <header className="flex flex-col gap-2">
@@ -97,26 +130,12 @@ export default function FundManagerDashboard() {
               { key: "owner", label: "Owner" },
               { key: "status", label: "Status" },
             ]}
-            rows={[
-              {
-                id: "fund-1",
-                fund: "NorthBridge Credit",
-                owner: "Orion Capital",
-                status: <StatusCell label="Pending approval" tone="warning" />,
-              },
-              {
-                id: "fund-2",
-                fund: "Atlas Macro",
-                owner: "Meridian Advisors",
-                status: <StatusCell label="Pending approval" tone="warning" />,
-              },
-              {
-                id: "fund-3",
-                fund: "Cobalt Growth",
-                owner: "Eastbay Partners",
-                status: <StatusCell label="Pending approval" tone="warning" />,
-              },
-            ]}
+            rows={data.pendingFunds.map((application) => ({
+              id: application.id,
+              fund: application.fundName,
+              owner: data.managerNameById.get(application.managerId) ?? "Gestor registrado",
+              status: <StatusCell label="Pendiente" tone="warning" />,
+            }))}
           />
 
           <DataTable
@@ -127,26 +146,12 @@ export default function FundManagerDashboard() {
               { key: "owner", label: "Owner" },
               { key: "status", label: "Status" },
             ]}
-            rows={[
-              {
-                id: "active-1",
-                fund: "Summit Infra",
-                owner: "Rivergate Partners",
-                status: <StatusCell label="Running" tone="success" />,
-              },
-              {
-                id: "active-2",
-                fund: "Aurora Equity",
-                owner: "Stonebridge Group",
-                status: <StatusCell label="Approved" tone="neutral" />,
-              },
-              {
-                id: "active-3",
-                fund: "Horizon Opportunities",
-                owner: "Kline Family Office",
-                status: <StatusCell label="Running" tone="success" />,
-              },
-            ]}
+            rows={data.verifiedFunds.map((fund) => ({
+              id: fund.id,
+              fund: fund.name,
+              owner: fund.manager,
+              status: <StatusCell label={fund.status} tone="success" />,
+            }))}
           />
         </div>
       </section>
