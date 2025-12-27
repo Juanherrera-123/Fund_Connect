@@ -1,14 +1,49 @@
-import StatusBadge from "@/components/dashboard/StatusBadge";
+"use client";
 
-const profileFields = [
-  { label: "Nombre", value: "Isabela" },
-  { label: "Apellido", value: "Ramos" },
-  { label: "Monto asignado", value: "$1.8M" },
-  { label: "Monto objetivo", value: "$3.0M" },
-  { label: "Perfil de inversión", value: "Infraestructura" },
-];
+import { useMemo } from "react";
+
+import StatusBadge from "@/components/dashboard/StatusBadge";
+import { MASTER_USER, STORAGE_KEYS, baseVerifiedFunds, getFundLogoLabel } from "@/lib/igatesData";
+import { useLocalStorage } from "@/lib/useLocalStorage";
+import type { FundApplication } from "@/lib/types";
 
 export default function SettingsDashboard() {
+  const [fundApplications] = useLocalStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
+
+  const verifiedFunds = useMemo(() => {
+    const verifiedFromApplications = fundApplications
+      .filter((application) => application.status === "verified")
+      .map((application) => ({
+        id: application.id,
+        name: application.fundName,
+        country: application.country || "Global",
+        aum: application.aum || "N/A",
+        strategy: application.strategyLabel || application.strategy || "Multi-Strategy",
+        logoLabel: getFundLogoLabel(application.fundName),
+      }));
+
+    return [
+      ...baseVerifiedFunds.map((fund) => ({
+        id: fund.id,
+        name: fund.name,
+        country: fund.country,
+        aum: fund.aum,
+        strategy: fund.strategy,
+        logoLabel: fund.logoLabel,
+      })),
+      ...verifiedFromApplications,
+    ];
+  }, [fundApplications]);
+
+  const pendingFundsCount = fundApplications.filter((application) => application.status === "pending").length;
+
+  const profileFields = [
+    { label: "Usuario Master", value: MASTER_USER.username },
+    { label: "Rol", value: MASTER_USER.role },
+    { label: "Fondos verificados", value: `${verifiedFunds.length}` },
+    { label: "Fondos en revisión", value: `${pendingFundsCount}` },
+  ];
+
   return (
     <>
       <header className="flex flex-col gap-2">
@@ -39,10 +74,42 @@ export default function SettingsDashboard() {
                 <span className="text-slate-600">{field.label}</span>
                 <input
                   defaultValue={field.value}
+                  readOnly
                   className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900"
                 />
               </label>
             ))}
+          </div>
+
+          <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+            <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+              Fondos verificados
+            </h3>
+            <div className="mt-4 grid gap-3 md:grid-cols-2">
+              {verifiedFunds.length ? (
+                verifiedFunds.map((fund) => (
+                  <div
+                    key={fund.id}
+                    className="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-4 py-3"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 text-xs font-semibold text-white">
+                        {fund.logoLabel}
+                      </span>
+                      <div>
+                        <p className="text-sm font-semibold text-slate-900">{fund.name}</p>
+                        <p className="text-xs text-slate-500">
+                          {fund.strategy} • {fund.country}
+                        </p>
+                      </div>
+                    </div>
+                    <span className="text-xs font-semibold text-slate-600">{fund.aum}</span>
+                  </div>
+                ))
+              ) : (
+                <p className="text-sm text-slate-500">Sin fondos verificados.</p>
+              )}
+            </div>
           </div>
 
           <div className="flex flex-wrap gap-3">
