@@ -4,8 +4,8 @@ import KpiCard, { KpiCardProps } from "@/components/dashboard/KpiCard";
 import type { Role } from "@/lib/types";
 
 const lineLegend = [
-  { label: "Active assets", color: "bg-emerald-500" },
-  { label: "Unassigned assets", color: "bg-slate-400" },
+  { label: "Active funds", color: "bg-emerald-500" },
+  { label: "Funds in review", color: "bg-slate-400" },
 ];
 
 const donutLegend = [
@@ -24,16 +24,46 @@ const visibilityByRole: Record<
   "Family Office": { kpis: false, charts: true, tables: true },
 };
 
+type TableRow = {
+  id: string;
+  [key: string]: React.ReactNode;
+  statusLabel?: string;
+  statusTone?: "success" | "warning" | "neutral";
+};
+
 export default function DashboardOverview({
   title,
   kpis,
   role,
+  pendingFundRows = [],
+  waitlistRows = [],
+  actionRows = [],
+  activeFundsCount = 0,
+  pendingFundsCount = 0,
+  roleCounts = { investors: 0, managers: 0, familyOffices: 0 },
 }: {
   title: string;
   kpis: KpiCardProps[];
   role: Role;
+  pendingFundRows?: TableRow[];
+  waitlistRows?: TableRow[];
+  actionRows?: TableRow[];
+  activeFundsCount?: number;
+  pendingFundsCount?: number;
+  roleCounts?: { investors: number; managers: number; familyOffices: number };
 }) {
   const visibility = visibilityByRole[role];
+  const maxLineValue = Math.max(activeFundsCount, pendingFundsCount, 1);
+  const lineY = (value: number) => 100 - Math.round((value / maxLineValue) * 70);
+  const activeLineY = lineY(activeFundsCount);
+  const pendingLineY = lineY(pendingFundsCount);
+  const activePoints = `10,${activeLineY} 60,${activeLineY} 110,${activeLineY} 160,${activeLineY} 210,${activeLineY} 250,${activeLineY}`;
+  const pendingPoints = `10,${pendingLineY} 60,${pendingLineY} 110,${pendingLineY} 160,${pendingLineY} 210,${pendingLineY} 250,${pendingLineY}`;
+  const totalRoles =
+    roleCounts.investors + roleCounts.managers + roleCounts.familyOffices || 1;
+  const investorArc = Math.round((roleCounts.investors / totalRoles) * 250);
+  const managerArc = Math.round((roleCounts.managers / totalRoles) * 250);
+  const familyArc = Math.round((roleCounts.familyOffices / totalRoles) * 250);
 
   return (
     <>
@@ -59,17 +89,17 @@ export default function DashboardOverview({
         <section className="flex flex-col gap-3">
           <h2 className="text-sm font-semibold text-slate-700">Analytics</h2>
           <div className="grid gap-4 lg:grid-cols-2">
-            <ChartCard title="Assets Curve" legend={lineLegend}>
+            <ChartCard title="Fund pipeline" legend={lineLegend}>
               <svg viewBox="0 0 260 120" className="h-32 w-full">
                 <polyline
-                  points="10,90 60,70 110,75 160,40 210,30 250,20"
+                  points={activePoints}
                   fill="none"
                   stroke="#10b981"
                   strokeWidth="3"
                   strokeLinecap="round"
                 />
                 <polyline
-                  points="10,100 60,90 110,82 160,70 210,60 250,52"
+                  points={pendingPoints}
                   fill="none"
                   stroke="#94a3b8"
                   strokeWidth="3"
@@ -81,7 +111,7 @@ export default function DashboardOverview({
             <ChartCard title="Users per role" legend={donutLegend}>
               <svg viewBox="0 0 120 120" className="h-32 w-32">
                 <g>
-                  <title>Investors: 128</title>
+                  <title>{`Investors: ${roleCounts.investors}`}</title>
                   <circle
                     cx="60"
                     cy="60"
@@ -89,11 +119,11 @@ export default function DashboardOverview({
                     stroke="#10b981"
                     strokeWidth="12"
                     fill="none"
-                    strokeDasharray="110 250"
+                    strokeDasharray={`${investorArc} 250`}
                   />
                 </g>
                 <g>
-                  <title>Managers: 42</title>
+                  <title>{`Managers: ${roleCounts.managers}`}</title>
                   <circle
                     cx="60"
                     cy="60"
@@ -101,12 +131,12 @@ export default function DashboardOverview({
                     stroke="#fbbf24"
                     strokeWidth="12"
                     fill="none"
-                    strokeDasharray="60 250"
-                    strokeDashoffset="-110"
+                    strokeDasharray={`${managerArc} 250`}
+                    strokeDashoffset={`-${investorArc}`}
                   />
                 </g>
                 <g>
-                  <title>Family Office: 24</title>
+                  <title>{`Family Office: ${roleCounts.familyOffices}`}</title>
                   <circle
                     cx="60"
                     cy="60"
@@ -114,8 +144,8 @@ export default function DashboardOverview({
                     stroke="#94a3b8"
                     strokeWidth="12"
                     fill="none"
-                    strokeDasharray="50 250"
-                    strokeDashoffset="-170"
+                    strokeDasharray={`${familyArc} 250`}
+                    strokeDashoffset={`-${investorArc + managerArc}`}
                   />
                 </g>
               </svg>
@@ -134,74 +164,36 @@ export default function DashboardOverview({
               columns={[
                 { key: "fund", label: "Fund" },
                 { key: "manager", label: "Manager" },
+                { key: "submitted", label: "Submitted" },
                 { key: "status", label: "Status" },
               ]}
-              rows={[
-                {
-                  id: "fund-1",
-                  fund: "NorthBridge Credit",
-                  manager: "Orion Capital",
-                  status: <StatusCell label="Under review" tone="warning" />,
-                },
-                {
-                  id: "fund-2",
-                  fund: "Atlas Macro",
-                  manager: "Meridian Advisors",
-                  status: <StatusCell label="Compliance" tone="neutral" />,
-                },
-                {
-                  id: "fund-3",
-                  fund: "Cobalt Growth",
-                  manager: "Eastbay Partners",
-                  status: <StatusCell label="Documentation" tone="warning" />,
-                },
-              ]}
+              rows={pendingFundRows.map((row) => ({
+                ...row,
+                status: row.statusLabel ? (
+                  <StatusCell label={row.statusLabel} tone={row.statusTone} />
+                ) : (
+                  "—"
+                ),
+              }))}
             />
 
             <DataTable
               title="Waitlist"
               actionLabel="Review"
               columns={[
-                { key: "name", label: "Name" },
-                { key: "amount", label: "Amount" },
                 { key: "fund", label: "Fund" },
-                { key: "time", label: "Time" },
+                { key: "investor", label: "Investor" },
+                { key: "country", label: "Country" },
                 { key: "status", label: "Status" },
               ]}
-              rows={[
-                {
-                  id: "wait-1",
-                  name: "Kline Family Office",
-                  amount: "$1.2M",
-                  fund: "Atlas Macro",
-                  time: "24 months",
-                  status: <StatusCell label="Incomplete" tone="warning" />,
-                },
-                {
-                  id: "wait-2",
-                  name: "Summit Holdings",
-                  amount: "$450K",
-                  fund: "NorthBridge Credit",
-                  time: "18 months",
-                  status: <StatusCell label="Information" tone="neutral" />,
-                },
-                {
-                  id: "wait-3",
-                  name: "Granite Ventures",
-                  amount: "$900K",
-                  fund: "Cobalt Growth",
-                  time: "12 months",
-                  status: <StatusCell label="Assigned" tone="warning" />,
-                },
-                {
-                  id: "wait-4",
-                  name: "Rivergate Partners",
-                  amount: "$2.8M",
-                  fund: "Summit Infra",
-                  time: "36 months",
-                  status: <StatusCell label="Ready" tone="success" />,
-                },
-              ]}
+              rows={waitlistRows.map((row) => ({
+                ...row,
+                status: row.statusLabel ? (
+                  <StatusCell label={row.statusLabel} tone={row.statusTone} />
+                ) : (
+                  "—"
+                ),
+              }))}
             />
           </div>
 
@@ -210,29 +202,18 @@ export default function DashboardOverview({
             actionLabel="View"
             columns={[
               { key: "action", label: "Action" },
-              { key: "owner", label: "Owner" },
+              { key: "detail", label: "Detail" },
+              { key: "date", label: "Date" },
               { key: "status", label: "Status" },
             ]}
-            rows={[
-              {
-                id: "act-1",
-                action: "Updated onboarding checklist",
-                owner: "Operations Desk",
-                status: <StatusCell label="Completed" tone="success" />,
-              },
-              {
-                id: "act-2",
-                action: "Reviewed fund documents",
-                owner: "Compliance Team",
-                status: <StatusCell label="In progress" tone="warning" />,
-              },
-              {
-                id: "act-3",
-                action: "Issued quarterly report",
-                owner: "Analytics",
-                status: <StatusCell label="Scheduled" tone="neutral" />,
-              },
-            ]}
+            rows={actionRows.map((row) => ({
+              ...row,
+              status: row.statusLabel ? (
+                <StatusCell label={row.statusLabel} tone={row.statusTone} />
+              ) : (
+                "—"
+              ),
+            }))}
           />
         </section>
       ) : null}

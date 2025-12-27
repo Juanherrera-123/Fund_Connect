@@ -1,4 +1,11 @@
+"use client";
+
+import { useMemo } from "react";
+
 import ChartCard from "@/components/dashboard/ChartCard";
+import { STORAGE_KEYS, baseVerifiedFunds } from "@/lib/igatesData";
+import { useLocalStorage } from "@/lib/useLocalStorage";
+import type { FundApplication, UserProfile } from "@/lib/types";
 
 const requestsLegend = [
   { label: "Waitlist", color: "bg-amber-400" },
@@ -7,20 +14,57 @@ const requestsLegend = [
 
 const usersLegend = [
   { label: "Active users", color: "bg-emerald-500" },
-  { label: "Inactive/pending", color: "bg-slate-400" },
+  { label: "Pending managers", color: "bg-slate-400" },
 ];
 
-const assetsLegend = [
-  { label: "Assigned", color: "bg-emerald-500" },
-  { label: "Unassigned", color: "bg-slate-400" },
+const coverageLegend = [
+  { label: "Verified funds", color: "bg-emerald-500" },
+  { label: "Funds in review", color: "bg-slate-400" },
 ];
 
 const fundsLegend = [
   { label: "Active funds", color: "bg-emerald-500" },
-  { label: "Inactive funds", color: "bg-amber-400" },
+  { label: "Pending funds", color: "bg-amber-400" },
 ];
 
+const getBarHeight = (value: number, max: number) => {
+  if (max <= 0) return 8;
+  const scaled = Math.round((value / max) * 70);
+  return Math.max(8, scaled);
+};
+
 export default function FamilyOfficeDashboard() {
+  const [profiles] = useLocalStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
+  const [fundApplications] = useLocalStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
+
+  const data = useMemo(() => {
+    const waitlistEntries = profiles.flatMap((profile) =>
+      profile.role === "Investor" && profile.waitlistFunds?.length
+        ? profile.waitlistFunds.map((fund) => ({ id: `${profile.id}-${fund}` }))
+        : []
+    );
+    const pendingFunds = fundApplications.filter((application) => application.status === "pending");
+    const verifiedFromApplications = fundApplications.filter(
+      (application) => application.status === "verified"
+    );
+    const verifiedFundsCount = baseVerifiedFunds.length + verifiedFromApplications.length;
+    const pendingManagers = profiles.filter(
+      (profile) => profile.role === "Fund Manager" && profile.fundManagerProfile?.status === "pending-review"
+    );
+
+    return {
+      waitlistCount: waitlistEntries.length,
+      pendingFundsCount: pendingFunds.length,
+      verifiedFundsCount,
+      pendingManagersCount: pendingManagers.length,
+      activeUsersCount: profiles.length,
+    };
+  }, [fundApplications, profiles]);
+
+  const requestsMax = Math.max(data.waitlistCount, data.pendingFundsCount, 1);
+  const usersMax = Math.max(data.activeUsersCount, data.pendingManagersCount, 1);
+  const fundsMax = Math.max(data.verifiedFundsCount, data.pendingFundsCount, 1);
+
   return (
     <>
       <header className="flex flex-col gap-2">
@@ -35,22 +79,58 @@ export default function FamilyOfficeDashboard() {
         <div className="grid gap-4 lg:grid-cols-2">
           <ChartCard title="Requests" legend={requestsLegend}>
             <svg viewBox="0 0 240 120" className="h-32 w-full">
-              <rect x="20" y="35" width="50" height="70" fill="#fbbf24" />
-              <rect x="100" y="20" width="50" height="85" fill="#10b981" />
+              <rect
+                x="20"
+                y={100 - getBarHeight(data.waitlistCount, requestsMax)}
+                width="50"
+                height={getBarHeight(data.waitlistCount, requestsMax)}
+                fill="#fbbf24"
+              />
+              <rect
+                x="100"
+                y={100 - getBarHeight(data.pendingFundsCount, requestsMax)}
+                width="50"
+                height={getBarHeight(data.pendingFundsCount, requestsMax)}
+                fill="#10b981"
+              />
             </svg>
           </ChartCard>
 
           <ChartCard title="Users" legend={usersLegend}>
             <svg viewBox="0 0 240 120" className="h-32 w-full">
-              <rect x="30" y="25" width="60" height="80" fill="#10b981" />
-              <rect x="130" y="45" width="60" height="60" fill="#94a3b8" />
+              <rect
+                x="30"
+                y={100 - getBarHeight(data.activeUsersCount, usersMax)}
+                width="60"
+                height={getBarHeight(data.activeUsersCount, usersMax)}
+                fill="#10b981"
+              />
+              <rect
+                x="130"
+                y={100 - getBarHeight(data.pendingManagersCount, usersMax)}
+                width="60"
+                height={getBarHeight(data.pendingManagersCount, usersMax)}
+                fill="#94a3b8"
+              />
             </svg>
           </ChartCard>
 
-          <ChartCard title="Total assets" legend={assetsLegend}>
+          <ChartCard title="Fund coverage" legend={coverageLegend}>
             <svg viewBox="0 0 240 120" className="h-32 w-full">
-              <rect x="30" y="20" width="60" height="85" fill="#10b981" />
-              <rect x="130" y="50" width="60" height="55" fill="#94a3b8" />
+              <rect
+                x="30"
+                y={100 - getBarHeight(data.verifiedFundsCount, fundsMax)}
+                width="60"
+                height={getBarHeight(data.verifiedFundsCount, fundsMax)}
+                fill="#10b981"
+              />
+              <rect
+                x="130"
+                y={100 - getBarHeight(data.pendingFundsCount, fundsMax)}
+                width="60"
+                height={getBarHeight(data.pendingFundsCount, fundsMax)}
+                fill="#94a3b8"
+              />
             </svg>
           </ChartCard>
 
@@ -63,7 +143,7 @@ export default function FamilyOfficeDashboard() {
                 stroke="#10b981"
                 strokeWidth="12"
                 fill="none"
-                strokeDasharray="170 250"
+                strokeDasharray={`${Math.round((data.verifiedFundsCount / fundsMax) * 250)} 250`}
               />
               <circle
                 cx="60"
@@ -72,8 +152,8 @@ export default function FamilyOfficeDashboard() {
                 stroke="#fbbf24"
                 strokeWidth="12"
                 fill="none"
-                strokeDasharray="80 250"
-                strokeDashoffset="-170"
+                strokeDasharray={`${Math.round((data.pendingFundsCount / fundsMax) * 250)} 250`}
+                strokeDashoffset={`-${Math.round((data.verifiedFundsCount / fundsMax) * 250)}`}
               />
             </svg>
           </ChartCard>
