@@ -4,13 +4,22 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
-import { STORAGE_KEYS, STRATEGY_OPTIONS, formatStrategyList, getStrategyLabel } from "@/lib/igatesData";
+import {
+  DEFAULT_FUND_MANAGER_PROFILES,
+  STORAGE_KEYS,
+  STRATEGY_OPTIONS,
+  formatStrategyList,
+  getStrategyLabel,
+} from "@/lib/igatesData";
 import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { FundApplication, MasterNotification, Session, UserProfile } from "@/lib/types";
 
 export function ProfileView() {
   const router = useRouter();
-  const [profiles, setProfiles] = useLocalStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
+  const [profiles, setProfiles] = useLocalStorage<UserProfile[]>(
+    STORAGE_KEYS.profiles,
+    DEFAULT_FUND_MANAGER_PROFILES
+  );
   const [session, setSession] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const [, setFundApplications] = useLocalStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
   const [notifications, setNotifications] = useLocalStorage<MasterNotification[]>(
