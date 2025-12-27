@@ -59,7 +59,7 @@ export default function MasterDashboard() {
 
     const roleCounts = {
       investors: profiles.filter((profile) => profile.role === "Investor").length,
-      managers: profiles.filter((profile) => profile.role === "Fund Manager").length,
+      managers: verifiedFunds.length,
       familyOffices: profiles.filter((profile) => profile.role === "Family Office").length,
     };
 
