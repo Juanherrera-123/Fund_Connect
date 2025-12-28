@@ -47,7 +47,10 @@ export default function FamilyOfficeDashboard() {
     const verifiedFromApplications = fundApplications.filter(
       (application) => application.status === "verified"
     );
-    const verifiedFundsCount = baseVerifiedFunds.length + verifiedFromApplications.length;
+    const baseIds = new Set(baseVerifiedFunds.map((fund) => fund.id));
+    const verifiedFundsCount =
+      baseVerifiedFunds.length +
+      verifiedFromApplications.filter((application) => !baseIds.has(application.id)).length;
     const pendingManagers = profiles.filter(
       (profile) => profile.role === "Fund Manager" && profile.fundManagerProfile?.status === "pending-review"
     );

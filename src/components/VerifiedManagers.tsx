@@ -63,9 +63,9 @@ export function VerifiedManagers() {
         country: application.country || "Global",
         logoLabel: getFundLogoLabel(application.fundName),
         region: application.region || "Global",
-        strategy: application.strategyLabel || "Multi-Strategy",
-        riskLevel: application.riskLevel || "En revisión",
-        yearProfit: application.yearProfit ?? null,
+        strategy: application.strategyLabel || application.strategy || "Multi-Strategy",
+        riskLevel: application.riskLevel || application.riskManagement || "En revisión",
+        yearProfit: application.yearProfit ?? application.monthlyProfit ?? null,
         maxDrawdown: application.maxDrawdown ?? null,
         winRate: application.winRate ?? null,
         volatility: application.volatility ?? null,
@@ -73,7 +73,36 @@ export function VerifiedManagers() {
         description: application.description || "Gestor en proceso de verificación.",
       }));
 
-    return [...baseVerifiedFunds, ...fromStorage];
+    const overridesById = new Map(fromStorage.map((fund) => [fund.id, fund]));
+    const mergedBase = baseVerifiedFunds.map((fund) => {
+      const override = overridesById.get(fund.id);
+      if (!override) {
+        return {
+          id: fund.id,
+          name: fund.name,
+          country: fund.country,
+          logoLabel: fund.logoLabel,
+          region: fund.region,
+          strategy: fund.strategy,
+          riskLevel: fund.riskLevel,
+          yearProfit: fund.yearProfit,
+          maxDrawdown: fund.maxDrawdown,
+          winRate: fund.winRate,
+          volatility: fund.volatility,
+          aum: fund.aum,
+          description: fund.description,
+        };
+      }
+      return {
+        ...override,
+        logoLabel: override.logoLabel || fund.logoLabel,
+      };
+    });
+
+    const baseIds = new Set(baseVerifiedFunds.map((fund) => fund.id));
+    const extraFunds = fromStorage.filter((fund) => !baseIds.has(fund.id));
+
+    return [...mergedBase, ...extraFunds];
   }, [fundApplications]);
 
   const regions = useMemo(() => {

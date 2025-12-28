@@ -232,6 +232,15 @@ export function AuthFlow() {
     }
 
     setSession({ id: match.id, role: match.role });
+    if (match.role === "Fund Manager") {
+      if (match.fundManagerProfile?.status !== "verified") {
+        router.push("/pending-review");
+        return;
+      }
+      router.push("/dashboard/manager/overview");
+      return;
+    }
+
     router.push("/profile");
   };
 

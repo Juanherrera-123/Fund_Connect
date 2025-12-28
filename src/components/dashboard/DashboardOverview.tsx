@@ -41,6 +41,7 @@ export default function DashboardOverview({
   activeFundsCount = 0,
   pendingFundsCount = 0,
   roleCounts = { investors: 0, managers: 0, familyOffices: 0 },
+  onPendingFundAction,
 }: {
   title: string;
   kpis: KpiCardProps[];
@@ -51,6 +52,7 @@ export default function DashboardOverview({
   activeFundsCount?: number;
   pendingFundsCount?: number;
   roleCounts?: { investors: number; managers: number; familyOffices: number };
+  onPendingFundAction?: (row: TableRow) => void;
 }) {
   const visibility = visibilityByRole[role];
   const maxLineValue = Math.max(activeFundsCount, pendingFundsCount, 1);
@@ -161,6 +163,7 @@ export default function DashboardOverview({
             <DataTable
               title="Pending fund approvals"
               actionLabel="Approve"
+              onAction={onPendingFundAction}
               columns={[
                 { key: "fund", label: "Fund" },
                 { key: "manager", label: "Manager" },

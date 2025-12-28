@@ -328,15 +328,17 @@ export const DEFAULT_FUND_MANAGER_PROFILES: UserProfile[] = baseVerifiedFunds.ma
     strategyDescription: fund.description,
     status: "verified" as const,
   };
+  const isBrennaFund = fund.id === "brenna-funding";
 
   return {
     id: `fund-manager-${fund.id}`,
-    fullName: `${fund.name} Management`,
-    email: `manager+${fund.id}@igatesfunds.com`,
+    fullName: isBrennaFund ? "Brenna Goncalvez" : `${fund.name} Management`,
+    email: isBrennaFund ? "brenna.investtrader@gmail.com" : `manager+${fund.id}@igatesfunds.com`,
     phone: "+00 000 000 000",
     country: fund.country,
     role: "Fund Manager",
-    password: `Fund${index + 1}!IGATES`,
+    password: isBrennaFund ? "BrennaFG_2025" : `Fund${index + 1}!IGATES`,
+    fundId: fund.id,
     onboarding: {
       role: "Fund Manager",
       completedAt: seedCompletedAt,

@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 
+import DataTable from "@/components/dashboard/DataTable";
 import DashboardOverview from "@/components/dashboard/DashboardOverview";
 import {
   DEFAULT_FUND_MANAGER_PROFILES,
@@ -15,11 +16,14 @@ import type { FundApplication, MasterNotification, UserProfile } from "@/lib/typ
 const iconClass = "h-4 w-4";
 
 export default function MasterDashboard() {
-  const [profiles] = useLocalStorage<UserProfile[]>(
+  const [profiles, setProfiles] = useLocalStorage<UserProfile[]>(
     STORAGE_KEYS.profiles,
     DEFAULT_FUND_MANAGER_PROFILES
   );
-  const [fundApplications] = useLocalStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
+  const [fundApplications, setFundApplications] = useLocalStorage<FundApplication[]>(
+    STORAGE_KEYS.fundApplications,
+    []
+  );
   const [notifications] = useLocalStorage<MasterNotification[]>(STORAGE_KEYS.notifications, []);
 
   const data = useMemo(() => {
@@ -27,25 +31,48 @@ export default function MasterDashboard() {
       (application) => application.status === "verified"
     );
     const pendingFunds = fundApplications.filter((application) => application.status === "pending");
+    const verifiedById = new Map(
+      verifiedFromApplications.map((application) => [
+        application.id,
+        {
+          id: application.id,
+          name: application.fundName,
+          managerId: application.managerId,
+          country: application.country || "Global",
+          aum: application.aum || "N/A",
+          strategy: application.strategyLabel || application.strategy || "Multi-Strategy",
+          logoLabel: getFundLogoLabel(application.fundName),
+        },
+      ])
+    );
+
+    const baseIds = new Set(baseVerifiedFunds.map((fund) => fund.id));
     const verifiedFunds = [
-      ...baseVerifiedFunds.map((fund) => ({
-        id: fund.id,
-        name: fund.name,
-        managerId: null,
-        country: fund.country,
-        aum: fund.aum,
-        strategy: fund.strategy,
-        logoLabel: fund.logoLabel,
-      })),
-      ...verifiedFromApplications.map((application) => ({
-        id: application.id,
-        name: application.fundName,
-        managerId: application.managerId,
-        country: application.country || "Global",
-        aum: application.aum || "N/A",
-        strategy: application.strategyLabel || application.strategy || "Multi-Strategy",
-        logoLabel: getFundLogoLabel(application.fundName),
-      })),
+      ...baseVerifiedFunds.map((fund) => {
+        const override = verifiedById.get(fund.id);
+        return (
+          override ?? {
+            id: fund.id,
+            name: fund.name,
+            managerId: null,
+            country: fund.country,
+            aum: fund.aum,
+            strategy: fund.strategy,
+            logoLabel: fund.logoLabel,
+          }
+        );
+      }),
+      ...verifiedFromApplications
+        .filter((application) => !baseIds.has(application.id))
+        .map((application) => ({
+          id: application.id,
+          name: application.fundName,
+          managerId: application.managerId,
+          country: application.country || "Global",
+          aum: application.aum || "N/A",
+          strategy: application.strategyLabel || application.strategy || "Multi-Strategy",
+          logoLabel: getFundLogoLabel(application.fundName),
+        })),
     ];
 
     const waitlistEntries = profiles.flatMap((profile) =>
@@ -60,7 +87,8 @@ export default function MasterDashboard() {
     );
 
     const pendingManagers = profiles.filter(
-      (profile) => profile.role === "Fund Manager" && profile.fundManagerProfile?.status === "pending-review"
+      (profile) =>
+        profile.role === "Fund Manager" && profile.fundManagerProfile?.status === "pending-review"
     );
 
     const managerNameById = new Map(profiles.map((profile) => [profile.id, profile.fullName]));
@@ -81,6 +109,30 @@ export default function MasterDashboard() {
       roleCounts,
     };
   }, [fundApplications, notifications, profiles]);
+
+  const handleApproveFund = (row: { id: string }) => {
+    setFundApplications((prev) =>
+      prev.map((application) =>
+        application.id === row.id ? { ...application, status: "verified" } : application
+      )
+    );
+  };
+
+  const handleApproveManager = (row: { id: string }) => {
+    setProfiles((prev) =>
+      prev.map((profile) =>
+        profile.id === row.id
+          ? {
+              ...profile,
+              fundManagerProfile: {
+                ...profile.fundManagerProfile,
+                status: "verified",
+              },
+            }
+          : profile
+      )
+    );
+  };
 
   const kpis = [
     {
@@ -181,16 +233,46 @@ export default function MasterDashboard() {
   }));
 
   return (
-    <DashboardOverview
-      title="Master Dashboard"
-      kpis={kpis}
-      role="MasterUser"
-      pendingFundRows={pendingFundRows}
-      waitlistRows={waitlistRows}
-      actionRows={actionRows}
-      activeFundsCount={data.verifiedFunds.length}
-      pendingFundsCount={data.pendingFunds.length}
-      roleCounts={data.roleCounts}
-    />
+    <>
+      <DashboardOverview
+        title="Master Dashboard"
+        kpis={kpis}
+        role="MasterUser"
+        pendingFundRows={pendingFundRows}
+        waitlistRows={waitlistRows}
+        actionRows={actionRows}
+        activeFundsCount={data.verifiedFunds.length}
+        pendingFundsCount={data.pendingFunds.length}
+        roleCounts={data.roleCounts}
+        onPendingFundAction={handleApproveFund}
+      />
+      <section className="flex flex-col gap-4">
+        <h2 className="text-sm font-semibold text-slate-700">Pending manager approvals</h2>
+        <div className="grid gap-4 xl:grid-cols-2">
+          <DataTable
+            title="Fund managers"
+            actionLabel="Approve"
+            onAction={handleApproveManager}
+            columns={[
+              { key: "name", label: "Name" },
+              { key: "email", label: "Email" },
+              { key: "submitted", label: "Submitted" },
+              { key: "status", label: "Status" },
+            ]}
+            rows={data.pendingManagers.map((profile) => ({
+              id: profile.id,
+              name: profile.fullName,
+              email: profile.email,
+              submitted: (profile.onboarding as { completedAt?: string })?.completedAt
+                ? new Date(
+                    String((profile.onboarding as { completedAt?: string }).completedAt)
+                  ).toLocaleDateString("es-ES")
+                : "—",
+              status: "En revisión",
+            }))}
+          />
+        </div>
+      </section>
+    </>
   );
 }
