@@ -1767,6 +1767,12 @@ a:hover {
   font-weight: 700;
 }
 
+.fund-stat-card .value {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
 .fund-stat-card .label {
   font-size: 13px;
   color: var(--text-muted);
@@ -1790,6 +1796,20 @@ a:hover {
   font-size: 13px;
   color: var(--text-secondary);
   font-weight: 600;
+}
+
+.fund-link-list {
+  margin: 0;
+  padding-left: 16px;
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.fund-link-list a {
+  color: var(--text-primary);
+  text-decoration: underline;
+  word-break: break-all;
 }
 
 .fund-cta {
