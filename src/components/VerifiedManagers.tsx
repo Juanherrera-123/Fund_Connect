@@ -9,7 +9,6 @@ import {
   countryFlags,
   DEFAULT_FUND_MANAGER_PROFILES,
   formatNumber,
-  formatPercent,
   getFundLogoLabel,
 } from "@/lib/igatesData";
 import { useLocalStorage } from "@/lib/useLocalStorage";
@@ -24,9 +23,19 @@ type VerifiedFund = {
   strategy: string;
   riskLevel: string;
   yearProfit: number | null;
+  monthlyProfit: number | null;
+  drawdownTarget: number | null;
   maxDrawdown: number | null;
   winRate: number | null;
   volatility: number | null;
+  operatingTime: string | null;
+  tradesPerMonth: number | null;
+  riskManagement: string | null;
+  livePerformanceLinks: string[];
+  minInvestment: string | null;
+  performanceFee: string | null;
+  subscriptionFee: string | null;
+  reportsFrequency: string | null;
   aum: string;
   description: string;
 };
@@ -87,14 +96,21 @@ export function VerifiedManagers() {
             "Multi-Strategy",
           riskLevel: application.riskLevel || application.riskManagement || "En revisión",
           yearProfit: application.yearProfit ?? application.monthlyProfit ?? null,
+          monthlyProfit: application.monthlyProfit ?? application.yearProfit ?? null,
+          drawdownTarget: application.drawdownTarget ?? null,
           maxDrawdown: application.maxDrawdown ?? null,
           winRate: application.winRate ?? null,
           volatility: application.volatility ?? null,
+          operatingTime: application.operatingTime ?? null,
+          tradesPerMonth: application.tradesPerMonth ?? null,
+          riskManagement: application.riskManagement ?? application.riskLevel ?? null,
+          livePerformanceLinks: application.livePerformanceLinks ?? [],
+          minInvestment: application.minInvestment ?? null,
+          performanceFee: application.performanceFee ?? null,
+          subscriptionFee: application.subscriptionFee ?? null,
+          reportsFrequency: application.reportsFrequency ?? null,
           aum: application.aum || "N/A",
-          description:
-            profileDetails?.strategyDescription ||
-            application.description ||
-            "Gestor en proceso de verificación.",
+          description: application.description || "Gestor en proceso de verificación.",
         };
       });
 
@@ -115,11 +131,21 @@ export function VerifiedManagers() {
             profileDetails?.strategyTypeLabel || profileDetails?.strategyType || fund.strategy,
           riskLevel: fund.riskLevel,
           yearProfit: fund.yearProfit,
+          monthlyProfit: fund.yearProfit,
+          drawdownTarget: null,
           maxDrawdown: fund.maxDrawdown,
           winRate: fund.winRate,
           volatility: fund.volatility,
+          operatingTime: null,
+          tradesPerMonth: null,
+          riskManagement: fund.riskLevel,
+          livePerformanceLinks: [],
+          minInvestment: null,
+          performanceFee: null,
+          subscriptionFee: null,
+          reportsFrequency: null,
           aum: fund.aum,
-          description: profileDetails?.strategyDescription || fund.description,
+          description: fund.description,
         };
       }
       return {
@@ -259,6 +285,26 @@ export function VerifiedManagers() {
       <span className="country-name">{country}</span>
     </>
   );
+
+  const formattedOperatingTime = selectedFund?.operatingTime
+    ? `${selectedFund.operatingTime} años`
+    : "—";
+  const formattedProfit = formatNumber(selectedFund?.monthlyProfit ?? null, "%");
+  const formattedDrawdownTarget = formatNumber(selectedFund?.drawdownTarget ?? null, "%");
+  const formattedMaxDrawdown = formatNumber(selectedFund?.maxDrawdown ?? null, "%");
+  const formattedTrades = formatNumber(selectedFund?.tradesPerMonth ?? null, "", 0);
+  const formattedRisk = selectedFund?.riskManagement ?? "—";
+  const formattedMinInvestment = selectedFund?.minInvestment || "—";
+  const formattedPerformanceFee = selectedFund?.performanceFee
+    ? `${selectedFund.performanceFee}%`
+    : "—";
+  const formattedSubscriptionFee = selectedFund?.subscriptionFee
+    ? `${selectedFund.subscriptionFee}%`
+    : "—";
+  const formattedReports = selectedFund?.reportsFrequency || "—";
+  const performanceLinks = selectedFund
+    ? Array.from({ length: 3 }, (_, index) => selectedFund.livePerformanceLinks[index] ?? "")
+    : [];
 
   return (
     <>
@@ -462,41 +508,60 @@ export function VerifiedManagers() {
                 </div>
                 <div className="fund-stats primary">
                   <div className="fund-stat-card primary">
-                    <p className="label">Year Total Profit</p>
-                    <p className="value">{formatPercent(selectedFund.yearProfit)}</p>
+                    <p className="label">Tiempo operando</p>
+                    <p className="value">{formattedOperatingTime}</p>
                   </div>
                   <div className="fund-stat-card primary">
-                    <p className="label">Max Drawdown</p>
-                    <p className="value">
-                      {formatNumber(
-                        selectedFund.maxDrawdown === null
-                          ? null
-                          : -Math.abs(selectedFund.maxDrawdown),
-                        "%"
-                      )}
-                    </p>
+                    <p className="label">Profit mensual (último año)</p>
+                    <p className="value">{formattedProfit}</p>
                   </div>
                   <div className="fund-stat-card primary">
-                    <p className="label">Win Rate</p>
-                    <p className="value">{formatNumber(selectedFund.winRate, "%", 0)}</p>
+                    <p className="label">Drawdown target</p>
+                    <p className="value">{formattedDrawdownTarget}</p>
                   </div>
                   <div className="fund-stat-card primary">
-                    <p className="label">Nivel de Riesgo</p>
-                    <p className="value">{selectedFund.riskLevel}</p>
+                    <p className="label">Max drawdown</p>
+                    <p className="value">{formattedMaxDrawdown}</p>
                   </div>
-                </div>
-                <div className="fund-stats secondary">
-                  <div className="stat-chip">
-                    Volatilidad <strong>{formatNumber(selectedFund.volatility, "%")}</strong>
+                  <div className="fund-stat-card">
+                    <p className="label">Trades mensuales</p>
+                    <p className="value">{formattedTrades}</p>
                   </div>
-                  <div className="stat-chip">
-                    AUM aprox. <strong>{selectedFund.aum}</strong>
+                  <div className="fund-stat-card">
+                    <p className="label">Gestión de riesgo</p>
+                    <p className="value">{formattedRisk}</p>
                   </div>
-                  <div className="stat-chip">
-                    Estrategia <strong>{selectedFund.strategy}</strong>
+                  <div className="fund-stat-card">
+                    <p className="label">Live performance tracking</p>
+                    <ul className="fund-link-list">
+                      {performanceLinks.map((link, index) => (
+                        <li key={`live-link-${index}`}>
+                          {link ? (
+                            <a href={link} target="_blank" rel="noreferrer">
+                              {link}
+                            </a>
+                          ) : (
+                            <span className="value">Link Myfxbook {index + 1}: —</span>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                  <div className="stat-chip">
-                    Región <strong>{selectedFund.region}</strong>
+                  <div className="fund-stat-card">
+                    <p className="label">Min investment</p>
+                    <p className="value">{formattedMinInvestment}</p>
+                  </div>
+                  <div className="fund-stat-card">
+                    <p className="label">Performance fee</p>
+                    <p className="value">{formattedPerformanceFee}</p>
+                  </div>
+                  <div className="fund-stat-card">
+                    <p className="label">Subscription fee</p>
+                    <p className="value">{formattedSubscriptionFee}</p>
+                  </div>
+                  <div className="fund-stat-card">
+                    <p className="label">Reports</p>
+                    <p className="value">{formattedReports}</p>
                   </div>
                 </div>
                 <div className="fund-cta">
