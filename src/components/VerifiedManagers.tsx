@@ -7,12 +7,13 @@ import {
   STORAGE_KEYS,
   baseVerifiedFunds,
   countryFlags,
+  DEFAULT_FUND_MANAGER_PROFILES,
   formatNumber,
   formatPercent,
   getFundLogoLabel,
 } from "@/lib/igatesData";
 import { useLocalStorage } from "@/lib/useLocalStorage";
-import type { FundApplication } from "@/lib/types";
+import type { FundApplication, UserProfile } from "@/lib/types";
 
 type VerifiedFund = {
   id: string;
@@ -48,6 +49,7 @@ const initialFilters: FilterState = {
 
 export function VerifiedManagers() {
   const [fundApplications] = useLocalStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
+  const [profiles] = useLocalStorage<UserProfile[]>(STORAGE_KEYS.profiles, DEFAULT_FUND_MANAGER_PROFILES);
   const [filters, setFilters] = useState<FilterState>(initialFilters);
   const [appliedFilters, setAppliedFilters] = useState<FilterState>(initialFilters);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -55,42 +57,75 @@ export function VerifiedManagers() {
   const carouselRef = useRef<HTMLDivElement | null>(null);
 
   const verifiedFunds = useMemo<VerifiedFund[]>(() => {
-    const fromStorage = fundApplications
-      .filter((application) => application.status === "verified")
-      .map((application) => ({
-        id: application.id,
-        name: application.fundName,
-        country: application.country || "Global",
-        logoLabel: getFundLogoLabel(application.fundName),
-        region: application.region || "Global",
-        strategy: application.strategyLabel || application.strategy || "Multi-Strategy",
-        riskLevel: application.riskLevel || application.riskManagement || "En revisión",
-        yearProfit: application.yearProfit ?? application.monthlyProfit ?? null,
-        maxDrawdown: application.maxDrawdown ?? null,
-        winRate: application.winRate ?? null,
-        volatility: application.volatility ?? null,
-        aum: application.aum || "N/A",
-        description: application.description || "Gestor en proceso de verificación.",
-      }));
+    const baseIds = new Set(baseVerifiedFunds.map((fund) => fund.id));
+    const managerProfiles = profiles.filter((profile) => profile.role === "Fund Manager");
+    const managerById = new Map(managerProfiles.map((profile) => [profile.id, profile]));
+    const managerByFundId = new Map(
+      managerProfiles
+        .filter((profile) => profile.fundId)
+        .map((profile) => [profile.fundId as string, profile])
+    );
+    const resolveManagerProfile = (fundId: string, managerId?: string) =>
+      (managerId ? managerById.get(managerId) : null) ?? managerByFundId.get(fundId) ?? null;
+
+    const baseApplications = fundApplications.filter((application) => baseIds.has(application.id));
+    const verifiedApplications = fundApplications.filter(
+      (application) => application.status === "verified"
+    );
+    const overrideApplications = [...baseApplications, ...verifiedApplications];
+
+    const fromStorage = overrideApplications
+      .map((application) => {
+        const managerProfile = resolveManagerProfile(application.id, application.managerId);
+        const profileDetails = managerProfile?.fundManagerProfile;
+
+        return {
+          id: application.id,
+          name: application.fundName,
+          country: application.country || "Global",
+          logoLabel: getFundLogoLabel(application.fundName),
+          region: application.region || "Global",
+          strategy:
+            profileDetails?.strategyTypeLabel ||
+            profileDetails?.strategyType ||
+            application.strategyLabel ||
+            application.strategy ||
+            "Multi-Strategy",
+          riskLevel: application.riskLevel || application.riskManagement || "En revisión",
+          yearProfit: application.yearProfit ?? application.monthlyProfit ?? null,
+          maxDrawdown: application.maxDrawdown ?? null,
+          winRate: application.winRate ?? null,
+          volatility: application.volatility ?? null,
+          aum: application.aum || "N/A",
+          description:
+            profileDetails?.strategyDescription ||
+            application.description ||
+            "Gestor en proceso de verificación.",
+        };
+      });
 
     const overridesById = new Map(fromStorage.map((fund) => [fund.id, fund]));
     const mergedBase = baseVerifiedFunds.map((fund) => {
       const override = overridesById.get(fund.id);
       if (!override) {
+        const managerProfile = managerByFundId.get(fund.id);
+        const profileDetails = managerProfile?.fundManagerProfile;
+
         return {
           id: fund.id,
           name: fund.name,
           country: fund.country,
           logoLabel: fund.logoLabel,
           region: fund.region,
-          strategy: fund.strategy,
+          strategy:
+            profileDetails?.strategyTypeLabel || profileDetails?.strategyType || fund.strategy,
           riskLevel: fund.riskLevel,
           yearProfit: fund.yearProfit,
           maxDrawdown: fund.maxDrawdown,
           winRate: fund.winRate,
           volatility: fund.volatility,
           aum: fund.aum,
-          description: fund.description,
+          description: profileDetails?.strategyDescription || fund.description,
         };
       }
       return {
@@ -99,11 +134,12 @@ export function VerifiedManagers() {
       };
     });
 
-    const baseIds = new Set(baseVerifiedFunds.map((fund) => fund.id));
-    const extraFunds = fromStorage.filter((fund) => !baseIds.has(fund.id));
+    const extraFunds = fromStorage
+      .filter((fund) => !baseIds.has(fund.id))
+      .filter((fund) => verifiedApplications.some((application) => application.id === fund.id));
 
     return [...mergedBase, ...extraFunds];
-  }, [fundApplications]);
+  }, [fundApplications, profiles]);
 
   const regions = useMemo(() => {
     return Array.from(new Set(verifiedFunds.map((fund) => fund.region))).sort((a, b) =>
