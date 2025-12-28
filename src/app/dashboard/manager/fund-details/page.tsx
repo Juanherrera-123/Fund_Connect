@@ -2,7 +2,12 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import { DEFAULT_FUND_MANAGER_PROFILES, STORAGE_KEYS, baseVerifiedFunds } from "@/lib/igatesData";
+import {
+  DEFAULT_FUND_MANAGER_PROFILES,
+  STORAGE_KEYS,
+  baseVerifiedFunds,
+  countryFlags,
+} from "@/lib/igatesData";
 import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { FundApplication, Session, UserProfile } from "@/lib/types";
 
@@ -179,12 +184,19 @@ export default function FundDetailsPage() {
 
           <label className="flex flex-col gap-2 text-xs font-medium">
             <span className="text-slate-600">País</span>
-            <input
+            <select
               name="country"
               defaultValue={existingApplication?.country ?? baseFund?.country ?? ""}
               required
               className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
-            />
+            >
+              <option value="">Selecciona</option>
+              {Object.entries(countryFlags).map(([country, flag]) => (
+                <option key={country} value={country}>
+                  {flag} {country}
+                </option>
+              ))}
+            </select>
           </label>
 
           <label className="md:col-span-2 flex flex-col gap-2 text-xs font-medium">
@@ -200,61 +212,76 @@ export default function FundDetailsPage() {
 
           <label className="flex flex-col gap-2 text-xs font-medium">
             <span className="text-slate-600">Tiempo operando</span>
-            <input
-              name="operatingTime"
-              defaultValue={existingApplication?.operatingTime ?? ""}
-              required
-              placeholder="Ej: 3 años"
-              className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
-            />
+            <div className="flex items-center rounded-lg border border-slate-200 px-3 py-2 text-sm">
+              <input
+                type="number"
+                name="operatingTime"
+                defaultValue={existingApplication?.operatingTime ?? ""}
+                required
+                placeholder="Ej: 3"
+                className="w-full bg-transparent text-sm outline-none"
+              />
+              <span className="ml-2 text-slate-500">años</span>
+            </div>
           </label>
 
           <label className="flex flex-col gap-2 text-xs font-medium">
             <span className="text-slate-600">Profit mensual (último año)</span>
-            <input
-              type="number"
-              step="0.01"
-              name="monthlyProfit"
-              defaultValue={existingApplication?.monthlyProfit ?? existingApplication?.yearProfit ?? ""}
-              placeholder="Ej: 2.4"
-              className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
-            />
+            <div className="flex items-center rounded-lg border border-slate-200 px-3 py-2 text-sm">
+              <input
+                type="number"
+                step="0.01"
+                name="monthlyProfit"
+                defaultValue={existingApplication?.monthlyProfit ?? existingApplication?.yearProfit ?? ""}
+                placeholder="Ej: 2.4"
+                className="w-full bg-transparent text-sm outline-none"
+              />
+              <span className="ml-2 text-slate-500">%</span>
+            </div>
           </label>
 
           <label className="flex flex-col gap-2 text-xs font-medium">
             <span className="text-slate-600">Drawdown target</span>
-            <input
-              type="number"
-              step="0.01"
-              name="drawdownTarget"
-              defaultValue={existingApplication?.drawdownTarget ?? ""}
-              placeholder="Ej: 5"
-              className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
-            />
+            <div className="flex items-center rounded-lg border border-slate-200 px-3 py-2 text-sm">
+              <input
+                type="number"
+                step="0.01"
+                name="drawdownTarget"
+                defaultValue={existingApplication?.drawdownTarget ?? ""}
+                placeholder="Ej: 5"
+                className="w-full bg-transparent text-sm outline-none"
+              />
+              <span className="ml-2 text-slate-500">%</span>
+            </div>
           </label>
 
           <label className="flex flex-col gap-2 text-xs font-medium">
             <span className="text-slate-600">Max drawdown</span>
-            <input
-              type="number"
-              step="0.01"
-              name="maxDrawdown"
-              defaultValue={existingApplication?.maxDrawdown ?? baseFund?.maxDrawdown ?? ""}
-              placeholder="Ej: 8"
-              className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
-            />
+            <div className="flex items-center rounded-lg border border-slate-200 px-3 py-2 text-sm">
+              <input
+                type="number"
+                step="0.01"
+                name="maxDrawdown"
+                defaultValue={existingApplication?.maxDrawdown ?? baseFund?.maxDrawdown ?? ""}
+                placeholder="Ej: 8"
+                className="w-full bg-transparent text-sm outline-none"
+              />
+              <span className="ml-2 text-slate-500">%</span>
+            </div>
           </label>
 
           <label className="flex flex-col gap-2 text-xs font-medium">
-            <span className="text-slate-600">% de trades mensuales</span>
-            <input
-              type="number"
-              step="0.01"
-              name="tradesPerMonth"
-              defaultValue={existingApplication?.tradesPerMonth ?? ""}
-              placeholder="Ej: 60"
-              className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
-            />
+            <span className="text-slate-600">Trades mensuales</span>
+            <div className="flex items-center rounded-lg border border-slate-200 px-3 py-2 text-sm">
+              <input
+                type="number"
+                step="0.01"
+                name="tradesPerMonth"
+                defaultValue={existingApplication?.tradesPerMonth ?? ""}
+                placeholder="Ej: 60"
+                className="w-full bg-transparent text-sm outline-none"
+              />
+            </div>
           </label>
 
           <label className="flex flex-col gap-2 text-xs font-medium">
@@ -294,32 +321,44 @@ export default function FundDetailsPage() {
 
           <label className="flex flex-col gap-2 text-xs font-medium">
             <span className="text-slate-600">Min investment</span>
-            <input
-              name="minInvestment"
-              defaultValue={existingApplication?.minInvestment ?? ""}
-              placeholder="Ej: $50K"
-              className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
-            />
+            <div className="flex items-center rounded-lg border border-slate-200 px-3 py-2 text-sm">
+              <input
+                type="number"
+                name="minInvestment"
+                defaultValue={existingApplication?.minInvestment ?? ""}
+                placeholder="Ej: 50000"
+                className="w-full bg-transparent text-sm outline-none"
+              />
+              <span className="ml-2 text-slate-500">USD</span>
+            </div>
           </label>
 
           <label className="flex flex-col gap-2 text-xs font-medium">
             <span className="text-slate-600">Performance fee</span>
-            <input
-              name="performanceFee"
-              defaultValue={existingApplication?.performanceFee ?? ""}
-              placeholder="Ej: 20%"
-              className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
-            />
+            <div className="flex items-center rounded-lg border border-slate-200 px-3 py-2 text-sm">
+              <input
+                type="number"
+                name="performanceFee"
+                defaultValue={existingApplication?.performanceFee ?? ""}
+                placeholder="Ej: 20"
+                className="w-full bg-transparent text-sm outline-none"
+              />
+              <span className="ml-2 text-slate-500">%</span>
+            </div>
           </label>
 
           <label className="flex flex-col gap-2 text-xs font-medium">
             <span className="text-slate-600">Subscription fee</span>
-            <input
-              name="subscriptionFee"
-              defaultValue={existingApplication?.subscriptionFee ?? ""}
-              placeholder="Ej: 1%"
-              className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
-            />
+            <div className="flex items-center rounded-lg border border-slate-200 px-3 py-2 text-sm">
+              <input
+                type="number"
+                name="subscriptionFee"
+                defaultValue={existingApplication?.subscriptionFee ?? ""}
+                placeholder="Ej: 1"
+                className="w-full bg-transparent text-sm outline-none"
+              />
+              <span className="ml-2 text-slate-500">%</span>
+            </div>
           </label>
 
           <label className="flex flex-col gap-2 text-xs font-medium">
