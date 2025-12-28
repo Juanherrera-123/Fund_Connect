@@ -2,7 +2,12 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import { DEFAULT_FUND_MANAGER_PROFILES, STORAGE_KEYS, baseVerifiedFunds } from "@/lib/igatesData";
+import {
+  DEFAULT_FUND_MANAGER_PROFILES,
+  STORAGE_KEYS,
+  baseVerifiedFunds,
+  countryFlags,
+} from "@/lib/igatesData";
 import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { FundApplication, Session, UserProfile } from "@/lib/types";
 
@@ -179,12 +184,19 @@ export default function FundDetailsPage() {
 
           <label className="flex flex-col gap-2 text-xs font-medium">
             <span className="text-slate-600">País</span>
-            <input
+            <select
               name="country"
               defaultValue={existingApplication?.country ?? baseFund?.country ?? ""}
               required
               className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
-            />
+            >
+              <option value="">Selecciona</option>
+              {Object.entries(countryFlags).map(([country, flag]) => (
+                <option key={country} value={country}>
+                  {flag} {country}
+                </option>
+              ))}
+            </select>
           </label>
 
           <label className="md:col-span-2 flex flex-col gap-2 text-xs font-medium">
