@@ -8,7 +8,7 @@ import { STORAGE_KEYS } from "@/lib/igatesData";
 import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { Session } from "@/lib/types";
 
-const navItems = [
+const masterNavItems = [
   {
     label: "Overview",
     href: "/dashboard/master",
@@ -89,16 +89,72 @@ const navItems = [
   },
 ];
 
+const fundManagerNavItems = [
+  {
+    label: "Overview",
+    href: "/dashboard/manager/overview",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M4.5 10.5 12 4.5l7.5 6v8.25a.75.75 0 0 1-.75.75h-4.5a.75.75 0 0 1-.75-.75V13.5h-3v5.25a.75.75 0 0 1-.75.75H5.25a.75.75 0 0 1-.75-.75Z"
+        />
+      </svg>
+    ),
+  },
+  {
+    label: "Fund details",
+    href: "/dashboard/manager/fund-details",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M4.5 7.5h15m-15 4.5h15m-15 4.5h9"
+        />
+      </svg>
+    ),
+  },
+  {
+    label: "Messages",
+    href: "/dashboard/manager/messages",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M21 11.25a8.25 8.25 0 1 1-4.08-7.08L21 5.25l-1.08 4.08A8.2 8.2 0 0 1 21 11.25Z"
+        />
+      </svg>
+    ),
+  },
+  {
+    label: "Settings",
+    href: "/dashboard/manager/settings",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M12 9.75A2.25 2.25 0 1 0 12 14.25 2.25 2.25 0 0 0 12 9.75Zm7.5 2.25a7.49 7.49 0 0 0-.12-1.35l2.07-1.62-2.25-3.9-2.46.96a7.47 7.47 0 0 0-2.34-1.35l-.39-2.61h-4.5l-.39 2.61a7.47 7.47 0 0 0-2.34 1.35l-2.46-.96-2.25 3.9 2.07 1.62a7.49 7.49 0 0 0 0 2.7l-2.07 1.62 2.25 3.9 2.46-.96a7.47 7.47 0 0 0 2.34 1.35l.39 2.61h4.5l.39-2.61a7.47 7.47 0 0 0 2.34-1.35l2.46.96 2.25-3.9-2.07-1.62c.08-.44.12-.89.12-1.35Z"
+        />
+      </svg>
+    ),
+  },
+];
+
 const actionIconClass =
   "flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-600 transition hover:border-slate-300 hover:text-slate-900";
 
 const roleMap: Record<string, string> = {
   "/dashboard/master": "MasterUser",
-  "/dashboard/fund-manager": "Fund Manager",
-  "/dashboard/investor": "Investor",
-  "/dashboard/family-office": "Family Office",
+  "/dashboard/fund-manager": "MasterUser",
+  "/dashboard/investor": "MasterUser",
+  "/dashboard/family-office": "MasterUser",
   "/dashboard/messages": "MasterUser",
   "/dashboard/settings": "MasterUser",
+  "/dashboard/manager": "Fund Manager",
 };
 
 export default function DashboardShell({
@@ -108,12 +164,27 @@ export default function DashboardShell({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [, setSession] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
+  const [session, setSession] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
+  const sessionRole = session?.role;
+  const navItems = sessionRole === "Fund Manager" ? fundManagerNavItems : masterNavItems;
   const role =
     Object.entries(roleMap).find(([href]) => pathname?.startsWith(href))?.[1] ??
     "Dashboard User";
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!sessionRole) return;
+    const isManagerRoute = pathname?.startsWith("/dashboard/manager");
+    const isMasterRoute = !isManagerRoute;
+    if (sessionRole === "Fund Manager" && isMasterRoute) {
+      router.push("/dashboard/manager/overview");
+      return;
+    }
+    if (sessionRole === "MasterUser" && isManagerRoute) {
+      router.push("/dashboard/master");
+    }
+  }, [pathname, router, sessionRole]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

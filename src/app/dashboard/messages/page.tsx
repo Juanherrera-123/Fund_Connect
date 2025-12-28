@@ -14,19 +14,39 @@ export default function MessagesDashboard() {
     const verifiedFundApplications = fundApplications.filter(
       (application) => application.status === "verified"
     );
+    const baseIds = new Set(baseVerifiedFunds.map((fund) => fund.id));
+    const overrides = new Map(
+      verifiedFundApplications.map((application) => [
+        application.id,
+        {
+          id: application.id,
+          title: application.fundName,
+          subtitle: `${application.strategyLabel || application.strategy || "Multi-Strategy"} · ${
+            application.country || "Global"
+          }`,
+        },
+      ])
+    );
     const funds = [
-      ...baseVerifiedFunds.map((fund) => ({
-        id: fund.id,
-        title: fund.name,
-        subtitle: `${fund.strategy} · ${fund.country}`,
-      })),
-      ...verifiedFundApplications.map((application) => ({
-        id: application.id,
-        title: application.fundName,
-        subtitle: `${application.strategyLabel || application.strategy || "Multi-Strategy"} · ${
-          application.country || "Global"
-        }`,
-      })),
+      ...baseVerifiedFunds.map((fund) => {
+        const override = overrides.get(fund.id);
+        return (
+          override ?? {
+            id: fund.id,
+            title: fund.name,
+            subtitle: `${fund.strategy} · ${fund.country}`,
+          }
+        );
+      }),
+      ...verifiedFundApplications
+        .filter((application) => !baseIds.has(application.id))
+        .map((application) => ({
+          id: application.id,
+          title: application.fundName,
+          subtitle: `${application.strategyLabel || application.strategy || "Multi-Strategy"} · ${
+            application.country || "Global"
+          }`,
+        })),
     ];
 
     const investors = profiles

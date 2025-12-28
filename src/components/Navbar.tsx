@@ -19,6 +19,10 @@ export function Navbar() {
       return { label: "Master Dashboard", href: "/dashboard/master" };
     }
 
+    if (session.role === "Fund Manager") {
+      return { label: "Manager Dashboard", href: "/dashboard/manager/overview" };
+    }
+
     return { label: "My Profile", href: "/profile" };
   })();
 

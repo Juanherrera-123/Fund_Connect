@@ -23,19 +23,39 @@ export default function FundManagerDashboard() {
       profiles.map((profile) => [profile.id, profile.fullName])
     );
 
+    const baseIds = new Set(baseVerifiedFunds.map((fund) => fund.id));
+    const verifiedFromApplicationsMap = new Map(
+      verifiedFromApplications.map((application) => [
+        application.id,
+        {
+          id: application.id,
+          name: application.fundName,
+          manager: managerNameById.get(application.managerId) ?? "Gestor registrado",
+          status: "Verificado",
+        },
+      ])
+    );
+
     const verifiedFunds = [
-      ...baseVerifiedFunds.map((fund) => ({
-        id: fund.id,
-        name: fund.name,
-        manager: "Equipo IGATES",
-        status: "Verificado",
-      })),
-      ...verifiedFromApplications.map((application) => ({
-        id: application.id,
-        name: application.fundName,
-        manager: managerNameById.get(application.managerId) ?? "Gestor registrado",
-        status: "Verificado",
-      })),
+      ...baseVerifiedFunds.map((fund) => {
+        const override = verifiedFromApplicationsMap.get(fund.id);
+        return (
+          override ?? {
+            id: fund.id,
+            name: fund.name,
+            manager: "Equipo IGATES",
+            status: "Verificado",
+          }
+        );
+      }),
+      ...verifiedFromApplications
+        .filter((application) => !baseIds.has(application.id))
+        .map((application) => ({
+          id: application.id,
+          name: application.fundName,
+          manager: managerNameById.get(application.managerId) ?? "Gestor registrado",
+          status: "Verificado",
+        })),
     ];
 
     return {

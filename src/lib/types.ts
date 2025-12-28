@@ -43,6 +43,7 @@ export type UserProfile = {
   role: Exclude<Role, "MasterUser">;
   password: string;
   onboarding: Record<string, unknown>;
+  fundId?: string;
   investorPreferences?: InvestorPreferences;
   fundManagerProfile?: FundManagerProfile;
   familyOfficePreferences?: FamilyOfficePreferences;
@@ -53,19 +54,29 @@ export type FundApplication = {
   id: string;
   fundName: string;
   country: string;
-  region: string;
-  aum: string;
-  strategy: string;
-  strategyLabel: string;
+  region?: string;
+  aum?: string;
+  strategy?: string;
+  strategyLabel?: string;
   description: string;
   status: "pending" | "verified";
   managerId: string;
   submittedAt: string;
   yearProfit?: number | null;
+  monthlyProfit?: number | null;
   maxDrawdown?: number | null;
   winRate?: number | null;
   volatility?: number | null;
   riskLevel?: string | null;
+  operatingTime?: string;
+  drawdownTarget?: number | null;
+  tradesPerMonth?: number | null;
+  riskManagement?: string | null;
+  livePerformanceLinks?: string[];
+  minInvestment?: string;
+  performanceFee?: string;
+  subscriptionFee?: string;
+  reportsFrequency?: string;
 };
 
 export type MasterNotification = {

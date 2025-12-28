@@ -18,11 +18,13 @@ export default function DataTable({
   columns,
   rows,
   actionLabel,
+  onAction,
 }: {
   title: string;
   columns: Column[];
   rows: Row[];
-  actionLabel: string;
+  actionLabel: string | ((row: Row) => string);
+  onAction?: (row: Row) => void;
 }) {
   return (
     <section className="rounded-xl border border-slate-200 bg-white shadow-sm">
@@ -60,8 +62,9 @@ export default function DataTable({
                     <button
                       type="button"
                       className="rounded-md border border-slate-200 px-3 py-1 text-[0.7rem] font-semibold text-slate-700 hover:border-slate-300 hover:text-slate-900"
+                      onClick={() => onAction?.(row)}
                     >
-                      {actionLabel}
+                      {typeof actionLabel === "function" ? actionLabel(row) : actionLabel}
                     </button>
                   </td>
                 </tr>
