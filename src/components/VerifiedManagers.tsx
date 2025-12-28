@@ -128,8 +128,9 @@ export function VerifiedManagers() {
       };
     });
 
-    const baseIds = new Set(baseVerifiedFunds.map((fund) => fund.id));
-    const extraFunds = fromStorage.filter((fund) => !baseIds.has(fund.id));
+    const extraFunds = fromStorage
+      .filter((fund) => !baseIds.has(fund.id))
+      .filter((fund) => verifiedApplications.some((application) => application.id === fund.id));
 
     return [...mergedBase, ...extraFunds];
   }, [fundApplications, profiles]);
