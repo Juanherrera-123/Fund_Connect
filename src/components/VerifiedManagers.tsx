@@ -57,7 +57,6 @@ export function VerifiedManagers() {
   const carouselRef = useRef<HTMLDivElement | null>(null);
 
   const verifiedFunds = useMemo<VerifiedFund[]>(() => {
-    const baseIds = new Set(baseVerifiedFunds.map((fund) => fund.id));
     const managerProfiles = profiles.filter((profile) => profile.role === "Fund Manager");
     const managerById = new Map(managerProfiles.map((profile) => [profile.id, profile]));
     const managerByFundId = new Map(
@@ -68,13 +67,8 @@ export function VerifiedManagers() {
     const resolveManagerProfile = (fundId: string, managerId?: string) =>
       (managerId ? managerById.get(managerId) : null) ?? managerByFundId.get(fundId) ?? null;
 
-    const baseApplications = fundApplications.filter((application) => baseIds.has(application.id));
-    const verifiedApplications = fundApplications.filter(
-      (application) => application.status === "verified"
-    );
-    const overrideApplications = [...baseApplications, ...verifiedApplications];
-
-    const fromStorage = overrideApplications
+    const fromStorage = fundApplications
+      .filter((application) => application.status === "verified")
       .map((application) => {
         const managerProfile = resolveManagerProfile(application.id, application.managerId);
         const profileDetails = managerProfile?.fundManagerProfile;
