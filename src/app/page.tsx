@@ -2,8 +2,6 @@ import Link from "next/link";
 
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
-import { FeaturedFunds } from "@/components/FeaturedFunds";
-import { InsightsFeed } from "@/components/InsightsFeed";
 import { ContactForm } from "@/components/forms/ContactForm";
 
 export default function HomePage() {
@@ -25,7 +23,7 @@ export default function HomePage() {
                 profesionales.
               </p>
               <div className="cta-group">
-                <Link className="btn btn-primary" href="#funds" data-i18n="heroCtaInvestor">
+                <Link className="btn btn-primary" href="#contact" data-i18n="heroCtaInvestor">
                   Solicitar asesoría de inversión
                 </Link>
                 <Link className="btn btn-secondary" href="#contact" data-i18n="heroCtaManager">
@@ -193,103 +191,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="funds" className="featured-funds">
-          <div className="container">
-            <div className="section-header">
-              <p className="eyebrow" data-i18n="fundsEyebrow">
-                Live Universe
-              </p>
-              <h2 data-i18n="fundsTitle">Featured Fund Programs</h2>
-              <p className="lead" data-i18n="fundsLead">
-                Signal-rich profiles backed by daily reconciled data, ready for allocator review.
-              </p>
-            </div>
-            <FeaturedFunds />
-          </div>
-        </section>
-
-        <section id="intelligence" className="intelligence">
-          <div className="container grid intelligence-grid">
-            <div className="intelligence-copy">
-              <p className="eyebrow" data-i18n="intelligenceEyebrow">
-                Data Fabric
-              </p>
-              <h2 data-i18n="intelligenceTitle">IGATES Intelligence Engine</h2>
-              <p className="lead" data-i18n="intelligenceLead">
-                Real-time analytics across performance, factor exposures, risk corridors, and
-                capital deployment readiness.
-              </p>
-              <div className="bullet-list">
-                <div className="bullet" data-i18n="intelligenceBullet1">
-                  Dynamic liquidity mapping
-                </div>
-                <div className="bullet" data-i18n="intelligenceBullet2">
-                  Exposure heatmaps with anomaly detection
-                </div>
-                <div className="bullet" data-i18n="intelligenceBullet3">
-                  LP-ready reporting with compliance presets
-                </div>
-              </div>
-              <div className="badge-list" id="intelligenceBadges">
-                <span className="badge" data-i18n="intelligenceBadge1">
-                  API Connected
-                </span>
-                <span className="badge" data-i18n="intelligenceBadge2">
-                  24/7 Monitoring
-                </span>
-                <span className="badge" data-i18n="intelligenceBadge3">
-                  SOC2 Ready
-                </span>
-              </div>
-            </div>
-            <div className="intelligence-visual">
-              <div className="chart-line"></div>
-              <div className="chart-heatmap">
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-              </div>
-              <div className="chart-scatter"></div>
-            </div>
-          </div>
-        </section>
-
-        <section id="insights" className="insights">
-          <div className="container">
-            <div className="section-header">
-              <p className="eyebrow" data-i18n="insightsEyebrow">
-                Signals
-              </p>
-              <h2 data-i18n="insightsTitle">Market &amp; Platform Insights</h2>
-              <p className="lead" data-i18n="insightsLead">
-                Short intelligence bursts designed for investment committees and risk partners.
-              </p>
-            </div>
-            <InsightsFeed />
-          </div>
-        </section>
-
         <section id="learn" className="insights learn">
           <div className="container">
             <div className="section-header">
@@ -344,52 +245,6 @@ export default function HomePage() {
                 </p>
               </article>
             </div>
-          </div>
-        </section>
-
-        <section id="investors" className="split investors">
-          <div className="container grid split-grid">
-            <div className="visual globe"></div>
-            <div className="split-copy">
-              <p className="eyebrow" data-i18n="investorsEyebrow">
-                For Investors
-              </p>
-              <h2 data-i18n="investorsTitle">Global access to institutional talent.</h2>
-              <ul>
-                <li data-i18n="investorsItem1">
-                  Curated mandates with verified AUM and audited track records.
-                </li>
-                <li data-i18n="investorsItem2">
-                  Structured comparables and risk analytics for faster IC approvals.
-                </li>
-                <li data-i18n="investorsItem3">
-                  Private access workflows and co-investment visibility.
-                </li>
-              </ul>
-            </div>
-          </div>
-        </section>
-
-        <section id="managers" className="split managers">
-          <div className="container grid split-grid reverse">
-            <div className="split-copy">
-              <p className="eyebrow" data-i18n="managersEyebrow">
-                For Managers
-              </p>
-              <h2 data-i18n="managersTitle">Purpose-built distribution for elite strategies.</h2>
-              <ul>
-                <li data-i18n="managersItem1">
-                  Engage verified allocators globally with embedded compliance.
-                </li>
-                <li data-i18n="managersItem2">
-                  Share data securely with granular permissions and watermarking.
-                </li>
-                <li data-i18n="managersItem3">
-                  Pipeline intelligence that prioritizes the right capital.
-                </li>
-              </ul>
-            </div>
-            <div className="visual wave"></div>
           </div>
         </section>
 
