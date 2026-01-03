@@ -8,8 +8,12 @@ const trustItems = [
 
 export function Hero() {
   return (
-    <section id="hero" className="bg-igates-900 text-white">
-      <div className="mx-auto grid max-w-6xl gap-12 px-6 py-20 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+    <section
+      id="hero"
+      className="relative overflow-hidden bg-[url('/worldmap-Igates.png')] bg-cover bg-center text-white"
+    >
+      <div className="absolute inset-0 bg-gradient-to-br from-igates-800/80 via-igates-700/70 to-igates-900/80" />
+      <div className="relative mx-auto grid max-w-6xl gap-12 px-6 py-20 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
         <div className="space-y-8">
           <p
             className="text-xs font-semibold uppercase tracking-[0.35em] text-white/60"
@@ -19,7 +23,7 @@ export function Hero() {
           </p>
           <div className="space-y-4">
             <h1
-              className="text-4xl font-semibold leading-tight md:text-6xl"
+              className="bg-gradient-to-r from-igates-400 via-igates-500 to-igates-400 bg-clip-text text-4xl font-semibold leading-tight text-transparent md:text-6xl"
               data-i18n="heroTitle"
             >
               Conectando capital con gestores verificados
@@ -31,7 +35,7 @@ export function Hero() {
           </div>
           <div className="flex flex-wrap gap-4">
             <Link
-              className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-igates-900 transition hover:bg-white/90"
+              className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-igates-500 to-igates-400 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-igates-500/30 transition hover:bg-none hover:bg-white hover:text-igates-500"
               href="#contact"
               data-i18n="heroCtaInvestor"
             >
@@ -99,7 +103,7 @@ export function Hero() {
             </div>
             <div className="relative flex items-center justify-between gap-4">
               <p className="text-sm text-white/70">Métricas consolidadas</p>
-              <button className="rounded-full bg-white px-4 py-2 text-xs font-semibold text-igates-900">
+              <button className="rounded-full bg-gradient-to-r from-igates-500 to-igates-400 px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-igates-500/30 transition hover:bg-none hover:bg-white hover:text-igates-500">
                 Ver estadísticas completas
               </button>
             </div>

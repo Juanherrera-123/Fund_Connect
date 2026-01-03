@@ -28,9 +28,9 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-10 border-b border-slate-300/25 bg-white/90 backdrop-blur">
-      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-6 py-4">
+      <div className="mx-auto flex w-full max-w-6xl flex-nowrap items-center justify-between gap-6 px-6 py-4">
         <Link
-          className="flex items-center gap-2 font-extrabold tracking-[0.08em] text-slate-900"
+          className="flex flex-shrink-0 items-center gap-2 font-extrabold tracking-[0.08em] text-slate-900"
           href="/"
           aria-label="IGATES home"
         >
@@ -40,7 +40,7 @@ export function Navbar() {
             className="h-14 w-auto"
           />
         </Link>
-        <nav className="hidden items-center gap-3 whitespace-nowrap text-[14px] uppercase tracking-[0.06em] text-slate-700 lg:flex">
+        <nav className="hidden flex-1 items-center justify-center gap-3 whitespace-nowrap text-[14px] uppercase tracking-[0.06em] text-slate-700 lg:flex">
           <Link href="/#why" data-i18n="navWhy">
             Why IGATES
           </Link>
@@ -58,17 +58,10 @@ export function Navbar() {
             Contact
           </Link>
         </nav>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-shrink-0 items-center gap-3">
           <LanguageSwitcher />
           <Link
-            className="hidden items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 md:inline-flex"
-            href="/#contact"
-            data-i18n="navRequestDemo"
-          >
-            Request Demo
-          </Link>
-          <Link
-            className="inline-flex items-center justify-center rounded-full bg-igates-500 px-4 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-white shadow-lg shadow-igates-500/30 transition hover:bg-igates-400"
+            className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-igates-500 to-igates-400 px-4 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-white shadow-lg shadow-igates-500/30 transition hover:bg-none hover:bg-white hover:text-igates-500"
             href={authLink.href}
             data-i18n="navAuth"
           >
