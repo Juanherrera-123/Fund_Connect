@@ -9,27 +9,28 @@ const heroHighlights = [
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden bg-igates-900">
+    <section className="relative flex min-h-screen items-center overflow-hidden bg-igates-900">
       <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(90,75,255,0.25),_transparent_50%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,_rgba(255,255,255,0.08),_transparent_40%)]" />
         <Image
           src="/worldmap-Igates.png"
           alt="World map"
           fill
-          className="object-contain opacity-20"
+          className="object-cover opacity-[0.12]"
           priority
         />
+        <div className="absolute inset-0 bg-white/60" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(90,75,255,0.25),_transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,_rgba(255,255,255,0.08),_transparent_40%)]" />
       </div>
-      <div className="relative mx-auto flex min-h-[520px] max-w-6xl flex-col justify-center gap-8 px-6 py-20">
+      <div className="relative mx-auto flex w-full max-w-6xl flex-col justify-center gap-8 px-6 py-20">
         <div className="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.3em] text-white/60">
           <span className="rounded-full border border-white/20 px-4 py-2">
             IGATES · Institutional Gateway
           </span>
           <span className="text-white/40">Nueva experiencia 2024</span>
         </div>
-        <h1 className="max-w-3xl text-4xl font-semibold leading-tight text-white md:text-6xl">
-          Conecta fondos, inversores y compliance en una sola plataforma.
+        <h1 className="max-w-3xl bg-gradient-to-r from-blue-600 to-indigo-500 bg-clip-text text-4xl font-semibold leading-tight text-transparent md:text-6xl">
+          Conectando capital con gestores verificados
         </h1>
         <p className="max-w-2xl text-base text-white/70 md:text-lg">
           Migramos a la nueva arquitectura con React + Next para ofrecer un home
