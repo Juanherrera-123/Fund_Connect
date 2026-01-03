@@ -16,9 +16,9 @@ export function TopBar() {
           <Image
             src="/IGATESLOGO.png"
             alt="IGATES"
-            width={148}
-            height={40}
-            className="h-8 w-auto"
+            width={178}
+            height={48}
+            className="h-10 w-auto"
             priority
           />
         </Link>
