@@ -35,11 +35,11 @@ export function Hero() {
           </div>
           <div className="flex flex-wrap gap-4">
             <Link
-              className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-igates-500 to-igates-400 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-igates-500/30 transition hover:bg-none hover:bg-white hover:text-igates-500"
+              className="btn-primary inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold shadow-lg shadow-igates-500/30 transition"
               href="#contact"
               data-i18n="heroCtaInvestor"
             >
-              Solicitar asesoría de inversión
+              Solicitar acceso institucional
             </Link>
             <Link
               className="inline-flex items-center justify-center rounded-full border border-white/30 px-6 py-3 text-sm font-semibold text-white transition hover:border-white"
