@@ -23,7 +23,7 @@ export function Hero() {
           </p>
           <div className="space-y-4">
             <h1
-              className="bg-gradient-to-r from-igates-400 via-igates-500 to-igates-400 bg-clip-text text-4xl font-semibold leading-tight text-transparent md:text-6xl"
+              className="text-gradient-brand text-4xl font-semibold leading-tight md:text-6xl"
               data-i18n="heroTitle"
             >
               Conectando capital con gestores verificados
