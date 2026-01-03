@@ -50,21 +50,28 @@ export function Why() {
           {purposeCards.map((card) => (
             <article
               key={card.titleKey}
-              className="flex h-full flex-col gap-6 rounded-3xl border border-slate-200 bg-slate-50/50 p-6 shadow-sm"
+              className="grid gap-5 rounded-[18px] border border-slate-200/60 bg-white p-6 shadow-[0_18px_45px_rgba(15,23,42,0.06)]"
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-igates-500/10 text-igates-500">
-                <span className="h-2 w-2 rounded-full bg-igates-500" aria-hidden="true" />
+              <div className="grid gap-4 md:grid-cols-[auto_1fr] md:items-start">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-igates-500/20 bg-gradient-to-br from-igates-500/10 to-indigo-500/10 text-igates-500">
+                  <span className="h-2.5 w-2.5 rounded-full bg-igates-500" aria-hidden="true" />
+                </div>
+                <div className="space-y-3">
+                  <h3 className="text-[19px] font-semibold text-slate-900" data-i18n={card.titleKey}>
+                    {card.title}
+                  </h3>
+                  <p className="text-[15px] text-slate-600" data-i18n={card.bodyKey}>
+                    {card.body}
+                  </p>
+                </div>
               </div>
-              <div className="space-y-3">
-                <h3 className="text-lg font-semibold text-slate-900" data-i18n={card.titleKey}>
-                  {card.title}
-                </h3>
-                <p className="text-sm text-slate-600" data-i18n={card.bodyKey}>
-                  {card.body}
-                </p>
-              </div>
-              <div className="mt-auto overflow-hidden rounded-2xl bg-white">
-                <img src={card.image} alt={card.alt} loading="lazy" className="h-40 w-full object-cover" />
+              <div className="overflow-hidden rounded-2xl bg-slate-50">
+                <img
+                  src={card.image}
+                  alt={card.alt}
+                  loading="lazy"
+                  className="h-60 w-full object-contain"
+                />
               </div>
             </article>
           ))}
