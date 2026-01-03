@@ -3,27 +3,27 @@ const learnPosts = [
     titleKey: "learnPost1Title",
     timeKey: "learnPost1Time",
     bodyKey: "learnPost1Body",
-    title: "Morning allocation radar: credit and macro themes",
-    time: "Today",
+    title: "Radar de asignación: crédito y macro tendencias",
+    time: "Hoy",
     body:
-      "Top forum threads from allocators discussing cross-asset liquidity, duration risk, and new macro hedges.",
+      "Hilos destacados con allocators sobre liquidez multi-activo, riesgo de duración y coberturas macro.",
   },
   {
     titleKey: "learnPost2Title",
     timeKey: "learnPost2Time",
     bodyKey: "learnPost2Body",
-    title: "Manager spotlight: digital asset neutrality",
-    time: "Updated daily",
-    body: "Daily digest of risk notes and operational updates from the digital asset desk.",
+    title: "Manager spotlight: neutralidad en activos digitales",
+    time: "Actualizado a diario",
+    body: "Resumen diario de notas de riesgo y updates operativos del desk de activos digitales.",
   },
   {
     titleKey: "learnPost3Title",
     timeKey: "learnPost3Time",
     bodyKey: "learnPost3Body",
-    title: "Community brief: ops and compliance corner",
-    time: "This week",
+    title: "Community brief: operaciones y compliance",
+    time: "Esta semana",
     body:
-      "Forum Q&A covering onboarding checklists, data room hygiene, and audit-ready packaging.",
+      "Q&A sobre checklists de onboarding, data rooms y preparación para auditorías.",
   },
 ];
 
@@ -36,13 +36,13 @@ export function Learn() {
             className="text-xs font-semibold uppercase tracking-[0.35em] text-igates-400"
             data-i18n="learnEyebrow"
           >
-            Daily Forum
+            Foro diario
           </p>
           <h2 className="text-3xl font-semibold" data-i18n="learnTitle">
-            Learn &amp; Community
+            Aprendizaje &amp; comunidad
           </h2>
           <p className="text-base text-white/70" data-i18n="learnLead">
-            Fresh briefings and forum highlights to keep you updated every day.
+            Briefings y highlights para mantenerte informado cada día.
           </p>
         </div>
         <div className="mt-10 grid gap-6 lg:grid-cols-3">

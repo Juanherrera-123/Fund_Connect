@@ -4,20 +4,20 @@ const contactMeta = [
   {
     labelKey: "contactResponseLabel",
     metricKey: "contactResponseMetric",
-    label: "Response time",
-    metric: "< 24 hours",
+    label: "Tiempo de respuesta",
+    metric: "< 24 horas",
   },
   {
     labelKey: "contactCoverageLabel",
     metricKey: "contactCoverageMetric",
-    label: "Coverage",
-    metric: "Global allocators",
+    label: "Cobertura",
+    metric: "Allocators globales",
   },
   {
     labelKey: "contactSecurityLabel",
     metricKey: "contactSecurityMetric",
-    label: "Security",
-    metric: "SOC2-ready",
+    label: "Seguridad",
+    metric: "Listo para SOC2",
   },
 ];
 
@@ -30,14 +30,14 @@ export function Contact() {
             className="text-xs font-semibold uppercase tracking-[0.35em] text-igates-400"
             data-i18n="contactEyebrow"
           >
-            Talk To Us
+            Conversemos
           </p>
           <h2 className="text-3xl font-semibold" data-i18n="contactTitle">
-            Start your access process.
+            Inicia tu proceso de acceso.
           </h2>
           <p className="text-base text-white/70" data-i18n="contactLead">
-            Tell us about your mandate or strategy. Our team will coordinate data rooms,
-            diligence requests, and secure access.
+            Cuéntanos sobre tu mandato o estrategia. Nuestro equipo coordinará data rooms,
+            solicitudes de due diligence y acceso seguro.
           </p>
           <div className="grid gap-4 sm:grid-cols-3">
             {contactMeta.map((item) => (
