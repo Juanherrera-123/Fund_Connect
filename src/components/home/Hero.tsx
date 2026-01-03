@@ -1,63 +1,109 @@
-import Image from "next/image";
 import Link from "next/link";
 
-const heroHighlights = [
-  "Onboarding institucional en minutos",
-  "Governance y approvals multiactor",
-  "Reportería ESG integrada",
+const trustItems = [
+  { key: "heroTrust1", label: "Operate with regulated entities" },
+  { key: "heroTrust2", label: "Segregated accounts and protected funds" },
+  { key: "heroTrust3", label: "Verified monthly reporting" },
 ];
 
 export function Hero() {
   return (
-    <section className="relative flex min-h-screen items-center overflow-hidden bg-igates-900">
-      <div className="absolute inset-0">
-        <Image
-          src="/worldmap-Igates.png"
-          alt="World map"
-          fill
-          className="object-cover opacity-[0.12]"
-          priority
-        />
-        <div className="absolute inset-0 bg-white/60" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(90,75,255,0.25),_transparent_50%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,_rgba(255,255,255,0.08),_transparent_40%)]" />
-      </div>
-      <div className="relative mx-auto flex w-full max-w-6xl flex-col justify-center gap-8 px-6 py-20">
-        <div className="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.3em] text-white/60">
-          <span className="rounded-full border border-white/20 px-4 py-2">
-            IGATES · Institutional Gateway
-          </span>
-          <span className="text-white/40">Nueva experiencia 2024</span>
-        </div>
-        <h1 className="max-w-3xl bg-gradient-to-r from-blue-600 to-indigo-500 bg-clip-text text-4xl font-semibold leading-tight text-transparent md:text-6xl">
-          Conectando capital con gestores verificados
-        </h1>
-        <p className="max-w-2xl text-base text-white/70 md:text-lg">
-          Migramos a la nueva arquitectura con React + Next para ofrecer un home
-          institucional, modular y con métricas en tiempo real para equipos de
-          gestión, distribución y back office.
-        </p>
-        <div className="flex flex-wrap items-center gap-4">
-          <Link
-            href="/dashboard/master"
-            className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-igates-900 transition hover:bg-white/90"
+    <section id="hero" className="bg-igates-900 text-white">
+      <div className="mx-auto grid max-w-6xl gap-12 px-6 py-20 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+        <div className="space-y-8">
+          <p
+            className="text-xs font-semibold uppercase tracking-[0.35em] text-white/60"
+            data-i18n="heroEyebrow"
           >
-            Ingresar al dashboard
-          </Link>
-          <Link
-            href="#plataforma"
-            className="inline-flex items-center justify-center rounded-full border border-white/30 px-6 py-3 text-sm font-semibold text-white transition hover:border-white"
-          >
-            Ver plataforma
-          </Link>
+            Acceso institucional
+          </p>
+          <div className="space-y-4">
+            <h1
+              className="text-4xl font-semibold leading-tight md:text-6xl"
+              data-i18n="heroTitle"
+            >
+              Conectando capital con gestores verificados
+            </h1>
+            <p className="text-base text-white/70 md:text-lg" data-i18n="heroLead">
+              Infraestructura institucional para acceder a fondos gestionados con estándares
+              profesionales.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-4">
+            <Link
+              className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-igates-900 transition hover:bg-white/90"
+              href="#contact"
+              data-i18n="heroCtaInvestor"
+            >
+              Solicitar asesoría de inversión
+            </Link>
+            <Link
+              className="inline-flex items-center justify-center rounded-full border border-white/30 px-6 py-3 text-sm font-semibold text-white transition hover:border-white"
+              href="#contact"
+              data-i18n="heroCtaManager"
+            >
+              Postularse como gestor
+            </Link>
+          </div>
+          <div className="flex flex-wrap gap-4 text-xs text-white/60">
+            {trustItems.map((item) => (
+              <span key={item.key} className="rounded-full border border-white/15 px-4 py-2">
+                <span data-i18n={item.key}>{item.label}</span>
+              </span>
+            ))}
+          </div>
         </div>
-        <div className="flex flex-wrap gap-6 pt-6 text-sm text-white/70">
-          {heroHighlights.map((item) => (
-            <div key={item} className="flex items-center gap-3">
-              <span className="h-2 w-2 rounded-full bg-igates-500" />
-              <span>{item}</span>
+        <div className="space-y-4">
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-5 shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
+            <div className="flex items-center justify-between text-sm text-white/70">
+              <span className="text-xs uppercase tracking-[0.2em]">Rendimiento YTD</span>
+              <span className="text-lg font-semibold text-emerald-300">+14.8%</span>
             </div>
-          ))}
+            <div className="mt-4 h-24 rounded-2xl bg-gradient-to-r from-emerald-300/30 via-emerald-400/10 to-transparent" />
+          </div>
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+            <div className="space-y-3 text-sm">
+              {[
+                { label: "Volatilidad", value: "12.4%" },
+                { label: "Máx. caída", value: "-3.1%", negative: true },
+                { label: "Riesgo", value: "Medio-Bajo", badge: true },
+              ].map((item) => (
+                <div key={item.label} className="flex items-center justify-between">
+                  <span className="text-white/60">{item.label}</span>
+                  {item.badge ? (
+                    <span className="rounded-full border border-white/20 px-3 py-1 text-xs text-white/70">
+                      {item.value}
+                    </span>
+                  ) : (
+                    <span className={item.negative ? "text-rose-300" : "text-white"}>{item.value}</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+            <div className="text-xs uppercase tracking-[0.2em] text-white/50">AUM verificado</div>
+            <div className="mt-2 text-3xl font-semibold">$212M</div>
+            <p className="mt-1 text-sm text-white/60">Con 10 gestores</p>
+          </div>
+          <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-5">
+            <div className="absolute inset-0 opacity-40">
+              <div className="grid h-full w-full grid-cols-4 gap-2 p-4">
+                {Array.from({ length: 4 }).map((_, index) => (
+                  <span
+                    key={index}
+                    className="h-full rounded-2xl bg-gradient-to-t from-white/15 to-transparent"
+                  />
+                ))}
+              </div>
+            </div>
+            <div className="relative flex items-center justify-between gap-4">
+              <p className="text-sm text-white/70">Métricas consolidadas</p>
+              <button className="rounded-full bg-white px-4 py-2 text-xs font-semibold text-igates-900">
+                Ver estadísticas completas
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </section>
