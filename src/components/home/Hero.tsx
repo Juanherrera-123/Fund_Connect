@@ -12,8 +12,8 @@ export function Hero() {
       id="hero"
       className="relative overflow-hidden bg-[url('/worldmap-Igates.png')] bg-cover bg-center text-white"
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-igates-800/80 via-igates-700/70 to-igates-900/80" />
-      <div className="relative mx-auto grid max-w-6xl gap-12 px-6 py-20 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+      <div className="absolute inset-0 z-0 bg-[rgba(255,255,255,0.88)] backdrop-blur" />
+      <div className="relative z-10 mx-auto grid max-w-6xl gap-12 px-6 py-20 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
         <div className="space-y-8">
           <p
             className="text-xs font-semibold uppercase tracking-[0.35em] text-white/60"
