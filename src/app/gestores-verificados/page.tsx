@@ -4,19 +4,23 @@ import { VerifiedManagers } from "@/components/VerifiedManagers";
 
 export default function GestoresVerificadosPage() {
   return (
-    <div className="verified-page">
+    <div className="min-h-screen bg-slate-50">
       <Navbar />
       <main>
-        <section className="page-header minimal compact-hero">
-          <div className="container">
-            <p className="eyebrow">Selección institucional</p>
-            <div className="page-title-row">
-              <h1>Gestores verificados</h1>
-              <div className="micro-tag">Vista curada</div>
+        <section className="py-8">
+          <div className="mx-auto w-full max-w-6xl px-6">
+            <div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-igates-500/10 to-indigo-500/5 p-6">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-igates-500">Selección institucional</p>
+              <div className="mt-2 flex flex-wrap items-center gap-3">
+                <h1 className="text-3xl font-semibold text-slate-900">Gestores verificados</h1>
+                <div className="rounded-full border border-igates-500/20 bg-igates-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-igates-700">
+                  Vista curada
+                </div>
+              </div>
+              <p className="mt-3 max-w-2xl text-sm text-slate-600">
+                Explora fondos privados con capital real, track record auditado y gestión profesional.
+              </p>
             </div>
-            <p className="lead compact">
-              Explora fondos privados con capital real, track record auditado y gestión profesional.
-            </p>
           </div>
         </section>
 

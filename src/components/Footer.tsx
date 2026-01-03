@@ -2,57 +2,69 @@ import Link from "next/link";
 
 export function Footer() {
   return (
-    <footer className="footer">
-      <div className="container footer-grid">
+    <footer className="border-t border-slate-200 bg-white">
+      <div className="mx-auto grid w-full max-w-6xl gap-8 px-6 py-12 md:grid-cols-4">
         <div>
-          <Link className="logo" href="/" aria-label="IGATES home">
-            <img src="/IGATESLOGO.png" alt="IGATES Fund Intelligence logo" />
+          <Link className="inline-flex items-center" href="/" aria-label="IGATES home">
+            <img
+              src="/IGATESLOGO.png"
+              alt="IGATES Fund Intelligence logo"
+              className="h-14 w-auto"
+            />
           </Link>
-          <p className="small silver" data-i18n="footerTagline">
+          <p className="mt-3 text-xs font-medium text-slate-500" data-i18n="footerTagline">
             Elite connectivity for fund managers and qualified capital.
           </p>
         </div>
-        <div>
-          <h5 data-i18n="footerPlatform">Platform</h5>
-          <Link href="/#hero" data-i18n="footerOverview">
+        <div className="grid gap-2 text-sm text-slate-600">
+          <h5 className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-900" data-i18n="footerPlatform">
+            Platform
+          </h5>
+          <Link className="hover:text-slate-900" href="/#hero" data-i18n="footerOverview">
             Overview
           </Link>
-          <Link href="/#funds" data-i18n="footerFeaturedFunds">
+          <Link className="hover:text-slate-900" href="/#funds" data-i18n="footerFeaturedFunds">
             Featured Funds
           </Link>
-          <Link href="/#intelligence" data-i18n="footerIntelligence">
+          <Link className="hover:text-slate-900" href="/#intelligence" data-i18n="footerIntelligence">
             Intelligence
           </Link>
         </div>
-        <div>
-          <h5 data-i18n="footerCompany">Company</h5>
-          <Link href="/#why" data-i18n="footerAbout">
+        <div className="grid gap-2 text-sm text-slate-600">
+          <h5 className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-900" data-i18n="footerCompany">
+            Company
+          </h5>
+          <Link className="hover:text-slate-900" href="/#why" data-i18n="footerAbout">
             About
           </Link>
-          <Link href="/#compliance" data-i18n="footerCompliance">
+          <Link className="hover:text-slate-900" href="/#compliance" data-i18n="footerCompliance">
             Compliance
           </Link>
-          <Link href="/#contact" data-i18n="footerCareers">
+          <Link className="hover:text-slate-900" href="/#contact" data-i18n="footerCareers">
             Careers
           </Link>
         </div>
-        <div>
-          <h5 data-i18n="footerContact">Contact</h5>
-          <a href="mailto:connect@igates.com">connect@igates.com</a>
-          <Link href="/#contact" data-i18n="footerRequestCall">
+        <div className="grid gap-2 text-sm text-slate-600">
+          <h5 className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-900" data-i18n="footerContact">
+            Contact
+          </h5>
+          <a className="hover:text-slate-900" href="mailto:connect@igates.com">
+            connect@igates.com
+          </a>
+          <Link className="hover:text-slate-900" href="/#contact" data-i18n="footerRequestCall">
             Request a Call
           </Link>
-          <Link href="/#contact" data-i18n="footerInvestorRelations">
+          <Link className="hover:text-slate-900" href="/#contact" data-i18n="footerInvestorRelations">
             Investor Relations
           </Link>
         </div>
       </div>
-      <div className="footer-line"></div>
-      <div className="container footer-meta">
-        <span className="small silver" data-i18n="footerRights">
+      <div className="border-t border-slate-200"></div>
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 px-6 py-6 text-xs font-medium text-slate-500 md:flex-row md:items-center md:justify-between">
+        <span data-i18n="footerRights">
           © 2024 IGATES. All rights reserved.
         </span>
-        <span className="small silver" data-i18n="footerPrivacy">
+        <span data-i18n="footerPrivacy">
           Privacy &amp; Security
         </span>
       </div>

@@ -67,8 +67,8 @@ export function FeaturedFunds() {
 
   if (!funds.length) {
     return (
-      <div className="fund-grid" id="fundGrid">
-        <div className="loading" data-i18n="fundsLoading">
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" id="fundGrid">
+        <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-center text-sm text-slate-500" data-i18n="fundsLoading">
           {strings.fundsLoadError ?? "No hay fondos verificados disponibles."}
         </div>
       </div>
@@ -76,35 +76,46 @@ export function FeaturedFunds() {
   }
 
   return (
-    <div className="fund-grid" id="fundGrid">
+    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" id="fundGrid">
       {funds.map((fund) => (
-        <article className="fund-card" key={fund.name}>
-          <header>
+        <article className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm" key={fund.name}>
+          <header className="flex items-start justify-between gap-4">
             <div>
-              <div className="fund-name">{fund.name}</div>
-              <div className="fund-meta">
-                <span className="tag">{fund.strategy}</span>
-                <span className="tag">{fund.domicile}</span>
+              <div className="text-lg font-semibold text-slate-900">{fund.name}</div>
+              <div className="mt-2 flex flex-wrap gap-2">
+                <span className="rounded-full border border-igates-500/20 bg-igates-500/10 px-3 py-1 text-xs font-semibold text-igates-700">
+                  {fund.strategy}
+                </span>
+                <span className="rounded-full border border-igates-500/20 bg-igates-500/10 px-3 py-1 text-xs font-semibold text-igates-700">
+                  {fund.domicile}
+                </span>
               </div>
             </div>
-            <span className="badge">{fund.status}</span>
+            <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+              {fund.status}
+            </span>
           </header>
-          <p className="small">{fund.summary}</p>
-          <div className="stat-row">
-            <span>AUM</span>
-            <strong>{fund.aum}</strong>
+          <p className="text-sm text-slate-600">{fund.summary}</p>
+          <div className="grid gap-2 text-sm text-slate-600">
+            <div className="flex items-center justify-between">
+              <span>AUM</span>
+              <strong className="text-slate-900">{fund.aum}</strong>
+            </div>
+            <div className="flex items-center justify-between">
+              <span>YTD</span>
+              <strong className="text-slate-900">{fund.performance}</strong>
+            </div>
+            <div className="flex items-center justify-between">
+              <span>Risk</span>
+              <strong className="text-slate-900">{fund.risk}</strong>
+            </div>
           </div>
-          <div className="stat-row">
-            <span>YTD</span>
-            <strong>{fund.performance}</strong>
-          </div>
-          <div className="stat-row">
-            <span>Risk</span>
-            <strong>{fund.risk}</strong>
-          </div>
-          <div className="pill-row">
+          <div className="flex flex-wrap gap-2">
             {fund.highlights.map((highlight) => (
-              <span className="pill" key={highlight}>
+              <span
+                className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600"
+                key={highlight}
+              >
                 {highlight}
               </span>
             ))}

@@ -28,7 +28,7 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-10 border-b border-slate-300/25 bg-white/90 backdrop-blur">
-      <div className="container flex items-center justify-between gap-3 py-4">
+      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-6 py-4">
         <Link
           className="flex items-center gap-2 font-extrabold tracking-[0.08em] text-slate-900"
           href="/"
@@ -60,10 +60,18 @@ export function Navbar() {
         </nav>
         <div className="flex items-center gap-2">
           <LanguageSwitcher />
-          <Link className="btn btn-secondary" href="/#contact" data-i18n="navRequestDemo">
+          <Link
+            className="hidden items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 md:inline-flex"
+            href="/#contact"
+            data-i18n="navRequestDemo"
+          >
             Request Demo
           </Link>
-          <Link className="btn btn-primary auth-link" href={authLink.href} data-i18n="navAuth">
+          <Link
+            className="inline-flex items-center justify-center rounded-full bg-igates-500 px-4 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-white shadow-lg shadow-igates-500/30 transition hover:bg-igates-400"
+            href={authLink.href}
+            data-i18n="navAuth"
+          >
             {authLink.label}
           </Link>
         </div>

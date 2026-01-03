@@ -6,61 +6,57 @@ import { FamilyAccessForm } from "@/components/forms/FamilyAccessForm";
 
 export default function FamilyOfficesPage() {
   return (
-    <div className="family-page-container">
+    <div className="min-h-screen bg-slate-50">
       <Navbar />
       <main>
-        <section className="hero hero-large">
-          <div className="container grid hero-grid">
-            <div className="hero-text">
-              <p className="eyebrow" data-i18n="familyHeroEyebrow">
+        <section className="py-16">
+          <div className="mx-auto grid w-full max-w-6xl gap-10 px-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+            <div className="space-y-6">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-igates-500" data-i18n="familyHeroEyebrow">
                 Family Offices
               </p>
-              <h1 data-i18n="familyHeroTitle">
-                Institutional Access for Modern Family Offices.
-              </h1>
-              <p className="hero-tagline" data-i18n="familyHeroLead">
-                Simplify manager discovery, diligence, and allocation workflows.
-              </p>
-              <div className="cta-group">
-                <Link className="btn btn-primary" href="#access" data-i18n="familyHeroCta">
+              <div className="space-y-3">
+                <h1 className="text-3xl font-semibold text-slate-900 md:text-4xl" data-i18n="familyHeroTitle">
+                  Institutional Access for Modern Family Offices.
+                </h1>
+                <p className="text-sm text-slate-600 md:text-base" data-i18n="familyHeroLead">
+                  Simplify manager discovery, diligence, and allocation workflows.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  className="inline-flex items-center justify-center rounded-full bg-igates-500 px-6 py-3 text-xs font-semibold uppercase tracking-[0.12em] text-white shadow-lg shadow-igates-500/30 transition hover:bg-igates-400"
+                  href="#access"
+                  data-i18n="familyHeroCta"
+                >
                   Request Access
                 </Link>
               </div>
-              <div className="trust-bar">
-                <span data-i18n="familyHeroTrust1">Allocator-grade reporting</span>
-                <span data-i18n="familyHeroTrust2">Private data workflows</span>
+              <div className="flex flex-wrap gap-3 text-xs font-semibold text-slate-600">
+                <span className="rounded-full border border-slate-200 bg-white px-4 py-2" data-i18n="familyHeroTrust1">
+                  Allocator-grade reporting
+                </span>
+                <span className="rounded-full border border-slate-200 bg-white px-4 py-2" data-i18n="familyHeroTrust2">
+                  Private data workflows
+                </span>
               </div>
             </div>
-            <div className="hero-dashboard">
-              <div className="dashboard-card">
-                <div className="card-label" data-i18n="familyCardLabel1">
+            <div className="grid gap-4">
+              <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500" data-i18n="familyCardLabel1">
                   Strategies reviewed
-                </div>
-                <div className="metric-chip emphasis" aria-label="Strategies reviewed">
-                  <div className="chip-text">
-                    <span className="chip-title" data-i18n="familyCardLabel1">
-                      Strategies reviewed
-                    </span>
-                    <span className="chip-value">140+</span>
-                  </div>
-                </div>
-                <p className="subcopy" data-i18n="familyCardCopy1">
+                </p>
+                <p className="mt-3 text-3xl font-semibold text-slate-900">140+</p>
+                <p className="mt-2 text-sm text-slate-600" data-i18n="familyCardCopy1">
                   Cross-asset intelligence tailored to mandate criteria.
                 </p>
               </div>
-              <div className="dashboard-card">
-                <div className="card-label" data-i18n="familyCardLabel2">
+              <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500" data-i18n="familyCardLabel2">
                   Diligence files
-                </div>
-                <div className="metric-chip emphasis" aria-label="Diligence files">
-                  <div className="chip-text">
-                    <span className="chip-title" data-i18n="familyCardLabel2">
-                      Diligence files
-                    </span>
-                    <span className="chip-value positive">Secure</span>
-                  </div>
-                </div>
-                <p className="subcopy" data-i18n="familyCardCopy2">
+                </p>
+                <p className="mt-3 text-3xl font-semibold text-igates-600">Secure</p>
+                <p className="mt-2 text-sm text-slate-600" data-i18n="familyCardCopy2">
                   Audit-ready archives with automated updates.
                 </p>
               </div>
@@ -68,123 +64,114 @@ export default function FamilyOfficesPage() {
           </div>
         </section>
 
-        <section className="featured-funds">
-          <div className="container">
-            <div className="section-header">
-              <p className="eyebrow" data-i18n="familyWhyEyebrow">
+        <section className="py-16">
+          <div className="mx-auto w-full max-w-6xl px-6">
+            <div className="max-w-3xl space-y-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-igates-500" data-i18n="familyWhyEyebrow">
                 Why IGATES
               </p>
-              <h2 data-i18n="familyWhyTitle">Operational clarity for investment principals.</h2>
+              <h2 className="text-2xl font-semibold text-slate-900" data-i18n="familyWhyTitle">
+                Operational clarity for investment principals.
+              </h2>
             </div>
-            <div className="card-grid">
-              <article className="info-card">
-                <div className="icon-circle">📡</div>
-                <h3 data-i18n="familyWhy1Title">Verified data streams</h3>
-                <p data-i18n="familyWhy1Body">
-                  Custodian, admin, and auditor-aligned reporting you can trust.
-                </p>
-              </article>
-              <article className="info-card">
-                <div className="icon-circle">🧾</div>
-                <h3 data-i18n="familyWhy2Title">Audit-ready reporting</h3>
-                <p data-i18n="familyWhy2Body">
-                  IC-ready packages with complete attribution and variance breakdowns.
-                </p>
-              </article>
-              <article className="info-card">
-                <div className="icon-circle">⭐</div>
-                <h3 data-i18n="familyWhy3Title">Consolidated manager reviews</h3>
-                <p data-i18n="familyWhy3Body">
-                  Side-by-side diligence trackers, notes, and signals in one workspace.
-                </p>
-              </article>
-              <article className="info-card">
-                <div className="icon-circle">🛡</div>
-                <h3 data-i18n="familyWhy4Title">Risk corridor analytics</h3>
-                <p data-i18n="familyWhy4Body">
-                  Scenario-aware bands so allocations stay inside mandate corridors.
-                </p>
-              </article>
+            <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+              {[
+                { icon: "📡", title: "Verified data streams", body: "Custodian, admin, and auditor-aligned reporting you can trust.", titleKey: "familyWhy1Title", bodyKey: "familyWhy1Body" },
+                { icon: "🧾", title: "Audit-ready reporting", body: "IC-ready packages with complete attribution and variance breakdowns.", titleKey: "familyWhy2Title", bodyKey: "familyWhy2Body" },
+                { icon: "⭐", title: "Consolidated manager reviews", body: "Side-by-side diligence trackers, notes, and signals in one workspace.", titleKey: "familyWhy3Title", bodyKey: "familyWhy3Body" },
+                { icon: "🛡", title: "Risk corridor analytics", body: "Scenario-aware bands so allocations stay inside mandate corridors.", titleKey: "familyWhy4Title", bodyKey: "familyWhy4Body" },
+              ].map((item) => (
+                <article className="grid gap-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm" key={item.titleKey}>
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full border border-igates-500/20 bg-igates-500/10 text-lg">
+                    {item.icon}
+                  </div>
+                  <h3 className="text-lg font-semibold text-slate-900" data-i18n={item.titleKey}>
+                    {item.title}
+                  </h3>
+                  <p className="text-sm text-slate-600" data-i18n={item.bodyKey}>
+                    {item.body}
+                  </p>
+                </article>
+              ))}
             </div>
           </div>
         </section>
 
-        <section className="intelligence">
-          <div className="container">
-            <div className="section-header">
-              <p className="eyebrow" data-i18n="familyCuratedEyebrow">
+        <section className="py-16">
+          <div className="mx-auto w-full max-w-6xl px-6">
+            <div className="max-w-3xl space-y-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-igates-500" data-i18n="familyCuratedEyebrow">
                 Curated Mandates
               </p>
-              <h2 data-i18n="familyCuratedTitle">Allocator-first views into leading strategies.</h2>
+              <h2 className="text-2xl font-semibold text-slate-900" data-i18n="familyCuratedTitle">
+                Allocator-first views into leading strategies.
+              </h2>
             </div>
-            <div className="card-grid">
-              <article className="info-card">
-                <div className="icon-circle">🌐</div>
-                <h3 data-i18n="familyMandate1">Macro</h3>
-                <p data-i18n="familyMandate1Body">
-                  Global macro managers with disciplined risk corridors.
-                </p>
-              </article>
-              <article className="info-card">
-                <div className="icon-circle">💳</div>
-                <h3 data-i18n="familyMandate2">Credit</h3>
-                <p data-i18n="familyMandate2Body">
-                  Event-driven and structured credit insights with live exposure checks.
-                </p>
-              </article>
-              <article className="info-card">
-                <div className="icon-circle">💠</div>
-                <h3 data-i18n="familyMandate3">Digital Assets</h3>
-                <p data-i18n="familyMandate3Body">
-                  On-chain transparency with institutional-grade custody signals.
-                </p>
-              </article>
-              <article className="info-card">
-                <div className="icon-circle">📊</div>
-                <h3 data-i18n="familyMandate4">Systematic Strategies</h3>
-                <p data-i18n="familyMandate4Body">
-                  Factor-aware systems with monitored model drift and capacity.
-                </p>
-              </article>
+            <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+              {[
+                { icon: "🌐", title: "Macro", body: "Global macro managers with disciplined risk corridors.", titleKey: "familyMandate1", bodyKey: "familyMandate1Body" },
+                { icon: "💳", title: "Credit", body: "Event-driven and structured credit insights with live exposure checks.", titleKey: "familyMandate2", bodyKey: "familyMandate2Body" },
+                { icon: "💠", title: "Digital Assets", body: "On-chain transparency with institutional-grade custody signals.", titleKey: "familyMandate3", bodyKey: "familyMandate3Body" },
+                { icon: "📊", title: "Systematic Strategies", body: "Factor-aware systems with monitored model drift and capacity.", titleKey: "familyMandate4", bodyKey: "familyMandate4Body" },
+              ].map((item) => (
+                <article className="grid gap-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm" key={item.titleKey}>
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full border border-igates-500/20 bg-igates-500/10 text-lg">
+                    {item.icon}
+                  </div>
+                  <h3 className="text-lg font-semibold text-slate-900" data-i18n={item.titleKey}>
+                    {item.title}
+                  </h3>
+                  <p className="text-sm text-slate-600" data-i18n={item.bodyKey}>
+                    {item.body}
+                  </p>
+                </article>
+              ))}
             </div>
           </div>
         </section>
 
-        <section id="access" className="contact">
-          <div className="container grid contact-grid">
-            <div className="contact-copy">
-              <p className="eyebrow" data-i18n="familyFormEyebrow">
+        <section id="access" className="py-16">
+          <div className="mx-auto grid w-full max-w-6xl gap-10 px-6 lg:grid-cols-[1.1fr_0.9fr]">
+            <div className="space-y-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-igates-500" data-i18n="familyFormEyebrow">
                 Access Requests
               </p>
-              <h2 data-i18n="familyFormTitle">Request allocator access.</h2>
-              <p className="lead" data-i18n="familyFormLead">
+              <h2 className="text-2xl font-semibold text-slate-900" data-i18n="familyFormTitle">
+                Request allocator access.
+              </h2>
+              <p className="text-sm text-slate-600" data-i18n="familyFormLead">
                 Tell us about your mandate, and we will provision secure access to managers.
               </p>
-              <div className="contact-meta">
-                <div>
-                  <p className="small" data-i18n="familyFormResponseLabel">
-                    Response time
-                  </p>
-                  <p className="metric" data-i18n="familyFormResponseMetric">
-                    &lt; 24 hours
-                  </p>
-                </div>
-                <div>
-                  <p className="small" data-i18n="familyFormSecurityLabel">
-                    Security
-                  </p>
-                  <p className="metric" data-i18n="familyFormSecurityMetric">
-                    Compliance-first
-                  </p>
-                </div>
-                <div>
-                  <p className="small" data-i18n="familyFormCoverageLabel">
-                    Coverage
-                  </p>
-                  <p className="metric" data-i18n="familyFormCoverageMetric">
-                    Global managers
-                  </p>
-                </div>
+              <div className="grid gap-4 sm:grid-cols-3">
+                {[
+                  {
+                    labelKey: "familyFormResponseLabel",
+                    label: "Response time",
+                    valueKey: "familyFormResponseMetric",
+                    value: "< 24 hours",
+                  },
+                  {
+                    labelKey: "familyFormSecurityLabel",
+                    label: "Security",
+                    valueKey: "familyFormSecurityMetric",
+                    value: "Compliance-first",
+                  },
+                  {
+                    labelKey: "familyFormCoverageLabel",
+                    label: "Coverage",
+                    valueKey: "familyFormCoverageMetric",
+                    value: "Global managers",
+                  },
+                ].map((item) => (
+                  <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm" key={item.labelKey}>
+                    <p className="text-xs uppercase tracking-[0.2em] text-slate-500" data-i18n={item.labelKey}>
+                      {item.label}
+                    </p>
+                    <p className="mt-2 text-sm font-semibold text-slate-900" data-i18n={item.valueKey}>
+                      {item.value}
+                    </p>
+                  </div>
+                ))}
               </div>
             </div>
             <FamilyAccessForm />

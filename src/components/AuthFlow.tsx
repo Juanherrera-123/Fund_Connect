@@ -245,10 +245,18 @@ export function AuthFlow() {
   };
 
   return (
-    <div className="auth-shell">
-      <div className="auth-tabs" role="tablist" aria-label="Access options">
+    <div className="mx-auto max-w-4xl rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div
+        className="flex gap-2 rounded-full bg-slate-100 p-1"
+        role="tablist"
+        aria-label="Access options"
+      >
         <button
-          className={`auth-tab ${activeTab === "signup" ? "is-active" : ""}`}
+          className={`flex-1 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition ${
+            activeTab === "signup"
+              ? "bg-white text-slate-900 shadow"
+              : "text-slate-500 hover:text-slate-700"
+          }`}
           type="button"
           role="tab"
           aria-selected={activeTab === "signup"}
@@ -257,7 +265,11 @@ export function AuthFlow() {
           Sign Up
         </button>
         <button
-          className={`auth-tab ${activeTab === "login" ? "is-active" : ""}`}
+          className={`flex-1 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition ${
+            activeTab === "login"
+              ? "bg-white text-slate-900 shadow"
+              : "text-slate-500 hover:text-slate-700"
+          }`}
           type="button"
           role="tab"
           aria-selected={activeTab === "login"}
@@ -267,15 +279,21 @@ export function AuthFlow() {
         </button>
       </div>
 
-      <div className="auth-panels">
-        <div className={`auth-panel ${activeTab === "signup" ? "" : "is-hidden"}`} role="tabpanel">
-          <div className="progress-indicator">Step {stepIndex + 1} of {totalSteps}</div>
-          <form className="contact-form" autoComplete="off">
+      <div className="mt-6">
+        <div className={activeTab === "signup" ? "block" : "hidden"} role="tabpanel">
+          <div className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+            Step {stepIndex + 1} of {totalSteps}
+          </div>
+          <form
+            className="mt-4 grid gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-5"
+            autoComplete="off"
+          >
             {currentStep.type === "kyc" && (
               <>
-                <label>
+                <label className="grid gap-2 text-sm font-medium text-slate-600">
                   <span>Nombre completo</span>
                   <input
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
                     type="text"
                     name="fullName"
                     placeholder="Nombre y apellido"
@@ -284,9 +302,10 @@ export function AuthFlow() {
                     required
                   />
                 </label>
-                <label>
+                <label className="grid gap-2 text-sm font-medium text-slate-600">
                   <span>Email</span>
                   <input
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
                     type="email"
                     name="email"
                     placeholder="tu@email.com"
@@ -295,9 +314,10 @@ export function AuthFlow() {
                     required
                   />
                 </label>
-                <label>
+                <label className="grid gap-2 text-sm font-medium text-slate-600">
                   <span>Teléfono</span>
                   <input
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
                     type="tel"
                     name="phone"
                     placeholder="+34 600 000 000"
@@ -306,9 +326,10 @@ export function AuthFlow() {
                     required
                   />
                 </label>
-                <label>
+                <label className="grid gap-2 text-sm font-medium text-slate-600">
                   <span>País</span>
                   <input
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
                     type="text"
                     name="country"
                     placeholder="País"
@@ -317,9 +338,10 @@ export function AuthFlow() {
                     required
                   />
                 </label>
-                <label>
+                <label className="grid gap-2 text-sm font-medium text-slate-600">
                   <span>Tipo de perfil</span>
                   <select
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
                     name="role"
                     required
                     value={kycAnswers.role ?? ""}
@@ -333,9 +355,10 @@ export function AuthFlow() {
                     ))}
                   </select>
                 </label>
-                <label>
+                <label className="grid gap-2 text-sm font-medium text-slate-600">
                   <span>Contraseña</span>
                   <input
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
                     type="password"
                     name="password"
                     placeholder="Crea una contraseña"
@@ -349,13 +372,17 @@ export function AuthFlow() {
 
             {currentStep.type === "survey" &&
               currentStep.questions.map((question) => (
-                <div className="question-block" key={question.id}>
-                  <span className="question-label">{question.label}</span>
+                <div
+                  className="grid gap-3 rounded-xl border border-slate-200 bg-white p-4"
+                  key={question.id}
+                >
+                  <span className="text-sm font-semibold text-slate-700">{question.label}</span>
                   {question.type === "text" && question.prompt ? (
-                    <p className="small">{question.prompt}</p>
+                    <p className="text-xs text-slate-500">{question.prompt}</p>
                   ) : null}
                   {question.type === "text" ? (
                     <textarea
+                      className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
                       name={question.id}
                       rows={3}
                       placeholder={question.prompt}
@@ -363,7 +390,7 @@ export function AuthFlow() {
                       onChange={(event) => updateSurvey(question.id, event.target.value)}
                     />
                   ) : (
-                    <div className="choice-grid">
+                    <div className="grid gap-2 sm:grid-cols-2">
                       {question.options?.map((option) => {
                         const isMulti = question.type === "multi";
                         const checked = isMulti
@@ -371,8 +398,16 @@ export function AuthFlow() {
                             (surveyAnswers[question.id] as string[]).includes(option.value)
                           : surveyAnswers[question.id] === option.value;
                         return (
-                          <label className="choice-card" key={option.value}>
+                          <label
+                            className={`flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition ${
+                              checked
+                                ? "border-igates-500 bg-igates-500/10 text-igates-700"
+                                : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                            }`}
+                            key={option.value}
+                          >
                             <input
+                              className="accent-igates-500"
                               type={isMulti ? "checkbox" : "radio"}
                               name={question.id}
                               value={option.value}
@@ -403,37 +438,65 @@ export function AuthFlow() {
                 </div>
               ))}
           </form>
-          <div className="wizard-actions">
-            <button className="btn btn-secondary" type="button" onClick={handleBack} disabled={stepIndex === 0}>
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+            <button
+              className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+              type="button"
+              onClick={handleBack}
+              disabled={stepIndex === 0}
+            >
               Back
             </button>
-            <button className="btn btn-primary" type="button" onClick={handleNext}>
+            <button
+              className="inline-flex items-center justify-center rounded-full bg-igates-500 px-6 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-white shadow-lg shadow-igates-500/30 transition hover:bg-igates-400"
+              type="button"
+              onClick={handleNext}
+            >
               {stepIndex === steps.length - 1 ? "Complete onboarding" : "Next"}
             </button>
           </div>
-          <p className="form-status" aria-live="polite">
+          <p className="mt-3 min-h-[22px] text-xs text-slate-500" aria-live="polite">
             {signupStatus}
           </p>
         </div>
 
-        <div className={`auth-panel ${activeTab === "login" ? "" : "is-hidden"}`} role="tabpanel">
-          <form className="contact-form" autoComplete="off" onSubmit={handleLogin}>
-            <label>
+        <div className={activeTab === "login" ? "block" : "hidden"} role="tabpanel">
+          <form
+            className="mt-4 grid gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-5"
+            autoComplete="off"
+            onSubmit={handleLogin}
+          >
+            <label className="grid gap-2 text-sm font-medium text-slate-600">
               <span>Usuario o email</span>
-              <input type="text" name="identifier" placeholder="Sebastian_ACY o tu correo" required />
+              <input
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
+                type="text"
+                name="identifier"
+                placeholder="Sebastian_ACY o tu correo"
+                required
+              />
             </label>
-            <label>
+            <label className="grid gap-2 text-sm font-medium text-slate-600">
               <span>Contraseña</span>
-              <input type="password" name="password" placeholder="••••••••" required />
+              <input
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
+                type="password"
+                name="password"
+                placeholder="••••••••"
+                required
+              />
             </label>
-            <button className="btn btn-primary" type="submit">
+            <button
+              className="inline-flex items-center justify-center rounded-full bg-igates-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-igates-500/30 transition hover:bg-igates-400"
+              type="submit"
+            >
               Log In
             </button>
-            <p className="form-status" aria-live="polite">
+            <p className="min-h-[22px] text-xs text-slate-500" aria-live="polite">
               {loginStatus}
             </p>
-            <div className="auth-hint">
-              <p className="small">
+            <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+              <p>
                 MasterUser: <strong>{MASTER_USER.username}</strong> / <strong>{MASTER_USER.password}</strong>
               </p>
             </div>

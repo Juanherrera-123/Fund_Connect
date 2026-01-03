@@ -17,12 +17,18 @@ export function ProfileHeader() {
 
   return (
     <>
-      <p className="eyebrow">Profile</p>
-      <div className="page-title-row">
-        <h1>{profile?.fullName || "Tu perfil"}</h1>
-        <div className="micro-tag">{profile?.role || "—"}</div>
+      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-igates-500">Profile</p>
+      <div className="mt-2 flex flex-wrap items-center gap-3">
+        <h1 className="text-3xl font-semibold text-slate-900">
+          {profile?.fullName || "Tu perfil"}
+        </h1>
+        <div className="rounded-full border border-igates-500/20 bg-igates-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-igates-700">
+          {profile?.role || "—"}
+        </div>
       </div>
-      <p className="lead compact">{profile?.email || "Resumen de tu perfil y preferencias."}</p>
+      <p className="mt-3 max-w-2xl text-sm text-slate-600">
+        {profile?.email || "Resumen de tu perfil y preferencias."}
+      </p>
     </>
   );
 }

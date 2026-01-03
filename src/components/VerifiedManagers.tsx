@@ -196,7 +196,9 @@ export function VerifiedManagers() {
     const track = trackRef.current;
     const carousel = carouselRef.current;
     if (!track || !carousel) return;
-    const activeCard = track.querySelector<HTMLButtonElement>(`.fund-card[data-index="${currentIndex}"]`);
+    const activeCard = track.querySelector<HTMLButtonElement>(
+      `[data-fund-card="true"][data-index="${currentIndex}"]`
+    );
     if (!activeCard) return;
     const containerWidth = carousel.offsetWidth;
     const cardCenter = activeCard.offsetLeft + activeCard.offsetWidth / 2;
@@ -209,7 +211,9 @@ export function VerifiedManagers() {
       const track = trackRef.current;
       const carousel = carouselRef.current;
       if (!track || !carousel) return;
-      const activeCard = track.querySelector<HTMLButtonElement>(`.fund-card[data-index="${currentIndex}"]`);
+      const activeCard = track.querySelector<HTMLButtonElement>(
+        `[data-fund-card="true"][data-index="${currentIndex}"]`
+      );
       if (!activeCard) return;
       const containerWidth = carousel.offsetWidth;
       const cardCenter = activeCard.offsetLeft + activeCard.offsetWidth / 2;
@@ -279,10 +283,14 @@ export function VerifiedManagers() {
 
   const renderCountryBadge = (country: string) => (
     <>
-      <span className="country-flag" role="img" aria-label={country}>
+      <span
+        className="flex h-5 w-5 items-center justify-center rounded-full border border-slate-200 bg-white text-[11px]"
+        role="img"
+        aria-label={country}
+      >
         {countryFlags[country] || "🌍"}
       </span>
-      <span className="country-name">{country}</span>
+      <span>{country}</span>
     </>
   );
 
@@ -308,63 +316,66 @@ export function VerifiedManagers() {
 
   return (
     <>
-      <section className="filters-section institutional" aria-labelledby="filtersTitle">
-        <div className="container">
-          <div className="filters-bar" id="filtersPanel">
-            <div className="filters-bar__header">
+      <section className="py-6" aria-labelledby="filtersTitle">
+        <div className="mx-auto w-full max-w-6xl px-6">
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm" id="filtersPanel">
+            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200/70 pb-4">
               <div>
-                <p className="eyebrow" id="filtersTitle">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-igates-500" id="filtersTitle">
                   Search settings
                 </p>
-                <p className="muted small">Ajusta umbrales mínimos y riesgo objetivo.</p>
+                <p className="mt-2 text-sm text-slate-500">
+                  Ajusta umbrales mínimos y riesgo objetivo.
+                </p>
               </div>
-              <div className="filters-actions">
-                <button className="btn btn-secondary btn-compact" type="button" onClick={handleResetFilters}>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+                  type="button"
+                  onClick={handleResetFilters}
+                >
                   Reset
                 </button>
-                <button className="btn btn-primary btn-compact" type="button" onClick={handleApplyFilters}>
+                <button
+                  className="inline-flex items-center justify-center rounded-full bg-igates-500 px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-white shadow-lg shadow-igates-500/30 transition hover:bg-igates-400"
+                  type="button"
+                  onClick={handleApplyFilters}
+                >
                   Apply filters
                 </button>
               </div>
             </div>
-            <div className="filters-bar__grid">
-              <div className="filter-control">
-                <label htmlFor="yearProfit" className="small label">
-                  Year Total Profit (%)
-                </label>
-                <div className="input-combo">
-                  <input
-                    type="number"
-                    id="yearProfit"
-                    placeholder="Ej: 10"
-                    value={appliedFilters.yearProfit}
-                    onChange={(event) =>
-                      setAppliedFilters((prev) => ({ ...prev, yearProfit: event.target.value }))
-                    }
-                  />
-                </div>
+            <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+              <div className="grid gap-2 text-sm font-medium text-slate-600">
+                <label htmlFor="yearProfit">Year Total Profit (%)</label>
+                <input
+                  className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
+                  type="number"
+                  id="yearProfit"
+                  placeholder="Ej: 10"
+                  value={appliedFilters.yearProfit}
+                  onChange={(event) =>
+                    setAppliedFilters((prev) => ({ ...prev, yearProfit: event.target.value }))
+                  }
+                />
               </div>
-              <div className="filter-control">
-                <label htmlFor="drawdown" className="small label">
-                  Max Drawdown (%)
-                </label>
-                <div className="input-combo">
-                  <input
-                    type="number"
-                    id="drawdown"
-                    placeholder="Ej: 12"
-                    value={appliedFilters.drawdown}
-                    onChange={(event) =>
-                      setAppliedFilters((prev) => ({ ...prev, drawdown: event.target.value }))
-                    }
-                  />
-                </div>
+              <div className="grid gap-2 text-sm font-medium text-slate-600">
+                <label htmlFor="drawdown">Max Drawdown (%)</label>
+                <input
+                  className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
+                  type="number"
+                  id="drawdown"
+                  placeholder="Ej: 12"
+                  value={appliedFilters.drawdown}
+                  onChange={(event) =>
+                    setAppliedFilters((prev) => ({ ...prev, drawdown: event.target.value }))
+                  }
+                />
               </div>
-              <div className="filter-control">
-                <label htmlFor="regionFilter" className="small label">
-                  Región
-                </label>
+              <div className="grid gap-2 text-sm font-medium text-slate-600">
+                <label htmlFor="regionFilter">Región</label>
                 <select
+                  className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
                   id="regionFilter"
                   value={appliedFilters.region}
                   onChange={(event) =>
@@ -379,11 +390,10 @@ export function VerifiedManagers() {
                   ))}
                 </select>
               </div>
-              <div className="filter-control">
-                <label htmlFor="countryFilter" className="small label">
-                  País
-                </label>
+              <div className="grid gap-2 text-sm font-medium text-slate-600">
+                <label htmlFor="countryFilter">País</label>
                 <select
+                  className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
                   id="countryFilter"
                   value={appliedFilters.country}
                   onChange={(event) =>
@@ -398,37 +408,34 @@ export function VerifiedManagers() {
                   ))}
                 </select>
               </div>
-              <div className="filter-control">
-                <label htmlFor="winRate" className="small label">
-                  Win Rate (%)
-                </label>
-                <div className="input-combo">
-                  <input
-                    type="number"
-                    id="winRate"
-                    placeholder="Ej: 55"
-                    value={appliedFilters.winRate}
-                    onChange={(event) =>
-                      setAppliedFilters((prev) => ({ ...prev, winRate: event.target.value }))
-                    }
-                  />
-                </div>
+              <div className="grid gap-2 text-sm font-medium text-slate-600">
+                <label htmlFor="winRate">Win Rate (%)</label>
+                <input
+                  className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
+                  type="number"
+                  id="winRate"
+                  placeholder="Ej: 55"
+                  value={appliedFilters.winRate}
+                  onChange={(event) =>
+                    setAppliedFilters((prev) => ({ ...prev, winRate: event.target.value }))
+                  }
+                />
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="verified-funds carousel-section" id="asesoria">
-        <div className="container">
-          <div className="section-header compact">
-            <p className="eyebrow">Panel de gestores</p>
-            <h2>Fondos verificados listos para diligencia</h2>
-            <p className="lead compact">Selecciona un fondo para ver el detalle curado.</p>
+      <section className="py-12" id="asesoria">
+        <div className="mx-auto w-full max-w-6xl px-6">
+          <div className="max-w-3xl space-y-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-igates-500">Panel de gestores</p>
+            <h2 className="text-2xl font-semibold text-slate-900">Fondos verificados listos para diligencia</h2>
+            <p className="text-sm text-slate-600">Selecciona un fondo para ver el detalle curado.</p>
           </div>
-          <div className="fund-carousel-shell">
+          <div className="mt-6 flex items-center gap-4">
             <button
-              className="carousel-control prev"
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-lg font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40"
               type="button"
               aria-label="Ver fondo anterior"
               onClick={handlePrev}
@@ -436,45 +443,71 @@ export function VerifiedManagers() {
             >
               ‹
             </button>
-            <div className="fund-carousel" ref={carouselRef} aria-live="polite">
-              <div className="fund-carousel-track" ref={trackRef}>
-                {!filteredFunds.length && <div className="empty-state">No hay fondos con estos criterios.</div>}
-                {filteredFunds.map((fund, index) => (
-                  <button
-                    className={`fund-card${index === currentIndex ? " active" : ""}${
-                      index === currentIndex - 1 ? " prev" : ""
-                    }${index === currentIndex + 1 ? " next" : ""}${
-                      Math.abs(index - currentIndex) > 1 ? " far" : ""
-                    }`}
-                    type="button"
-                    key={fund.id}
-                    data-index={index}
-                    aria-label={`Ver detalle de ${fund.name}`}
-                    onClick={() => setCurrentIndex(index)}
-                  >
-                    <div className="fund-card__header">
-                      <div className="fund-logo" aria-hidden="true">
-                        {fund.logoLabel}
-                      </div>
-                      <div>
-                        <p className="fund-card__name">{fund.name}</p>
-                        <div className="fund-card__meta">
-                          <span className="badge country">{renderCountryBadge(fund.country)}</span>
-                          <span className="badge success">✅ Verificado</span>
+            <div className="flex-1 overflow-hidden" ref={carouselRef} aria-live="polite">
+              <div className="flex gap-5 py-4 transition-transform duration-500" ref={trackRef}>
+                {!filteredFunds.length && (
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
+                    No hay fondos con estos criterios.
+                  </div>
+                )}
+                {filteredFunds.map((fund, index) => {
+                  const isActive = index === currentIndex;
+                  const isPrev = index === currentIndex - 1;
+                  const isNext = index === currentIndex + 1;
+                  const isFar = Math.abs(index - currentIndex) > 1;
+                  return (
+                    <button
+                      className={`flex w-[70%] max-w-3xl flex-shrink-0 flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm transition duration-300 ${
+                        isActive
+                          ? "scale-100 opacity-100 shadow-lg"
+                          : isFar
+                            ? "scale-90 opacity-30"
+                            : isPrev || isNext
+                              ? "scale-95 opacity-70"
+                              : "scale-95 opacity-60"
+                      }`}
+                      type="button"
+                      key={fund.id}
+                      data-index={index}
+                      data-fund-card="true"
+                      aria-label={`Ver detalle de ${fund.name}`}
+                      onClick={() => setCurrentIndex(index)}
+                    >
+                      <div className="flex items-center gap-4">
+                        <div
+                          className="flex h-14 w-14 items-center justify-center rounded-2xl bg-igates-500/10 text-lg font-semibold text-igates-700"
+                          aria-hidden="true"
+                        >
+                          {fund.logoLabel}
+                        </div>
+                        <div>
+                          <p className="text-lg font-semibold text-slate-900">{fund.name}</p>
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600">
+                              {renderCountryBadge(fund.country)}
+                            </span>
+                            <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                              ✅ Verificado
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <p className="fund-card__description">{fund.description}</p>
-                    <div className="fund-card__tags">
-                      <span className="tag subtle">{fund.strategy}</span>
-                      <span className="tag subtle">{fund.region}</span>
-                    </div>
-                  </button>
-                ))}
+                      <p className="text-sm text-slate-600">{fund.description}</p>
+                      <div className="flex flex-wrap gap-2">
+                        <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600">
+                          {fund.strategy}
+                        </span>
+                        <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600">
+                          {fund.region}
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
             <button
-              className="carousel-control next"
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-lg font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40"
               type="button"
               aria-label="Ver fondo siguiente"
               onClick={handleNext}
@@ -486,89 +519,95 @@ export function VerifiedManagers() {
         </div>
       </section>
 
-      <section className="fund-detail" aria-live="polite">
-        <div className="container">
-          <div className="detail-card">
+      <section className="py-8" aria-live="polite">
+        <div className="mx-auto w-full max-w-6xl px-6">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             {!selectedFund ? (
-              <div className="empty-state">Selecciona un fondo para ver el detalle.</div>
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
+                Selecciona un fondo para ver el detalle.
+              </div>
             ) : (
               <>
-                <div className="fund-detail-header">
-                  <div className="fund-logo" aria-hidden="true">
+                <div className="flex flex-wrap items-center gap-4">
+                  <div
+                    className="flex h-14 w-14 items-center justify-center rounded-2xl bg-igates-500/10 text-lg font-semibold text-igates-700"
+                    aria-hidden="true"
+                  >
                     {selectedFund.logoLabel}
                   </div>
                   <div>
-                    <div className="fund-detail-title-row">
-                      <h3>{selectedFund.name}</h3>
-                      <span className="badge country">{renderCountryBadge(selectedFund.country)}</span>
-                      <span className="badge success">✅ Verificado</span>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h3 className="text-xl font-semibold text-slate-900">{selectedFund.name}</h3>
+                      <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600">
+                        {renderCountryBadge(selectedFund.country)}
+                      </span>
+                      <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                        ✅ Verificado
+                      </span>
                     </div>
-                    <p className="fund-detail-description">{selectedFund.description}</p>
+                    <p className="mt-2 text-sm text-slate-600">{selectedFund.description}</p>
                   </div>
                 </div>
-                <div className="fund-stats primary">
-                  <div className="fund-stat-card primary">
-                    <p className="label">Tiempo operando</p>
-                    <p className="value">{formattedOperatingTime}</p>
-                  </div>
-                  <div className="fund-stat-card primary">
-                    <p className="label">Profit mensual (último año)</p>
-                    <p className="value">{formattedProfit}</p>
-                  </div>
-                  <div className="fund-stat-card primary">
-                    <p className="label">Drawdown target</p>
-                    <p className="value">{formattedDrawdownTarget}</p>
-                  </div>
-                  <div className="fund-stat-card primary">
-                    <p className="label">Max drawdown</p>
-                    <p className="value">{formattedMaxDrawdown}</p>
-                  </div>
-                  <div className="fund-stat-card">
-                    <p className="label">Trades mensuales</p>
-                    <p className="value">{formattedTrades}</p>
-                  </div>
-                  <div className="fund-stat-card">
-                    <p className="label">Gestión de riesgo</p>
-                    <p className="value">{formattedRisk}</p>
-                  </div>
-                  <div className="fund-stat-card">
-                    <p className="label">Live performance tracking</p>
-                    <ul className="fund-link-list">
+                <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                  {[
+                    { label: "Tiempo operando", value: formattedOperatingTime, highlight: true },
+                    { label: "Profit mensual (último año)", value: formattedProfit, highlight: true },
+                    { label: "Drawdown target", value: formattedDrawdownTarget, highlight: true },
+                    { label: "Max drawdown", value: formattedMaxDrawdown, highlight: true },
+                    { label: "Trades mensuales", value: formattedTrades },
+                    { label: "Gestión de riesgo", value: formattedRisk },
+                  ].map((item) => (
+                    <div
+                      key={item.label}
+                      className="rounded-xl border border-slate-200 bg-slate-50 p-4"
+                    >
+                      <p className="text-xs uppercase tracking-[0.2em] text-slate-500">{item.label}</p>
+                      <p className={`mt-2 text-lg font-semibold ${item.highlight ? "text-slate-900" : "text-slate-700"}`}>
+                        {item.value}
+                      </p>
+                    </div>
+                  ))}
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 sm:col-span-2 lg:col-span-2">
+                    <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
+                      Live performance tracking
+                    </p>
+                    <ul className="mt-2 grid gap-1 text-xs text-slate-600">
                       {performanceLinks.map((link, index) => (
                         <li key={`live-link-${index}`}>
                           {link ? (
-                            <a href={link} target="_blank" rel="noreferrer">
+                            <a className="break-all underline" href={link} target="_blank" rel="noreferrer">
                               {link}
                             </a>
                           ) : (
-                            <span className="value">Link Myfxbook {index + 1}: —</span>
+                            <span>Link Myfxbook {index + 1}: —</span>
                           )}
                         </li>
                       ))}
                     </ul>
                   </div>
-                  <div className="fund-stat-card">
-                    <p className="label">Min investment</p>
-                    <p className="value">{formattedMinInvestment}</p>
-                  </div>
-                  <div className="fund-stat-card">
-                    <p className="label">Performance fee</p>
-                    <p className="value">{formattedPerformanceFee}</p>
-                  </div>
-                  <div className="fund-stat-card">
-                    <p className="label">Subscription fee</p>
-                    <p className="value">{formattedSubscriptionFee}</p>
-                  </div>
-                  <div className="fund-stat-card">
-                    <p className="label">Reports</p>
-                    <p className="value">{formattedReports}</p>
-                  </div>
+                  {[
+                    { label: "Min investment", value: formattedMinInvestment },
+                    { label: "Performance fee", value: formattedPerformanceFee },
+                    { label: "Subscription fee", value: formattedSubscriptionFee },
+                    { label: "Reports", value: formattedReports },
+                  ].map((item) => (
+                    <div
+                      key={item.label}
+                      className="rounded-xl border border-slate-200 bg-slate-50 p-4"
+                    >
+                      <p className="text-xs uppercase tracking-[0.2em] text-slate-500">{item.label}</p>
+                      <p className="mt-2 text-sm font-semibold text-slate-900">{item.value}</p>
+                    </div>
+                  ))}
                 </div>
-                <div className="fund-cta">
-                  <Link className="btn btn-primary" href="/#contact">
+                <div className="mt-6 flex flex-col gap-2">
+                  <Link
+                    className="inline-flex w-fit items-center justify-center rounded-full bg-igates-500 px-5 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-white shadow-lg shadow-igates-500/30 transition hover:bg-igates-400"
+                    href="/#contact"
+                  >
                     Quiero más información
                   </Link>
-                  <p className="muted small">
+                  <p className="text-xs text-slate-500">
                     Accede a documentación, estructura operativa y proceso de inversión.
                   </p>
                 </div>

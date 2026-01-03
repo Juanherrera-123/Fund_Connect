@@ -68,7 +68,11 @@ export default function FundDetailsPage() {
   }, [existingApplication]);
 
   if (!profile) {
-    return <div className="status-banner">Inicia sesión como gestor para ver este panel.</div>;
+    return (
+      <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
+        Inicia sesión como gestor para ver este panel.
+      </div>
+    );
   }
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {

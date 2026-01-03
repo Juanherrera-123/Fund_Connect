@@ -40,8 +40,8 @@ export function InsightsFeed() {
 
   if (status && !insights.length) {
     return (
-      <div className="insight-list" id="insightList">
-        <div className="loading" data-i18n="insightsLoading">
+      <div className="grid gap-4" id="insightList">
+        <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-center text-sm text-slate-500" data-i18n="insightsLoading">
           {status}
         </div>
       </div>
@@ -49,14 +49,17 @@ export function InsightsFeed() {
   }
 
   return (
-    <div className="insight-list" id="insightList">
+    <div className="grid gap-4" id="insightList">
       {insights.map((insight) => (
-        <article className="insight-card" key={`${insight.title}-${insight.timestamp}`}>
-          <header>
-            <span className="insight-title">{insight.title}</span>
-            <span className="timestamp">{insight.timestamp}</span>
+        <article
+          className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+          key={`${insight.title}-${insight.timestamp}`}
+        >
+          <header className="flex flex-wrap items-center justify-between gap-2">
+            <span className="text-sm font-semibold text-slate-900">{insight.title}</span>
+            <span className="text-xs text-slate-400">{insight.timestamp}</span>
           </header>
-          <p className="small">{insight.summary}</p>
+          <p className="mt-3 text-sm text-slate-600">{insight.summary}</p>
         </article>
       ))}
     </div>
