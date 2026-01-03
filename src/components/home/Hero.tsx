@@ -10,10 +10,10 @@ export function Hero() {
   return (
     <section
       id="hero"
-      className="relative overflow-hidden bg-[url('/worldmap-Igates.png')] bg-cover bg-center text-white"
+      className="relative flex min-h-screen items-center overflow-hidden bg-[url('/worldmap-Igates.png')] bg-cover bg-center text-white"
     >
       <div className="absolute inset-0 z-0 bg-[rgba(255,255,255,0.88)] backdrop-blur" />
-      <div className="relative z-10 mx-auto grid max-w-6xl gap-12 px-6 py-20 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+      <div className="relative z-10 mx-auto grid max-w-6xl translate-y-4 gap-12 px-6 py-20 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
         <div className="space-y-8">
           <p
             className="text-xs font-semibold uppercase tracking-[0.35em] text-white/60"
