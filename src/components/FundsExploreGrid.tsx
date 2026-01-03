@@ -61,36 +61,58 @@ export function FundsExploreGrid() {
   };
 
   if (!profile) {
-    return <div className="status-banner">Inicia sesión como inversionista para ver los fondos.</div>;
+    return (
+      <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
+        Inicia sesión como inversionista para ver los fondos.
+      </div>
+    );
   }
 
   if (status && !funds.length) {
-    return <div className="loading">{status}</div>;
+    return (
+      <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
+        {status}
+      </div>
+    );
   }
 
   return (
-    <div className="fund-grid">
+    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {funds.map((fund) => {
         const isWaitlisted = profile.waitlistFunds?.includes(fund.name);
         return (
-          <div className="fund-card" key={fund.name}>
-            <div className="fund-card__header">
+          <div className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm" key={fund.name}>
+            <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="fund-card__name">{fund.name}</p>
-                <div className="fund-card__meta">
-                  <span className="badge">{fund.strategy}</span>
-                  <span className="badge">{fund.domicile}</span>
+                <p className="text-lg font-semibold text-slate-900">{fund.name}</p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <span className="rounded-full border border-igates-500/20 bg-igates-500/10 px-3 py-1 text-xs font-semibold text-igates-700">
+                    {fund.strategy}
+                  </span>
+                  <span className="rounded-full border border-igates-500/20 bg-igates-500/10 px-3 py-1 text-xs font-semibold text-igates-700">
+                    {fund.domicile}
+                  </span>
                 </div>
               </div>
-              <span className="badge">{fund.status}</span>
+              <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                {fund.status}
+              </span>
             </div>
-            <p className="fund-card__description">{fund.summary}</p>
-            <div className="fund-card__tags">
-              <span className="tag subtle">AUM {fund.aum}</span>
-              <span className="tag subtle">{fund.performance}</span>
+            <p className="text-sm text-slate-600">{fund.summary}</p>
+            <div className="flex flex-wrap gap-2">
+              <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600">
+                AUM {fund.aum}
+              </span>
+              <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600">
+                {fund.performance}
+              </span>
             </div>
-            <div className="profile-actions">
-              <button className="btn btn-primary" type="button" onClick={() => toggleWaitlist(fund.name)}>
+            <div className="mt-2 flex flex-wrap gap-3">
+              <button
+                className="inline-flex items-center justify-center rounded-full bg-igates-500 px-5 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-white shadow-lg shadow-igates-500/30 transition hover:bg-igates-400"
+                type="button"
+                onClick={() => toggleWaitlist(fund.name)}
+              >
                 {isWaitlisted ? "En waitlist" : "Unirse a waitlist"}
               </button>
             </div>

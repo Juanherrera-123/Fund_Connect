@@ -17,14 +17,18 @@ export function FamilyDashboardContent() {
   }, [profiles, session]);
 
   if (!profile) {
-    return <div className="status-banner">Inicia sesión como Family Office.</div>;
+    return (
+      <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
+        Inicia sesión como Family Office.
+      </div>
+    );
   }
 
   return (
-    <div className="profile-grid">
-      <div className="profile-card">
-        <h3>Mandato activo</h3>
-        <div className="data-list">
+    <div className="grid gap-4 md:grid-cols-2">
+      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <h3 className="text-lg font-semibold text-slate-900">Mandato activo</h3>
+        <div className="mt-3 grid gap-1 text-sm text-slate-600">
           <span>
             <strong>Rol:</strong> {profile.familyOfficePreferences?.managementRole || "—"}
           </span>
@@ -36,9 +40,9 @@ export function FamilyDashboardContent() {
           </span>
         </div>
       </div>
-      <div className="profile-card">
-        <h3>Interacción y reporting</h3>
-        <div className="data-list">
+      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <h3 className="text-lg font-semibold text-slate-900">Interacción y reporting</h3>
+        <div className="mt-3 grid gap-1 text-sm text-slate-600">
           <span>
             <strong>Nivel de interacción:</strong> {profile.familyOfficePreferences?.interactionLevel || "—"}
           </span>
@@ -48,13 +52,19 @@ export function FamilyDashboardContent() {
           <span>Acceso directo con gestores y MasterUser activo.</span>
         </div>
       </div>
-      <div className="profile-card">
-        <h3>Acciones rápidas</h3>
-        <div className="profile-actions">
-          <Link className="btn btn-primary" href="/gestores-verificados">
+      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:col-span-2">
+        <h3 className="text-lg font-semibold text-slate-900">Acciones rápidas</h3>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <Link
+            className="inline-flex items-center justify-center rounded-full bg-igates-500 px-5 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-white shadow-lg shadow-igates-500/30 transition hover:bg-igates-400"
+            href="/gestores-verificados"
+          >
             Ver gestores verificados
           </Link>
-          <Link className="btn btn-secondary" href="/profile">
+          <Link
+            className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+            href="/profile"
+          >
             Ver perfil
           </Link>
         </div>

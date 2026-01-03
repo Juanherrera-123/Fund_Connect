@@ -25,18 +25,40 @@ export function ContactForm() {
   };
 
   return (
-    <form id="contactForm" ref={formRef} className="contact-form" onSubmit={handleSubmit}>
-      <label>
+    <form
+      id="contactForm"
+      ref={formRef}
+      className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
+      onSubmit={handleSubmit}
+    >
+      <label className="grid gap-2 text-sm font-medium text-slate-600">
         <span data-i18n="contactNameLabel">Name</span>
-        <input type="text" name="name" placeholder="Your full name" required />
+        <input
+          className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
+          type="text"
+          name="name"
+          placeholder="Your full name"
+          required
+        />
       </label>
-      <label>
+      <label className="grid gap-2 text-sm font-medium text-slate-600">
         <span data-i18n="contactEmailLabel">Email</span>
-        <input type="email" name="email" placeholder="you@firm.com" required />
+        <input
+          className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
+          type="email"
+          name="email"
+          placeholder="you@firm.com"
+          required
+        />
       </label>
-      <label>
+      <label className="grid gap-2 text-sm font-medium text-slate-600">
         <span data-i18n="contactRoleLabel">Role</span>
-        <select name="role" required aria-label="Role">
+        <select
+          className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
+          name="role"
+          required
+          aria-label="Role"
+        >
           <option value="" data-i18n="contactRolePlaceholder">
             Select your role
           </option>
@@ -51,18 +73,24 @@ export function ContactForm() {
           </option>
         </select>
       </label>
-      <label>
+      <label className="grid gap-2 text-sm font-medium text-slate-600">
         <span data-i18n="contactNotesLabel">Notes</span>
         <textarea
+          className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
           name="message"
           rows={3}
           placeholder="Mandate size, strategies, timing"
         ></textarea>
       </label>
-      <button className="btn btn-primary" type="submit" data-i18n="contactSubmit" disabled={state.isSubmitting}>
+      <button
+        className="inline-flex items-center justify-center rounded-full bg-igates-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-igates-500/30 transition hover:bg-igates-400 disabled:cursor-not-allowed disabled:opacity-70"
+        type="submit"
+        data-i18n="contactSubmit"
+        disabled={state.isSubmitting}
+      >
         Request Advisory
       </button>
-      <p className="form-status" id="formStatus" aria-live="polite">
+      <p className="min-h-[22px] text-xs text-slate-500" id="formStatus" aria-live="polite">
         {state.status}
       </p>
     </form>

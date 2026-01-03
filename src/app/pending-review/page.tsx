@@ -4,24 +4,28 @@ import { PendingReviewView } from "@/components/PendingReviewView";
 
 export default function PendingReviewPage() {
   return (
-    <div className="profile-page">
+    <div className="min-h-screen bg-slate-50">
       <Navbar />
       <main>
-        <section className="page-header minimal compact-hero">
-          <div className="container">
-            <p className="eyebrow">Fund Manager</p>
-            <div className="page-title-row">
-              <h1>Estado de revisión</h1>
-              <div className="micro-tag">Pending Review</div>
+        <section className="py-8">
+          <div className="mx-auto w-full max-w-6xl px-6">
+            <div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-igates-500/10 to-indigo-500/5 p-6">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-igates-500">Fund Manager</p>
+              <div className="mt-2 flex flex-wrap items-center gap-3">
+                <h1 className="text-3xl font-semibold text-slate-900">Estado de revisión</h1>
+                <div className="rounded-full border border-igates-500/20 bg-igates-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-igates-700">
+                  Pending Review
+                </div>
+              </div>
+              <p className="mt-3 max-w-2xl text-sm text-slate-600">
+                Tu solicitud está en revisión por el MasterUser. Te avisaremos cuando esté aprobada.
+              </p>
             </div>
-            <p className="lead compact">
-              Tu solicitud está en revisión por el MasterUser. Te avisaremos cuando esté aprobada.
-            </p>
           </div>
         </section>
 
-        <section className="profile-section">
-          <div className="container">
+        <section className="py-6">
+          <div className="mx-auto w-full max-w-6xl px-6">
             <PendingReviewView />
           </div>
         </section>
