@@ -23,7 +23,7 @@ export function Hero() {
           </p>
           <div className="space-y-4">
             <h1
-              className="text-gradient-brand text-4xl font-semibold leading-tight md:text-6xl"
+              className="igates-gradient-text text-4xl font-semibold leading-tight md:text-6xl"
               data-i18n="heroTitle"
             >
               Conectando capital con gestores verificados
@@ -63,7 +63,7 @@ export function Hero() {
               <span className="uppercase tracking-[0.2em] text-slate-500">Rendimiento YTD</span>
               <span className="text-base font-semibold text-emerald-500">+14.8%</span>
             </div>
-            <div className="mt-3 h-16 rounded-xl bg-gradient-to-r from-slate-200 via-slate-100 to-transparent" />
+            <div className="mt-3 h-16 rounded-xl bg-gradient-to-r from-igates-500/10 via-igates-400/10 to-transparent" />
           </div>
           <div className="rounded-2xl border border-slate-200/80 bg-slate-50/80 p-4 text-slate-700 shadow-sm">
             <div className="space-y-2 text-xs">
@@ -98,7 +98,7 @@ export function Hero() {
                 {Array.from({ length: 4 }).map((_, index) => (
                   <span
                     key={index}
-                    className="h-full rounded-xl bg-gradient-to-t from-slate-200/60 to-transparent"
+                    className="h-full rounded-xl bg-gradient-to-t from-igates-500/20 to-transparent"
                   />
                 ))}
               </div>

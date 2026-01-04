@@ -43,7 +43,7 @@ export function Modules() {
           {modules.map((module) => (
             <div
               key={module.title}
-              className="rounded-3xl border border-white/10 bg-gradient-to-br from-white/10 to-white/5 p-6"
+              className="rounded-3xl border border-white/10 bg-gradient-to-br from-igates-500/10 to-igates-400/5 p-6"
             >
               <h3 className="text-lg font-semibold text-white">
                 {module.title}

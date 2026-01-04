@@ -18,19 +18,19 @@ a {
   text-decoration: none;
 }
 
-.text-gradient-brand {
-  background: linear-gradient(90deg, #1e3a8a 0%, #2563eb 50%, #38bdf8 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+@layer utilities {
+  .igates-gradient-text {
+    @apply bg-gradient-to-r from-igates-500 to-igates-400 bg-clip-text text-transparent;
+  }
 }
 
-.btn-primary {
-  background: linear-gradient(90deg, #1e3a8a 0%, #2563eb 50%, #38bdf8 100%);
-  color: #ffffff;
-}
+@layer components {
+  .btn-primary {
+    @apply bg-gradient-to-r from-igates-500 to-igates-400 text-white;
+  }
 
-.btn-primary:hover,
-.btn-primary:active {
-  background: linear-gradient(90deg, #1e3a8a 0%, #2563eb 50%, #38bdf8 100%);
-  color: #ffffff;
+  .btn-primary:hover,
+  .btn-primary:active {
+    @apply bg-gradient-to-r from-igates-500 to-igates-400 text-white;
+  }
 }
