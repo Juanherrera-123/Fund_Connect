@@ -105,7 +105,7 @@ export function Hero() {
             </div>
             <div className="relative flex items-center justify-between gap-4">
               <p className="text-xs text-slate-600">Métricas consolidadas</p>
-              <button className="rounded-full border border-slate-200 bg-white/80 px-3 py-1.5 text-[11px] font-semibold text-slate-600 transition hover:border-slate-300 hover:text-slate-700">
+              <button className="btn-primary inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold shadow-lg shadow-igates-500/30 transition">
                 Ver estadísticas completas
               </button>
             </div>

@@ -61,7 +61,7 @@ export function Navbar() {
         <div className="flex flex-shrink-0 items-center gap-3">
           <LanguageSwitcher />
           <Link
-            className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-igates-500 to-igates-400 px-4 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-white shadow-lg shadow-igates-500/30 transition hover:bg-none hover:bg-white hover:text-igates-500"
+            className="btn-primary inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold shadow-lg shadow-igates-500/30 transition"
             href={authLink.href}
             data-i18n="navAuth"
           >
