@@ -4,7 +4,7 @@ export function Cta() {
   return (
     <section className="bg-igates-900 py-16">
       <div className="mx-auto max-w-6xl px-6">
-        <div className="rounded-3xl border border-white/10 bg-gradient-to-r from-igates-600/30 via-white/5 to-igates-600/20 p-10 md:p-12">
+        <div className="rounded-3xl border border-white/10 bg-gradient-to-r from-igates-600/30 via-igates-500/10 to-igates-600/20 p-10 md:p-12">
           <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
             <div className="space-y-3">
               <p className="text-xs uppercase tracking-[0.4em] text-white/60">

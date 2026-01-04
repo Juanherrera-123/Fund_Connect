@@ -53,7 +53,7 @@ export function Why() {
               className="grid gap-5 rounded-[18px] border border-slate-200/60 bg-white p-6 shadow-[0_18px_45px_rgba(15,23,42,0.06)]"
             >
               <div className="grid gap-4 md:grid-cols-[auto_1fr] md:items-start">
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-igates-500/20 bg-gradient-to-br from-igates-500/10 to-indigo-500/10 text-igates-500">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-igates-500/20 bg-gradient-to-br from-igates-500/10 to-igates-400/10 text-igates-500">
                   <span className="h-2.5 w-2.5 rounded-full bg-igates-500" aria-hidden="true" />
                 </div>
                 <div className="space-y-3">
