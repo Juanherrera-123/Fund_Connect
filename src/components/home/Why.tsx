@@ -36,7 +36,7 @@ const purposeCards = [
 
 export function Why() {
   return (
-    <section id="why" className="bg-white py-20">
+    <section id="why" className="bg-white py-16">
       <div className="mx-auto max-w-6xl px-6">
         <div className="mx-auto max-w-3xl space-y-4 text-center">
           <p
