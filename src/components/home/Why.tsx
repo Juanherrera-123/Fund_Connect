@@ -38,7 +38,7 @@ export function Why() {
   return (
     <section id="why" className="bg-white py-20">
       <div className="mx-auto max-w-6xl px-6">
-        <div className="max-w-3xl space-y-4">
+        <div className="mx-auto max-w-3xl space-y-4 text-center">
           <p
             className="text-xs font-semibold uppercase tracking-[0.35em] text-igates-500"
             data-i18n="whyEyebrow"
@@ -48,7 +48,7 @@ export function Why() {
           <h2 className="text-3xl font-semibold text-slate-900" data-i18n="whyTitle">
             Por qué existe IGATES
           </h2>
-          <p className="text-base text-slate-600" data-i18n="whyLead">
+          <p className="text-base text-slate-600 text-justify" data-i18n="whyLead">
             Un puente curado entre capital calificado y gestores privados con historial verificado.
           </p>
         </div>
@@ -56,31 +56,26 @@ export function Why() {
           {purposeCards.map((card) => (
             <article key={card.titleKey} className="igates-card grid gap-5">
               <div className="igates-gradient h-[3px] w-full rounded-full" aria-hidden="true" />
-              <div className="grid gap-4 md:grid-cols-[auto_1fr] md:items-start">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white">
-                  <span className="h-2 w-2 rounded-full bg-blue-600" aria-hidden="true" />
+              <div className="flex items-start gap-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-igates-500">
+                  <svg viewBox="0 0 20 20" className="h-4 w-4" aria-hidden="true">
+                    <path
+                      d="M10 2.5a7.5 7.5 0 1 0 0 15a7.5 7.5 0 0 0 0-15Zm3.1 5.65a.75.75 0 0 1 .02 1.06l-3.62 3.72a.75.75 0 0 1-1.07 0L6.9 11.39a.75.75 0 1 1 1.06-1.06l1.12 1.12 3.09-3.17a.75.75 0 0 1 1.06-.02Z"
+                      fill="currentColor"
+                    />
+                  </svg>
                 </div>
-                <div className="space-y-3">
-                  <div className="space-y-1">
-                    <h3 className="text-[19px] font-semibold text-slate-900" data-i18n={card.titleKey}>
-                      {card.title}
-                    </h3>
-                    <p className="text-[11px] uppercase tracking-wide text-slate-500">{card.spec}</p>
-                  </div>
-                  <p className="text-[15px] text-slate-600" data-i18n={card.bodyKey}>
-                    {card.body}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {card.chips.map((chip) => (
-                      <span key={chip} className="igates-chip">
-                        <span className="igates-gradient h-1.5 w-1.5 rounded-full" aria-hidden="true" />
-                        {chip}
-                      </span>
-                    ))}
-                  </div>
+                <div className="space-y-1">
+                  <h3 className="text-[19px] font-semibold text-slate-900" data-i18n={card.titleKey}>
+                    {card.title}
+                  </h3>
+                  <p className="text-[11px] uppercase tracking-wide text-slate-500">{card.spec}</p>
                 </div>
               </div>
-              <div className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
+              <p className="text-[15px] text-slate-600" data-i18n={card.bodyKey}>
+                {card.body}
+              </p>
+              <div className="rounded-2xl bg-white p-4">
                 <img
                   src={card.image}
                   alt={card.alt}
