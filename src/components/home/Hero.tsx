@@ -10,13 +10,13 @@ export function Hero() {
   return (
     <section
       id="hero"
-      className="relative flex min-h-screen items-center overflow-hidden bg-[url('/worldmap-Igates.png')] bg-cover bg-center text-white"
+      className="relative flex min-h-screen items-center overflow-hidden bg-[url('/worldmap-Igates.png')] bg-cover bg-center text-slate-900"
     >
-      <div className="absolute inset-0 z-0 bg-[rgba(255,255,255,0.88)] backdrop-blur" />
+      <div className="absolute inset-0 z-0 bg-[rgba(255,255,255,0.6)] backdrop-blur" />
       <div className="relative z-10 mx-auto grid max-w-6xl translate-y-4 gap-12 px-6 py-20 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
         <div className="space-y-8">
           <p
-            className="text-xs font-semibold uppercase tracking-[0.35em] text-white/60"
+            className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-600"
             data-i18n="heroEyebrow"
           >
             Acceso institucional
@@ -28,7 +28,7 @@ export function Hero() {
             >
               Conectando capital con gestores verificados
             </h1>
-            <p className="text-base text-white/70 md:text-lg" data-i18n="heroLead">
+            <p className="text-base text-slate-700 md:text-lg" data-i18n="heroLead">
               Infraestructura institucional para acceder a fondos gestionados con estándares
               profesionales.
             </p>
@@ -42,16 +42,16 @@ export function Hero() {
               Solicitar acceso institucional
             </Link>
             <Link
-              className="inline-flex items-center justify-center rounded-full border border-white/30 px-6 py-3 text-sm font-semibold text-white transition hover:border-white"
+              className="inline-flex items-center justify-center rounded-full border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:text-slate-900"
               href="#contact"
               data-i18n="heroCtaManager"
             >
               Postularse como gestor
             </Link>
           </div>
-          <div className="flex flex-wrap gap-4 text-xs text-white/60">
+          <div className="flex flex-wrap gap-4 text-xs text-slate-600">
             {trustItems.map((item) => (
-              <span key={item.key} className="rounded-full border border-white/15 px-4 py-2">
+              <span key={item.key} className="rounded-full border border-slate-200/80 px-4 py-2">
                 <span data-i18n={item.key}>{item.label}</span>
               </span>
             ))}
