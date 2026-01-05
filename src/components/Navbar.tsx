@@ -49,9 +49,6 @@ export function Navbar() {
           />
         </Link>
         <nav className="hidden flex-1 items-center justify-center gap-3 whitespace-nowrap text-[14px] uppercase tracking-[0.06em] text-slate-700 lg:flex">
-          <Link href="/#why" data-i18n="navWhy">
-            Why IGATES
-          </Link>
           <Link href="/gestores-verificados" data-i18n="navVerifiedManagers">
             Gestores Verificados
           </Link>
@@ -60,9 +57,6 @@ export function Navbar() {
           </Link>
           <Link href="/family-offices" data-i18n="navFamily">
             Family Offices
-          </Link>
-          <Link href="/#learn" data-i18n="navLearn">
-            Learn
           </Link>
           <Link href="/#contact" data-i18n="navContact">
             Contact
