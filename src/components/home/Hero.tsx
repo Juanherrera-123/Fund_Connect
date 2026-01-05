@@ -10,7 +10,7 @@ export function Hero() {
   return (
     <section
       id="hero"
-      className="relative flex min-h-[calc(100vh-5.5rem)] items-center overflow-hidden bg-[url('/worldmap-Igates.png')] bg-cover bg-center text-slate-900"
+      className="relative flex min-h-[75vh] items-center overflow-hidden bg-[url('/worldmap-Igates.png')] bg-cover bg-center text-slate-900"
     >
       <div className="absolute inset-0 z-0 bg-[rgba(255,255,255,0.6)] backdrop-blur" />
       <div className="relative z-10 mx-auto grid max-w-6xl gap-12 px-6 py-16 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
