@@ -33,7 +33,7 @@ export function Navbar() {
   })();
 
   return (
-    <header className="sticky top-0 z-10 border-b border-slate-300/25 bg-white/90 backdrop-blur">
+    <header className="sticky top-0 z-50 border-b border-slate-300/25 bg-white/90 backdrop-blur">
       <div className="mx-auto flex w-full max-w-6xl flex-nowrap items-center justify-between gap-6 px-6 py-4">
         <Link
           className="flex flex-shrink-0 items-center gap-2 font-extrabold tracking-[0.08em] text-slate-900"
