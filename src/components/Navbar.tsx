@@ -71,7 +71,7 @@ export function Navbar() {
         <div className="flex flex-shrink-0 items-center gap-3">
           <LanguageSwitcher />
           <Link
-            className="btn-primary inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold shadow-lg shadow-igates-500/30 transition"
+            className="btn-primary inline-flex items-center justify-center whitespace-nowrap rounded-full px-6 py-3 text-sm font-semibold leading-none shadow-lg shadow-igates-500/30 transition"
             href={authLink.href}
             data-i18n={authLink.key}
           >
