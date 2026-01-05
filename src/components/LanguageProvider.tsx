@@ -1,6 +1,7 @@
 "use client";
 
-import { createContext, useContext, useMemo } from "react";
+import { createContext, useContext, useEffect, useMemo } from "react";
+import { usePathname } from "next/navigation";
 
 import { languageOptions, translations, type LanguageKey, STORAGE_KEYS } from "@/lib/igatesData";
 import { useLocalStorage } from "@/lib/useLocalStorage";
@@ -17,8 +18,9 @@ const LanguageContext = createContext<LanguageContextValue | null>(null);
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguageState] = useLocalStorage<LanguageKey>(
     STORAGE_KEYS.preferredLanguage,
-    "en"
+    "es"
   );
+  const pathname = usePathname();
 
   const setLanguage = (lang: LanguageKey) => {
     setLanguageState(lang);
@@ -27,14 +29,48 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const strings = useMemo(() => translations[language] ?? translations.en, [language]);
+
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    document.documentElement.lang = languageOptions[language]?.locale ?? "en";
+
+    const translate = (key?: string | null) => {
+      if (!key) return null;
+      return (strings as Record<string, string>)[key] ?? null;
+    };
+
+    document.querySelectorAll<HTMLElement>("[data-i18n]").forEach((element) => {
+      const value = translate(element.dataset.i18n);
+      if (value) {
+        element.textContent = value;
+      }
+    });
+
+    const applyAttribute = (dataAttribute: string, attributeName: string) => {
+      document.querySelectorAll<HTMLElement>(`[data-${dataAttribute}]`).forEach((element) => {
+        const key = element.getAttribute(`data-${dataAttribute}`);
+        const value = translate(key);
+        if (value) {
+          element.setAttribute(attributeName, value);
+        }
+      });
+    };
+
+    applyAttribute("i18n-placeholder", "placeholder");
+    applyAttribute("i18n-aria-label", "aria-label");
+    applyAttribute("i18n-alt", "alt");
+    applyAttribute("i18n-title", "title");
+  }, [language, pathname, strings]);
+
   const value = useMemo(
     () => ({
       language,
       setLanguage,
-      strings: translations[language] ?? translations.en,
+      strings,
       options: languageOptions,
     }),
-    [language]
+    [language, setLanguage, strings]
   );
 
   return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;

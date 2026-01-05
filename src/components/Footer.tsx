@@ -5,10 +5,16 @@ export function Footer() {
     <footer className="border-t border-slate-200 bg-white">
       <div className="mx-auto grid w-full max-w-6xl gap-8 px-6 py-12 md:grid-cols-4">
         <div>
-          <Link className="inline-flex items-center" href="/" aria-label="IGATES home">
+          <Link
+            className="inline-flex items-center"
+            href="/"
+            aria-label="IGATES home"
+            data-i18n-aria-label="brandAriaLabel"
+          >
             <img
               src="/IGATESLOGO.png"
               alt="IGATES Fund Intelligence logo"
+              data-i18n-alt="brandAlt"
               className="h-14 w-auto"
             />
           </Link>

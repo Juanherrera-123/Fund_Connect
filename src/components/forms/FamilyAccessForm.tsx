@@ -2,11 +2,17 @@
 
 import { useRef } from "react";
 
+import { useLanguage } from "@/components/LanguageProvider";
 import { useApiForm } from "@/lib/useApiForm";
 
 export function FamilyAccessForm() {
   const formRef = useRef<HTMLFormElement | null>(null);
-  const { state, submit } = useApiForm("/request-access");
+  const { strings } = useLanguage();
+  const { state, submit } = useApiForm("/request-access", {
+    sending: strings.formStatusSending,
+    success: strings.formStatusSuccess,
+    error: strings.formStatusError,
+  });
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -32,6 +38,7 @@ export function FamilyAccessForm() {
           type="text"
           name="name"
           placeholder="Your full name"
+          data-i18n-placeholder="formNamePlaceholder"
           required
         />
       </label>
@@ -42,6 +49,7 @@ export function FamilyAccessForm() {
           type="text"
           name="firm"
           placeholder="Family office name"
+          data-i18n-placeholder="formFirmPlaceholderFamily"
           required
         />
       </label>
@@ -52,6 +60,7 @@ export function FamilyAccessForm() {
           type="text"
           name="strategy"
           placeholder="Macro, Credit, Digital Assets..."
+          data-i18n-placeholder="formStrategyPlaceholderFamily"
           required
         />
       </label>
@@ -62,6 +71,7 @@ export function FamilyAccessForm() {
           type="text"
           name="aum"
           placeholder="$500M"
+          data-i18n-placeholder="formAumPlaceholderFamily"
           required
         />
       </label>
@@ -72,6 +82,7 @@ export function FamilyAccessForm() {
           type="email"
           name="email"
           placeholder="you@office.com"
+          data-i18n-placeholder="formEmailPlaceholderFamily"
           required
         />
       </label>
@@ -82,6 +93,7 @@ export function FamilyAccessForm() {
           name="notes"
           rows={3}
           placeholder="Mandate size, target strategies, timelines"
+          data-i18n-placeholder="formNotesPlaceholderFamily"
         ></textarea>
       </label>
       <button

@@ -38,6 +38,7 @@ export function ContactForm() {
           type="text"
           name="name"
           placeholder="Your full name"
+          data-i18n-placeholder="contactNamePlaceholder"
           required
         />
       </label>
@@ -48,6 +49,7 @@ export function ContactForm() {
           type="email"
           name="email"
           placeholder="you@firm.com"
+          data-i18n-placeholder="contactEmailPlaceholder"
           required
         />
       </label>
@@ -58,6 +60,7 @@ export function ContactForm() {
           name="role"
           required
           aria-label="Role"
+          data-i18n-aria-label="contactRoleAria"
         >
           <option value="" data-i18n="contactRolePlaceholder">
             Select your role
@@ -80,6 +83,7 @@ export function ContactForm() {
           name="message"
           rows={3}
           placeholder="Mandate size, strategies, timing"
+          data-i18n-placeholder="contactNotesPlaceholder"
         ></textarea>
       </label>
       <button
