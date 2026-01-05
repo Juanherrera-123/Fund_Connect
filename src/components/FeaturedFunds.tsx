@@ -7,11 +7,12 @@ import { STORAGE_KEYS, baseVerifiedFunds, formatPercent } from "@/lib/igatesData
 import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { FundApplication, FundSummary } from "@/lib/types";
 
-const DEFAULT_HIGHLIGHTS = ["Verified track record", "Monthly reporting", "Due diligence ready"];
+const DEFAULT_HIGHLIGHT_KEYS = ["fundsHighlight1", "fundsHighlight2", "fundsHighlight3"] as const;
 
 export function FeaturedFunds() {
   const { strings } = useLanguage();
   const [fundApplications] = useLocalStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
+  const defaultHighlights = DEFAULT_HIGHLIGHT_KEYS.map((key) => strings[key]);
 
   const funds = useMemo<FundSummary[]>(() => {
     const verifiedApplications = fundApplications.filter(
@@ -22,14 +23,17 @@ export function FeaturedFunds() {
         application.id,
         {
           name: application.fundName,
-          strategy: application.strategyLabel || application.strategy || "Multi-Strategy",
-          domicile: application.country || "Global",
-          status: "Verificado",
+          strategy:
+            application.strategyLabel ||
+            application.strategy ||
+            strings.fundsLabelStrategyFallback,
+          domicile: application.country || strings.fundsLabelDomicileFallback,
+          status: strings.fundsStatusVerified,
           aum: application.aum || "N/A",
           performance: formatPercent(application.yearProfit ?? application.monthlyProfit ?? null),
           risk: application.riskLevel || application.riskManagement || "—",
-          summary: application.description || "Gestor en proceso de verificación.",
-          highlights: DEFAULT_HIGHLIGHTS,
+          summary: application.description || strings.fundsSummaryDefault,
+          highlights: defaultHighlights,
         },
       ])
     );
@@ -41,35 +45,48 @@ export function FeaturedFunds() {
         name: fund.name,
         strategy: fund.strategy,
         domicile: fund.country,
-        status: "Verificado",
+        status: strings.fundsStatusVerified,
         aum: fund.aum,
         performance: formatPercent(fund.yearProfit),
         risk: fund.riskLevel,
         summary: fund.description,
-        highlights: DEFAULT_HIGHLIGHTS,
+        highlights: defaultHighlights,
         ...overridesById.get(fund.id),
       })),
       ...verifiedApplications
         .filter((application) => !baseIds.has(application.id))
         .map((application) => ({
           name: application.fundName,
-          strategy: application.strategyLabel || application.strategy || "Multi-Strategy",
-          domicile: application.country || "Global",
-          status: "Verificado",
+          strategy:
+            application.strategyLabel ||
+            application.strategy ||
+            strings.fundsLabelStrategyFallback,
+          domicile: application.country || strings.fundsLabelDomicileFallback,
+          status: strings.fundsStatusVerified,
           aum: application.aum || "N/A",
           performance: formatPercent(application.yearProfit ?? application.monthlyProfit ?? null),
           risk: application.riskLevel || application.riskManagement || "—",
-          summary: application.description || "Gestor en proceso de verificación.",
-          highlights: DEFAULT_HIGHLIGHTS,
+          summary: application.description || strings.fundsSummaryDefault,
+          highlights: defaultHighlights,
         })),
     ];
-  }, [fundApplications]);
+  }, [
+    defaultHighlights,
+    fundApplications,
+    strings.fundsLabelDomicileFallback,
+    strings.fundsLabelStrategyFallback,
+    strings.fundsStatusVerified,
+    strings.fundsSummaryDefault,
+  ]);
 
   if (!funds.length) {
     return (
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" id="fundGrid">
-        <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-center text-sm text-slate-500" data-i18n="fundsLoading">
-          {strings.fundsLoadError ?? "No hay fondos verificados disponibles."}
+        <div
+          className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-center text-sm text-slate-500"
+          data-i18n="fundsEmpty"
+        >
+          {strings.fundsEmpty}
         </div>
       </div>
     );
@@ -98,15 +115,15 @@ export function FeaturedFunds() {
           <p className="text-sm text-slate-600">{fund.summary}</p>
           <div className="grid gap-2 text-sm text-slate-600">
             <div className="flex items-center justify-between">
-              <span>AUM</span>
+              <span data-i18n="fundsLabelAum">AUM</span>
               <strong className="text-slate-900">{fund.aum}</strong>
             </div>
             <div className="flex items-center justify-between">
-              <span>YTD</span>
+              <span data-i18n="fundsLabelYtd">YTD</span>
               <strong className="text-slate-900">{fund.performance}</strong>
             </div>
             <div className="flex items-center justify-between">
-              <span>Risk</span>
+              <span data-i18n="fundsLabelRisk">Risk</span>
               <strong className="text-slate-900">{fund.risk}</strong>
             </div>
           </div>

@@ -2,6 +2,8 @@ const purposeCards = [
   {
     titleKey: "whyCard1Title",
     bodyKey: "whyCard1Body",
+    specKey: "whyCard1Spec",
+    altKey: "whyCard1Alt",
     title: "Cuentas auditadas y capital verificado",
     spec: "VERIFICATION",
     body:
@@ -13,6 +15,8 @@ const purposeCards = [
   {
     titleKey: "whyCard2Title",
     bodyKey: "whyCard2Body",
+    specKey: "whyCard2Spec",
+    altKey: "whyCard2Alt",
     title: "Acompañamiento continuo y control de riesgo",
     spec: "RISK OVERSIGHT",
     body:
@@ -24,6 +28,8 @@ const purposeCards = [
   {
     titleKey: "whyCard3Title",
     bodyKey: "whyCard3Body",
+    specKey: "whyCard3Spec",
+    altKey: "whyCard3Alt",
     title: "Infraestructura de ejecución",
     spec: "EXECUTION RAILS",
     body:
@@ -69,7 +75,9 @@ export function Why() {
                   <h3 className="text-[19px] font-semibold text-slate-900" data-i18n={card.titleKey}>
                     {card.title}
                   </h3>
-                  <p className="text-[11px] uppercase tracking-wide text-slate-500">{card.spec}</p>
+                  <p className="text-[11px] uppercase tracking-wide text-slate-500" data-i18n={card.specKey}>
+                    {card.spec}
+                  </p>
                 </div>
               </div>
               <p className="text-[15px] text-slate-600" data-i18n={card.bodyKey}>
@@ -79,6 +87,7 @@ export function Why() {
                 <img
                   src={card.image}
                   alt={card.alt}
+                  data-i18n-alt={card.altKey}
                   loading="lazy"
                   className="h-52 w-full object-contain opacity-90"
                 />
@@ -86,7 +95,7 @@ export function Why() {
             </article>
           ))}
         </div>
-        <p className="mt-8 max-w-2xl text-center text-sm text-slate-500 mx-auto">
+        <p className="mt-8 max-w-2xl text-center text-sm text-slate-500 mx-auto" data-i18n="whyFooterNote">
           IGATES es la capa de verificación y reporting; la ejecución y custodia ocurren vía
           brokers integrados.
         </p>

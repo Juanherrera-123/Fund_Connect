@@ -2,11 +2,17 @@
 
 import { useRef } from "react";
 
+import { useLanguage } from "@/components/LanguageProvider";
 import { useApiForm } from "@/lib/useApiForm";
 
 export function ManagerApplyForm() {
   const formRef = useRef<HTMLFormElement | null>(null);
-  const { state, submit } = useApiForm("/manager-apply");
+  const { strings } = useLanguage();
+  const { state, submit } = useApiForm("/manager-apply", {
+    sending: strings.formStatusSending,
+    success: strings.formStatusSuccess,
+    error: strings.formStatusError,
+  });
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -32,6 +38,7 @@ export function ManagerApplyForm() {
           type="text"
           name="name"
           placeholder="Your full name"
+          data-i18n-placeholder="formNamePlaceholder"
           required
         />
       </label>
@@ -42,6 +49,7 @@ export function ManagerApplyForm() {
           type="text"
           name="firm"
           placeholder="Firm name"
+          data-i18n-placeholder="formFirmPlaceholderManager"
           required
         />
       </label>
@@ -52,6 +60,7 @@ export function ManagerApplyForm() {
           type="text"
           name="strategy"
           placeholder="Credit, Macro, Digital Assets..."
+          data-i18n-placeholder="formStrategyPlaceholderManager"
           required
         />
       </label>
@@ -62,6 +71,7 @@ export function ManagerApplyForm() {
           type="text"
           name="aum"
           placeholder="$250M"
+          data-i18n-placeholder="formAumPlaceholderManager"
           required
         />
       </label>
@@ -72,6 +82,7 @@ export function ManagerApplyForm() {
           type="email"
           name="email"
           placeholder="you@firm.com"
+          data-i18n-placeholder="formEmailPlaceholderManager"
           required
         />
       </label>
@@ -82,6 +93,7 @@ export function ManagerApplyForm() {
           name="notes"
           rows={3}
           placeholder="Mandate focus, timelines, targets"
+          data-i18n-placeholder="formNotesPlaceholderManager"
         ></textarea>
       </label>
       <button

@@ -3,27 +3,33 @@
 import Link from "next/link";
 
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useLanguage } from "@/components/LanguageProvider";
 import { STORAGE_KEYS } from "@/lib/igatesData";
 import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { Session } from "@/lib/types";
 
 export function Navbar() {
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
+  const { strings } = useLanguage();
 
   const authLink = (() => {
     if (!session) {
-      return { label: "Sign Up / Log In", href: "/auth" };
+      return { label: strings.navAuthSignup, href: "/auth", key: "navAuthSignup" };
     }
 
     if (session.role === "MasterUser") {
-      return { label: "Master Dashboard", href: "/dashboard/master" };
+      return { label: strings.navAuthMaster, href: "/dashboard/master", key: "navAuthMaster" };
     }
 
     if (session.role === "Fund Manager") {
-      return { label: "Manager Dashboard", href: "/dashboard/manager/overview" };
+      return {
+        label: strings.navAuthManager,
+        href: "/dashboard/manager/overview",
+        key: "navAuthManager",
+      };
     }
 
-    return { label: "My Profile", href: "/profile" };
+    return { label: strings.navAuthProfile, href: "/profile", key: "navAuthProfile" };
   })();
 
   return (
@@ -33,10 +39,12 @@ export function Navbar() {
           className="flex flex-shrink-0 items-center gap-2 font-extrabold tracking-[0.08em] text-slate-900"
           href="/"
           aria-label="IGATES home"
+          data-i18n-aria-label="brandAriaLabel"
         >
           <img
             src="/IGATESLOGO.png"
             alt="IGATES Fund Intelligence logo"
+            data-i18n-alt="brandAlt"
             className="h-14 w-auto"
           />
         </Link>
@@ -44,7 +52,9 @@ export function Navbar() {
           <Link href="/#why" data-i18n="navWhy">
             Why IGATES
           </Link>
-          <Link href="/gestores-verificados">Gestores Verificados</Link>
+          <Link href="/gestores-verificados" data-i18n="navVerifiedManagers">
+            Gestores Verificados
+          </Link>
           <Link href="/for-managers" data-i18n="navManagers">
             Fund Manager
           </Link>
@@ -63,7 +73,7 @@ export function Navbar() {
           <Link
             className="btn-primary inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold shadow-lg shadow-igates-500/30 transition"
             href={authLink.href}
-            data-i18n="navAuth"
+            data-i18n={authLink.key}
           >
             {authLink.label}
           </Link>

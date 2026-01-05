@@ -55,7 +55,9 @@ export default function FamilyOfficesPage() {
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500" data-i18n="familyCardLabel2">
                   Diligence files
                 </p>
-                <p className="mt-3 text-3xl font-semibold text-igates-600">Secure</p>
+                <p className="mt-3 text-3xl font-semibold text-igates-600" data-i18n="familyCardMetric2">
+                  Secure
+                </p>
                 <p className="mt-2 text-sm text-slate-600" data-i18n="familyCardCopy2">
                   Audit-ready archives with automated updates.
                 </p>

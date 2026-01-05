@@ -88,6 +88,7 @@ export function LanguageSwitcher() {
         aria-haspopup="listbox"
         aria-expanded={isOpen}
         aria-label="Select language"
+        data-i18n-aria-label="languageSelectLabel"
         onClick={() => setIsOpen((prev) => !prev)}
         onKeyDown={handleTriggerKeyDown}
       >
@@ -100,6 +101,7 @@ export function LanguageSwitcher() {
         }`}
         role="listbox"
         aria-label="Language options"
+        data-i18n-aria-label="languageOptionsLabel"
         onKeyDown={handleListKeyDown}
       >
         {optionKeys.map((key, index) => {
