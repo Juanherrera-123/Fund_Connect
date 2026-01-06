@@ -218,8 +218,12 @@ export default function DashboardShell({
   return (
     <div className="relative h-screen bg-slate-100 text-slate-900">
       <aside className="fixed inset-y-0 left-0 hidden w-56 flex-col border-r border-slate-200 bg-white px-4 py-5 md:flex">
-        <div className="flex h-12 items-center text-[10px] font-semibold uppercase tracking-[0.3em] text-slate-500">
-          <span>IGATES</span>
+        <div className="flex h-12 items-center">
+          <img
+            src="/IGATESLOGO.png"
+            alt="IGATES Fund Intelligence logo"
+            className="h-8 w-auto"
+          />
         </div>
         <nav className="mt-4 flex flex-1 flex-col gap-1 text-xs font-medium">
           {navItems.map((item) => {
