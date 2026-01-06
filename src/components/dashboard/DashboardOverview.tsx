@@ -29,7 +29,7 @@ type TableRow = {
   [key: string]: React.ReactNode;
   statusLabel?: string;
   statusLabelKey?: string;
-  statusTone?: "success" | "warning" | "neutral";
+  statusTone?: "success" | "warning" | "neutral" | "danger" | "info";
 };
 
 export default function DashboardOverview({

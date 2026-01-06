@@ -42,12 +42,37 @@ export type UserProfile = {
   country: string;
   role: Exclude<Role, "MasterUser">;
   password: string;
+  org?: string;
+  onboardingCompleted: boolean;
   onboarding: Record<string, unknown>;
   fundId?: string;
   investorPreferences?: InvestorPreferences;
   fundManagerProfile?: FundManagerProfile;
   familyOfficePreferences?: FamilyOfficePreferences;
   waitlistFunds?: string[];
+};
+
+export type WaitlistStatus = "pending" | "approved" | "rejected" | "allocated";
+
+export type WaitlistRequest = {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  requesterUserId: string;
+  requesterRole: "investor" | "family_office";
+  requesterName: string;
+  requesterEmail: string;
+  requesterOrg?: string | null;
+  fundId: string;
+  fundNameSnapshot: string;
+  status: WaitlistStatus;
+  reviewedByUserId?: string | null;
+  reviewedAt?: string | null;
+  reviewNotes?: string | null;
+  allocationId?: string | null;
+  allocationStatus?: string | null;
+  metadata?: Record<string, string | number | null | undefined>;
+  requestNotes?: string | null;
 };
 
 export type FundApplication = {
