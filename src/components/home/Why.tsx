@@ -61,39 +61,40 @@ export function Why() {
         </div>
         <div className="mt-12 grid gap-6 lg:grid-cols-3">
           {purposeCards.map((card) => (
-            <article key={card.titleKey} className="igates-card grid gap-5">
-              <div className="igates-gradient h-[3px] w-full rounded-full" aria-hidden="true" />
-              <div className="flex items-start gap-4">
-                <div className={iconContainerClasses}>
-                  <svg viewBox="0 0 20 20" className={iconClasses} aria-hidden="true">
-                    <path
-                      d="M10 2.5a7.5 7.5 0 1 0 0 15a7.5 7.5 0 0 0 0-15Zm3.1 5.65a.75.75 0 0 1 .02 1.06l-3.62 3.72a.75.75 0 0 1-1.07 0L6.9 11.39a.75.75 0 1 1 1.06-1.06l1.12 1.12 3.09-3.17a.75.75 0 0 1 1.06-.02Z"
-                      fill="currentColor"
-                    />
-                  </svg>
+            <div key={card.titleKey} className="igates-card-frame">
+              <article className="igates-card grid gap-5">
+                <div className="flex items-start gap-4">
+                  <div className={iconContainerClasses}>
+                    <svg viewBox="0 0 20 20" className={iconClasses} aria-hidden="true">
+                      <path
+                        d="M10 2.5a7.5 7.5 0 1 0 0 15a7.5 7.5 0 0 0 0-15Zm3.1 5.65a.75.75 0 0 1 .02 1.06l-3.62 3.72a.75.75 0 0 1-1.07 0L6.9 11.39a.75.75 0 1 1 1.06-1.06l1.12 1.12 3.09-3.17a.75.75 0 0 1 1.06-.02Z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </div>
+                  <div className="space-y-1">
+                    <h3 className="text-[19px] font-semibold text-slate-900" data-i18n={card.titleKey}>
+                      {card.title}
+                    </h3>
+                    <p className="text-[11px] uppercase tracking-wide text-slate-500" data-i18n={card.specKey}>
+                      {card.spec}
+                    </p>
+                  </div>
                 </div>
-                <div className="space-y-1">
-                  <h3 className="text-[19px] font-semibold text-slate-900" data-i18n={card.titleKey}>
-                    {card.title}
-                  </h3>
-                  <p className="text-[11px] uppercase tracking-wide text-slate-500" data-i18n={card.specKey}>
-                    {card.spec}
-                  </p>
+                <p className="text-[15px] text-slate-600" data-i18n={card.bodyKey}>
+                  {card.body}
+                </p>
+                <div className="rounded-2xl bg-white p-4">
+                  <img
+                    src={card.image}
+                    alt={card.alt}
+                    data-i18n-alt={card.altKey}
+                    loading="lazy"
+                    className="h-52 w-full object-contain opacity-90"
+                  />
                 </div>
-              </div>
-              <p className="text-[15px] text-slate-600" data-i18n={card.bodyKey}>
-                {card.body}
-              </p>
-              <div className="rounded-2xl bg-white p-4">
-                <img
-                  src={card.image}
-                  alt={card.alt}
-                  data-i18n-alt={card.altKey}
-                  loading="lazy"
-                  className="h-52 w-full object-contain opacity-90"
-                />
-              </div>
-            </article>
+              </article>
+            </div>
           ))}
         </div>
         <p className="mt-8 max-w-2xl text-center text-sm text-slate-500 mx-auto" data-i18n="whyFooterNote">
