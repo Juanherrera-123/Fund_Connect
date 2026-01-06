@@ -52,11 +52,8 @@ export function Why() {
             Propósito Estratégico
           </p>
           <h2 className="text-3xl font-semibold text-slate-900" data-i18n="whyTitle">
-            Por qué existe IGATES
+            ¿Por qué existe IGATES?
           </h2>
-          <p className="text-base text-slate-600 text-justify" data-i18n="whyLead">
-            Un puente curado entre capital calificado y gestores privados con historial verificado.
-          </p>
         </div>
         <div className="mt-12 grid gap-6 lg:grid-cols-3">
           {purposeCards.map((card) => (
