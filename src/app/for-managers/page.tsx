@@ -8,7 +8,7 @@ export default function ForManagersPage() {
   return (
     <div className="min-h-screen bg-slate-50">
       <Navbar />
-      <main>
+      <main className="pt-8">
         <section className="py-16">
           <div className="mx-auto grid w-full max-w-6xl gap-10 px-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
             <div className="space-y-6">
