@@ -2665,6 +2665,7 @@ export const STORAGE_KEYS = {
   session: "igatesCurrentSession",
   notifications: "igatesMasterNotifications",
   fundApplications: "igatesFundApplications",
+  waitlistRequests: "igatesWaitlistRequests",
   preferredLanguage: "preferredLanguage",
 };
 
@@ -2770,6 +2771,7 @@ export const DEFAULT_FUND_MANAGER_PROFILES: UserProfile[] = baseVerifiedFunds.ma
     role: "Fund Manager",
     password: isBrennaFund ? "BrennaFG_2025" : `Fund${index + 1}!IGATES`,
     fundId: fund.id,
+    onboardingCompleted: true,
     onboarding: {
       role: "Fund Manager",
       completedAt: seedCompletedAt,

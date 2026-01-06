@@ -10,13 +10,17 @@ import {
   formatStrategyList,
 } from "@/lib/igatesData";
 import { useLocalStorage } from "@/lib/useLocalStorage";
-import type { Session, UserProfile } from "@/lib/types";
+import type { Session, UserProfile, WaitlistRequest } from "@/lib/types";
 
 export function ProfileView() {
   const router = useRouter();
   const [profiles] = useLocalStorage<UserProfile[]>(
     STORAGE_KEYS.profiles,
     DEFAULT_FUND_MANAGER_PROFILES
+  );
+  const [waitlistRequests] = useLocalStorage<WaitlistRequest[]>(
+    STORAGE_KEYS.waitlistRequests,
+    []
   );
   const [session, setSession] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const profile = useMemo(() => {
@@ -28,6 +32,11 @@ export function ProfileView() {
     setSession(null);
     router.push("/auth");
   };
+
+  const waitlistItems = useMemo(() => {
+    if (!profile) return [];
+    return waitlistRequests.filter((request) => request.requesterUserId === profile.id);
+  }, [profile, waitlistRequests]);
 
 
   if (!profile) {
@@ -125,8 +134,10 @@ export function ProfileView() {
               Lista de espera
             </h3>
             <div className="mt-3 grid gap-1 text-sm text-slate-600">
-              {(profile.waitlistFunds || []).length ? (
-                (profile.waitlistFunds || []).map((fund) => <span key={fund}>• {fund}</span>)
+              {waitlistItems.length ? (
+                waitlistItems.map((request) => (
+                  <span key={request.id}>• {request.fundNameSnapshot}</span>
+                ))
               ) : (
                 <span data-i18n="profileWaitlistEmpty">Sin fondos aún.</span>
               )}

@@ -4,9 +4,9 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-import { STORAGE_KEYS } from "@/lib/igatesData";
+import { DEFAULT_FUND_MANAGER_PROFILES, STORAGE_KEYS } from "@/lib/igatesData";
 import { useLocalStorage } from "@/lib/useLocalStorage";
-import type { Session } from "@/lib/types";
+import type { Session, UserProfile } from "@/lib/types";
 
 const masterNavItems = [
   {
@@ -154,14 +154,76 @@ const fundManagerNavItems = [
   },
 ];
 
+const investorNavItems = [
+  {
+    label: "Dashboard",
+    labelKey: "dashboardNavOverview",
+    href: "/dashboard/investor",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M4.5 10.5 12 4.5l7.5 6v8.25a.75.75 0 0 1-.75.75h-4.5a.75.75 0 0 1-.75-.75V13.5h-3v5.25a.75.75 0 0 1-.75.75H5.25a.75.75 0 0 1-.75-.75Z"
+        />
+      </svg>
+    ),
+  },
+  {
+    label: "Profile",
+    labelKey: "profileTitleFallback",
+    href: "/profile",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.5 20.25a7.5 7.5 0 0 1 15 0"
+        />
+      </svg>
+    ),
+  },
+];
+
+const familyOfficeNavItems = [
+  {
+    label: "Dashboard",
+    labelKey: "dashboardNavOverview",
+    href: "/dashboard/family-office",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M4.5 10.5 12 4.5l7.5 6v8.25a.75.75 0 0 1-.75.75h-4.5a.75.75 0 0 1-.75-.75V13.5h-3v5.25a.75.75 0 0 1-.75.75H5.25a.75.75 0 0 1-.75-.75Z"
+        />
+      </svg>
+    ),
+  },
+  {
+    label: "Profile",
+    labelKey: "profileTitleFallback",
+    href: "/profile",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.5 20.25a7.5 7.5 0 0 1 15 0"
+        />
+      </svg>
+    ),
+  },
+];
+
 const actionIconClass =
   "flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-600 transition hover:border-slate-300 hover:text-slate-900";
 
 const roleMap: Record<string, { label: string; labelKey: string }> = {
   "/dashboard/master": { label: "MasterUser", labelKey: "dashboardRoleMaster" },
   "/dashboard/fund-manager": { label: "MasterUser", labelKey: "dashboardRoleMaster" },
-  "/dashboard/investor": { label: "MasterUser", labelKey: "dashboardRoleMaster" },
-  "/dashboard/family-office": { label: "MasterUser", labelKey: "dashboardRoleMaster" },
+  "/dashboard/investor": { label: "Investor", labelKey: "dashboardRoleUser" },
+  "/dashboard/family-office": { label: "Family Office", labelKey: "dashboardRoleUser" },
   "/dashboard/messages": { label: "MasterUser", labelKey: "dashboardRoleMaster" },
   "/dashboard/settings": { label: "MasterUser", labelKey: "dashboardRoleMaster" },
   "/dashboard/manager": { label: "Fund Manager", labelKey: "dashboardRoleManager" },
@@ -175,8 +237,19 @@ export default function DashboardShell({
   const pathname = usePathname();
   const router = useRouter();
   const [session, setSession] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
+  const [profiles] = useLocalStorage<UserProfile[]>(
+    STORAGE_KEYS.profiles,
+    DEFAULT_FUND_MANAGER_PROFILES
+  );
   const sessionRole = session?.role;
-  const navItems = sessionRole === "Fund Manager" ? fundManagerNavItems : masterNavItems;
+  const navItems =
+    sessionRole === "Fund Manager"
+      ? fundManagerNavItems
+      : sessionRole === "Investor"
+        ? investorNavItems
+        : sessionRole === "Family Office"
+          ? familyOfficeNavItems
+          : masterNavItems;
   const role =
     Object.entries(roleMap).find(([href]) => pathname?.startsWith(href))?.[1] ?? {
       label: "Dashboard User",
@@ -187,16 +260,36 @@ export default function DashboardShell({
 
   useEffect(() => {
     if (!sessionRole) return;
-    const isManagerRoute = pathname?.startsWith("/dashboard/manager");
-    const isMasterRoute = !isManagerRoute;
-    if (sessionRole === "Fund Manager" && isMasterRoute) {
-      router.push("/dashboard/manager/overview");
+    const profile = profiles.find((item) => item.id === session?.id);
+    if (sessionRole !== "MasterUser" && profile?.onboardingCompleted === false) {
+      router.push("/auth");
       return;
     }
-    if (sessionRole === "MasterUser" && isManagerRoute) {
-      router.push("/dashboard/master");
+
+    const routeForRole: Record<NonNullable<Session["role"]>, string> = {
+      MasterUser: "/dashboard/master",
+      Investor: "/dashboard/investor",
+      "Fund Manager": "/dashboard/manager/overview",
+      "Family Office": "/dashboard/family-office",
+    };
+    const expected = routeForRole[sessionRole];
+
+    if (pathname?.startsWith("/dashboard")) {
+      const isManagerRoute = pathname?.startsWith("/dashboard/manager");
+      const isMasterRoute = pathname?.startsWith("/dashboard/master");
+      const isInvestorRoute = pathname?.startsWith("/dashboard/investor");
+      const isFamilyOfficeRoute = pathname?.startsWith("/dashboard/family-office");
+
+      if (
+        (sessionRole === "Fund Manager" && !isManagerRoute) ||
+        (sessionRole === "MasterUser" && !isMasterRoute) ||
+        (sessionRole === "Investor" && !isInvestorRoute) ||
+        (sessionRole === "Family Office" && !isFamilyOfficeRoute)
+      ) {
+        router.push(expected);
+      }
     }
-  }, [pathname, router, sessionRole]);
+  }, [pathname, profiles, router, session, sessionRole]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

@@ -134,6 +134,7 @@ export function AuthFlow() {
       country: kycAnswers.country,
       role,
       password: kycAnswers.password,
+      onboardingCompleted: true,
       onboarding: {
         role,
         completedAt: new Date().toISOString(),
@@ -191,7 +192,7 @@ export function AuthFlow() {
     setSession({ id: profileId, role: baseProfile.role });
 
     if (baseProfile.role === "Investor") {
-      router.push("/funds-explore");
+      router.push("/dashboard/investor");
       return;
     }
 
@@ -201,7 +202,7 @@ export function AuthFlow() {
     }
 
     if (baseProfile.role === "Family Office") {
-      router.push("/family-dashboard");
+      router.push("/dashboard/family-office");
     }
   };
 
@@ -240,6 +241,16 @@ export function AuthFlow() {
         return;
       }
       router.push("/dashboard/manager/overview");
+      return;
+    }
+
+    if (match.role === "Investor") {
+      router.push("/dashboard/investor");
+      return;
+    }
+
+    if (match.role === "Family Office") {
+      router.push("/dashboard/family-office");
       return;
     }
 

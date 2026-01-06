@@ -1,62 +1,135 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-import { DEFAULT_FUND_MANAGER_PROFILES, STORAGE_KEYS } from "@/lib/igatesData";
+import StatusBadge from "@/components/dashboard/StatusBadge";
+import { DEFAULT_FUND_MANAGER_PROFILES, STORAGE_KEYS, apiBase } from "@/lib/igatesData";
 import { useLocalStorage } from "@/lib/useLocalStorage";
-import type { FundApplication, UserProfile } from "@/lib/types";
+import type { FundSummary, Session, UserProfile, WaitlistRequest, WaitlistStatus } from "@/lib/types";
 
-const breakdownCardClass =
-  "rounded-xl border border-slate-200 bg-white p-4 shadow-sm";
+const cardClass = "rounded-2xl border border-slate-200 bg-white p-5 shadow-sm";
 
-const getBarHeight = (value: number, max: number) => {
-  if (max <= 0) return 8;
-  const scaled = Math.round((value / max) * 70);
-  return Math.max(8, scaled);
+const statusConfig: Record<WaitlistStatus, { label: string; tone: "neutral" | "success" | "danger" | "info" }> = {
+  pending: { label: "Pending", tone: "neutral" },
+  approved: { label: "Approved", tone: "success" },
+  rejected: { label: "Rejected", tone: "danger" },
+  allocated: { label: "Allocated", tone: "info" },
 };
 
 export default function InvestorDashboard() {
-  const [profiles] = useLocalStorage<UserProfile[]>(STORAGE_KEYS.profiles, DEFAULT_FUND_MANAGER_PROFILES);
-  const [fundApplications] = useLocalStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
+  const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
+  const [profiles, setProfiles] = useLocalStorage<UserProfile[]>(
+    STORAGE_KEYS.profiles,
+    DEFAULT_FUND_MANAGER_PROFILES
+  );
+  const [waitlistRequests, setWaitlistRequests] = useLocalStorage<WaitlistRequest[]>(
+    STORAGE_KEYS.waitlistRequests,
+    []
+  );
+  const [funds, setFunds] = useState<FundSummary[]>([]);
+  const [status, setStatus] = useState("Loading funds...");
+  const [activeFund, setActiveFund] = useState<FundSummary | null>(null);
+  const [requestNotes, setRequestNotes] = useState("");
+  const [feedback, setFeedback] = useState("");
 
-  const data = useMemo(() => {
-    const waitlistEntries = profiles.flatMap((profile) =>
-      profile.role === "Investor" && profile.waitlistFunds?.length
-        ? profile.waitlistFunds.map((fundName) => ({
-            id: `${profile.id}-${fundName}`,
-            investor: profile.fullName,
-            fund: fundName,
-          }))
-        : []
-    );
+  const profile = useMemo(() => {
+    if (!session || session.role !== "Investor") return null;
+    return profiles.find((item) => item.id === session.id) ?? null;
+  }, [profiles, session]);
 
-    const waitlistInvestors = new Set(waitlistEntries.map((entry) => entry.investor));
-    const waitlistFunds = new Set(waitlistEntries.map((entry) => entry.fund));
-
-    const pendingFunds = fundApplications.filter((application) => application.status === "pending");
-    const verifiedFunds = fundApplications.filter((application) => application.status === "verified");
-
-    return {
-      waitlistEntries,
-      waitlistInvestorsCount: waitlistInvestors.size,
-      waitlistFundsCount: waitlistFunds.size,
-      pendingFunds,
-      verifiedFunds,
+  useEffect(() => {
+    if (!profile) return;
+    let isMounted = true;
+    const loadFunds = async () => {
+      try {
+        const response = await fetch(`${apiBase}/funds`);
+        if (!response.ok) throw new Error("Request failed");
+        const data = (await response.json()) as FundSummary[];
+        if (isMounted) {
+          setFunds(data);
+          setStatus("");
+        }
+      } catch (error) {
+        console.error(error);
+        if (isMounted) {
+          setStatus("Unable to load funds.");
+        }
+      }
     };
-  }, [fundApplications, profiles]);
 
-  const waitlistMax = Math.max(
-    data.waitlistEntries.length,
-    data.waitlistInvestorsCount,
-    data.waitlistFundsCount,
-    1
-  );
-  const requestMax = Math.max(
-    data.pendingFunds.length,
-    data.verifiedFunds.length,
-    data.pendingFunds.length + data.verifiedFunds.length,
-    1
-  );
+    loadFunds();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [profile]);
+
+  const myRequests = useMemo(() => {
+    if (!profile) return [];
+    return waitlistRequests.filter((request) => request.requesterUserId === profile.id);
+  }, [profile, waitlistRequests]);
+
+  const requestByFundId = useMemo(() => {
+    const map = new Map<string, WaitlistRequest>();
+    myRequests.forEach((request) => {
+      map.set(request.fundId, request);
+    });
+    return map;
+  }, [myRequests]);
+
+  const handleSubmitRequest = () => {
+    if (!profile || !activeFund) return;
+    const existing = requestByFundId.get(activeFund.id);
+    if (existing) {
+      setFeedback("You already requested this fund.");
+      return;
+    }
+
+    const now = new Date().toISOString();
+    const newRequest: WaitlistRequest = {
+      id: `waitlist-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
+      createdAt: now,
+      updatedAt: now,
+      requesterUserId: profile.id,
+      requesterRole: "investor",
+      requesterName: profile.fullName,
+      requesterEmail: profile.email,
+      requesterOrg: profile.org ?? null,
+      fundId: activeFund.id,
+      fundNameSnapshot: activeFund.name,
+      status: "pending",
+      reviewedByUserId: null,
+      reviewedAt: null,
+      reviewNotes: null,
+      allocationId: null,
+      allocationStatus: null,
+      metadata: { country: profile.country },
+      requestNotes: requestNotes.trim() ? requestNotes.trim() : null,
+    };
+
+    setWaitlistRequests((prev) => [newRequest, ...prev]);
+    setProfiles((prev) =>
+      prev.map((item) =>
+        item.id === profile.id
+          ? {
+              ...item,
+              waitlistFunds: Array.from(new Set([...(item.waitlistFunds ?? []), activeFund.name])),
+            }
+          : item
+      )
+    );
+    setActiveFund(null);
+    setRequestNotes("");
+    setFeedback("Waitlist request submitted.");
+  };
+
+  if (!profile) {
+    return (
+      <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
+        Please sign in as an investor to view this dashboard.
+      </div>
+    );
+  }
 
   return (
     <>
@@ -67,147 +140,194 @@ export default function InvestorDashboard() {
         >
           Dashboard
         </p>
-        <h1 className="text-2xl font-semibold text-slate-900" data-i18n="dashboardTitleRequests">
-          Requests
-        </h1>
+        <h1 className="text-2xl font-semibold text-slate-900">Investor workspace</h1>
+        <p className="text-sm text-slate-600">
+          Manage your profile, explore funds, and track your waitlist requests.
+        </p>
       </header>
 
-      <section className="flex flex-col gap-3">
-        <h2 className="text-sm font-semibold text-slate-700" data-i18n="dashboardKeyMetrics">
-          Key metrics
-        </h2>
-        <div className="grid gap-4 lg:grid-cols-2">
-          <div className={breakdownCardClass}>
-            <div className="flex items-start justify-between">
-              <div>
-                <h3 className="text-sm font-semibold text-slate-900" data-i18n="dashboardWaitlist">
-                  Waitlist
-                </h3>
-                <p className="text-xs text-slate-500" data-i18n="dashboardWaitlistQueue">
-                  Solicitudes en cola
-                </p>
-              </div>
-              <span className="text-sm font-semibold text-slate-900">
-                {data.waitlistEntries.length}
-              </span>
+      {feedback ? (
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+          {feedback}
+        </div>
+      ) : null}
+
+      <section className="grid gap-4 lg:grid-cols-[minmax(0,1fr),minmax(0,1fr)]">
+        <div className={cardClass}>
+          <h2 className="text-sm font-semibold text-slate-700">My profile</h2>
+          <div className="mt-4 grid gap-3 text-sm text-slate-600">
+            <div className="flex items-center justify-between">
+              <span>Name</span>
+              <span className="font-semibold text-slate-900">{profile.fullName}</span>
             </div>
-            <div className="mt-4 grid gap-4 md:grid-cols-[140px,1fr]">
-              <svg viewBox="0 0 140 100" className="h-24 w-full">
-                <rect
-                  x="12"
-                  y={92 - getBarHeight(data.waitlistEntries.length, waitlistMax)}
-                  width="24"
-                  height={getBarHeight(data.waitlistEntries.length, waitlistMax)}
-                  fill="#0f766e"
-                />
-                <rect
-                  x="52"
-                  y={92 - getBarHeight(data.waitlistInvestorsCount, waitlistMax)}
-                  width="24"
-                  height={getBarHeight(data.waitlistInvestorsCount, waitlistMax)}
-                  fill="#14b8a6"
-                />
-                <rect
-                  x="92"
-                  y={92 - getBarHeight(data.waitlistFundsCount, waitlistMax)}
-                  width="24"
-                  height={getBarHeight(data.waitlistFundsCount, waitlistMax)}
-                  fill="#94a3b8"
-                />
-              </svg>
-              <div className="space-y-2 text-xs text-slate-600">
-                <div className="flex items-center justify-between">
-                  <span data-i18n="dashboardWaitlistTotalRequests">Solicitudes totales</span>
-                  <span className="font-semibold text-slate-900">
-                    {data.waitlistEntries.length}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span data-i18n="dashboardWaitlistInvestors">
-                    Inversionistas con waitlist
-                  </span>
-                  <span className="font-semibold text-slate-900">
-                    {data.waitlistInvestorsCount}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span data-i18n="dashboardWaitlistFunds">Fondos solicitados</span>
-                  <span className="font-semibold text-slate-900">
-                    {data.waitlistFundsCount}
-                  </span>
-                </div>
-              </div>
+            <div className="flex items-center justify-between">
+              <span>Email</span>
+              <span className="font-semibold text-slate-900">{profile.email}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span>Country</span>
+              <span className="font-semibold text-slate-900">{profile.country}</span>
             </div>
           </div>
+        </div>
 
-          <div className={breakdownCardClass}>
-            <div className="flex items-start justify-between">
-              <div>
-                <h3 className="text-sm font-semibold text-slate-900" data-i18n="dashboardFundRequests">
-                  Fund requests
-                </h3>
-                <p className="text-xs text-slate-500" data-i18n="dashboardFundRequestsPending">
-                  Fondos nuevos por aprobar
-                </p>
-              </div>
-              <span className="text-sm font-semibold text-slate-900">
-                {data.pendingFunds.length}
+        <div className={cardClass}>
+          <h2 className="text-sm font-semibold text-slate-700">Waitlist summary</h2>
+          <div className="mt-4 grid gap-3 text-sm text-slate-600">
+            <div className="flex items-center justify-between">
+              <span>Total requests</span>
+              <span className="font-semibold text-slate-900">{myRequests.length}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span>Pending</span>
+              <span className="font-semibold text-slate-900">
+                {myRequests.filter((request) => request.status === "pending").length}
               </span>
             </div>
-            <div className="mt-4 grid gap-4 md:grid-cols-[140px,1fr]">
-              <svg viewBox="0 0 140 100" className="h-24 w-full">
-                <rect
-                  x="12"
-                  y={92 - getBarHeight(data.pendingFunds.length, requestMax)}
-                  width="24"
-                  height={getBarHeight(data.pendingFunds.length, requestMax)}
-                  fill="#f97316"
-                />
-                <rect
-                  x="52"
-                  y={92 - getBarHeight(data.verifiedFunds.length, requestMax)}
-                  width="24"
-                  height={getBarHeight(data.verifiedFunds.length, requestMax)}
-                  fill="#fdba74"
-                />
-                <rect
-                  x="92"
-                  y={92 - getBarHeight(
-                    data.pendingFunds.length + data.verifiedFunds.length,
-                    requestMax
-                  )}
-                  width="24"
-                  height={getBarHeight(
-                    data.pendingFunds.length + data.verifiedFunds.length,
-                    requestMax
-                  )}
-                  fill="#94a3b8"
-                />
-              </svg>
-              <div className="space-y-2 text-xs text-slate-600">
-                <div className="flex items-center justify-between">
-                  <span data-i18n="dashboardPendingApproval">Pendientes de aprobación</span>
-                  <span className="font-semibold text-slate-900">
-                    {data.pendingFunds.length}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span data-i18n="dashboardVerified">Verificados</span>
-                  <span className="font-semibold text-slate-900">
-                    {data.verifiedFunds.length}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span data-i18n="dashboardTotalRegistered">Totales registrados</span>
-                  <span className="font-semibold text-slate-900">
-                    {data.pendingFunds.length + data.verifiedFunds.length}
-                  </span>
-                </div>
-              </div>
+            <div className="flex items-center justify-between">
+              <span>Approved</span>
+              <span className="font-semibold text-slate-900">
+                {myRequests.filter((request) => request.status === "approved").length}
+              </span>
             </div>
           </div>
         </div>
       </section>
+
+      <section className="flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-semibold text-slate-700">Browse funds</h2>
+          <span className="text-xs text-slate-500">
+            {funds.length ? `${funds.length} funds` : status}
+          </span>
+        </div>
+        <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+          {funds.map((fund) => {
+            const existingRequest = requestByFundId.get(fund.id);
+            const config = existingRequest ? statusConfig[existingRequest.status] : null;
+            return (
+              <div className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm" key={fund.id}>
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-lg font-semibold text-slate-900">{fund.name}</p>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      <span className="rounded-full border border-igates-500/20 bg-igates-500/10 px-3 py-1 text-xs font-semibold text-igates-700">
+                        {fund.strategy}
+                      </span>
+                      <span className="rounded-full border border-igates-500/20 bg-igates-500/10 px-3 py-1 text-xs font-semibold text-igates-700">
+                        {fund.domicile}
+                      </span>
+                    </div>
+                  </div>
+                  <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                    {fund.status}
+                  </span>
+                </div>
+                <p className="text-sm text-slate-600">{fund.summary}</p>
+                <div className="flex flex-wrap gap-2">
+                  <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600">
+                    AUM {fund.aum}
+                  </span>
+                  <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600">
+                    {fund.performance}
+                  </span>
+                </div>
+                <div className="mt-2 flex flex-wrap items-center gap-3">
+                  <button
+                    className="inline-flex items-center justify-center rounded-full bg-igates-500 px-5 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-white shadow-lg shadow-igates-500/30 transition hover:bg-igates-400 disabled:cursor-not-allowed disabled:bg-slate-300"
+                    type="button"
+                    onClick={() => setActiveFund(fund)}
+                    disabled={Boolean(existingRequest)}
+                  >
+                    {existingRequest ? "Requested" : "Join waitlist"}
+                  </button>
+                  {config ? <StatusBadge label={config.label} tone={config.tone} /> : null}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-sm font-semibold text-slate-700">My waitlist requests</h2>
+        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+          <table className="w-full text-left text-xs">
+            <thead className="bg-slate-50 text-[0.7rem] uppercase tracking-wide text-slate-500">
+              <tr>
+                <th className="px-4 py-2">Fund</th>
+                <th className="px-4 py-2">Submitted</th>
+                <th className="px-4 py-2">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {myRequests.length ? (
+                myRequests.map((request) => {
+                  const config = statusConfig[request.status];
+                  return (
+                    <tr key={request.id} className="text-slate-700">
+                      <td className="px-4 py-2">
+                        <span className="font-semibold text-slate-900">{request.fundNameSnapshot}</span>
+                      </td>
+                      <td className="px-4 py-2">
+                        {new Date(request.createdAt).toLocaleDateString("en-US")}
+                      </td>
+                      <td className="px-4 py-2">
+                        <StatusBadge label={config.label} tone={config.tone} />
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td className="px-4 py-6 text-center text-xs font-medium text-slate-500" colSpan={3}>
+                    No waitlist requests yet.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {activeFund ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 px-4">
+          <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-xl">
+            <h3 className="text-lg font-semibold text-slate-900">Join waitlist</h3>
+            <p className="mt-2 text-sm text-slate-600">
+              Confirm your waitlist request for <span className="font-semibold">{activeFund.name}</span>.
+            </p>
+            <label className="mt-4 block text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+              Notes (optional)
+            </label>
+            <textarea
+              className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700"
+              rows={4}
+              value={requestNotes}
+              onChange={(event) => setRequestNotes(event.target.value)}
+            />
+            <div className="mt-5 flex flex-wrap justify-end gap-3">
+              <button
+                className="rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-600"
+                type="button"
+                onClick={() => {
+                  setActiveFund(null);
+                  setRequestNotes("");
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                className="rounded-full bg-igates-500 px-5 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-white shadow-lg shadow-igates-500/30 transition hover:bg-igates-400"
+                type="button"
+                onClick={handleSubmitRequest}
+              >
+                Submit request
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </>
   );
 }

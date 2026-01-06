@@ -10,7 +10,7 @@ type Column = {
 type Row = {
   id: string;
   [key: string]: React.ReactNode;
-  statusTone?: "success" | "warning" | "neutral";
+  statusTone?: "success" | "warning" | "neutral" | "danger" | "info";
   statusLabel?: string;
 };
 
@@ -105,7 +105,7 @@ export function StatusCell({
 }: {
   label: string;
   labelKey?: string;
-  tone?: "success" | "warning" | "neutral";
+  tone?: "success" | "warning" | "neutral" | "danger" | "info";
 }) {
   return <StatusBadge label={label} labelKey={labelKey} tone={tone} />;
 }
