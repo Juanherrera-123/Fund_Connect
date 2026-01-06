@@ -35,7 +35,7 @@ export function Hero() {
           </p>
           <div className="space-y-3">
             <h1
-              className="igates-gradient-text text-4xl font-semibold leading-tight md:text-6xl"
+              className="igates-gradient-text pb-1 text-4xl font-semibold leading-[1.05] md:text-6xl"
               data-i18n="heroTitle"
             >
               Conectando capital con gestores verificados
