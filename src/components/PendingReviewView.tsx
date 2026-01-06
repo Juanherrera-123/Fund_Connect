@@ -19,7 +19,9 @@ export function PendingReviewView() {
   if (!profile) {
     return (
       <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-        Inicia sesión como gestor para ver este panel.
+        <span data-i18n="dashboardManagerLoginPrompt">
+          Inicia sesión como gestor para ver este panel.
+        </span>
       </div>
     );
   }
@@ -29,24 +31,32 @@ export function PendingReviewView() {
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <h3 className="text-lg font-semibold text-slate-900">Perfil</h3>
+        <h3 className="text-lg font-semibold text-slate-900" data-i18n="pendingReviewProfileTitle">
+          Perfil
+        </h3>
         <p className="mt-2 text-xs uppercase tracking-[0.2em] text-slate-500">
-          Estado de onboarding
+          <span data-i18n="pendingReviewOnboardingStatus">Estado de onboarding</span>
         </p>
         <span className="mt-2 inline-flex rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">
-          {profile.fundManagerProfile?.status || "Pendiente"}
+          <span data-i18n="dashboardStatusPending">
+            {profile.fundManagerProfile?.status || "Pendiente"}
+          </span>
         </span>
-        <p className="mt-2 text-xs text-slate-500">Revisión por MasterUser.</p>
+        <p className="mt-2 text-xs text-slate-500" data-i18n="pendingReviewMasterNote">
+          Revisión por MasterUser.
+        </p>
       </div>
       <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <h3 className="text-lg font-semibold text-slate-900">Fondos registrados</h3>
+        <h3 className="text-lg font-semibold text-slate-900" data-i18n="pendingReviewFundsTitle">
+          Fondos registrados
+        </h3>
         <div className="mt-3 grid gap-1 text-sm text-slate-600">
           {myApplications.length ? (
             myApplications.map((item) => (
               <span key={item.id}>• {item.fundName} ({item.status})</span>
             ))
           ) : (
-            <span>No hay fondos registrados.</span>
+            <span data-i18n="pendingReviewNoFunds">No hay fondos registrados.</span>
           )}
         </div>
       </div>

@@ -11,6 +11,7 @@ import type { Session } from "@/lib/types";
 const masterNavItems = [
   {
     label: "Overview",
+    labelKey: "dashboardNavOverview",
     href: "/dashboard/master",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -24,6 +25,7 @@ const masterNavItems = [
   },
   {
     label: "Funds",
+    labelKey: "dashboardNavFunds",
     href: "/dashboard/fund-manager",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -37,6 +39,7 @@ const masterNavItems = [
   },
   {
     label: "Requests",
+    labelKey: "dashboardNavRequests",
     href: "/dashboard/investor",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -50,6 +53,7 @@ const masterNavItems = [
   },
   {
     label: "Analytics",
+    labelKey: "dashboardNavAnalytics",
     href: "/dashboard/family-office",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -63,6 +67,7 @@ const masterNavItems = [
   },
   {
     label: "Messages",
+    labelKey: "dashboardNavMessages",
     href: "/dashboard/messages",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -76,6 +81,7 @@ const masterNavItems = [
   },
   {
     label: "Settings",
+    labelKey: "dashboardNavSettings",
     href: "/dashboard/settings",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -92,6 +98,7 @@ const masterNavItems = [
 const fundManagerNavItems = [
   {
     label: "Overview",
+    labelKey: "dashboardNavOverview",
     href: "/dashboard/manager/overview",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -105,6 +112,7 @@ const fundManagerNavItems = [
   },
   {
     label: "Fund details",
+    labelKey: "dashboardNavFundDetails",
     href: "/dashboard/manager/fund-details",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -118,6 +126,7 @@ const fundManagerNavItems = [
   },
   {
     label: "Messages",
+    labelKey: "dashboardNavMessages",
     href: "/dashboard/manager/messages",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -131,6 +140,7 @@ const fundManagerNavItems = [
   },
   {
     label: "Settings",
+    labelKey: "dashboardNavSettings",
     href: "/dashboard/manager/settings",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -147,14 +157,14 @@ const fundManagerNavItems = [
 const actionIconClass =
   "flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-600 transition hover:border-slate-300 hover:text-slate-900";
 
-const roleMap: Record<string, string> = {
-  "/dashboard/master": "MasterUser",
-  "/dashboard/fund-manager": "MasterUser",
-  "/dashboard/investor": "MasterUser",
-  "/dashboard/family-office": "MasterUser",
-  "/dashboard/messages": "MasterUser",
-  "/dashboard/settings": "MasterUser",
-  "/dashboard/manager": "Fund Manager",
+const roleMap: Record<string, { label: string; labelKey: string }> = {
+  "/dashboard/master": { label: "MasterUser", labelKey: "dashboardRoleMaster" },
+  "/dashboard/fund-manager": { label: "MasterUser", labelKey: "dashboardRoleMaster" },
+  "/dashboard/investor": { label: "MasterUser", labelKey: "dashboardRoleMaster" },
+  "/dashboard/family-office": { label: "MasterUser", labelKey: "dashboardRoleMaster" },
+  "/dashboard/messages": { label: "MasterUser", labelKey: "dashboardRoleMaster" },
+  "/dashboard/settings": { label: "MasterUser", labelKey: "dashboardRoleMaster" },
+  "/dashboard/manager": { label: "Fund Manager", labelKey: "dashboardRoleManager" },
 };
 
 export default function DashboardShell({
@@ -168,8 +178,10 @@ export default function DashboardShell({
   const sessionRole = session?.role;
   const navItems = sessionRole === "Fund Manager" ? fundManagerNavItems : masterNavItems;
   const role =
-    Object.entries(roleMap).find(([href]) => pathname?.startsWith(href))?.[1] ??
-    "Dashboard User";
+    Object.entries(roleMap).find(([href]) => pathname?.startsWith(href))?.[1] ?? {
+      label: "Dashboard User",
+      labelKey: "dashboardRoleUser",
+    };
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -231,7 +243,7 @@ export default function DashboardShell({
                 <span className="flex h-4 w-4 items-center justify-center text-slate-500">
                   {item.icon}
                 </span>
-                <span>{item.label}</span>
+                <span data-i18n={item.labelKey}>{item.label}</span>
               </Link>
             );
           })}
@@ -241,14 +253,22 @@ export default function DashboardShell({
       <div className="flex h-screen flex-col md:ml-56">
         <header className="fixed left-0 right-0 top-0 z-20 flex h-14 items-center justify-between gap-4 border-b border-slate-200 bg-white px-6 md:left-56">
           <div className="flex flex-1 items-center gap-4">
-            <h1 className="text-sm font-semibold text-slate-900">Dashboard</h1>
+            <h1 className="text-sm font-semibold text-slate-900" data-i18n="dashboardLabel">
+              Dashboard
+            </h1>
             <input
               className="h-9 w-full max-w-xl rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm text-slate-700 placeholder:text-slate-400 focus:border-slate-300 focus:outline-none"
               placeholder="Search funds, users, requests…"
+              data-i18n-placeholder="dashboardSearchPlaceholder"
             />
           </div>
           <div className="flex items-center gap-3 text-sm">
-            <button className={actionIconClass} type="button" aria-label="Notifications">
+            <button
+              className={actionIconClass}
+              type="button"
+              aria-label="Notifications"
+              data-i18n-aria-label="dashboardNotificationsLabel"
+            >
               <svg
                 className="h-5 w-5"
                 viewBox="0 0 24 24"
@@ -283,6 +303,7 @@ export default function DashboardShell({
                     type="button"
                     role="menuitem"
                     onClick={handleLogout}
+                    data-i18n="dashboardLogout"
                   >
                     Cerrar sesión
                   </button>
@@ -290,7 +311,7 @@ export default function DashboardShell({
               ) : null}
             </div>
             <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-700">
-              {role}
+              <span data-i18n={role.labelKey}>{role.label}</span>
             </span>
           </div>
         </header>

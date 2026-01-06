@@ -67,7 +67,8 @@ export default function FundManagerDashboard() {
 
   const fundKpis = [
     {
-      label: "Total funds",
+          label: "Total funds",
+          labelKey: "dashboardKpiTotalFunds",
       value: `${data.pendingFunds.length + data.verifiedFunds.length}`,
       icon: (
         <svg viewBox="0 0 20 20" className={iconClass} aria-hidden>
@@ -84,6 +85,7 @@ export default function FundManagerDashboard() {
     },
     {
       label: "Inactive funds",
+      labelKey: "dashboardKpiInactiveFunds",
       value: `${data.pendingFunds.length}`,
       icon: (
         <svg viewBox="0 0 20 20" className={iconClass} aria-hidden>
@@ -100,6 +102,7 @@ export default function FundManagerDashboard() {
     },
     {
       label: "Active funds",
+      labelKey: "dashboardKpiActiveFunds",
       value: `${data.verifiedFunds.length}`,
       icon: (
         <svg viewBox="0 0 20 20" className={iconClass} aria-hidden>
@@ -124,14 +127,21 @@ export default function FundManagerDashboard() {
   return (
     <>
       <header className="flex flex-col gap-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
+        <p
+          className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500"
+          data-i18n="dashboardLabel"
+        >
           Dashboard
         </p>
-        <h1 className="text-2xl font-semibold text-slate-900">Funds</h1>
+        <h1 className="text-2xl font-semibold text-slate-900" data-i18n="dashboardTitleFunds">
+          Funds
+        </h1>
       </header>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-sm font-semibold text-slate-700">Key metrics</h2>
+        <h2 className="text-sm font-semibold text-slate-700" data-i18n="dashboardKeyMetrics">
+          Key metrics
+        </h2>
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {fundKpis.map((kpi) => (
             <KpiCard key={kpi.label} {...kpi} />
@@ -140,37 +150,47 @@ export default function FundManagerDashboard() {
       </section>
 
       <section className="flex flex-col gap-4">
-        <h2 className="text-sm font-semibold text-slate-700">Operational queues</h2>
+        <h2 className="text-sm font-semibold text-slate-700" data-i18n="dashboardOperationalQueues">
+          Operational queues
+        </h2>
         <div className="grid gap-4 xl:grid-cols-2">
           <DataTable
             title="Pending fund approvals"
+            titleKey="dashboardPendingFundApprovals"
             actionLabel="Review"
+            actionLabelKey="dashboardReviewAction"
             columns={[
-              { key: "fund", label: "Fund name" },
-              { key: "owner", label: "Owner" },
-              { key: "status", label: "Status" },
+              { key: "fund", label: "Fund name", labelKey: "dashboardColumnFundName" },
+              { key: "owner", label: "Owner", labelKey: "dashboardColumnOwner" },
+              { key: "status", label: "Status", labelKey: "dashboardColumnStatus" },
             ]}
             rows={data.pendingFunds.map((application) => ({
               id: application.id,
               fund: application.fundName,
               owner: data.managerNameById.get(application.managerId) ?? "Gestor registrado",
-              status: <StatusCell label="Pendiente" tone="warning" />,
+              status: (
+                <StatusCell label="Pendiente" labelKey="dashboardStatusPending" tone="warning" />
+              ),
             }))}
           />
 
           <DataTable
             title="Active funds"
+            titleKey="dashboardActiveFunds"
             actionLabel="Open"
+            actionLabelKey="dashboardOpenAction"
             columns={[
-              { key: "fund", label: "Fund name" },
-              { key: "owner", label: "Owner" },
-              { key: "status", label: "Status" },
+              { key: "fund", label: "Fund name", labelKey: "dashboardColumnFundName" },
+              { key: "owner", label: "Owner", labelKey: "dashboardColumnOwner" },
+              { key: "status", label: "Status", labelKey: "dashboardColumnStatus" },
             ]}
             rows={data.verifiedFunds.map((fund) => ({
               id: fund.id,
               fund: fund.name,
               owner: fund.manager,
-              status: <StatusCell label={fund.status} tone="success" />,
+              status: (
+                <StatusCell label={fund.status} labelKey="dashboardStatusVerified" tone="success" />
+              ),
             }))}
           />
         </div>

@@ -18,7 +18,9 @@ export default function FundManagerSettings() {
   if (!profile) {
     return (
       <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-        Inicia sesión como gestor para ver este panel.
+        <span data-i18n="dashboardManagerLoginPrompt">
+          Inicia sesión como gestor para ver este panel.
+        </span>
       </div>
     );
   }
@@ -33,23 +35,39 @@ export default function FundManagerSettings() {
   return (
     <>
       <header className="flex flex-col gap-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
+        <p
+          className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500"
+          data-i18n="dashboardLabel"
+        >
           Dashboard
         </p>
-        <h1 className="text-2xl font-semibold text-slate-900">Settings</h1>
+        <h1 className="text-2xl font-semibold text-slate-900" data-i18n="dashboardTitleSettings">
+          Settings
+        </h1>
       </header>
 
       <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex flex-col gap-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h2 className="text-sm font-semibold text-slate-900">Perfil del gestor</h2>
-              <p className="text-xs text-slate-500">Revisa los datos de tu cuenta.</p>
+              <h2 className="text-sm font-semibold text-slate-900" data-i18n="dashboardManagerProfileTitle">
+                Perfil del gestor
+              </h2>
+              <p className="text-xs text-slate-500" data-i18n="dashboardManagerProfileLead">
+                Revisa los datos de tu cuenta.
+              </p>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-slate-600">Estado</span>
+              <span className="text-xs font-semibold text-slate-600" data-i18n="dashboardStatusLabel">
+                Estado
+              </span>
               <StatusBadge
                 label={profile.fundManagerProfile?.status === "verified" ? "Activo" : "Pendiente"}
+                labelKey={
+                  profile.fundManagerProfile?.status === "verified"
+                    ? "dashboardStatusActive"
+                    : "dashboardStatusPending"
+                }
                 tone={profile.fundManagerProfile?.status === "verified" ? "success" : "warning"}
               />
             </div>
@@ -57,13 +75,15 @@ export default function FundManagerSettings() {
 
           <div className="grid gap-4 md:grid-cols-2">
             {[
-              { label: "Nombre", value: profile.fullName },
-              { label: "Email", value: profile.email },
-              { label: "País", value: profile.country },
-              { label: "Fondo asociado", value: fundName },
+              { label: "Nombre", labelKey: "dashboardFieldName", value: profile.fullName },
+              { label: "Email", labelKey: "dashboardFieldEmail", value: profile.email },
+              { label: "País", labelKey: "dashboardFieldCountry", value: profile.country },
+              { label: "Fondo asociado", labelKey: "dashboardFieldFund", value: fundName },
             ].map((field) => (
               <label key={field.label} className="flex flex-col gap-2 text-xs font-medium">
-                <span className="text-slate-600">{field.label}</span>
+                <span className="text-slate-600" data-i18n={field.labelKey}>
+                  {field.label}
+                </span>
                 <input
                   defaultValue={field.value}
                   readOnly
@@ -74,13 +94,24 @@ export default function FundManagerSettings() {
           </div>
 
           <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
-            <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+            <h3
+              className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500"
+              data-i18n="dashboardManagerFundStatusTitle"
+            >
               Estado del fondo
             </h3>
             <p className="mt-2 text-sm text-slate-600">
-              {fundStatus === "verified"
-                ? "Tu fondo ya aparece en gestores verificados."
-                : "Tu fondo está pendiente de aprobación."}
+              <span
+                data-i18n={
+                  fundStatus === "verified"
+                    ? "dashboardManagerFundVerified"
+                    : "dashboardManagerFundPending"
+                }
+              >
+                {fundStatus === "verified"
+                  ? "Tu fondo ya aparece en gestores verificados."
+                  : "Tu fondo está pendiente de aprobación."}
+              </span>
             </p>
           </div>
         </div>

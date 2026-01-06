@@ -8,23 +8,23 @@ import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { FundApplication, UserProfile } from "@/lib/types";
 
 const requestsLegend = [
-  { label: "Waitlist", color: "bg-amber-400" },
-  { label: "Fund requests", color: "bg-emerald-500" },
+  { label: "Waitlist", labelKey: "dashboardWaitlist", color: "bg-amber-400" },
+  { label: "Fund requests", labelKey: "dashboardFundRequests", color: "bg-emerald-500" },
 ];
 
 const usersLegend = [
-  { label: "Active users", color: "bg-emerald-500" },
-  { label: "Pending managers", color: "bg-slate-400" },
+  { label: "Active users", labelKey: "dashboardActiveUsers", color: "bg-emerald-500" },
+  { label: "Pending managers", labelKey: "dashboardPendingManagers", color: "bg-slate-400" },
 ];
 
 const coverageLegend = [
-  { label: "Verified funds", color: "bg-emerald-500" },
-  { label: "Funds in review", color: "bg-slate-400" },
+  { label: "Verified funds", labelKey: "dashboardVerifiedFunds", color: "bg-emerald-500" },
+  { label: "Funds in review", labelKey: "dashboardFundsReview", color: "bg-slate-400" },
 ];
 
 const fundsLegend = [
-  { label: "Active funds", color: "bg-emerald-500" },
-  { label: "Pending funds", color: "bg-amber-400" },
+  { label: "Active funds", labelKey: "dashboardLegendActiveFunds", color: "bg-emerald-500" },
+  { label: "Pending funds", labelKey: "dashboardPendingFunds", color: "bg-amber-400" },
 ];
 
 const getBarHeight = (value: number, max: number) => {
@@ -71,16 +71,23 @@ export default function FamilyOfficeDashboard() {
   return (
     <>
       <header className="flex flex-col gap-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
+        <p
+          className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500"
+          data-i18n="dashboardLabel"
+        >
           Dashboard
         </p>
-        <h1 className="text-2xl font-semibold text-slate-900">Analytics</h1>
+        <h1 className="text-2xl font-semibold text-slate-900" data-i18n="dashboardTitleAnalytics">
+          Analytics
+        </h1>
       </header>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-sm font-semibold text-slate-700">Analytics</h2>
+        <h2 className="text-sm font-semibold text-slate-700" data-i18n="dashboardAnalytics">
+          Analytics
+        </h2>
         <div className="grid gap-4 lg:grid-cols-2">
-          <ChartCard title="Requests" legend={requestsLegend}>
+          <ChartCard title="Requests" titleKey="dashboardRequests" legend={requestsLegend}>
             <svg viewBox="0 0 240 120" className="h-32 w-full">
               <rect
                 x="20"
@@ -99,7 +106,7 @@ export default function FamilyOfficeDashboard() {
             </svg>
           </ChartCard>
 
-          <ChartCard title="Users" legend={usersLegend}>
+          <ChartCard title="Users" titleKey="dashboardUsers" legend={usersLegend}>
             <svg viewBox="0 0 240 120" className="h-32 w-full">
               <rect
                 x="30"
@@ -118,7 +125,7 @@ export default function FamilyOfficeDashboard() {
             </svg>
           </ChartCard>
 
-          <ChartCard title="Fund coverage" legend={coverageLegend}>
+          <ChartCard title="Fund coverage" titleKey="dashboardFundCoverage" legend={coverageLegend}>
             <svg viewBox="0 0 240 120" className="h-32 w-full">
               <rect
                 x="30"
@@ -137,7 +144,7 @@ export default function FamilyOfficeDashboard() {
             </svg>
           </ChartCard>
 
-          <ChartCard title="Active funds" legend={fundsLegend}>
+          <ChartCard title="Active funds" titleKey="dashboardActiveFunds" legend={fundsLegend}>
             <svg viewBox="0 0 120 120" className="h-32 w-32">
               <circle
                 cx="60"

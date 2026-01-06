@@ -19,7 +19,7 @@ export function FamilyDashboardContent() {
   if (!profile) {
     return (
       <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-        Inicia sesión como Family Office.
+        <span data-i18n="familyDashboardLoginPrompt">Inicia sesión como Family Office.</span>
       </div>
     );
   }
@@ -27,43 +27,58 @@ export function FamilyDashboardContent() {
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <h3 className="text-lg font-semibold text-slate-900">Mandato activo</h3>
+        <h3 className="text-lg font-semibold text-slate-900" data-i18n="familyDashboardActiveMandate">
+          Mandato activo
+        </h3>
         <div className="mt-3 grid gap-1 text-sm text-slate-600">
           <span>
-            <strong>Rol:</strong> {profile.familyOfficePreferences?.managementRole || "—"}
+            <strong data-i18n="familyDashboardRoleLabel">Rol:</strong>{" "}
+            {profile.familyOfficePreferences?.managementRole || "—"}
           </span>
           <span>
-            <strong>Diversificación:</strong> {profile.familyOfficePreferences?.diversificationLevel || "—"}
+            <strong data-i18n="familyDashboardDiversificationLabel">Diversificación:</strong>{" "}
+            {profile.familyOfficePreferences?.diversificationLevel || "—"}
           </span>
           <span>
-            <strong>Estrategias:</strong> {formatStrategyList(profile.familyOfficePreferences?.strategyPreferences)}
+            <strong data-i18n="familyDashboardStrategiesLabel">Estrategias:</strong>{" "}
+            {formatStrategyList(profile.familyOfficePreferences?.strategyPreferences)}
           </span>
         </div>
       </div>
       <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <h3 className="text-lg font-semibold text-slate-900">Interacción y reporting</h3>
+        <h3 className="text-lg font-semibold text-slate-900" data-i18n="familyDashboardInteractionTitle">
+          Interacción y reporting
+        </h3>
         <div className="mt-3 grid gap-1 text-sm text-slate-600">
           <span>
-            <strong>Nivel de interacción:</strong> {profile.familyOfficePreferences?.interactionLevel || "—"}
+            <strong data-i18n="familyDashboardInteractionLabel">Nivel de interacción:</strong>{" "}
+            {profile.familyOfficePreferences?.interactionLevel || "—"}
           </span>
           <span>
-            <strong>Reporting:</strong> {profile.familyOfficePreferences?.reportingCustomization || "—"}
+            <strong data-i18n="familyDashboardReportingLabel">Reporting:</strong>{" "}
+            {profile.familyOfficePreferences?.reportingCustomization || "—"}
           </span>
-          <span>Acceso directo con gestores y MasterUser activo.</span>
+          <span data-i18n="familyDashboardAccessNote">
+            Acceso directo con gestores y MasterUser activo.
+          </span>
         </div>
       </div>
       <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:col-span-2">
-        <h3 className="text-lg font-semibold text-slate-900">Acciones rápidas</h3>
+        <h3 className="text-lg font-semibold text-slate-900" data-i18n="familyDashboardQuickActions">
+          Acciones rápidas
+        </h3>
         <div className="mt-4 flex flex-wrap gap-3">
           <Link
             className="inline-flex items-center justify-center rounded-full bg-igates-500 px-5 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-white shadow-lg shadow-igates-500/30 transition hover:bg-igates-400"
             href="/gestores-verificados"
+            data-i18n="familyDashboardViewManagers"
           >
             Ver gestores verificados
           </Link>
           <Link
             className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
             href="/profile"
+            data-i18n="familyDashboardViewProfile"
           >
             Ver perfil
           </Link>

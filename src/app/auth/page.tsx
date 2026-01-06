@@ -10,9 +10,16 @@ export default function AuthPage() {
         <section className="py-8">
           <div className="mx-auto w-full max-w-6xl px-6">
             <div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-igates-500/10 to-igates-400/10 p-6">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-igates-500">User Access</p>
-              <h1 className="mt-2 text-3xl font-semibold text-slate-900">Acceso y onboarding</h1>
-              <p className="mt-3 max-w-2xl text-sm text-slate-600">
+              <p
+                className="text-xs font-semibold uppercase tracking-[0.2em] text-igates-500"
+                data-i18n="authEyebrow"
+              >
+                User Access
+              </p>
+              <h1 className="mt-2 text-3xl font-semibold text-slate-900" data-i18n="authTitle">
+                Acceso y onboarding
+              </h1>
+              <p className="mt-3 max-w-2xl text-sm text-slate-600" data-i18n="authLead">
                 Completa un KYC ligero y elige tu perfil para desbloquear el flujo de IGATES.
               </p>
             </div>

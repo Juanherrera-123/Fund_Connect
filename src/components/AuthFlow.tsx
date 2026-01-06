@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { useLanguage } from "@/components/LanguageProvider";
 import {
   DEFAULT_FUND_MANAGER_PROFILES,
   MASTER_USER,
@@ -23,6 +24,7 @@ type SignupStep =
 
 export function AuthFlow() {
   const router = useRouter();
+  const { strings } = useLanguage();
   const [activeTab, setActiveTab] = useState<"signup" | "login">("signup");
   const [stepIndex, setStepIndex] = useState(0);
   const [signupStatus, setSignupStatus] = useState("");
@@ -69,7 +71,7 @@ export function AuthFlow() {
   const validateKyc = () => {
     const missing = requiredKycFields.filter((field) => !kycAnswers[field]);
     if (missing.length) {
-      setSignupStatus("Completa todos los campos para continuar.");
+      setSignupStatus(strings.authStatusMissingFields);
       return false;
     }
     return true;
@@ -85,7 +87,7 @@ export function AuthFlow() {
     });
 
     if (!isValid) {
-      setSignupStatus("Responde todas las preguntas para continuar.");
+      setSignupStatus(strings.authStatusMissingSurvey);
     }
 
     return isValid;
@@ -119,7 +121,7 @@ export function AuthFlow() {
     if (!role) return;
     const existing = profiles.find((profile) => profile.email.toLowerCase() === kycAnswers.email?.toLowerCase());
     if (existing) {
-      setSignupStatus("Este email ya está registrado.");
+      setSignupStatus(strings.authStatusEmailExists);
       return;
     }
 
@@ -212,7 +214,7 @@ export function AuthFlow() {
     const password = String(formData.get("password") || "").trim();
 
     if (!identifier || !password) {
-      setLoginStatus("Ingresa tus credenciales.");
+      setLoginStatus(strings.authStatusMissingCredentials);
       return;
     }
 
@@ -227,7 +229,7 @@ export function AuthFlow() {
     );
 
     if (!match) {
-      setLoginStatus("Credenciales inválidas.");
+      setLoginStatus(strings.authStatusInvalidCredentials);
       return;
     }
 
@@ -250,6 +252,7 @@ export function AuthFlow() {
         className="flex gap-2 rounded-full bg-slate-100 p-1"
         role="tablist"
         aria-label="Access options"
+        data-i18n-aria-label="authAccessOptionsLabel"
       >
         <button
           className={`flex-1 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition ${
@@ -261,6 +264,7 @@ export function AuthFlow() {
           role="tab"
           aria-selected={activeTab === "signup"}
           onClick={() => setActiveTab("signup")}
+          data-i18n="authTabSignup"
         >
           Sign Up
         </button>
@@ -274,6 +278,7 @@ export function AuthFlow() {
           role="tab"
           aria-selected={activeTab === "login"}
           onClick={() => setActiveTab("login")}
+          data-i18n="authTabLogin"
         >
           Log In
         </button>
@@ -282,7 +287,7 @@ export function AuthFlow() {
       <div className="mt-6">
         <div className={activeTab === "signup" ? "block" : "hidden"} role="tabpanel">
           <div className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
-            Step {stepIndex + 1} of {totalSteps}
+            {strings.authStepLabel} {stepIndex + 1} {strings.authStepOf} {totalSteps}
           </div>
           <form
             className="mt-4 grid gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-5"
@@ -291,55 +296,59 @@ export function AuthFlow() {
             {currentStep.type === "kyc" && (
               <>
                 <label className="grid gap-2 text-sm font-medium text-slate-600">
-                  <span>Nombre completo</span>
+                  <span data-i18n="authFullNameLabel">Nombre completo</span>
                   <input
                     className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
                     type="text"
                     name="fullName"
                     placeholder="Nombre y apellido"
+                    data-i18n-placeholder="authFullNamePlaceholder"
                     value={kycAnswers.fullName ?? ""}
                     onChange={(event) => updateKyc("fullName", event.target.value)}
                     required
                   />
                 </label>
                 <label className="grid gap-2 text-sm font-medium text-slate-600">
-                  <span>Email</span>
+                  <span data-i18n="authEmailLabel">Email</span>
                   <input
                     className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
                     type="email"
                     name="email"
                     placeholder="tu@email.com"
+                    data-i18n-placeholder="authEmailPlaceholder"
                     value={kycAnswers.email ?? ""}
                     onChange={(event) => updateKyc("email", event.target.value)}
                     required
                   />
                 </label>
                 <label className="grid gap-2 text-sm font-medium text-slate-600">
-                  <span>Teléfono</span>
+                  <span data-i18n="authPhoneLabel">Teléfono</span>
                   <input
                     className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
                     type="tel"
                     name="phone"
                     placeholder="+34 600 000 000"
+                    data-i18n-placeholder="authPhonePlaceholder"
                     value={kycAnswers.phone ?? ""}
                     onChange={(event) => updateKyc("phone", event.target.value)}
                     required
                   />
                 </label>
                 <label className="grid gap-2 text-sm font-medium text-slate-600">
-                  <span>País</span>
+                  <span data-i18n="authCountryLabel">País</span>
                   <input
                     className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
                     type="text"
                     name="country"
                     placeholder="País"
+                    data-i18n-placeholder="authCountryPlaceholder"
                     value={kycAnswers.country ?? ""}
                     onChange={(event) => updateKyc("country", event.target.value)}
                     required
                   />
                 </label>
                 <label className="grid gap-2 text-sm font-medium text-slate-600">
-                  <span>Tipo de perfil</span>
+                  <span data-i18n="authRoleLabel">Tipo de perfil</span>
                   <select
                     className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
                     name="role"
@@ -347,7 +356,9 @@ export function AuthFlow() {
                     value={kycAnswers.role ?? ""}
                     onChange={(event) => updateKyc("role", event.target.value)}
                   >
-                    <option value="">Selecciona un perfil</option>
+                    <option value="" data-i18n="authRolePlaceholder">
+                      Selecciona un perfil
+                    </option>
                     {Object.keys(SURVEY_DEFINITIONS).map((roleOption) => (
                       <option key={roleOption} value={roleOption}>
                         {roleOption}
@@ -356,12 +367,13 @@ export function AuthFlow() {
                   </select>
                 </label>
                 <label className="grid gap-2 text-sm font-medium text-slate-600">
-                  <span>Contraseña</span>
+                  <span data-i18n="authPasswordLabel">Contraseña</span>
                   <input
                     className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
                     type="password"
                     name="password"
                     placeholder="Crea una contraseña"
+                    data-i18n-placeholder="authPasswordPlaceholder"
                     value={kycAnswers.password ?? ""}
                     onChange={(event) => updateKyc("password", event.target.value)}
                     required
@@ -444,6 +456,7 @@ export function AuthFlow() {
               type="button"
               onClick={handleBack}
               disabled={stepIndex === 0}
+              data-i18n="authBack"
             >
               Back
             </button>
@@ -451,6 +464,7 @@ export function AuthFlow() {
               className="inline-flex items-center justify-center rounded-full bg-igates-500 px-6 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-white shadow-lg shadow-igates-500/30 transition hover:bg-igates-400"
               type="button"
               onClick={handleNext}
+              data-i18n={stepIndex === steps.length - 1 ? "authCompleteOnboarding" : "authNext"}
             >
               {stepIndex === steps.length - 1 ? "Complete onboarding" : "Next"}
             </button>
@@ -467,28 +481,31 @@ export function AuthFlow() {
             onSubmit={handleLogin}
           >
             <label className="grid gap-2 text-sm font-medium text-slate-600">
-              <span>Usuario o email</span>
+              <span data-i18n="authLoginIdentifierLabel">Usuario o email</span>
               <input
                 className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
                 type="text"
                 name="identifier"
                 placeholder="Sebastian_ACY o tu correo"
+                data-i18n-placeholder="authLoginIdentifierPlaceholder"
                 required
               />
             </label>
             <label className="grid gap-2 text-sm font-medium text-slate-600">
-              <span>Contraseña</span>
+              <span data-i18n="authPasswordLabel">Contraseña</span>
               <input
                 className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
                 type="password"
                 name="password"
                 placeholder="••••••••"
+                data-i18n-placeholder="authLoginPasswordPlaceholder"
                 required
               />
             </label>
             <button
               className="inline-flex items-center justify-center rounded-full bg-igates-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-igates-500/30 transition hover:bg-igates-400"
               type="submit"
+              data-i18n="authTabLogin"
             >
               Log In
             </button>
@@ -497,7 +514,8 @@ export function AuthFlow() {
             </p>
             <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
               <p>
-                MasterUser: <strong>{MASTER_USER.username}</strong> / <strong>{MASTER_USER.password}</strong>
+                <span data-i18n="authMasterUserLabel">MasterUser:</span>{" "}
+                <strong>{MASTER_USER.username}</strong> / <strong>{MASTER_USER.password}</strong>
               </p>
             </div>
           </form>

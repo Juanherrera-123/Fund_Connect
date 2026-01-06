@@ -61,20 +61,31 @@ export default function InvestorDashboard() {
   return (
     <>
       <header className="flex flex-col gap-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
+        <p
+          className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500"
+          data-i18n="dashboardLabel"
+        >
           Dashboard
         </p>
-        <h1 className="text-2xl font-semibold text-slate-900">Requests</h1>
+        <h1 className="text-2xl font-semibold text-slate-900" data-i18n="dashboardTitleRequests">
+          Requests
+        </h1>
       </header>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-sm font-semibold text-slate-700">Key metrics</h2>
+        <h2 className="text-sm font-semibold text-slate-700" data-i18n="dashboardKeyMetrics">
+          Key metrics
+        </h2>
         <div className="grid gap-4 lg:grid-cols-2">
           <div className={breakdownCardClass}>
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="text-sm font-semibold text-slate-900">Waitlist</h3>
-                <p className="text-xs text-slate-500">Solicitudes en cola</p>
+                <h3 className="text-sm font-semibold text-slate-900" data-i18n="dashboardWaitlist">
+                  Waitlist
+                </h3>
+                <p className="text-xs text-slate-500" data-i18n="dashboardWaitlistQueue">
+                  Solicitudes en cola
+                </p>
               </div>
               <span className="text-sm font-semibold text-slate-900">
                 {data.waitlistEntries.length}
@@ -106,19 +117,21 @@ export default function InvestorDashboard() {
               </svg>
               <div className="space-y-2 text-xs text-slate-600">
                 <div className="flex items-center justify-between">
-                  <span>Solicitudes totales</span>
+                  <span data-i18n="dashboardWaitlistTotalRequests">Solicitudes totales</span>
                   <span className="font-semibold text-slate-900">
                     {data.waitlistEntries.length}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span>Inversionistas con waitlist</span>
+                  <span data-i18n="dashboardWaitlistInvestors">
+                    Inversionistas con waitlist
+                  </span>
                   <span className="font-semibold text-slate-900">
                     {data.waitlistInvestorsCount}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span>Fondos solicitados</span>
+                  <span data-i18n="dashboardWaitlistFunds">Fondos solicitados</span>
                   <span className="font-semibold text-slate-900">
                     {data.waitlistFundsCount}
                   </span>
@@ -130,8 +143,12 @@ export default function InvestorDashboard() {
           <div className={breakdownCardClass}>
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="text-sm font-semibold text-slate-900">Fund requests</h3>
-                <p className="text-xs text-slate-500">Fondos nuevos por aprobar</p>
+                <h3 className="text-sm font-semibold text-slate-900" data-i18n="dashboardFundRequests">
+                  Fund requests
+                </h3>
+                <p className="text-xs text-slate-500" data-i18n="dashboardFundRequestsPending">
+                  Fondos nuevos por aprobar
+                </p>
               </div>
               <span className="text-sm font-semibold text-slate-900">
                 {data.pendingFunds.length}
@@ -169,19 +186,19 @@ export default function InvestorDashboard() {
               </svg>
               <div className="space-y-2 text-xs text-slate-600">
                 <div className="flex items-center justify-between">
-                  <span>Pendientes de aprobación</span>
+                  <span data-i18n="dashboardPendingApproval">Pendientes de aprobación</span>
                   <span className="font-semibold text-slate-900">
                     {data.pendingFunds.length}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span>Verificados</span>
+                  <span data-i18n="dashboardVerified">Verificados</span>
                   <span className="font-semibold text-slate-900">
                     {data.verifiedFunds.length}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span>Totales registrados</span>
+                  <span data-i18n="dashboardTotalRegistered">Totales registrados</span>
                   <span className="font-semibold text-slate-900">
                     {data.pendingFunds.length + data.verifiedFunds.length}
                   </span>

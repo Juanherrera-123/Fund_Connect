@@ -3,17 +3,19 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { DEFAULT_FUND_MANAGER_PROFILES, apiBase, STORAGE_KEYS } from "@/lib/igatesData";
+import { useLanguage } from "@/components/LanguageProvider";
 import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { FundSummary, Session, UserProfile } from "@/lib/types";
 
 export function FundsExploreGrid() {
+  const { strings } = useLanguage();
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const [profiles, setProfiles] = useLocalStorage<UserProfile[]>(
     STORAGE_KEYS.profiles,
     DEFAULT_FUND_MANAGER_PROFILES
   );
   const [funds, setFunds] = useState<FundSummary[]>([]);
-  const [status, setStatus] = useState("Cargando fondos...");
+  const [status, setStatus] = useState(strings.fundsExploreLoading);
 
   const profile = useMemo(() => {
     if (!session || session.role !== "Investor") return null;
@@ -36,7 +38,7 @@ export function FundsExploreGrid() {
       } catch (error) {
         console.error(error);
         if (isMounted) {
-          setStatus("No se pudieron cargar los fondos.");
+          setStatus(strings.fundsExploreLoadError);
         }
       }
     };
@@ -63,7 +65,9 @@ export function FundsExploreGrid() {
   if (!profile) {
     return (
       <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-        Inicia sesión como inversionista para ver los fondos.
+        <span data-i18n="fundsExploreLoginPrompt">
+          Inicia sesión como inversionista para ver los fondos.
+        </span>
       </div>
     );
   }
@@ -101,7 +105,7 @@ export function FundsExploreGrid() {
             <p className="text-sm text-slate-600">{fund.summary}</p>
             <div className="flex flex-wrap gap-2">
               <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600">
-                AUM {fund.aum}
+                <span data-i18n="fundsExploreAumLabel">AUM</span> {fund.aum}
               </span>
               <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600">
                 {fund.performance}
@@ -113,7 +117,7 @@ export function FundsExploreGrid() {
                 type="button"
                 onClick={() => toggleWaitlist(fund.name)}
               >
-                {isWaitlisted ? "En waitlist" : "Unirse a waitlist"}
+                {isWaitlisted ? strings.fundsExploreWaitlisted : strings.fundsExploreJoinWaitlist}
               </button>
             </div>
           </div>
