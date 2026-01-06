@@ -8,7 +8,11 @@ import { STORAGE_KEYS } from "@/lib/igatesData";
 import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { Session } from "@/lib/types";
 
-export function Navbar() {
+type NavbarProps = {
+  floating?: boolean;
+};
+
+export function Navbar({ floating = false }: NavbarProps) {
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const { strings } = useLanguage();
 
@@ -33,7 +37,13 @@ export function Navbar() {
   })();
 
   return (
-    <header className="sticky top-4 z-50 isolate mt-4">
+    <header
+      className={
+        floating
+          ? "absolute left-0 right-0 top-4 z-50 isolate"
+          : "sticky top-4 z-50 isolate mt-4"
+      }
+    >
       <div className="mx-auto w-full max-w-7xl px-4">
         <div className="flex h-16 flex-nowrap items-center justify-between gap-6 rounded-2xl border border-slate-200/60 bg-white/75 px-6 shadow-sm backdrop-blur-md">
           <Link
