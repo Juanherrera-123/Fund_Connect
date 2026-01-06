@@ -31,11 +31,22 @@ export function Hero() {
           muted
           loop
           playsInline
+          style={{
+            filter: "saturate(92%) contrast(96%) brightness(102%)",
+          }}
         >
           <source src="/background-hero-animation.mp4" type="video/mp4" />
         </video>
       </div>
-      <div className="absolute inset-0 z-[1] bg-white/70" />
+      <div
+        className="absolute inset-0 z-[1] pointer-events-none"
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(235, 242, 255, 0.55) 0%, rgba(240, 246, 255, 0.38) 45%, rgba(255, 255, 255, 0.12) 100%)",
+          backdropFilter: "blur(6px) saturate(105%)",
+          WebkitBackdropFilter: "blur(6px) saturate(105%)",
+        }}
+      />
       <div className="relative z-10 mx-auto grid h-full max-w-6xl gap-10 px-6 pt-24 pb-14 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:pt-28 lg:pb-16">
         <div className="space-y-6">
           <p
@@ -81,7 +92,7 @@ export function Hero() {
           </div>
         </div>
         <div className="space-y-3">
-            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/80 p-4 text-slate-700 shadow-sm">
+          <div className="rounded-2xl border border-[rgba(255,255,255,0.35)] bg-[rgba(255,255,255,0.82)] p-4 text-slate-700 shadow-sm backdrop-blur-[8px]">
             <div className="flex items-center justify-between text-xs">
               <span
                 className="uppercase tracking-[0.2em] text-slate-500"
@@ -93,7 +104,7 @@ export function Hero() {
             </div>
             <div className="mt-3 h-16 rounded-xl bg-gradient-to-r from-igates-500/10 via-igates-400/10 to-transparent" />
           </div>
-          <div className="rounded-2xl border border-slate-200/80 bg-slate-50/80 p-4 text-slate-700 shadow-sm">
+          <div className="rounded-2xl border border-[rgba(255,255,255,0.35)] bg-[rgba(255,255,255,0.82)] p-4 text-slate-700 shadow-sm backdrop-blur-[8px]">
             <div className="space-y-2 text-xs">
               {performanceItems.map((item) => (
                 <div key={item.labelKey} className="flex items-center justify-between">
@@ -116,7 +127,7 @@ export function Hero() {
               ))}
             </div>
           </div>
-          <div className="rounded-2xl border border-slate-200/80 bg-slate-50/80 p-4 text-slate-700 shadow-sm">
+          <div className="rounded-2xl border border-[rgba(255,255,255,0.35)] bg-[rgba(255,255,255,0.82)] p-4 text-slate-700 shadow-sm backdrop-blur-[8px]">
             <div
               className="text-[11px] uppercase tracking-[0.2em] text-slate-500"
               data-i18n="heroAumLabel"
@@ -128,7 +139,7 @@ export function Hero() {
               Con 10 gestores
             </p>
           </div>
-          <div className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-slate-50/80 p-4 text-slate-700 shadow-sm">
+          <div className="relative overflow-hidden rounded-2xl border border-[rgba(255,255,255,0.35)] bg-[rgba(255,255,255,0.82)] p-4 text-slate-700 shadow-sm backdrop-blur-[8px]">
             <div className="absolute inset-0 opacity-20">
               <div className="grid h-full w-full grid-cols-4 gap-2 p-3">
                 {Array.from({ length: 4 }).map((_, index) => (
