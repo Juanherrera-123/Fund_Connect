@@ -30,8 +30,24 @@ a {
 }
 
 @layer components {
+  .igates-card-frame {
+    --igates-border: 2px;
+    --igates-radius: 1rem;
+    border-radius: var(--igates-radius);
+    padding: var(--igates-border);
+    background: linear-gradient(90deg, #1e3a8a 0%, #2563eb 50%, #38bdf8 100%);
+    background-size: 200% 200%;
+    animation: igates-border-flow 8s ease-in-out infinite;
+    transition: padding 0.2s ease;
+  }
+
+  .igates-card-frame:hover {
+    --igates-border: 3px;
+  }
+
   .igates-card {
-    @apply rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md;
+    border-radius: calc(var(--igates-radius) - var(--igates-border));
+    @apply bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md;
   }
 
   .igates-chip {
@@ -54,6 +70,24 @@ a {
     color: transparent;
     -webkit-text-fill-color: transparent;
     transform: translateY(-2px);
+  }
+}
+
+@keyframes igates-border-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .igates-card-frame {
+    animation: none;
   }
 }
 
