@@ -15,6 +15,7 @@ type NavbarProps = {
 export function Navbar({ floating = false }: NavbarProps) {
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const { strings } = useLanguage();
+  const positionClassName = floating ? "fixed top-4" : "sticky top-0";
 
   const authLink = (() => {
     if (!session) {
@@ -37,7 +38,7 @@ export function Navbar({ floating = false }: NavbarProps) {
   })();
 
   return (
-    <header className="absolute top-4 left-0 right-0 z-50 isolate">
+    <header className={`${positionClassName} left-0 right-0 z-50 isolate`}>
       <div className="mx-auto w-full max-w-7xl px-4">
         <div className="flex h-16 flex-nowrap items-center justify-between gap-6 rounded-2xl border border-white/30 bg-white/55 px-6 shadow-sm backdrop-blur-md">
           <Link
