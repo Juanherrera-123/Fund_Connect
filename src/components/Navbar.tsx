@@ -37,15 +37,9 @@ export function Navbar({ floating = false }: NavbarProps) {
   })();
 
   return (
-    <header
-      className={
-        floating
-          ? "absolute left-0 right-0 top-4 z-50 isolate"
-          : "sticky top-4 z-50 isolate mt-4"
-      }
-    >
+    <header className="absolute top-4 left-0 right-0 z-50 isolate">
       <div className="mx-auto w-full max-w-7xl px-4">
-        <div className="flex h-16 flex-nowrap items-center justify-between gap-6 rounded-2xl border border-slate-200/60 bg-white/75 px-6 shadow-sm backdrop-blur-md">
+        <div className="flex h-16 flex-nowrap items-center justify-between gap-6 rounded-2xl border border-white/30 bg-white/55 px-6 shadow-sm backdrop-blur-md">
           <Link
             className="flex flex-shrink-0 items-center gap-2 font-extrabold tracking-[0.08em] text-slate-900"
             href="/"

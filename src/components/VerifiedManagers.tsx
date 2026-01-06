@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { AnimatePresence, MotionConfig, motion } from "framer-motion";
 
 import {
   STORAGE_KEYS,
@@ -56,14 +57,17 @@ const initialFilters: FilterState = {
   country: "",
 };
 
+const transition = {
+  duration: 0.4,
+  ease: [0.22, 1, 0.36, 1],
+};
+
 export function VerifiedManagers() {
   const [fundApplications] = useLocalStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
   const [profiles] = useLocalStorage<UserProfile[]>(STORAGE_KEYS.profiles, DEFAULT_FUND_MANAGER_PROFILES);
   const [filters, setFilters] = useState<FilterState>(initialFilters);
   const [appliedFilters, setAppliedFilters] = useState<FilterState>(initialFilters);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const trackRef = useRef<HTMLDivElement | null>(null);
-  const carouselRef = useRef<HTMLDivElement | null>(null);
+  const [selectedFundId, setSelectedFundId] = useState<string | null>(null);
 
   const verifiedFunds = useMemo<VerifiedFund[]>(() => {
     const managerProfiles = profiles.filter((profile) => profile.role === "Fund Manager");
@@ -155,8 +159,7 @@ export function VerifiedManagers() {
     });
 
     const baseIds = new Set(baseVerifiedFunds.map((fund) => fund.id));
-    const extraFunds = fromStorage
-      .filter((fund) => !baseIds.has(fund.id));
+    const extraFunds = fromStorage.filter((fund) => !baseIds.has(fund.id));
 
     return [...mergedBase, ...extraFunds];
   }, [fundApplications, profiles]);
@@ -189,79 +192,12 @@ export function VerifiedManagers() {
   }, [filters, verifiedFunds]);
 
   useEffect(() => {
-    setCurrentIndex(0);
-  }, [filters]);
+    if (selectedFundId && !filteredFunds.some((fund) => fund.id === selectedFundId)) {
+      setSelectedFundId(null);
+    }
+  }, [filteredFunds, selectedFundId]);
 
-  useEffect(() => {
-    const track = trackRef.current;
-    const carousel = carouselRef.current;
-    if (!track || !carousel) return;
-    const activeCard = track.querySelector<HTMLButtonElement>(
-      `[data-fund-card="true"][data-index="${currentIndex}"]`
-    );
-    if (!activeCard) return;
-    const containerWidth = carousel.offsetWidth;
-    const cardCenter = activeCard.offsetLeft + activeCard.offsetWidth / 2;
-    const offset = containerWidth / 2 - cardCenter;
-    track.style.transform = `translateX(${offset}px)`;
-  }, [currentIndex, filteredFunds.length]);
-
-  useEffect(() => {
-    const handleResize = () => {
-      const track = trackRef.current;
-      const carousel = carouselRef.current;
-      if (!track || !carousel) return;
-      const activeCard = track.querySelector<HTMLButtonElement>(
-        `[data-fund-card="true"][data-index="${currentIndex}"]`
-      );
-      if (!activeCard) return;
-      const containerWidth = carousel.offsetWidth;
-      const cardCenter = activeCard.offsetLeft + activeCard.offsetWidth / 2;
-      const offset = containerWidth / 2 - cardCenter;
-      track.style.transform = `translateX(${offset}px)`;
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [currentIndex]);
-
-  useEffect(() => {
-    const carousel = carouselRef.current;
-    if (!carousel) return;
-    let startX = 0;
-    let deltaX = 0;
-
-    const handleStart = (event: TouchEvent) => {
-      startX = event.touches[0]?.clientX ?? 0;
-    };
-
-    const handleMove = (event: TouchEvent) => {
-      deltaX = (event.touches[0]?.clientX ?? 0) - startX;
-    };
-
-    const handleEnd = () => {
-      if (Math.abs(deltaX) > 50) {
-        if (deltaX < 0) {
-          setCurrentIndex((prev) => Math.min(prev + 1, filteredFunds.length - 1));
-        } else {
-          setCurrentIndex((prev) => Math.max(prev - 1, 0));
-        }
-      }
-      deltaX = 0;
-    };
-
-    carousel.addEventListener("touchstart", handleStart);
-    carousel.addEventListener("touchmove", handleMove);
-    carousel.addEventListener("touchend", handleEnd);
-
-    return () => {
-      carousel.removeEventListener("touchstart", handleStart);
-      carousel.removeEventListener("touchmove", handleMove);
-      carousel.removeEventListener("touchend", handleEnd);
-    };
-  }, [filteredFunds.length]);
-
-  const selectedFund = filteredFunds[currentIndex] ?? null;
+  const selectedFund = filteredFunds.find((fund) => fund.id === selectedFundId) ?? null;
 
   const handleApplyFilters = () => {
     setFilters(appliedFilters);
@@ -270,15 +206,6 @@ export function VerifiedManagers() {
   const handleResetFilters = () => {
     setAppliedFilters(initialFilters);
     setFilters(initialFilters);
-  };
-
-  const handlePrev = () => {
-    setCurrentIndex((prev) => Math.max(prev - 1, 0));
-  };
-
-  const handleNext = () => {
-    if (!filteredFunds.length) return;
-    setCurrentIndex((prev) => Math.min(prev + 1, filteredFunds.length - 1));
   };
 
   const renderCountryBadge = (country: string) => (
@@ -313,6 +240,22 @@ export function VerifiedManagers() {
   const performanceLinks = selectedFund
     ? Array.from({ length: 3 }, (_, index) => selectedFund.livePerformanceLinks[index] ?? "")
     : [];
+
+  const panelMetrics = [
+    { label: "Tiempo operando", value: formattedOperatingTime, highlight: true },
+    { label: "Profit mensual (último año)", value: formattedProfit, highlight: true },
+    { label: "Drawdown target", value: formattedDrawdownTarget, highlight: true },
+    { label: "Max drawdown", value: formattedMaxDrawdown, highlight: true },
+    { label: "Trades mensuales", value: formattedTrades },
+    { label: "Gestión de riesgo", value: formattedRisk },
+  ];
+
+  const terms = [
+    { label: "Min investment", value: formattedMinInvestment },
+    { label: "Performance fee", value: formattedPerformanceFee },
+    { label: "Subscription fee", value: formattedSubscriptionFee },
+    { label: "Reports", value: formattedReports },
+  ];
 
   return (
     <>
@@ -433,187 +376,200 @@ export function VerifiedManagers() {
             <h2 className="text-2xl font-semibold text-slate-900">Fondos verificados listos para diligencia</h2>
             <p className="text-sm text-slate-600">Selecciona un fondo para ver el detalle curado.</p>
           </div>
-          <div className="mt-6 flex items-center gap-4">
-            <button
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-lg font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40"
-              type="button"
-              aria-label="Ver fondo anterior"
-              onClick={handlePrev}
-              disabled={currentIndex <= 0}
+
+          <MotionConfig transition={transition}>
+            <motion.div
+              layout
+              className="mt-6 rounded-3xl border border-slate-200 bg-white p-4 shadow-sm"
             >
-              ‹
-            </button>
-            <div className="flex-1 overflow-hidden" ref={carouselRef} aria-live="polite">
-              <div className="flex gap-5 py-4 transition-transform duration-500" ref={trackRef}>
-                {!filteredFunds.length && (
-                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
-                    No hay fondos con estos criterios.
-                  </div>
-                )}
-                {filteredFunds.map((fund, index) => {
-                  const isActive = index === currentIndex;
-                  const isPrev = index === currentIndex - 1;
-                  const isNext = index === currentIndex + 1;
-                  const isFar = Math.abs(index - currentIndex) > 1;
-                  return (
-                    <button
-                      className={`flex w-[70%] max-w-3xl flex-shrink-0 flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm transition duration-300 ${
-                        isActive
-                          ? "scale-100 opacity-100 shadow-lg"
-                          : isFar
-                            ? "scale-90 opacity-30"
-                            : isPrev || isNext
-                              ? "scale-95 opacity-70"
-                              : "scale-95 opacity-60"
-                      }`}
-                      type="button"
-                      key={fund.id}
-                      data-index={index}
-                      data-fund-card="true"
-                      aria-label={`Ver detalle de ${fund.name}`}
-                      onClick={() => setCurrentIndex(index)}
-                    >
-                      <div className="flex items-center gap-4">
-                        <div
-                          className="flex h-14 w-14 items-center justify-center rounded-2xl bg-igates-500/10 text-lg font-semibold text-igates-700"
-                          aria-hidden="true"
+              <motion.div
+                layout
+                className={`grid gap-6 ${selectedFund ? "lg:grid-cols-[minmax(240px,300px)_1fr]" : "grid-cols-1"}`}
+              >
+                <motion.div
+                  layout
+                  className={selectedFund ? "max-h-[72vh] overflow-y-auto pr-2" : ""}
+                >
+                  <motion.div
+                    layout
+                    className={
+                      selectedFund
+                        ? "flex flex-col gap-3"
+                        : "grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
+                    }
+                  >
+                    {!filteredFunds.length && (
+                      <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
+                        No hay fondos con estos criterios.
+                      </div>
+                    )}
+                    {filteredFunds.map((fund) => {
+                      const isActive = fund.id === selectedFundId;
+                      return (
+                        <motion.button
+                          layout
+                          key={fund.id}
+                          type="button"
+                          onClick={() => setSelectedFundId(fund.id)}
+                          className={
+                            selectedFund
+                              ? `flex w-full items-start gap-3 rounded-2xl border px-4 py-3 text-left transition ${
+                                  isActive
+                                    ? "border-igates-500/40 bg-igates-500/10 shadow-sm"
+                                    : "border-slate-200 bg-white hover:border-igates-500/40"
+                                }`
+                              : "flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-igates-500/40"
+                          }
                         >
-                          {fund.logoLabel}
-                        </div>
-                        <div>
-                          <p className="text-lg font-semibold text-slate-900">{fund.name}</p>
-                          <div className="mt-2 flex flex-wrap gap-2">
-                            <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600">
-                              {renderCountryBadge(fund.country)}
-                            </span>
-                            <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-                              ✅ Verificado
-                            </span>
+                          <div
+                            className={
+                              selectedFund
+                                ? "flex h-10 w-10 items-center justify-center rounded-xl bg-igates-500/10 text-sm font-semibold text-igates-700"
+                                : "flex h-12 w-12 items-center justify-center rounded-2xl bg-igates-500/10 text-lg font-semibold text-igates-700"
+                            }
+                            aria-hidden="true"
+                          >
+                            {fund.logoLabel}
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <p className={selectedFund ? "text-sm font-semibold text-slate-900" : "text-lg font-semibold text-slate-900"}>
+                                {fund.name}
+                              </p>
+                              <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
+                                ✅ Verificado
+                              </span>
+                            </div>
+                            <div className="mt-2 flex flex-wrap gap-2 text-xs font-semibold text-slate-600">
+                              <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-2 py-1">
+                                {renderCountryBadge(fund.country)}
+                              </span>
+                              <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-1">
+                                {fund.strategy}
+                              </span>
+                            </div>
+                            {!selectedFund && (
+                              <p className="mt-3 text-sm text-slate-600">{fund.description}</p>
+                            )}
+                          </div>
+                        </motion.button>
+                      );
+                    })}
+                  </motion.div>
+                </motion.div>
+
+                <AnimatePresence mode="wait">
+                  {selectedFund && (
+                    <motion.div
+                      key={selectedFund.id}
+                      initial={{ opacity: 0, x: 40 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 40 }}
+                      transition={transition}
+                      className="relative flex h-full flex-col rounded-2xl border border-slate-200 bg-slate-50/60 p-6"
+                    >
+                      <div className="flex flex-wrap items-start justify-between gap-4">
+                        <div className="flex items-start gap-4">
+                          <div
+                            className="flex h-14 w-14 items-center justify-center rounded-2xl bg-igates-500/10 text-lg font-semibold text-igates-700"
+                            aria-hidden="true"
+                          >
+                            {selectedFund.logoLabel}
+                          </div>
+                          <div>
+                            <div className="flex flex-wrap items-center gap-2">
+                              <h3 className="text-xl font-semibold text-slate-900">{selectedFund.name}</h3>
+                              <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-600">
+                                {renderCountryBadge(selectedFund.country)}
+                              </span>
+                              <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                                ✅ Verificado
+                              </span>
+                            </div>
+                            <p className="mt-2 text-sm text-slate-600">{selectedFund.description}</p>
                           </div>
                         </div>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedFundId(null)}
+                          className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-600 transition hover:border-slate-300 hover:bg-slate-50"
+                        >
+                          Back to all funds
+                        </button>
                       </div>
-                      <p className="text-sm text-slate-600">{fund.description}</p>
-                      <div className="flex flex-wrap gap-2">
-                        <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600">
-                          {fund.strategy}
-                        </span>
-                        <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600">
-                          {fund.region}
-                        </span>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-            <button
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-lg font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40"
-              type="button"
-              aria-label="Ver fondo siguiente"
-              onClick={handleNext}
-              disabled={currentIndex >= filteredFunds.length - 1}
-            >
-              ›
-            </button>
-          </div>
-        </div>
-      </section>
 
-      <section className="py-8" aria-live="polite">
-        <div className="mx-auto w-full max-w-6xl px-6">
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            {!selectedFund ? (
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
-                Selecciona un fondo para ver el detalle.
-              </div>
-            ) : (
-              <>
-                <div className="flex flex-wrap items-center gap-4">
-                  <div
-                    className="flex h-14 w-14 items-center justify-center rounded-2xl bg-igates-500/10 text-lg font-semibold text-igates-700"
-                    aria-hidden="true"
-                  >
-                    {selectedFund.logoLabel}
-                  </div>
-                  <div>
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="text-xl font-semibold text-slate-900">{selectedFund.name}</h3>
-                      <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600">
-                        {renderCountryBadge(selectedFund.country)}
-                      </span>
-                      <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-                        ✅ Verificado
-                      </span>
-                    </div>
-                    <p className="mt-2 text-sm text-slate-600">{selectedFund.description}</p>
-                  </div>
-                </div>
-                <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                  {[
-                    { label: "Tiempo operando", value: formattedOperatingTime, highlight: true },
-                    { label: "Profit mensual (último año)", value: formattedProfit, highlight: true },
-                    { label: "Drawdown target", value: formattedDrawdownTarget, highlight: true },
-                    { label: "Max drawdown", value: formattedMaxDrawdown, highlight: true },
-                    { label: "Trades mensuales", value: formattedTrades },
-                    { label: "Gestión de riesgo", value: formattedRisk },
-                  ].map((item) => (
-                    <div
-                      key={item.label}
-                      className="rounded-xl border border-slate-200 bg-slate-50 p-4"
-                    >
-                      <p className="text-xs uppercase tracking-[0.2em] text-slate-500">{item.label}</p>
-                      <p className={`mt-2 text-lg font-semibold ${item.highlight ? "text-slate-900" : "text-slate-700"}`}>
-                        {item.value}
-                      </p>
-                    </div>
-                  ))}
-                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 sm:col-span-2 lg:col-span-2">
-                    <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
-                      Live performance tracking
-                    </p>
-                    <ul className="mt-2 grid gap-1 text-xs text-slate-600">
-                      {performanceLinks.map((link, index) => (
-                        <li key={`live-link-${index}`}>
-                          {link ? (
-                            <a className="break-all underline" href={link} target="_blank" rel="noreferrer">
-                              {link}
-                            </a>
-                          ) : (
-                            <span>Link Myfxbook {index + 1}: —</span>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  {[
-                    { label: "Min investment", value: formattedMinInvestment },
-                    { label: "Performance fee", value: formattedPerformanceFee },
-                    { label: "Subscription fee", value: formattedSubscriptionFee },
-                    { label: "Reports", value: formattedReports },
-                  ].map((item) => (
-                    <div
-                      key={item.label}
-                      className="rounded-xl border border-slate-200 bg-slate-50 p-4"
-                    >
-                      <p className="text-xs uppercase tracking-[0.2em] text-slate-500">{item.label}</p>
-                      <p className="mt-2 text-sm font-semibold text-slate-900">{item.value}</p>
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-6 flex flex-col gap-2">
-                  <Link
-                    className="inline-flex w-fit items-center justify-center rounded-full bg-igates-500 px-5 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-white shadow-lg shadow-igates-500/30 transition hover:bg-igates-400"
-                    href="/#contact"
-                  >
-                    Quiero más información
-                  </Link>
-                  <p className="text-xs text-slate-500">
-                    Accede a documentación, estructura operativa y proceso de inversión.
-                  </p>
-                </div>
-              </>
-            )}
-          </div>
+                      <div className="mt-6 grid gap-3 md:grid-cols-2">
+                        {panelMetrics.map((item) => (
+                          <div
+                            key={item.label}
+                            className="rounded-xl border border-slate-200 bg-white p-4"
+                          >
+                            <p className="text-xs uppercase tracking-[0.2em] text-slate-500">{item.label}</p>
+                            <p className={`mt-2 text-lg font-semibold ${item.highlight ? "text-slate-900" : "text-slate-700"}`}>
+                              {item.value}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4">
+                        <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
+                          Live performance tracking
+                        </p>
+                        <ul className="mt-3 grid gap-2 text-xs text-slate-600">
+                          {performanceLinks.map((link, index) => (
+                            <li key={`live-link-${index}`}>
+                              {link ? (
+                                <a className="break-all underline" href={link} target="_blank" rel="noreferrer">
+                                  {link}
+                                </a>
+                              ) : (
+                                <span>Link Myfxbook {index + 1}: —</span>
+                              )}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      <div className="mt-4">
+                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+                          Términos
+                        </p>
+                        <div className="mt-3 grid gap-3 md:grid-cols-2">
+                          {terms.map((item) => (
+                            <div
+                              key={item.label}
+                              className="rounded-xl border border-slate-200 bg-white p-4"
+                            >
+                              <p className="text-xs uppercase tracking-[0.2em] text-slate-500">{item.label}</p>
+                              <p className="mt-2 text-sm font-semibold text-slate-900">{item.value}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="mt-auto pt-6">
+                        <div className="flex flex-wrap items-center gap-3">
+                          <Link
+                            className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-igates-500 to-igates-400 px-6 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-white shadow-lg shadow-igates-500/30 transition hover:from-igates-400 hover:to-igates-500"
+                            href="/#contact"
+                          >
+                            Join the waitlist
+                          </Link>
+                          <Link
+                            className="inline-flex items-center justify-center rounded-full border border-white/60 bg-white/70 px-6 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-700 shadow-sm backdrop-blur transition hover:border-slate-200 hover:bg-white"
+                            href="/#contact"
+                          >
+                            Request more information
+                          </Link>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            </motion.div>
+          </MotionConfig>
         </div>
       </section>
     </>
