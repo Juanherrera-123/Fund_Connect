@@ -66,26 +66,33 @@ export default function MessagesDashboard() {
       }));
 
     return [
-      { title: "Fondos", items: funds },
-      { title: "Inversionistas", items: investors },
-      { title: "Family offices", items: familyOffices },
+      { title: "Fondos", titleKey: "dashboardMessagesFunds", items: funds },
+      { title: "Inversionistas", titleKey: "dashboardMessagesInvestors", items: investors },
+      { title: "Family offices", titleKey: "dashboardMessagesFamilyOffices", items: familyOffices },
     ];
   }, [fundApplications, profiles]);
 
   return (
     <>
       <header className="flex flex-col gap-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
+        <p
+          className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500"
+          data-i18n="dashboardLabel"
+        >
           Dashboard
         </p>
-        <h1 className="text-2xl font-semibold text-slate-900">Messages</h1>
+        <h1 className="text-2xl font-semibold text-slate-900" data-i18n="dashboardTitleMessages">
+          Messages
+        </h1>
       </header>
 
       <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="grid gap-6 md:grid-cols-3">
           {columns.map((column) => (
             <div key={column.title}>
-              <h2 className="text-sm font-semibold text-slate-900">{column.title}</h2>
+              <h2 className="text-sm font-semibold text-slate-900" data-i18n={column.titleKey}>
+                {column.title}
+              </h2>
               <ul className="mt-3 space-y-2 text-sm text-slate-600">
                 {column.items.length ? (
                   column.items.map((item) => (
@@ -99,7 +106,7 @@ export default function MessagesDashboard() {
                   ))
                 ) : (
                   <li className="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-400">
-                    Sin mensajes por ahora.
+                    <span data-i18n="dashboardMessagesEmpty">Sin mensajes por ahora.</span>
                   </li>
                 )}
               </ul>

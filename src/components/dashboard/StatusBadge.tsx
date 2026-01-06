@@ -6,9 +6,11 @@ const toneStyles: Record<string, string> = {
 
 export default function StatusBadge({
   label,
+  labelKey,
   tone = "neutral",
 }: {
   label: string;
+  labelKey?: string;
   tone?: "success" | "warning" | "neutral";
 }) {
   return (
@@ -16,6 +18,7 @@ export default function StatusBadge({
       className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium ${
         toneStyles[tone]
       }`}
+      data-i18n={labelKey}
     >
       {label}
     </span>

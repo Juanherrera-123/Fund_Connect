@@ -4,14 +4,14 @@ import KpiCard, { KpiCardProps } from "@/components/dashboard/KpiCard";
 import type { Role } from "@/lib/types";
 
 const lineLegend = [
-  { label: "Active funds", color: "bg-emerald-500" },
-  { label: "Funds in review", color: "bg-slate-400" },
+  { label: "Active funds", labelKey: "dashboardLegendActiveFunds", color: "bg-emerald-500" },
+  { label: "Funds in review", labelKey: "dashboardLegendFundsReview", color: "bg-slate-400" },
 ];
 
 const donutLegend = [
-  { label: "Investors", color: "bg-emerald-500" },
-  { label: "Managers", color: "bg-amber-400" },
-  { label: "Family Office", color: "bg-slate-400" },
+  { label: "Investors", labelKey: "dashboardLegendInvestors", color: "bg-emerald-500" },
+  { label: "Managers", labelKey: "dashboardLegendManagers", color: "bg-amber-400" },
+  { label: "Family Office", labelKey: "dashboardLegendFamilyOffice", color: "bg-slate-400" },
 ];
 
 const visibilityByRole: Record<
@@ -28,11 +28,13 @@ type TableRow = {
   id: string;
   [key: string]: React.ReactNode;
   statusLabel?: string;
+  statusLabelKey?: string;
   statusTone?: "success" | "warning" | "neutral";
 };
 
 export default function DashboardOverview({
   title,
+  titleKey,
   kpis,
   role,
   pendingFundRows = [],
@@ -44,6 +46,7 @@ export default function DashboardOverview({
   onPendingFundAction,
 }: {
   title: string;
+  titleKey?: string;
   kpis: KpiCardProps[];
   role: Role;
   pendingFundRows?: TableRow[];
@@ -70,15 +73,22 @@ export default function DashboardOverview({
   return (
     <>
       <header className="flex flex-col gap-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
+        <p
+          className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500"
+          data-i18n="dashboardLabel"
+        >
           Dashboard
         </p>
-        <h1 className="text-2xl font-semibold text-slate-900">{title}</h1>
+        <h1 className="text-2xl font-semibold text-slate-900" data-i18n={titleKey}>
+          {title}
+        </h1>
       </header>
 
       {visibility.kpis ? (
         <section className="flex flex-col gap-3">
-          <h2 className="text-sm font-semibold text-slate-700">Key metrics</h2>
+          <h2 className="text-sm font-semibold text-slate-700" data-i18n="dashboardKeyMetrics">
+            Key metrics
+          </h2>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {kpis.map((kpi) => (
               <KpiCard key={kpi.label} {...kpi} />
@@ -89,9 +99,11 @@ export default function DashboardOverview({
 
       {visibility.charts ? (
         <section className="flex flex-col gap-3">
-          <h2 className="text-sm font-semibold text-slate-700">Analytics</h2>
+          <h2 className="text-sm font-semibold text-slate-700" data-i18n="dashboardAnalytics">
+            Analytics
+          </h2>
           <div className="grid gap-4 lg:grid-cols-2">
-            <ChartCard title="Fund pipeline" legend={lineLegend}>
+            <ChartCard title="Fund pipeline" titleKey="dashboardFundPipeline" legend={lineLegend}>
               <svg viewBox="0 0 260 120" className="h-32 w-full">
                 <polyline
                   points={activePoints}
@@ -110,7 +122,7 @@ export default function DashboardOverview({
               </svg>
             </ChartCard>
 
-            <ChartCard title="Users per role" legend={donutLegend}>
+            <ChartCard title="Users per role" titleKey="dashboardUsersPerRole" legend={donutLegend}>
               <svg viewBox="0 0 120 120" className="h-32 w-32">
                 <g>
                   <title>{`Investors: ${roleCounts.investors}`}</title>
@@ -158,22 +170,30 @@ export default function DashboardOverview({
 
       {visibility.tables ? (
         <section className="flex flex-col gap-4">
-          <h2 className="text-sm font-semibold text-slate-700">Operational queues</h2>
+          <h2 className="text-sm font-semibold text-slate-700" data-i18n="dashboardOperationalQueues">
+            Operational queues
+          </h2>
           <div className="grid gap-4 xl:grid-cols-2">
             <DataTable
               title="Pending fund approvals"
+              titleKey="dashboardPendingFundApprovals"
               actionLabel="Approve"
+              actionLabelKey="dashboardApproveAction"
               onAction={onPendingFundAction}
               columns={[
-                { key: "fund", label: "Fund" },
-                { key: "manager", label: "Manager" },
-                { key: "submitted", label: "Submitted" },
-                { key: "status", label: "Status" },
+                { key: "fund", label: "Fund", labelKey: "dashboardColumnFund" },
+                { key: "manager", label: "Manager", labelKey: "dashboardColumnManager" },
+                { key: "submitted", label: "Submitted", labelKey: "dashboardColumnSubmitted" },
+                { key: "status", label: "Status", labelKey: "dashboardColumnStatus" },
               ]}
               rows={pendingFundRows.map((row) => ({
                 ...row,
                 status: row.statusLabel ? (
-                  <StatusCell label={row.statusLabel} tone={row.statusTone} />
+                  <StatusCell
+                    label={row.statusLabel}
+                    labelKey={row.statusLabelKey}
+                    tone={row.statusTone}
+                  />
                 ) : (
                   "—"
                 ),
@@ -182,17 +202,23 @@ export default function DashboardOverview({
 
             <DataTable
               title="Waitlist"
+              titleKey="dashboardWaitlist"
               actionLabel="Review"
+              actionLabelKey="dashboardReviewAction"
               columns={[
-                { key: "fund", label: "Fund" },
-                { key: "investor", label: "Investor" },
-                { key: "country", label: "Country" },
-                { key: "status", label: "Status" },
+                { key: "fund", label: "Fund", labelKey: "dashboardColumnFund" },
+                { key: "investor", label: "Investor", labelKey: "dashboardColumnInvestor" },
+                { key: "country", label: "Country", labelKey: "dashboardColumnCountry" },
+                { key: "status", label: "Status", labelKey: "dashboardColumnStatus" },
               ]}
               rows={waitlistRows.map((row) => ({
                 ...row,
                 status: row.statusLabel ? (
-                  <StatusCell label={row.statusLabel} tone={row.statusTone} />
+                  <StatusCell
+                    label={row.statusLabel}
+                    labelKey={row.statusLabelKey}
+                    tone={row.statusTone}
+                  />
                 ) : (
                   "—"
                 ),
@@ -202,17 +228,23 @@ export default function DashboardOverview({
 
           <DataTable
             title="Recent actions"
+            titleKey="dashboardRecentActions"
             actionLabel="View"
+            actionLabelKey="dashboardViewAction"
             columns={[
-              { key: "action", label: "Action" },
-              { key: "detail", label: "Detail" },
-              { key: "date", label: "Date" },
-              { key: "status", label: "Status" },
+              { key: "action", label: "Action", labelKey: "dashboardColumnAction" },
+              { key: "detail", label: "Detail", labelKey: "dashboardColumnDetail" },
+              { key: "date", label: "Date", labelKey: "dashboardColumnDate" },
+              { key: "status", label: "Status", labelKey: "dashboardColumnStatus" },
             ]}
             rows={actionRows.map((row) => ({
               ...row,
               status: row.statusLabel ? (
-                <StatusCell label={row.statusLabel} tone={row.statusTone} />
+                <StatusCell
+                  label={row.statusLabel}
+                  labelKey={row.statusLabelKey}
+                  tone={row.statusTone}
+                />
               ) : (
                 "—"
               ),

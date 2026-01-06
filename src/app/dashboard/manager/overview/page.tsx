@@ -43,7 +43,9 @@ export default function FundManagerOverview() {
   if (!profile) {
     return (
       <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-        Inicia sesión como gestor para ver este panel.
+        <span data-i18n="dashboardManagerLoginPrompt">
+          Inicia sesión como gestor para ver este panel.
+        </span>
       </div>
     );
   }
@@ -51,6 +53,7 @@ export default function FundManagerOverview() {
   const kpis = [
     {
       label: "Capital preparado",
+      labelKey: "dashboardManagerCapitalPrepared",
       value: fundSnapshot?.capitalPrepared ?? "—",
       icon: (
         <svg viewBox="0 0 20 20" className={iconClass} aria-hidden>
@@ -67,6 +70,7 @@ export default function FundManagerOverview() {
     },
     {
       label: "Profit mensual",
+      labelKey: "dashboardManagerMonthlyProfit",
       value:
         fundSnapshot?.monthlyProfit !== null && fundSnapshot?.monthlyProfit !== undefined
           ? `${fundSnapshot.monthlyProfit}%`
@@ -79,6 +83,7 @@ export default function FundManagerOverview() {
     },
     {
       label: "Max drawdown",
+      labelKey: "dashboardManagerMaxDrawdown",
       value:
         fundSnapshot?.maxDrawdown !== null && fundSnapshot?.maxDrawdown !== undefined
           ? `${fundSnapshot.maxDrawdown}%`
@@ -94,14 +99,21 @@ export default function FundManagerOverview() {
   return (
     <>
       <header className="flex flex-col gap-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
+        <p
+          className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500"
+          data-i18n="dashboardLabel"
+        >
           Dashboard
         </p>
-        <h1 className="text-2xl font-semibold text-slate-900">Overview</h1>
+        <h1 className="text-2xl font-semibold text-slate-900" data-i18n="dashboardTitleOverview">
+          Overview
+        </h1>
       </header>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-sm font-semibold text-slate-700">Key metrics</h2>
+        <h2 className="text-sm font-semibold text-slate-700" data-i18n="dashboardKeyMetrics">
+          Key metrics
+        </h2>
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {kpis.map((kpi) => (
             <KpiCard key={kpi.label} {...kpi} />
@@ -114,12 +126,22 @@ export default function FundManagerOverview() {
           <div>
             <h2 className="text-sm font-semibold text-slate-900">{fundSnapshot?.name}</h2>
             <p className="text-xs text-slate-500">
-              Estado actual: {fundSnapshot?.status === "verified" ? "Verificado" : "En revisión"}
+              <span data-i18n="dashboardCurrentStatusLabel">Estado actual:</span>{" "}
+              <span
+                data-i18n={
+                  fundSnapshot?.status === "verified"
+                    ? "dashboardStatusVerified"
+                    : "dashboardStatusInReview"
+                }
+              >
+                {fundSnapshot?.status === "verified" ? "Verificado" : "En revisión"}
+              </span>
             </p>
           </div>
           <Link
             className="rounded-lg bg-slate-900 px-4 py-2 text-xs font-semibold text-white"
             href="/dashboard/manager/fund-details"
+            data-i18n="dashboardUpdateDetails"
           >
             Actualizar detalles
           </Link>

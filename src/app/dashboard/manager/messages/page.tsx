@@ -32,7 +32,9 @@ export default function FundManagerMessages() {
   if (!profile) {
     return (
       <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-        Inicia sesión como gestor para ver este panel.
+        <span data-i18n="dashboardManagerLoginPrompt">
+          Inicia sesión como gestor para ver este panel.
+        </span>
       </div>
     );
   }
@@ -40,16 +42,23 @@ export default function FundManagerMessages() {
   return (
     <>
       <header className="flex flex-col gap-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
+        <p
+          className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500"
+          data-i18n="dashboardLabel"
+        >
           Dashboard
         </p>
-        <h1 className="text-2xl font-semibold text-slate-900">Messages</h1>
+        <h1 className="text-2xl font-semibold text-slate-900" data-i18n="dashboardTitleMessages">
+          Messages
+        </h1>
       </header>
 
       <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="grid gap-6 md:grid-cols-2">
           <div>
-            <h2 className="text-sm font-semibold text-slate-900">Tu fondo</h2>
+            <h2 className="text-sm font-semibold text-slate-900" data-i18n="dashboardManagerYourFund">
+              Tu fondo
+            </h2>
             <ul className="mt-3 space-y-2 text-sm text-slate-600">
               {fundInfo ? (
                 <li className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
@@ -58,16 +67,20 @@ export default function FundManagerMessages() {
                 </li>
               ) : (
                 <li className="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-400">
-                  Sin fondo asignado aún.
+                  <span data-i18n="dashboardManagerNoFund">
+                    Sin fondo asignado aún.
+                  </span>
                 </li>
               )}
             </ul>
           </div>
           <div>
-            <h2 className="text-sm font-semibold text-slate-900">Inbox</h2>
+            <h2 className="text-sm font-semibold text-slate-900" data-i18n="dashboardManagerInbox">
+              Inbox
+            </h2>
             <ul className="mt-3 space-y-2 text-sm text-slate-600">
               <li className="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-400">
-                Sin mensajes por ahora.
+                <span data-i18n="dashboardMessagesEmpty">Sin mensajes por ahora.</span>
               </li>
             </ul>
           </div>

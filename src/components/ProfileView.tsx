@@ -33,7 +33,7 @@ export function ProfileView() {
   if (!profile) {
     return (
       <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-        Inicia sesión para ver tu perfil.
+        <span data-i18n="profileLoginPrompt">Inicia sesión para ver tu perfil.</span>
       </div>
     );
   }
@@ -42,25 +42,33 @@ export function ProfileView() {
     <>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Email</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-slate-500" data-i18n="profileEmailLabel">
+            Email
+          </p>
           <p>
             <strong>{profile.email}</strong>
           </p>
         </div>
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Teléfono</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-slate-500" data-i18n="profilePhoneLabel">
+            Teléfono
+          </p>
           <p>
             <strong>{profile.phone}</strong>
           </p>
         </div>
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-xs uppercase tracking-[0.2em] text-slate-500">País</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-slate-500" data-i18n="profileCountryLabel">
+            País
+          </p>
           <p>
             <strong>{profile.country}</strong>
           </p>
         </div>
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Estado</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-slate-500" data-i18n="profileStatusLabel">
+            Estado
+          </p>
           <span
             className={`mt-2 inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${
               profile.role === "Fund Manager"
@@ -68,7 +76,17 @@ export function ProfileView() {
                 : "border-emerald-200 bg-emerald-50 text-emerald-700"
             }`}
           >
-            {profile.role === "Fund Manager" ? profile.fundManagerProfile?.status || "Pendiente" : "Activo"}
+            <span
+              data-i18n={
+                profile.role === "Fund Manager"
+                  ? "dashboardStatusPending"
+                  : "dashboardStatusActive"
+              }
+            >
+              {profile.role === "Fund Manager"
+                ? profile.fundManagerProfile?.status || "Pendiente"
+                : "Activo"}
+            </span>
           </span>
         </div>
       </div>
@@ -76,38 +94,48 @@ export function ProfileView() {
       {profile.role === "Investor" && (
         <>
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h3 className="text-lg font-semibold text-slate-900">Preferencias del inversionista</h3>
+            <h3 className="text-lg font-semibold text-slate-900" data-i18n="profileInvestorPreferences">
+              Preferencias del inversionista
+            </h3>
             <div className="mt-3 grid gap-1 text-sm text-slate-600">
               <span>
-                <strong>Objetivo:</strong> {profile.investorPreferences?.objective || "—"}
+                <strong data-i18n="profileObjectiveLabel">Objetivo:</strong>{" "}
+                {profile.investorPreferences?.objective || "—"}
               </span>
               <span>
-                <strong>Horizonte:</strong> {profile.investorPreferences?.horizon || "—"}
+                <strong data-i18n="profileHorizonLabel">Horizonte:</strong>{" "}
+                {profile.investorPreferences?.horizon || "—"}
               </span>
               <span>
-                <strong>Riesgo:</strong> {profile.investorPreferences?.riskLevel || "—"}
+                <strong data-i18n="profileRiskLabel">Riesgo:</strong>{" "}
+                {profile.investorPreferences?.riskLevel || "—"}
               </span>
               <span>
-                <strong>Estrategias:</strong> {formatStrategyList(profile.investorPreferences?.strategyPreferences)}
+                <strong data-i18n="profileStrategiesLabel">Estrategias:</strong>{" "}
+                {formatStrategyList(profile.investorPreferences?.strategyPreferences)}
               </span>
               <span>
-                <strong>Reporting:</strong> {profile.investorPreferences?.reportingFrequency || "—"}
+                <strong data-i18n="profileReportingLabel">Reporting:</strong>{" "}
+                {profile.investorPreferences?.reportingFrequency || "—"}
               </span>
             </div>
           </div>
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h3 className="text-lg font-semibold text-slate-900">Lista de espera</h3>
+            <h3 className="text-lg font-semibold text-slate-900" data-i18n="profileWaitlistTitle">
+              Lista de espera
+            </h3>
             <div className="mt-3 grid gap-1 text-sm text-slate-600">
               {(profile.waitlistFunds || []).length ? (
                 (profile.waitlistFunds || []).map((fund) => <span key={fund}>• {fund}</span>)
               ) : (
-                <span>Sin fondos aún.</span>
+                <span data-i18n="profileWaitlistEmpty">Sin fondos aún.</span>
               )}
             </div>
             <div className="mt-4 flex flex-wrap gap-3">
               <Link
                 className="inline-flex items-center justify-center rounded-full bg-igates-500 px-5 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-white shadow-lg shadow-igates-500/30 transition hover:bg-igates-400"
                 href="/funds-explore"
+                data-i18n="profileExploreFunds"
               >
                 Explorar fondos
               </Link>
@@ -119,34 +147,44 @@ export function ProfileView() {
       {profile.role === "Fund Manager" && (
         <>
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h3 className="text-lg font-semibold text-slate-900">Perfil del gestor</h3>
+            <h3 className="text-lg font-semibold text-slate-900" data-i18n="profileManagerProfile">
+              Perfil del gestor
+            </h3>
             <div className="mt-3 grid gap-1 text-sm text-slate-600">
               <span>
-                <strong>Estrategia:</strong> {profile.fundManagerProfile?.strategyTypeLabel || "—"}
+                <strong data-i18n="profileManagerStrategyLabel">Estrategia:</strong>{" "}
+                {profile.fundManagerProfile?.strategyTypeLabel || "—"}
               </span>
               <span>
-                <strong>Capital:</strong> {profile.fundManagerProfile?.capitalStatus || "—"}
+                <strong data-i18n="profileManagerCapitalLabel">Capital:</strong>{" "}
+                {profile.fundManagerProfile?.capitalStatus || "—"}
               </span>
               <span>
-                <strong>Track record:</strong> {profile.fundManagerProfile?.trackRecordLength || "—"}
+                <strong data-i18n="profileManagerTrackRecordLabel">Track record:</strong>{" "}
+                {profile.fundManagerProfile?.trackRecordLength || "—"}
               </span>
               <span>
-                <strong>Estructura:</strong> {profile.fundManagerProfile?.operatingStructure || "—"}
+                <strong data-i18n="profileManagerStructureLabel">Estructura:</strong>{" "}
+                {profile.fundManagerProfile?.operatingStructure || "—"}
               </span>
               <span>
-                <strong>Descripción:</strong> {profile.fundManagerProfile?.strategyDescription || "—"}
+                <strong data-i18n="profileManagerDescriptionLabel">Descripción:</strong>{" "}
+                {profile.fundManagerProfile?.strategyDescription || "—"}
               </span>
             </div>
           </div>
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h3 className="text-lg font-semibold text-slate-900">Detalles del fondo</h3>
-            <p className="mt-2 text-sm text-slate-600">
+            <h3 className="text-lg font-semibold text-slate-900" data-i18n="profileFundDetailsTitle">
+              Detalles del fondo
+            </h3>
+            <p className="mt-2 text-sm text-slate-600" data-i18n="profileFundDetailsLead">
               Completa los datos de tu fondo desde el dashboard de gestores para enviarlo a revisión.
             </p>
             <div className="mt-4 flex flex-wrap gap-3">
               <Link
                 className="inline-flex items-center justify-center rounded-full bg-igates-500 px-5 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-white shadow-lg shadow-igates-500/30 transition hover:bg-igates-400"
                 href="/dashboard/manager/overview"
+                data-i18n="profileGoToDashboard"
               >
                 Ir al dashboard
               </Link>
@@ -158,36 +196,46 @@ export function ProfileView() {
       {profile.role === "Family Office" && (
         <>
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h3 className="text-lg font-semibold text-slate-900">Preferencias Family Office</h3>
+            <h3 className="text-lg font-semibold text-slate-900" data-i18n="profileFamilyPreferences">
+              Preferencias Family Office
+            </h3>
             <div className="mt-3 grid gap-1 text-sm text-slate-600">
               <span>
-                <strong>Rol:</strong> {profile.familyOfficePreferences?.managementRole || "—"}
+                <strong data-i18n="profileFamilyRoleLabel">Rol:</strong>{" "}
+                {profile.familyOfficePreferences?.managementRole || "—"}
               </span>
               <span>
-                <strong>Diversificación:</strong> {profile.familyOfficePreferences?.diversificationLevel || "—"}
+                <strong data-i18n="profileFamilyDiversificationLabel">Diversificación:</strong>{" "}
+                {profile.familyOfficePreferences?.diversificationLevel || "—"}
               </span>
               <span>
-                <strong>Estrategias:</strong> {formatStrategyList(profile.familyOfficePreferences?.strategyPreferences)}
+                <strong data-i18n="profileStrategiesLabel">Estrategias:</strong>{" "}
+                {formatStrategyList(profile.familyOfficePreferences?.strategyPreferences)}
               </span>
               <span>
-                <strong>Interacción:</strong> {profile.familyOfficePreferences?.interactionLevel || "—"}
+                <strong data-i18n="profileFamilyInteractionLabel">Interacción:</strong>{" "}
+                {profile.familyOfficePreferences?.interactionLevel || "—"}
               </span>
               <span>
-                <strong>Reporting:</strong> {profile.familyOfficePreferences?.reportingCustomization || "—"}
+                <strong data-i18n="profileReportingLabel">Reporting:</strong>{" "}
+                {profile.familyOfficePreferences?.reportingCustomization || "—"}
               </span>
             </div>
           </div>
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h3 className="text-lg font-semibold text-slate-900">Acceso directo</h3>
+            <h3 className="text-lg font-semibold text-slate-900" data-i18n="profileDirectAccessTitle">
+              Acceso directo
+            </h3>
             <div className="mt-3 grid gap-1 text-sm text-slate-600">
-              <span>• Chat directo con gestores verificados</span>
-              <span>• Canal preferente con MasterUser</span>
-              <span>• Informes personalizados por fondo</span>
+              <span data-i18n="profileDirectAccessChat">• Chat directo con gestores verificados</span>
+              <span data-i18n="profileDirectAccessChannel">• Canal preferente con MasterUser</span>
+              <span data-i18n="profileDirectAccessReports">• Informes personalizados por fondo</span>
             </div>
             <div className="mt-4 flex flex-wrap gap-3">
               <Link
                 className="inline-flex items-center justify-center rounded-full bg-igates-500 px-5 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-white shadow-lg shadow-igates-500/30 transition hover:bg-igates-400"
                 href="/family-dashboard"
+                data-i18n="profileGoToDashboard"
               >
                 Ir al dashboard
               </Link>
@@ -200,6 +248,7 @@ export function ProfileView() {
         <Link
           className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
           href="/"
+          data-i18n="profileBackHome"
         >
           Volver al inicio
         </Link>
@@ -207,6 +256,7 @@ export function ProfileView() {
           className="inline-flex items-center justify-center rounded-full bg-igates-500 px-5 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-white shadow-lg shadow-igates-500/30 transition hover:bg-igates-400"
           type="button"
           onClick={handleLogout}
+          data-i18n="profileLogout"
         >
           Cerrar sesión
         </button>

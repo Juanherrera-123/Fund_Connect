@@ -8,11 +8,20 @@ import {
   baseVerifiedFunds,
   countryFlags,
 } from "@/lib/igatesData";
+import { useLanguage } from "@/components/LanguageProvider";
 import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { FundApplication, Session, UserProfile } from "@/lib/types";
 
-const riskOptions = ["Controlado", "Medio", "Arriesgado"];
-const reportOptions = ["Semanal", "Quincenal", "Mensual"];
+const riskOptions = [
+  { label: "Controlado", labelKey: "dashboardRiskControlled" },
+  { label: "Medio", labelKey: "dashboardRiskMedium" },
+  { label: "Arriesgado", labelKey: "dashboardRiskAggressive" },
+];
+const reportOptions = [
+  { label: "Semanal", labelKey: "dashboardReportWeekly" },
+  { label: "Quincenal", labelKey: "dashboardReportBiweekly" },
+  { label: "Mensual", labelKey: "dashboardReportMonthly" },
+];
 
 const parseNumericValue = (value: FormDataEntryValue | null) => {
   if (value === null) return null;
@@ -23,6 +32,7 @@ const parseNumericValue = (value: FormDataEntryValue | null) => {
 };
 
 export default function FundDetailsPage() {
+  const { strings } = useLanguage();
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const [profiles, setProfiles] = useLocalStorage<UserProfile[]>(
     STORAGE_KEYS.profiles,
@@ -70,7 +80,9 @@ export default function FundDetailsPage() {
   if (!profile) {
     return (
       <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-        Inicia sesión como gestor para ver este panel.
+        <span data-i18n="dashboardManagerLoginPrompt">
+          Inicia sesión como gestor para ver este panel.
+        </span>
       </div>
     );
   }
@@ -91,12 +103,12 @@ export default function FundDetailsPage() {
     const normalizedLinks = linkFields.map((link) => link.trim()).filter(Boolean);
 
     if (!fundName || !description || !operatingTime || !country || !riskManagement || !reportsFrequency) {
-      setStatusMessage("Completa los campos requeridos.");
+      setStatusMessage(strings.dashboardFundDetailsRequiredFields);
       return;
     }
 
     if (!normalizedLinks.length) {
-      setStatusMessage("Agrega al menos un link de performance.");
+      setStatusMessage(strings.dashboardFundDetailsAddLink);
       return;
     }
 
@@ -160,24 +172,31 @@ export default function FundDetailsPage() {
 
     setStatusMessage(
       status === "verified"
-        ? "Detalles actualizados para el fondo verificado."
-        : "Detalles enviados. El MasterUser aprobará el fondo."
+        ? strings.dashboardFundDetailsUpdated
+        : strings.dashboardFundDetailsSubmitted
     );
   };
 
   return (
     <>
       <header className="flex flex-col gap-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
+        <p
+          className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500"
+          data-i18n="dashboardLabel"
+        >
           Dashboard
         </p>
-        <h1 className="text-2xl font-semibold text-slate-900">Fund details</h1>
+        <h1 className="text-2xl font-semibold text-slate-900" data-i18n="dashboardTitleFundDetails">
+          Fund details
+        </h1>
       </header>
 
       <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
         <form className="grid gap-4 md:grid-cols-2" onSubmit={handleSubmit}>
           <label className="flex flex-col gap-2 text-xs font-medium">
-            <span className="text-slate-600">Nombre del fondo</span>
+            <span className="text-slate-600" data-i18n="dashboardFundNameLabel">
+              Nombre del fondo
+            </span>
             <input
               name="fundName"
               defaultValue={existingApplication?.fundName ?? baseFund?.name ?? ""}
@@ -187,14 +206,18 @@ export default function FundDetailsPage() {
           </label>
 
           <label className="flex flex-col gap-2 text-xs font-medium">
-            <span className="text-slate-600">País</span>
+            <span className="text-slate-600" data-i18n="dashboardCountryLabel">
+              País
+            </span>
             <select
               name="country"
               defaultValue={existingApplication?.country ?? baseFund?.country ?? ""}
               required
               className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
             >
-              <option value="">Selecciona</option>
+              <option value="" data-i18n="dashboardSelectPlaceholder">
+                Selecciona
+              </option>
               {Object.entries(countryFlags).map(([country, flag]) => (
                 <option key={country} value={country}>
                   {flag} {country}
@@ -204,7 +227,9 @@ export default function FundDetailsPage() {
           </label>
 
           <label className="md:col-span-2 flex flex-col gap-2 text-xs font-medium">
-            <span className="text-slate-600">Descripción</span>
+            <span className="text-slate-600" data-i18n="dashboardDescriptionLabel">
+              Descripción
+            </span>
             <textarea
               name="description"
               rows={3}
@@ -215,7 +240,9 @@ export default function FundDetailsPage() {
           </label>
 
           <label className="flex flex-col gap-2 text-xs font-medium">
-            <span className="text-slate-600">Tiempo operando</span>
+            <span className="text-slate-600" data-i18n="dashboardOperatingTimeLabel">
+              Tiempo operando
+            </span>
             <div className="flex items-center rounded-lg border border-slate-200 px-3 py-2 text-sm">
               <input
                 type="number"
@@ -223,14 +250,19 @@ export default function FundDetailsPage() {
                 defaultValue={existingApplication?.operatingTime ?? ""}
                 required
                 placeholder="Ej: 3"
+                data-i18n-placeholder="dashboardExampleYears"
                 className="w-full bg-transparent text-sm outline-none"
               />
-              <span className="ml-2 text-slate-500">años</span>
+              <span className="ml-2 text-slate-500" data-i18n="dashboardYearsLabel">
+                años
+              </span>
             </div>
           </label>
 
           <label className="flex flex-col gap-2 text-xs font-medium">
-            <span className="text-slate-600">Profit mensual (último año)</span>
+            <span className="text-slate-600" data-i18n="dashboardMonthlyProfitLabel">
+              Profit mensual (último año)
+            </span>
             <div className="flex items-center rounded-lg border border-slate-200 px-3 py-2 text-sm">
               <input
                 type="number"
@@ -238,6 +270,7 @@ export default function FundDetailsPage() {
                 name="monthlyProfit"
                 defaultValue={existingApplication?.monthlyProfit ?? existingApplication?.yearProfit ?? ""}
                 placeholder="Ej: 2.4"
+                data-i18n-placeholder="dashboardExamplePercent"
                 className="w-full bg-transparent text-sm outline-none"
               />
               <span className="ml-2 text-slate-500">%</span>
@@ -245,7 +278,9 @@ export default function FundDetailsPage() {
           </label>
 
           <label className="flex flex-col gap-2 text-xs font-medium">
-            <span className="text-slate-600">Drawdown target</span>
+            <span className="text-slate-600" data-i18n="dashboardDrawdownTargetLabel">
+              Drawdown target
+            </span>
             <div className="flex items-center rounded-lg border border-slate-200 px-3 py-2 text-sm">
               <input
                 type="number"
@@ -253,6 +288,7 @@ export default function FundDetailsPage() {
                 name="drawdownTarget"
                 defaultValue={existingApplication?.drawdownTarget ?? ""}
                 placeholder="Ej: 5"
+                data-i18n-placeholder="dashboardExamplePercent"
                 className="w-full bg-transparent text-sm outline-none"
               />
               <span className="ml-2 text-slate-500">%</span>
@@ -260,7 +296,9 @@ export default function FundDetailsPage() {
           </label>
 
           <label className="flex flex-col gap-2 text-xs font-medium">
-            <span className="text-slate-600">Max drawdown</span>
+            <span className="text-slate-600" data-i18n="dashboardMaxDrawdownLabel">
+              Max drawdown
+            </span>
             <div className="flex items-center rounded-lg border border-slate-200 px-3 py-2 text-sm">
               <input
                 type="number"
@@ -268,6 +306,7 @@ export default function FundDetailsPage() {
                 name="maxDrawdown"
                 defaultValue={existingApplication?.maxDrawdown ?? baseFund?.maxDrawdown ?? ""}
                 placeholder="Ej: 8"
+                data-i18n-placeholder="dashboardExamplePercent"
                 className="w-full bg-transparent text-sm outline-none"
               />
               <span className="ml-2 text-slate-500">%</span>
@@ -275,7 +314,9 @@ export default function FundDetailsPage() {
           </label>
 
           <label className="flex flex-col gap-2 text-xs font-medium">
-            <span className="text-slate-600">Trades mensuales</span>
+            <span className="text-slate-600" data-i18n="dashboardTradesLabel">
+              Trades mensuales
+            </span>
             <div className="flex items-center rounded-lg border border-slate-200 px-3 py-2 text-sm">
               <input
                 type="number"
@@ -283,35 +324,42 @@ export default function FundDetailsPage() {
                 name="tradesPerMonth"
                 defaultValue={existingApplication?.tradesPerMonth ?? ""}
                 placeholder="Ej: 60"
+                data-i18n-placeholder="dashboardExampleTrades"
                 className="w-full bg-transparent text-sm outline-none"
               />
             </div>
           </label>
 
           <label className="flex flex-col gap-2 text-xs font-medium">
-            <span className="text-slate-600">Gestión de riesgo</span>
+            <span className="text-slate-600" data-i18n="dashboardRiskLabel">
+              Gestión de riesgo
+            </span>
             <select
               name="riskManagement"
               defaultValue={existingApplication?.riskManagement ?? existingApplication?.riskLevel ?? ""}
               required
               className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
             >
-              <option value="">Selecciona</option>
+              <option value="" data-i18n="dashboardSelectPlaceholder">
+                Selecciona
+              </option>
               {riskOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option}
+                <option key={option.label} value={option.label} data-i18n={option.labelKey}>
+                  {option.label}
                 </option>
               ))}
             </select>
           </label>
 
           <div className="md:col-span-2 grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4">
-            <p className="text-xs font-semibold text-slate-600">Live performance tracking</p>
+            <p className="text-xs font-semibold text-slate-600" data-i18n="dashboardLiveTracking">
+              Live performance tracking
+            </p>
             {linkFields.map((link, index) => (
               <input
                 key={`link-${index}`}
                 type="url"
-                placeholder={`Link Myfxbook ${index + 1}`}
+                placeholder={`${strings.dashboardMyfxbookLink} ${index + 1}`}
                 value={link}
                 onChange={(event) =>
                   setLinkFields((prev) =>
@@ -324,13 +372,16 @@ export default function FundDetailsPage() {
           </div>
 
           <label className="flex flex-col gap-2 text-xs font-medium">
-            <span className="text-slate-600">Min investment</span>
+            <span className="text-slate-600" data-i18n="dashboardMinInvestmentLabel">
+              Min investment
+            </span>
             <div className="flex items-center rounded-lg border border-slate-200 px-3 py-2 text-sm">
               <input
                 type="number"
                 name="minInvestment"
                 defaultValue={existingApplication?.minInvestment ?? ""}
                 placeholder="Ej: 50000"
+                data-i18n-placeholder="dashboardExampleAmount"
                 className="w-full bg-transparent text-sm outline-none"
               />
               <span className="ml-2 text-slate-500">USD</span>
@@ -338,13 +389,16 @@ export default function FundDetailsPage() {
           </label>
 
           <label className="flex flex-col gap-2 text-xs font-medium">
-            <span className="text-slate-600">Performance fee</span>
+            <span className="text-slate-600" data-i18n="dashboardPerformanceFeeLabel">
+              Performance fee
+            </span>
             <div className="flex items-center rounded-lg border border-slate-200 px-3 py-2 text-sm">
               <input
                 type="number"
                 name="performanceFee"
                 defaultValue={existingApplication?.performanceFee ?? ""}
                 placeholder="Ej: 20"
+                data-i18n-placeholder="dashboardExamplePercent"
                 className="w-full bg-transparent text-sm outline-none"
               />
               <span className="ml-2 text-slate-500">%</span>
@@ -352,13 +406,16 @@ export default function FundDetailsPage() {
           </label>
 
           <label className="flex flex-col gap-2 text-xs font-medium">
-            <span className="text-slate-600">Subscription fee</span>
+            <span className="text-slate-600" data-i18n="dashboardSubscriptionFeeLabel">
+              Subscription fee
+            </span>
             <div className="flex items-center rounded-lg border border-slate-200 px-3 py-2 text-sm">
               <input
                 type="number"
                 name="subscriptionFee"
                 defaultValue={existingApplication?.subscriptionFee ?? ""}
                 placeholder="Ej: 1"
+                data-i18n-placeholder="dashboardExamplePercent"
                 className="w-full bg-transparent text-sm outline-none"
               />
               <span className="ml-2 text-slate-500">%</span>
@@ -366,17 +423,21 @@ export default function FundDetailsPage() {
           </label>
 
           <label className="flex flex-col gap-2 text-xs font-medium">
-            <span className="text-slate-600">Reports</span>
+            <span className="text-slate-600" data-i18n="dashboardReportsLabel">
+              Reports
+            </span>
             <select
               name="reportsFrequency"
               defaultValue={existingApplication?.reportsFrequency ?? ""}
               required
               className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
             >
-              <option value="">Selecciona</option>
+              <option value="" data-i18n="dashboardSelectPlaceholder">
+                Selecciona
+              </option>
               {reportOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option}
+                <option key={option.label} value={option.label} data-i18n={option.labelKey}>
+                  {option.label}
                 </option>
               ))}
             </select>
@@ -386,6 +447,7 @@ export default function FundDetailsPage() {
             <button
               type="submit"
               className="rounded-lg bg-slate-900 px-4 py-2 text-xs font-semibold text-white"
+              data-i18n="dashboardSaveDetails"
             >
               Guardar detalles
             </button>

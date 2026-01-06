@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 
-import DataTable from "@/components/dashboard/DataTable";
+import DataTable, { StatusCell } from "@/components/dashboard/DataTable";
 import DashboardOverview from "@/components/dashboard/DashboardOverview";
 import {
   DEFAULT_FUND_MANAGER_PROFILES,
@@ -137,6 +137,7 @@ export default function MasterDashboard() {
   const kpis = [
     {
       label: "Active funds",
+      labelKey: "dashboardKpiActiveFunds",
       value: `${data.verifiedFunds.length}`,
       icon: (
         <svg viewBox="0 0 20 20" className={iconClass} aria-hidden>
@@ -158,6 +159,7 @@ export default function MasterDashboard() {
     },
     {
       label: "Funds in review",
+      labelKey: "dashboardKpiFundsReview",
       value: `${data.pendingFunds.length}`,
       icon: (
         <svg viewBox="0 0 20 20" className={iconClass} aria-hidden>
@@ -173,6 +175,7 @@ export default function MasterDashboard() {
     },
     {
       label: "Waitlist requests",
+      labelKey: "dashboardKpiWaitlistRequests",
       value: `${data.waitlistEntries.length}`,
       icon: (
         <svg viewBox="0 0 20 20" className={iconClass} aria-hidden>
@@ -189,6 +192,7 @@ export default function MasterDashboard() {
     },
     {
       label: "Pending approvals",
+      labelKey: "dashboardKpiPendingApprovals",
       value: `${data.pendingFunds.length + data.pendingManagers.length}`,
       icon: (
         <svg viewBox="0 0 20 20" className={iconClass} aria-hidden>
@@ -211,6 +215,7 @@ export default function MasterDashboard() {
     manager: data.managerNameById.get(application.managerId) ?? "Gestor registrado",
     submitted: new Date(application.submittedAt).toLocaleDateString("es-ES"),
     statusLabel: "En revisión",
+    statusLabelKey: "dashboardStatusInReview",
     statusTone: "warning" as const,
   }));
 
@@ -220,6 +225,7 @@ export default function MasterDashboard() {
     fund: entry.fund,
     country: entry.country,
     statusLabel: "Waitlist",
+    statusLabelKey: "dashboardStatusWaitlist",
     statusTone: "neutral" as const,
   }));
 
@@ -229,6 +235,7 @@ export default function MasterDashboard() {
     detail: notification.message,
     date: new Date(notification.createdAt).toLocaleDateString("es-ES"),
     statusLabel: "Nuevo",
+    statusLabelKey: "dashboardStatusNew",
     statusTone: "neutral" as const,
   }));
 
@@ -236,6 +243,7 @@ export default function MasterDashboard() {
     <>
       <DashboardOverview
         title="Master Dashboard"
+        titleKey="dashboardMasterTitle"
         kpis={kpis}
         role="MasterUser"
         pendingFundRows={pendingFundRows}
@@ -247,17 +255,24 @@ export default function MasterDashboard() {
         onPendingFundAction={handleApproveFund}
       />
       <section className="flex flex-col gap-4">
-        <h2 className="text-sm font-semibold text-slate-700">Pending manager approvals</h2>
+        <h2
+          className="text-sm font-semibold text-slate-700"
+          data-i18n="dashboardPendingManagerApprovals"
+        >
+          Pending manager approvals
+        </h2>
         <div className="grid gap-4 xl:grid-cols-2">
           <DataTable
             title="Fund managers"
+            titleKey="dashboardFundManagersTitle"
             actionLabel="Approve"
+            actionLabelKey="dashboardApproveAction"
             onAction={handleApproveManager}
             columns={[
-              { key: "name", label: "Name" },
-              { key: "email", label: "Email" },
-              { key: "submitted", label: "Submitted" },
-              { key: "status", label: "Status" },
+              { key: "name", label: "Name", labelKey: "dashboardColumnName" },
+              { key: "email", label: "Email", labelKey: "dashboardColumnEmail" },
+              { key: "submitted", label: "Submitted", labelKey: "dashboardColumnSubmitted" },
+              { key: "status", label: "Status", labelKey: "dashboardColumnStatus" },
             ]}
             rows={data.pendingManagers.map((profile) => ({
               id: profile.id,
@@ -268,7 +283,7 @@ export default function MasterDashboard() {
                     String((profile.onboarding as { completedAt?: string }).completedAt)
                   ).toLocaleDateString("es-ES")
                 : "—",
-              status: "En revisión",
+              status: <StatusCell label="En revisión" labelKey="dashboardStatusInReview" tone="warning" />,
             }))}
           />
         </div>
