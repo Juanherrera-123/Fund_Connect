@@ -9,7 +9,7 @@ import { Why } from "@/components/home/Why";
 export default function HomePage() {
   return (
     <>
-      <Navbar />
+      <Navbar floating />
       <main>
         <Hero />
         <Why />
