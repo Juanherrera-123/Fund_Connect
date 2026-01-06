@@ -44,7 +44,7 @@ export const translations = {
     heroMetricsLabel: "Consolidated metrics",
     heroMetricsCta: "View full statistics",
     whyEyebrow: "Strategic purpose",
-    whyTitle: "Why IGATES exists",
+    whyTitle: "Why IGATES exists?",
     whyLead: "A curated bridge between qualified capital and private managers with verified track records.",
     whyCard1Title: "Audited accounts and verified capital",
     whyCard1Body:
@@ -277,7 +277,7 @@ export const translations = {
     heroMetricsLabel: "Métricas consolidadas",
     heroMetricsCta: "Ver estadísticas completas",
     whyEyebrow: "Propósito estratégico",
-    whyTitle: "Por qué existe IGATES",
+    whyTitle: "¿Por qué existe IGATES?",
     whyLead: "Un puente curado entre capital calificado y gestores privados con historial verificado.",
     whyCard1Title: "Cuentas auditadas y capital verificado",
     whyCard1Body:
@@ -514,7 +514,7 @@ export const translations = {
     heroMetricsLabel: "Métricas consolidadas",
     heroMetricsCta: "Ver estatísticas completas",
     whyEyebrow: "Propósito estratégico",
-    whyTitle: "Por que a IGATES existe",
+    whyTitle: "Por que a IGATES existe?",
     whyLead: "Uma ponte curada entre capital qualificado e gestores privados com histórico verificado.",
     whyCard1Title: "Contas auditadas e capital verificado",
     whyCard1Body:
@@ -750,7 +750,7 @@ export const translations = {
     heroMetricsLabel: "Metriche consolidate",
     heroMetricsCta: "Vedi statistiche complete",
     whyEyebrow: "Scopo strategico",
-    whyTitle: "Perché esiste IGATES",
+    whyTitle: "Perché esiste IGATES?",
     whyLead: "Un ponte curato tra capitale qualificato e gestori privati con track record verificato.",
     whyCard1Title: "Conti auditati e capitale verificato",
     whyCard1Body:
@@ -985,7 +985,7 @@ export const translations = {
     heroMetricsLabel: "汇总指标",
     heroMetricsCta: "查看完整统计",
     whyEyebrow: "战略使命",
-    whyTitle: "IGATES 为什么存在",
+    whyTitle: "IGATES 为什么存在？",
     whyLead: "在合格资本与具备可验证业绩的私募管理人之间搭建精选桥梁。",
     whyCard1Title: "审计账户与已验证资本",
     whyCard1Body:
