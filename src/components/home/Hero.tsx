@@ -22,10 +22,10 @@ export function Hero() {
   return (
     <section
       id="hero"
-      className="relative flex h-[calc(100vh-5.5rem)] items-center overflow-hidden bg-[url('/worldmap-Igates.png')] bg-cover bg-center text-slate-900"
+      className="relative flex min-h-screen items-center overflow-hidden bg-[url('/worldmap-Igates.png')] bg-cover bg-center text-slate-900"
     >
       <div className="absolute inset-0 z-0 bg-[rgba(255,255,255,0.6)] backdrop-blur" />
-      <div className="relative z-10 mx-auto grid h-full max-w-6xl gap-10 px-6 py-12 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:py-14">
+      <div className="relative z-10 mx-auto grid h-full max-w-6xl gap-10 px-6 pt-24 pb-14 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:pt-28 lg:pb-16">
         <div className="space-y-6">
           <p
             className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-600"
