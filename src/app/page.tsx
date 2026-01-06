@@ -10,7 +10,7 @@ export default function HomePage() {
   return (
     <>
       <Navbar />
-      <main className="pt-8">
+      <main>
         <Hero />
         <Why />
         <Learn />
