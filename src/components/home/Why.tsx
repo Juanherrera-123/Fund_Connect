@@ -40,6 +40,10 @@ const purposeCards = [
   },
 ];
 
+const iconContainerClasses =
+  "flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-igates-500";
+const iconClasses = "h-4 w-4";
+
 export function Why() {
   return (
     <section id="why" className="bg-white py-16">
@@ -63,8 +67,8 @@ export function Why() {
             <article key={card.titleKey} className="igates-card grid gap-5">
               <div className="igates-gradient h-[3px] w-full rounded-full" aria-hidden="true" />
               <div className="flex items-start gap-4">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-igates-500">
-                  <svg viewBox="0 0 20 20" className="h-4 w-4" aria-hidden="true">
+                <div className={iconContainerClasses}>
+                  <svg viewBox="0 0 20 20" className={iconClasses} aria-hidden="true">
                     <path
                       d="M10 2.5a7.5 7.5 0 1 0 0 15a7.5 7.5 0 0 0 0-15Zm3.1 5.65a.75.75 0 0 1 .02 1.06l-3.62 3.72a.75.75 0 0 1-1.07 0L6.9 11.39a.75.75 0 1 1 1.06-1.06l1.12 1.12 3.09-3.17a.75.75 0 0 1 1.06-.02Z"
                       fill="currentColor"
