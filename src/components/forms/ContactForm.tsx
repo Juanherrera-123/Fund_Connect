@@ -3,11 +3,18 @@
 import { useRef } from "react";
 
 import { useLanguage } from "@/components/LanguageProvider";
+import { STORAGE_KEYS } from "@/lib/igatesData";
 import { useApiForm } from "@/lib/useApiForm";
+import { useLocalStorage } from "@/lib/useLocalStorage";
+import type { ContactRequest } from "@/lib/types";
 
 export function ContactForm() {
   const formRef = useRef<HTMLFormElement | null>(null);
   const { strings } = useLanguage();
+  const [contactRequests, setContactRequests] = useLocalStorage<ContactRequest[]>(
+    STORAGE_KEYS.contactRequests,
+    []
+  );
   const { state, submit } = useApiForm("/contact", {
     sending: strings.contactStatusSending,
     success: strings.contactStatusSuccess,
@@ -20,6 +27,22 @@ export function ContactForm() {
     const payload = Object.fromEntries(formData.entries());
     const ok = await submit(payload);
     if (ok) {
+      const name = String(payload.name ?? "").trim();
+      const email = String(payload.email ?? "").trim();
+      const phone = String(payload.phone ?? "").trim();
+      const message = String(payload.message ?? "").trim();
+      const receivedAt = new Date().toISOString();
+      setContactRequests((prev) => [
+        {
+          id: `contact-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
+          name,
+          email,
+          phone,
+          message,
+          receivedAt,
+        },
+        ...prev,
+      ]);
       formRef.current?.reset();
     }
   };
@@ -54,27 +77,15 @@ export function ContactForm() {
         />
       </label>
       <label className="grid gap-2 text-sm font-medium text-slate-600">
-        <span data-i18n="contactRoleLabel">Role</span>
-        <select
-          className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
-          name="role"
+        <span data-i18n="contactPhoneLabel">Phone</span>
+        <input
+          className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
+          type="tel"
+          name="phone"
+          placeholder="+57 300 000 0000"
+          data-i18n-placeholder="contactPhonePlaceholder"
           required
-          aria-label="Role"
-          data-i18n-aria-label="contactRoleAria"
-        >
-          <option value="" data-i18n="contactRolePlaceholder">
-            Select your role
-          </option>
-          <option value="allocator" data-i18n="contactRoleAllocator">
-            Allocator / Investor
-          </option>
-          <option value="manager" data-i18n="contactRoleManager">
-            Fund Manager
-          </option>
-          <option value="ops" data-i18n="contactRoleOps">
-            Operations / Compliance
-          </option>
-        </select>
+        />
       </label>
       <label className="grid gap-2 text-sm font-medium text-slate-600">
         <span data-i18n="contactNotesLabel">Notes</span>
@@ -84,6 +95,7 @@ export function ContactForm() {
           rows={3}
           placeholder="Mandate size, strategies, timing"
           data-i18n-placeholder="contactNotesPlaceholder"
+          required
         ></textarea>
       </label>
       <button

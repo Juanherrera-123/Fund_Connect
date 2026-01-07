@@ -5,7 +5,7 @@ import { contactRequests } from "../data";
 type ContactPayload = {
   name?: string;
   email?: string;
-  role?: string;
+  phone?: string;
   message?: string;
 };
 
@@ -30,17 +30,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON payload." }, { status: 400 });
   }
 
-  const { name, email, role, message } = payload;
+  const { name, email, phone, message } = payload;
 
-  if (!name || !email || !role) {
-    return NextResponse.json({ error: "Name, email, and role are required." }, { status: 400 });
+  if (!name || !email || !phone) {
+    return NextResponse.json({ error: "Name, email, and phone are required." }, { status: 400 });
   }
 
   contactRequests.push({
     id: contactRequests.length + 1,
     name,
     email,
-    role,
+    phone,
     message: message ?? "",
     receivedAt: new Date().toISOString(),
   });
