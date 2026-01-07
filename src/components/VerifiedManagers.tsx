@@ -289,6 +289,12 @@ export function VerifiedManagers() {
 
     const userRole =
       currentProfile?.role ?? (session?.role && session.role !== "MasterUser" ? session.role : "Investor");
+    const requesterId = currentProfile?.id ?? session?.id;
+    if (!requesterId || !session?.role || session.role === "MasterUser") {
+      setToastMessage("⚠️ Please log in as an investor or family office to continue.");
+      setIsSubmitting(false);
+      return;
+    }
     const payload = {
       fundId: selectedFund.id,
       fundName: selectedFund.name,
@@ -308,6 +314,8 @@ export function VerifiedManagers() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "x-user-id": requesterId,
+          "x-user-role": session.role,
         },
         body: JSON.stringify(payload),
       });

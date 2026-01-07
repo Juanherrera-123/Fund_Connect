@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { sendWaitlistStatusEmail } from "@/lib/email";
+import { getAuthContext, isAdminRole } from "@/lib/server/guards";
 
 type WaitlistDecisionPayload = {
   requestId?: string;
@@ -21,9 +22,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON payload." }, { status: 400 });
   }
 
-  const { reviewerRole, requesterEmail, fundName } = payload;
-
-  if (reviewerRole !== "MasterUser") {
+  const { requesterEmail, fundName } = payload;
+  const auth = getAuthContext(request);
+  if (!auth || !isAdminRole(auth.role)) {
     return NextResponse.json({ error: "Forbidden." }, { status: 403 });
   }
 
