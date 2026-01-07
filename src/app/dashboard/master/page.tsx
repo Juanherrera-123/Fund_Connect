@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import DataTable, { StatusCell } from "@/components/dashboard/DataTable";
 import StatusBadge from "@/components/dashboard/StatusBadge";
@@ -33,13 +33,17 @@ export default function MasterDashboard() {
     []
   );
   const [notifications] = useLocalStorage<MasterNotification[]>(STORAGE_KEYS.notifications, []);
-  const [waitlistRequests, setWaitlistRequests] = useLocalStorage<WaitlistRequest[]>(
-    STORAGE_KEYS.waitlistRequests,
-    []
-  );
+  const [waitlistRequests, setWaitlistRequests] = useState<WaitlistRequest[]>([]);
+  const [pendingWaitlistRequests, setPendingWaitlistRequests] = useState<WaitlistRequest[]>([]);
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const [activeWaitlistTab, setActiveWaitlistTab] = useState<WaitlistStatus>("PENDING");
   const [waitlistMessage, setWaitlistMessage] = useState("");
+  const [waitlistError, setWaitlistError] = useState("");
+  const [waitlistLoading, setWaitlistLoading] = useState(false);
+  const [selectedWaitlistRequest, setSelectedWaitlistRequest] = useState<WaitlistRequest | null>(
+    null
+  );
+  const [lastRefreshAt, setLastRefreshAt] = useState<Date | null>(null);
 
   const data = useMemo(() => {
     const verifiedFromApplications = fundApplications.filter(
@@ -94,7 +98,7 @@ export default function MasterDashboard() {
       profiles.map((profile) => [profile.id, profile.fullName])
     );
 
-    const waitlistEntries = waitlistRequests.map((request) => ({
+    const waitlistEntries = pendingWaitlistRequests.map((request) => ({
       id: request.id,
       investor: requesterNameById.get(request.requesterId) ?? "—",
       fund: request.fundName,
@@ -119,14 +123,13 @@ export default function MasterDashboard() {
       verifiedFunds,
       pendingFunds,
       waitlistEntries,
-      waitlistRequests,
       pendingManagers,
       notifications,
       managerNameById,
       requesterNameById,
       roleCounts,
     };
-  }, [fundApplications, notifications, profiles, waitlistRequests]);
+  }, [fundApplications, notifications, pendingWaitlistRequests, profiles]);
 
   const handleApproveFund = (row: { id: string }) => {
     setFundApplications((prev) =>
@@ -152,6 +155,74 @@ export default function MasterDashboard() {
     );
   };
 
+  const fetchWaitlistRequests = useCallback(
+    async (status: WaitlistStatus, options?: { silent?: boolean }) => {
+      const silent = options?.silent ?? false;
+      if (!silent) {
+        setWaitlistLoading(true);
+      }
+      setWaitlistError("");
+      try {
+        const response = await fetch(`/api/admin/waitlist?status=${status}`);
+        if (!response.ok) {
+          throw new Error("Unable to load waitlist requests.");
+        }
+        const payload = (await response.json()) as { data?: WaitlistRequest[] };
+        setWaitlistRequests(payload.data ?? []);
+        if (status === "PENDING") {
+          setPendingWaitlistRequests(payload.data ?? []);
+        }
+        setLastRefreshAt(new Date());
+      } catch (error) {
+        console.error(error);
+        setWaitlistError("Unable to refresh waitlist requests.");
+      } finally {
+        if (!silent) {
+          setWaitlistLoading(false);
+        }
+      }
+    },
+    []
+  );
+
+  useEffect(() => {
+    fetchWaitlistRequests(activeWaitlistTab);
+    if (activeWaitlistTab !== "PENDING") {
+      fetchWaitlistRequests("PENDING", { silent: true });
+    }
+  }, [activeWaitlistTab, fetchWaitlistRequests]);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      fetchWaitlistRequests(activeWaitlistTab, { silent: true });
+      if (activeWaitlistTab !== "PENDING") {
+        fetchWaitlistRequests("PENDING", { silent: true });
+      }
+    }, 20000);
+    return () => window.clearInterval(interval);
+  }, [activeWaitlistTab, fetchWaitlistRequests]);
+
+  useEffect(() => {
+    const handleFocus = () => {
+      fetchWaitlistRequests(activeWaitlistTab, { silent: true });
+      if (activeWaitlistTab !== "PENDING") {
+        fetchWaitlistRequests("PENDING", { silent: true });
+      }
+    };
+    window.addEventListener("focus", handleFocus);
+    return () => window.removeEventListener("focus", handleFocus);
+  }, [activeWaitlistTab, fetchWaitlistRequests]);
+
+  useEffect(() => {
+    if (!waitlistMessage) {
+      return undefined;
+    }
+    const timeout = window.setTimeout(() => {
+      setWaitlistMessage("");
+    }, 4000);
+    return () => window.clearTimeout(timeout);
+  }, [waitlistMessage]);
+
   const handleWaitlistDecision = async (
     request: WaitlistRequest,
     nextStatus: WaitlistStatus
@@ -159,6 +230,7 @@ export default function MasterDashboard() {
     const now = new Date().toISOString();
     const reviewerId = session?.id ?? session?.username ?? "master";
     const requesterName = data.requesterNameById.get(request.requesterId) ?? "User";
+    const previousRequests = waitlistRequests;
     setWaitlistRequests((prev) =>
       prev.map((item) =>
         item.id === request.id
@@ -189,20 +261,19 @@ export default function MasterDashboard() {
           decisionNote: request.decisionNote ?? null,
         }),
       });
-      setWaitlistMessage(
-        nextStatus === "APPROVED"
-          ? `Approved ${requesterName}'s waitlist request.`
-          : `Rejected ${requesterName}'s waitlist request.`
-      );
+      if (nextStatus === "APPROVED") {
+        setWaitlistMessage("Approved — email sent");
+      } else {
+        setWaitlistMessage(`Rejected ${requesterName}'s waitlist request.`);
+      }
     } catch (error) {
       console.error(error);
+      setWaitlistRequests(previousRequests);
       setWaitlistMessage("Unable to send the waitlist email notification.");
     }
   };
 
-  const filteredWaitlist = data.waitlistRequests.filter(
-    (request) => request.status === activeWaitlistTab
-  );
+  const filteredWaitlist = waitlistRequests;
 
   const kpis = [
     {
@@ -340,25 +411,75 @@ export default function MasterDashboard() {
             <h2 className="text-sm font-semibold text-slate-700">Waitlist review queue</h2>
             <p className="text-xs text-slate-500">Approve or reject pending allocation requests.</p>
           </div>
-          <div className="flex rounded-full border border-slate-200 bg-white p-1 text-xs font-semibold text-slate-600">
-            {(["PENDING", "APPROVED", "REJECTED"] as WaitlistStatus[]).map((status) => (
-              <button
-                key={status}
-                type="button"
-                className={`rounded-full px-4 py-1.5 transition ${
-                  activeWaitlistTab === status ? "bg-slate-900 text-white" : "text-slate-600"
-                }`}
-                onClick={() => setActiveWaitlistTab(status)}
-              >
-                {status.charAt(0) + status.slice(1).toLowerCase()}
-              </button>
-            ))}
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[0.7rem] font-semibold text-slate-600 hover:border-slate-300 disabled:cursor-not-allowed disabled:opacity-60"
+              onClick={() => fetchWaitlistRequests(activeWaitlistTab)}
+              disabled={waitlistLoading}
+            >
+              {waitlistLoading ? "Refreshing..." : "Refresh"}
+            </button>
+            <div className="flex rounded-full border border-slate-200 bg-white p-1 text-xs font-semibold text-slate-600">
+              {(["PENDING", "APPROVED", "REJECTED"] as WaitlistStatus[]).map((status) => (
+                <button
+                  key={status}
+                  type="button"
+                  className={`rounded-full px-4 py-1.5 transition ${
+                    activeWaitlistTab === status ? "bg-slate-900 text-white" : "text-slate-600"
+                  }`}
+                  onClick={() => setActiveWaitlistTab(status)}
+                >
+                  {status.charAt(0) + status.slice(1).toLowerCase()}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
+
+        {lastRefreshAt ? (
+          <p className="text-[0.7rem] text-slate-400">
+            Last refresh: {lastRefreshAt.toLocaleTimeString("en-US", { timeStyle: "short" })}
+          </p>
+        ) : null}
 
         {waitlistMessage ? (
           <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
             {waitlistMessage}
+          </div>
+        ) : null}
+
+        {waitlistError ? (
+          <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+            {waitlistError}
+          </div>
+        ) : null}
+
+        {selectedWaitlistRequest ? (
+          <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-xs text-slate-600 shadow-sm">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <p className="text-sm font-semibold text-slate-900">
+                  {selectedWaitlistRequest.fundName}
+                </p>
+                <p className="text-[0.7rem] text-slate-500">
+                  {data.requesterNameById.get(selectedWaitlistRequest.requesterId) ?? "—"} ·{" "}
+                  {selectedWaitlistRequest.requesterEmail}
+                </p>
+              </div>
+              <button
+                type="button"
+                className="rounded-md border border-slate-200 px-2 py-1 text-[0.7rem] font-semibold text-slate-500 hover:border-slate-300"
+                onClick={() => setSelectedWaitlistRequest(null)}
+              >
+                Close
+              </button>
+            </div>
+            {selectedWaitlistRequest.note ? (
+              <p className="mt-2 text-[0.7rem] text-slate-500">
+                Note: {selectedWaitlistRequest.note}
+              </p>
+            ) : null}
           </div>
         ) : null}
 
@@ -367,10 +488,10 @@ export default function MasterDashboard() {
             <thead className="bg-slate-50 text-[0.7rem] uppercase tracking-wide text-slate-500">
               <tr>
                 <th className="px-4 py-2">Fund</th>
-                <th className="px-4 py-2">User / Org</th>
+                <th className="px-4 py-2">Requester</th>
                 <th className="px-4 py-2">Role</th>
                 <th className="px-4 py-2">Country</th>
-                <th className="px-4 py-2">Created</th>
+                <th className="px-4 py-2">Date</th>
                 <th className="px-4 py-2">Status</th>
                 <th className="px-4 py-2 text-right">Actions</th>
               </tr>
@@ -390,7 +511,7 @@ export default function MasterDashboard() {
                             {data.requesterNameById.get(request.requesterId) ?? "—"}
                           </span>
                           <span className="text-[0.7rem] text-slate-500">
-                            {request.requesterOrg ?? "—"}
+                            {request.requesterEmail}
                           </span>
                         </div>
                       </td>
@@ -416,11 +537,10 @@ export default function MasterDashboard() {
                           </button>
                           <button
                             type="button"
-                            className="rounded-md border border-rose-200 px-3 py-1 text-[0.7rem] font-semibold text-rose-700 hover:border-rose-300 disabled:cursor-not-allowed disabled:opacity-60"
-                            onClick={() => handleWaitlistDecision(request, "REJECTED")}
-                            disabled={request.status !== "PENDING"}
+                            className="rounded-md border border-slate-200 px-3 py-1 text-[0.7rem] font-semibold text-slate-600 hover:border-slate-300"
+                            onClick={() => setSelectedWaitlistRequest(request)}
                           >
-                            Reject
+                            View
                           </button>
                         </div>
                       </td>
