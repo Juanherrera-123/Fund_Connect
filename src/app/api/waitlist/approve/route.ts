@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON payload." }, { status: 400 });
   }
 
-  const { requesterEmail, fundName } = payload;
+  const { requesterEmail, fundName, requesterName } = payload;
   const auth = getAuthContext(request);
   if (!auth || !isAdminRole(auth.role)) {
     return NextResponse.json({ error: "Forbidden." }, { status: 403 });
@@ -33,7 +33,21 @@ export async function POST(request: Request) {
   }
 
   try {
-    await sendWaitlistStatusEmail({ to: requesterEmail, fundName, status: "approved" });
+    const origin = request.headers.get("origin");
+    const forwardedHost = request.headers.get("x-forwarded-host");
+    const host = forwardedHost ?? request.headers.get("host");
+    const protocol = request.headers.get("x-forwarded-proto") ?? "https";
+    const baseUrl = origin ?? (host ? `${protocol}://${host}` : "");
+    const fundUrl = baseUrl ? `${baseUrl}/funds-explore?fund=${encodeURIComponent(fundName)}` : null;
+    const trimmedRequesterName = requesterName?.trim();
+
+    await sendWaitlistStatusEmail({
+      to: requesterEmail,
+      fundName,
+      status: "approved",
+      requesterName: trimmedRequesterName || null,
+      fundUrl,
+    });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: "Failed to send email." }, { status: 500 });
