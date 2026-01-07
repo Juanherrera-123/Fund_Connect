@@ -446,9 +446,6 @@ export function VerifiedManagers() {
                                     </div>
                                   </div>
                                 </div>
-                                <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-1 text-[10px] font-semibold text-emerald-700">
-                                  ✅ Verificado
-                                </span>
                               </div>
                               <p className="text-sm text-slate-600">{fund.description}</p>
                               <div className="mt-auto grid gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-3 text-xs font-semibold text-slate-600 sm:grid-cols-2">
@@ -490,9 +487,6 @@ export function VerifiedManagers() {
                               <p className={selectedFund ? "text-sm font-semibold text-slate-900" : "text-lg font-semibold text-slate-900"}>
                                 {fund.name}
                               </p>
-                              <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
-                                ✅ Verificado
-                              </span>
                             </div>
                             <div className="mt-2 flex flex-wrap gap-2 text-xs font-semibold text-slate-600">
                               <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-2 py-1">
@@ -536,9 +530,6 @@ export function VerifiedManagers() {
                               <h3 className="text-xl font-semibold text-slate-900">{selectedFund.name}</h3>
                               <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-600">
                                 {renderCountryBadge(selectedFund.country)}
-                              </span>
-                              <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-                                ✅ Verificado
                               </span>
                             </div>
                             <p className="mt-2 text-sm text-slate-600">{selectedFund.description}</p>
