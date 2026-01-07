@@ -20,6 +20,7 @@ type VerifiedFund = {
   name: string;
   country: string;
   logoLabel: string;
+  logoUrl: string | null;
   region: string;
   strategy: string;
   riskLevel: string;
@@ -91,6 +92,7 @@ export function VerifiedManagers() {
           name: application.fundName,
           country: application.country || "Global",
           logoLabel: getFundLogoLabel(application.fundName),
+          logoUrl: application.logoUrl ?? null,
           region: application.region || "Global",
           strategy:
             profileDetails?.strategyTypeLabel ||
@@ -130,6 +132,7 @@ export function VerifiedManagers() {
           name: fund.name,
           country: fund.country,
           logoLabel: fund.logoLabel,
+          logoUrl: fund.logoUrl ?? null,
           region: fund.region,
           strategy:
             profileDetails?.strategyTypeLabel || profileDetails?.strategyType || fund.strategy,
@@ -155,6 +158,7 @@ export function VerifiedManagers() {
       return {
         ...override,
         logoLabel: override.logoLabel || fund.logoLabel,
+        logoUrl: override.logoUrl ?? fund.logoUrl ?? null,
       };
     });
 
@@ -219,6 +223,21 @@ export function VerifiedManagers() {
       </span>
       <span>{country}</span>
     </>
+  );
+
+  const renderFundLogo = (fund: VerifiedFund, sizeClasses: string, textClass: string) => (
+    <div className={`flex items-center justify-center bg-igates-500/10 ${sizeClasses}`}>
+      {fund.logoUrl ? (
+        <img
+          src={fund.logoUrl}
+          alt={`${fund.name} logo`}
+          className="h-full w-full object-contain"
+          loading="lazy"
+        />
+      ) : (
+        <span className={textClass}>{fund.logoLabel}</span>
+      )}
+    </div>
   );
 
   const formattedOperatingTime = selectedFund?.operatingTime
@@ -405,54 +424,97 @@ export function VerifiedManagers() {
                     )}
                     {filteredFunds.map((fund) => {
                       const isActive = fund.id === selectedFundId;
+                      const yearlyProfit = formatNumber(fund.yearProfit, "%");
+                      const maxDrawdown = formatNumber(fund.maxDrawdown, "%");
+
+                      if (!selectedFund) {
+                        return (
+                          <motion.div key={fund.id} layout className="igates-card-frame">
+                            <motion.button
+                              layout
+                              type="button"
+                              onClick={() => setSelectedFundId(fund.id)}
+                              className="igates-card flex h-full flex-col gap-4 text-left"
+                            >
+                              <div className="flex items-center justify-between gap-3">
+                                <div className="flex items-center gap-3">
+                                  {renderFundLogo(fund, "h-14 w-14", "text-lg font-semibold text-igates-700")}
+                                  <div>
+                                    <p className="text-lg font-semibold text-slate-900">{fund.name}</p>
+                                    <div className="mt-1 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-semibold text-slate-600">
+                                      {renderCountryBadge(fund.country)}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <p className="text-sm text-slate-600">{fund.description}</p>
+                              <div className="mt-auto grid gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-3 text-xs font-semibold text-slate-600 sm:grid-cols-2">
+                                <div className="flex items-center justify-between">
+                                  <span>Profit último año</span>
+                                  <span className="text-sm font-semibold text-slate-900">{yearlyProfit}</span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                  <span>Max drawdown</span>
+                                  <span className="text-sm font-semibold text-slate-900">{maxDrawdown}</span>
+                                </div>
+                              </div>
+                            </motion.button>
+                          </motion.div>
+                        );
+                      }
+
                       return (
-                        <motion.button
-                          layout
+                        <motion.div
                           key={fund.id}
-                          type="button"
-                          onClick={() => setSelectedFundId(fund.id)}
-                          className={
-                            selectedFund
-                              ? `flex w-full items-start gap-3 rounded-2xl border px-4 py-3 text-left transition ${
-                                  isActive
-                                    ? "border-igates-500/40 bg-igates-500/10 shadow-sm"
-                                    : "border-slate-200 bg-white hover:border-igates-500/40"
-                                }`
-                              : "flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-igates-500/40"
-                          }
+                          layout
+                          className={selectedFund ? "igates-card-frame" : "w-full"}
                         >
-                          <div
+                          <motion.button
+                            layout
+                            type="button"
+                            onClick={() => setSelectedFundId(fund.id)}
                             className={
                               selectedFund
-                                ? "flex h-10 w-10 items-center justify-center rounded-xl bg-igates-500/10 text-sm font-semibold text-igates-700"
-                                : "flex h-12 w-12 items-center justify-center rounded-2xl bg-igates-500/10 text-lg font-semibold text-igates-700"
+                                ? `igates-card flex w-full flex-col gap-3 text-left transition ${
+                                    isActive
+                                      ? "bg-igates-500/10 shadow-sm"
+                                      : "bg-white hover:-translate-y-0.5 hover:shadow-md"
+                                  }`
+                                : "flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-igates-500/40"
                             }
-                            aria-hidden="true"
                           >
-                            {fund.logoLabel}
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex flex-wrap items-center gap-2">
-                              <p className={selectedFund ? "text-sm font-semibold text-slate-900" : "text-lg font-semibold text-slate-900"}>
-                                {fund.name}
-                              </p>
-                              <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
-                                ✅ Verificado
-                              </span>
+                            <div className="flex items-center gap-3">
+                              <div aria-hidden="true">
+                                {renderFundLogo(
+                                  fund,
+                                  "h-10 w-10 rounded-xl",
+                                  "text-sm font-semibold text-igates-700"
+                                )}
+                              </div>
+                              <div className="flex-1">
+                                <p className="text-sm font-semibold text-slate-900">{fund.name}</p>
+                                <div className="mt-1 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-semibold text-slate-600">
+                                  {renderCountryBadge(fund.country)}
+                                </div>
+                              </div>
                             </div>
-                            <div className="mt-2 flex flex-wrap gap-2 text-xs font-semibold text-slate-600">
-                              <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-2 py-1">
-                                {renderCountryBadge(fund.country)}
-                              </span>
-                              <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-1">
-                                {fund.strategy}
-                              </span>
-                            </div>
-                            {!selectedFund && (
-                              <p className="mt-3 text-sm text-slate-600">{fund.description}</p>
+                            {selectedFund && (
+                              <div className="grid gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-600">
+                                <div className="flex items-center justify-between">
+                                  <span>Profit último año</span>
+                                  <span className="text-sm font-semibold text-slate-900">{yearlyProfit}</span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                  <span>Max drawdown</span>
+                                  <span className="text-sm font-semibold text-slate-900">{maxDrawdown}</span>
+                                </div>
+                              </div>
                             )}
-                          </div>
-                        </motion.button>
+                            {!selectedFund && (
+                              <p className="text-sm text-slate-600">{fund.description}</p>
+                            )}
+                          </motion.button>
+                        </motion.div>
                       );
                     })}
                   </motion.div>
@@ -470,11 +532,12 @@ export function VerifiedManagers() {
                     >
                       <div className="flex flex-wrap items-start justify-between gap-4">
                         <div className="flex items-start gap-4">
-                          <div
-                            className="flex h-14 w-14 items-center justify-center rounded-2xl bg-igates-500/10 text-lg font-semibold text-igates-700"
-                            aria-hidden="true"
-                          >
-                            {selectedFund.logoLabel}
+                          <div aria-hidden="true">
+                            {renderFundLogo(
+                              selectedFund,
+                              "h-14 w-14 rounded-2xl",
+                              "text-lg font-semibold text-igates-700"
+                            )}
                           </div>
                           <div>
                             <div className="flex flex-wrap items-center gap-2">
@@ -482,11 +545,20 @@ export function VerifiedManagers() {
                               <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-600">
                                 {renderCountryBadge(selectedFund.country)}
                               </span>
-                              <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-                                ✅ Verificado
-                              </span>
                             </div>
                             <p className="mt-2 text-sm text-slate-600">{selectedFund.description}</p>
+                            <div className="mt-4 grid gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 sm:grid-cols-2">
+                              <div className="flex items-center justify-between">
+                                <span>Profit último año</span>
+                                <span className="text-sm font-semibold text-slate-900">{formattedProfit}</span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span>Max drawdown</span>
+                                <span className="text-sm font-semibold text-slate-900">
+                                  {formattedMaxDrawdown}
+                                </span>
+                              </div>
+                            </div>
                           </div>
                         </div>
                         <button
