@@ -34,6 +34,15 @@ export async function POST(request: Request, context: { params: { id: string } }
   }
 
   try {
+    const origin = request.headers.get("origin");
+    const forwardedHost = request.headers.get("x-forwarded-host");
+    const host = forwardedHost ?? request.headers.get("host");
+    const protocol = request.headers.get("x-forwarded-proto") ?? "https";
+    const baseUrl = origin ?? (host ? `${protocol}://${host}` : "");
+    const fundUrl = baseUrl
+      ? `${baseUrl}/funds-explore?fund=${encodeURIComponent(waitlistRequest.fundName)}`
+      : null;
+
     await updateWaitlistStatus({
       id: requestId,
       status: "APPROVED",
@@ -45,6 +54,7 @@ export async function POST(request: Request, context: { params: { id: string } }
       to: waitlistRequest.requesterEmail,
       fundName: waitlistRequest.fundName,
       status: "approved",
+      fundUrl,
     });
   } catch (error) {
     console.error(error);
