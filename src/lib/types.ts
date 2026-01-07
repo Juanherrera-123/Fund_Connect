@@ -81,6 +81,7 @@ export type FundApplication = {
   country: string;
   region?: string;
   aum?: string;
+  logoUrl?: string;
   strategy?: string;
   strategyLabel?: string;
   description: string;
