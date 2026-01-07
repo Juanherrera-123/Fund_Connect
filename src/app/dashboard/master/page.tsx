@@ -38,7 +38,7 @@ export default function MasterDashboard() {
     []
   );
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
-  const [activeWaitlistTab, setActiveWaitlistTab] = useState<WaitlistStatus>("pending");
+  const [activeWaitlistTab, setActiveWaitlistTab] = useState<WaitlistStatus>("PENDING");
   const [waitlistMessage, setWaitlistMessage] = useState("");
 
   const data = useMemo(() => {
@@ -90,11 +90,15 @@ export default function MasterDashboard() {
         })),
     ];
 
+    const requesterNameById = new Map(
+      profiles.map((profile) => [profile.id, profile.fullName])
+    );
+
     const waitlistEntries = waitlistRequests.map((request) => ({
       id: request.id,
-      investor: request.requesterName,
-      fund: request.fundNameSnapshot,
-      country: String(request.metadata?.country ?? "—"),
+      investor: requesterNameById.get(request.requesterId) ?? "—",
+      fund: request.fundName,
+      country: request.requesterCountry ?? "—",
       status: request.status,
     }));
 
@@ -119,6 +123,7 @@ export default function MasterDashboard() {
       pendingManagers,
       notifications,
       managerNameById,
+      requesterNameById,
       roleCounts,
     };
   }, [fundApplications, notifications, profiles, waitlistRequests]);
@@ -153,15 +158,16 @@ export default function MasterDashboard() {
   ) => {
     const now = new Date().toISOString();
     const reviewerId = session?.id ?? session?.username ?? "master";
+    const requesterName = data.requesterNameById.get(request.requesterId) ?? "User";
     setWaitlistRequests((prev) =>
       prev.map((item) =>
         item.id === request.id
           ? {
               ...item,
               status: nextStatus,
-              reviewedByUserId: reviewerId,
-              reviewedAt: now,
-              updatedAt: now,
+              approvedBy: nextStatus === "PENDING" ? null : reviewerId,
+              approvedAt: nextStatus === "PENDING" ? null : now,
+              decisionNote: item.decisionNote ?? null,
             }
           : item
       )
@@ -169,7 +175,7 @@ export default function MasterDashboard() {
 
     try {
       const endpoint =
-        nextStatus === "approved" ? "/api/waitlist/approve" : "/api/waitlist/reject";
+        nextStatus === "APPROVED" ? "/api/waitlist/approve" : "/api/waitlist/reject";
       await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -178,14 +184,14 @@ export default function MasterDashboard() {
           reviewerId,
           reviewerRole: session?.role,
           requesterEmail: request.requesterEmail,
-          requesterName: request.requesterName,
-          fundName: request.fundNameSnapshot,
+          requesterName,
+          fundName: request.fundName,
         }),
       });
       setWaitlistMessage(
-        nextStatus === "approved"
-          ? `Approved ${request.requesterName}'s waitlist request.`
-          : `Rejected ${request.requesterName}'s waitlist request.`
+        nextStatus === "APPROVED"
+          ? `Approved ${requesterName}'s waitlist request.`
+          : `Rejected ${requesterName}'s waitlist request.`
       );
     } catch (error) {
       console.error(error);
@@ -284,23 +290,22 @@ export default function MasterDashboard() {
 
   const statusConfig: Record<
     WaitlistStatus,
-    { label: string; tone: "neutral" | "success" | "danger" | "info" }
+    { label: string; tone: "neutral" | "success" | "danger" }
   > = {
-    pending: { label: "Pending", tone: "neutral" },
-    approved: { label: "Approved", tone: "success" },
-    rejected: { label: "Rejected", tone: "danger" },
-    allocated: { label: "Allocated", tone: "info" },
+    PENDING: { label: "Pending", tone: "neutral" },
+    APPROVED: { label: "Approved", tone: "success" },
+    REJECTED: { label: "Rejected", tone: "danger" },
   };
 
   const waitlistRows = data.waitlistEntries
-    .filter((entry) => entry.status === "pending")
+    .filter((entry) => entry.status === "PENDING")
     .map((entry) => ({
       id: entry.id,
       investor: entry.investor,
       fund: entry.fund,
       country: entry.country,
-      statusLabel: statusConfig.pending.label,
-      statusTone: statusConfig.pending.tone,
+      statusLabel: statusConfig.PENDING.label,
+      statusTone: statusConfig.PENDING.tone,
     }));
 
   const actionRows = data.notifications.map((notification) => ({
@@ -335,7 +340,7 @@ export default function MasterDashboard() {
             <p className="text-xs text-slate-500">Approve or reject pending allocation requests.</p>
           </div>
           <div className="flex rounded-full border border-slate-200 bg-white p-1 text-xs font-semibold text-slate-600">
-            {(["pending", "approved", "rejected"] as WaitlistStatus[]).map((status) => (
+            {(["PENDING", "APPROVED", "REJECTED"] as WaitlistStatus[]).map((status) => (
               <button
                 key={status}
                 type="button"
@@ -344,7 +349,7 @@ export default function MasterDashboard() {
                 }`}
                 onClick={() => setActiveWaitlistTab(status)}
               >
-                {status.charAt(0).toUpperCase() + status.slice(1)}
+                {status.charAt(0) + status.slice(1).toLowerCase()}
               </button>
             ))}
           </div>
@@ -376,18 +381,22 @@ export default function MasterDashboard() {
                   return (
                     <tr key={request.id} className="text-slate-700">
                       <td className="px-4 py-2">
-                        <span className="font-semibold text-slate-900">{request.fundNameSnapshot}</span>
+                        <span className="font-semibold text-slate-900">{request.fundName}</span>
                       </td>
                       <td className="px-4 py-2">
                         <div className="grid gap-1">
-                          <span className="font-semibold text-slate-900">{request.requesterName}</span>
+                          <span className="font-semibold text-slate-900">
+                            {data.requesterNameById.get(request.requesterId) ?? "—"}
+                          </span>
                           <span className="text-[0.7rem] text-slate-500">
                             {request.requesterOrg ?? "—"}
                           </span>
                         </div>
                       </td>
-                      <td className="px-4 py-2 capitalize">{request.requesterRole.replace("_", " ")}</td>
-                      <td className="px-4 py-2">{request.metadata?.country ?? "—"}</td>
+                      <td className="px-4 py-2 capitalize">
+                        {request.requesterRole.replace("_", " ").toLowerCase()}
+                      </td>
+                      <td className="px-4 py-2">{request.requesterCountry ?? "—"}</td>
                       <td className="px-4 py-2">
                         {new Date(request.createdAt).toLocaleDateString("en-US")}
                       </td>
@@ -399,16 +408,16 @@ export default function MasterDashboard() {
                           <button
                             type="button"
                             className="rounded-md border border-emerald-200 px-3 py-1 text-[0.7rem] font-semibold text-emerald-700 hover:border-emerald-300 disabled:cursor-not-allowed disabled:opacity-60"
-                            onClick={() => handleWaitlistDecision(request, "approved")}
-                            disabled={request.status !== "pending"}
+                            onClick={() => handleWaitlistDecision(request, "APPROVED")}
+                            disabled={request.status !== "PENDING"}
                           >
                             Approve
                           </button>
                           <button
                             type="button"
                             className="rounded-md border border-rose-200 px-3 py-1 text-[0.7rem] font-semibold text-rose-700 hover:border-rose-300 disabled:cursor-not-allowed disabled:opacity-60"
-                            onClick={() => handleWaitlistDecision(request, "rejected")}
-                            disabled={request.status !== "pending"}
+                            onClick={() => handleWaitlistDecision(request, "REJECTED")}
+                            disabled={request.status !== "PENDING"}
                           >
                             Reject
                           </button>
