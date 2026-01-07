@@ -4,6 +4,7 @@ import {
   addDoc,
   collection,
   doc,
+  getDoc,
   getDocs,
   limit,
   orderBy,
@@ -50,6 +51,7 @@ export async function createWaitlistRequest(
     waitlistCollection,
     where("fundId", "==", input.fundId),
     where("requesterId", "==", input.requesterId),
+    where("status", "==", "PENDING"),
     orderBy("createdAt", "desc"),
     limit(1)
   );
@@ -90,6 +92,14 @@ export async function listWaitlistRequestsByStatus(
   );
   const snapshot = await getDocs(statusQuery);
   return snapshot.docs.map((docSnap) => mapWaitlistDoc(docSnap) as WaitlistRequest);
+}
+
+export async function getWaitlistRequestById(id: string): Promise<WaitlistRequest | null> {
+  const snapshot = await getDoc(doc(waitlistCollection, id));
+  if (!snapshot.exists()) {
+    return null;
+  }
+  return mapWaitlistDoc(snapshot) as WaitlistRequest;
 }
 
 export async function updateWaitlistStatus(input: UpdateWaitlistStatusInput): Promise<void> {

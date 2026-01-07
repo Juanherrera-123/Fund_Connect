@@ -175,17 +175,18 @@ export default function MasterDashboard() {
 
     try {
       const endpoint =
-        nextStatus === "APPROVED" ? "/api/waitlist/approve" : "/api/waitlist/reject";
+        nextStatus === "APPROVED"
+          ? `/api/admin/waitlist/${request.id}/approve`
+          : `/api/admin/waitlist/${request.id}/reject`;
       await fetch(endpoint, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-user-id": reviewerId,
+          "x-user-role": session?.role ?? "MasterUser",
+        },
         body: JSON.stringify({
-          requestId: request.id,
-          reviewerId,
-          reviewerRole: session?.role,
-          requesterEmail: request.requesterEmail,
-          requesterName,
-          fundName: request.fundName,
+          decisionNote: request.decisionNote ?? null,
         }),
       });
       setWaitlistMessage(
