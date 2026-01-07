@@ -22,7 +22,7 @@ export type ContactRequest = {
   id: number;
   name: string;
   email: string;
-  role: string;
+  phone: string;
   message: string;
   receivedAt: string;
 };
