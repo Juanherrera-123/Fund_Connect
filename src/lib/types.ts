@@ -52,27 +52,23 @@ export type UserProfile = {
   waitlistFunds?: string[];
 };
 
-export type WaitlistStatus = "pending" | "approved" | "rejected" | "allocated";
+export type WaitlistStatus = "PENDING" | "APPROVED" | "REJECTED";
 
 export type WaitlistRequest = {
   id: string;
-  createdAt: string;
-  updatedAt: string;
-  requesterUserId: string;
-  requesterRole: "investor" | "family_office";
-  requesterName: string;
-  requesterEmail: string;
-  requesterOrg?: string | null;
   fundId: string;
-  fundNameSnapshot: string;
+  fundName: string;
+  requesterId: string;
+  requesterRole: "INVESTOR" | "FAMILY_OFFICE";
+  requesterEmail: string;
+  requesterCountry: string;
+  requesterOrg?: string | null;
+  note?: string | null;
   status: WaitlistStatus;
-  reviewedByUserId?: string | null;
-  reviewedAt?: string | null;
-  reviewNotes?: string | null;
-  allocationId?: string | null;
-  allocationStatus?: string | null;
-  metadata?: Record<string, string | number | null | undefined>;
-  requestNotes?: string | null;
+  createdAt: string;
+  approvedAt?: string | null;
+  approvedBy?: string | null;
+  decisionNote?: string | null;
 };
 
 export type FundApplication = {

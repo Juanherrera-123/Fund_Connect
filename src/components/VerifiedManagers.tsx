@@ -469,34 +469,22 @@ export function VerifiedManagers() {
                           layout
                           className={selectedFund ? "igates-card-frame" : "w-full"}
                         >
-                          <motion.button
-                            layout
-                            type="button"
-                            onClick={() => setSelectedFundId(fund.id)}
-                            className={
-                              selectedFund
-                                ? `igates-card flex w-full flex-col gap-3 text-left transition ${
-                                    isActive
-                                      ? "bg-igates-500/10 shadow-sm"
-                                      : "bg-white hover:-translate-y-0.5 hover:shadow-md"
-                                  }`
-                                : "flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-igates-500/40"
-                            }
-                          >
-                            <div className="flex items-center gap-3">
-                              <div aria-hidden="true">
-                                {renderFundLogo(
-                                  fund,
-                                  "h-10 w-10 rounded-xl",
-                                  "text-sm font-semibold text-igates-700"
-                                )}
-                              </div>
-                              <div className="flex-1">
-                                <p className="text-sm font-semibold text-slate-900">{fund.name}</p>
-                                <div className="mt-1 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-semibold text-slate-600">
-                                  {renderCountryBadge(fund.country)}
-                                </div>
-                              </div>
+                          <div aria-hidden="true">
+                            {renderFundLogo(fund, "h-10 w-10 rounded-xl", "text-sm font-semibold text-igates-700")}
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <p className={selectedFund ? "text-sm font-semibold text-slate-900" : "text-lg font-semibold text-slate-900"}>
+                                {fund.name}
+                              </p>
+                            </div>
+                            <div className="mt-2 flex flex-wrap gap-2 text-xs font-semibold text-slate-600">
+                              <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-2 py-1">
+                                {renderCountryBadge(fund.country)}
+                              </span>
+                              <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-1">
+                                {fund.strategy}
+                              </span>
                             </div>
                             {selectedFund && (
                               <div className="grid gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-600">

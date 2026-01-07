@@ -9,11 +9,10 @@ import type { FundSummary, Session, UserProfile, WaitlistRequest, WaitlistStatus
 
 const cardClass = "rounded-2xl border border-slate-200 bg-white p-5 shadow-sm";
 
-const statusConfig: Record<WaitlistStatus, { label: string; tone: "neutral" | "success" | "danger" | "info" }> = {
-  pending: { label: "Pending", tone: "neutral" },
-  approved: { label: "Approved", tone: "success" },
-  rejected: { label: "Rejected", tone: "danger" },
-  allocated: { label: "Allocated", tone: "info" },
+const statusConfig: Record<WaitlistStatus, { label: string; tone: "neutral" | "success" | "danger" }> = {
+  PENDING: { label: "Pending", tone: "neutral" },
+  APPROVED: { label: "Approved", tone: "success" },
+  REJECTED: { label: "Rejected", tone: "danger" },
 };
 
 export default function InvestorDashboard() {
@@ -66,7 +65,7 @@ export default function InvestorDashboard() {
 
   const myRequests = useMemo(() => {
     if (!profile) return [];
-    return waitlistRequests.filter((request) => request.requesterUserId === profile.id);
+    return waitlistRequests.filter((request) => request.requesterId === profile.id);
   }, [profile, waitlistRequests]);
 
   const requestByFundId = useMemo(() => {
@@ -89,22 +88,18 @@ export default function InvestorDashboard() {
     const newRequest: WaitlistRequest = {
       id: `waitlist-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
       createdAt: now,
-      updatedAt: now,
-      requesterUserId: profile.id,
-      requesterRole: "investor",
-      requesterName: profile.fullName,
+      requesterId: profile.id,
+      requesterRole: "INVESTOR",
       requesterEmail: profile.email,
+      requesterCountry: profile.country,
       requesterOrg: profile.org ?? null,
       fundId: activeFund.id,
-      fundNameSnapshot: activeFund.name,
-      status: "pending",
-      reviewedByUserId: null,
-      reviewedAt: null,
-      reviewNotes: null,
-      allocationId: null,
-      allocationStatus: null,
-      metadata: { country: profile.country },
-      requestNotes: requestNotes.trim() ? requestNotes.trim() : null,
+      fundName: activeFund.name,
+      status: "PENDING",
+      approvedAt: null,
+      approvedBy: null,
+      decisionNote: null,
+      note: requestNotes.trim() ? requestNotes.trim() : null,
     };
 
     setWaitlistRequests((prev) => [newRequest, ...prev]);
@@ -181,13 +176,13 @@ export default function InvestorDashboard() {
             <div className="flex items-center justify-between">
               <span>Pending</span>
               <span className="font-semibold text-slate-900">
-                {myRequests.filter((request) => request.status === "pending").length}
+                {myRequests.filter((request) => request.status === "PENDING").length}
               </span>
             </div>
             <div className="flex items-center justify-between">
               <span>Approved</span>
               <span className="font-semibold text-slate-900">
-                {myRequests.filter((request) => request.status === "approved").length}
+                {myRequests.filter((request) => request.status === "APPROVED").length}
               </span>
             </div>
           </div>
@@ -267,7 +262,7 @@ export default function InvestorDashboard() {
                   return (
                     <tr key={request.id} className="text-slate-700">
                       <td className="px-4 py-2">
-                        <span className="font-semibold text-slate-900">{request.fundNameSnapshot}</span>
+                        <span className="font-semibold text-slate-900">{request.fundName}</span>
                       </td>
                       <td className="px-4 py-2">
                         {new Date(request.createdAt).toLocaleDateString("en-US")}

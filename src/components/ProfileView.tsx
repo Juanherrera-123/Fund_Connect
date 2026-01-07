@@ -35,7 +35,7 @@ export function ProfileView() {
 
   const waitlistItems = useMemo(() => {
     if (!profile) return [];
-    return waitlistRequests.filter((request) => request.requesterUserId === profile.id);
+    return waitlistRequests.filter((request) => request.requesterId === profile.id);
   }, [profile, waitlistRequests]);
 
 
@@ -135,9 +135,7 @@ export function ProfileView() {
             </h3>
             <div className="mt-3 grid gap-1 text-sm text-slate-600">
               {waitlistItems.length ? (
-                waitlistItems.map((request) => (
-                  <span key={request.id}>• {request.fundNameSnapshot}</span>
-                ))
+                waitlistItems.map((request) => <span key={request.id}>• {request.fundName}</span>)
               ) : (
                 <span data-i18n="profileWaitlistEmpty">Sin fondos aún.</span>
               )}
