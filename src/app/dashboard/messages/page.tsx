@@ -4,11 +4,12 @@ import { useMemo } from "react";
 
 import { DEFAULT_FUND_MANAGER_PROFILES, STORAGE_KEYS, baseVerifiedFunds } from "@/lib/igatesData";
 import { useLocalStorage } from "@/lib/useLocalStorage";
-import type { FundApplication, UserProfile } from "@/lib/types";
+import type { ContactRequest, FundApplication, UserProfile } from "@/lib/types";
 
 export default function MessagesDashboard() {
   const [profiles] = useLocalStorage<UserProfile[]>(STORAGE_KEYS.profiles, DEFAULT_FUND_MANAGER_PROFILES);
   const [fundApplications] = useLocalStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
+  const [contactRequests] = useLocalStorage<ContactRequest[]>(STORAGE_KEYS.contactRequests, []);
 
   const columns = useMemo(() => {
     const verifiedFundApplications = fundApplications.filter(
@@ -65,12 +66,30 @@ export default function MessagesDashboard() {
         subtitle: profile.country,
       }));
 
+    const contactMessages = contactRequests.map((request) => {
+      const details = [
+        request.email,
+        request.phone,
+        request.message?.trim().length ? request.message.trim() : null,
+      ].filter(Boolean);
+      return {
+        id: request.id,
+        title: request.name,
+        subtitle: details.join(" · "),
+      };
+    });
+
     return [
       { title: "Fondos", titleKey: "dashboardMessagesFunds", items: funds },
       { title: "Inversionistas", titleKey: "dashboardMessagesInvestors", items: investors },
       { title: "Family offices", titleKey: "dashboardMessagesFamilyOffices", items: familyOffices },
+      {
+        title: "Solicitudes de asesoría",
+        titleKey: "dashboardMessagesContact",
+        items: contactMessages,
+      },
     ];
-  }, [fundApplications, profiles]);
+  }, [contactRequests, fundApplications, profiles]);
 
   return (
     <>

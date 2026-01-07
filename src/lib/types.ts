@@ -104,6 +104,15 @@ export type FundApplication = {
   reportsFrequency?: string;
 };
 
+export type ContactRequest = {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  message: string;
+  receivedAt: string;
+};
+
 export type MasterNotification = {
   id: string;
   type: string;

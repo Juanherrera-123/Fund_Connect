@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { useLanguage } from "@/components/LanguageProvider";
 import {
@@ -24,6 +24,7 @@ type SignupStep =
 
 export function AuthFlow() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { strings } = useLanguage();
   const [activeTab, setActiveTab] = useState<"signup" | "login">("signup");
   const [stepIndex, setStepIndex] = useState(0);
@@ -59,6 +60,16 @@ export function AuthFlow() {
   useEffect(() => {
     setStepIndex(0);
   }, [role]);
+
+  useEffect(() => {
+    const roleParam = searchParams.get("role");
+    if (roleParam && Object.prototype.hasOwnProperty.call(SURVEY_DEFINITIONS, roleParam)) {
+      setActiveTab("signup");
+      setKycAnswers((prev) =>
+        prev.role === roleParam ? prev : { ...prev, role: roleParam }
+      );
+    }
+  }, [searchParams]);
 
   const updateKyc = (field: string, value: string) => {
     setKycAnswers((prev) => ({ ...prev, [field]: value }));
