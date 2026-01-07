@@ -464,20 +464,10 @@ export function VerifiedManagers() {
                       }
 
                       return (
-                        <motion.button
-                          layout
+                        <motion.div
                           key={fund.id}
-                          type="button"
-                          onClick={() => setSelectedFundId(fund.id)}
-                          className={
-                            selectedFund
-                              ? `flex w-full items-start gap-3 rounded-2xl border px-4 py-3 text-left transition ${
-                                  isActive
-                                    ? "border-igates-500/40 bg-igates-500/10 shadow-sm"
-                                    : "border-slate-200 bg-white hover:border-igates-500/40"
-                                }`
-                              : "flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-igates-500/40"
-                          }
+                          layout
+                          className={selectedFund ? "igates-card-frame" : "w-full"}
                         >
                           <div aria-hidden="true">
                             {renderFundLogo(fund, "h-10 w-10 rounded-xl", "text-sm font-semibold text-igates-700")}
@@ -496,11 +486,23 @@ export function VerifiedManagers() {
                                 {fund.strategy}
                               </span>
                             </div>
-                            {!selectedFund && (
-                              <p className="mt-3 text-sm text-slate-600">{fund.description}</p>
+                            {selectedFund && (
+                              <div className="grid gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-600">
+                                <div className="flex items-center justify-between">
+                                  <span>Profit último año</span>
+                                  <span className="text-sm font-semibold text-slate-900">{yearlyProfit}</span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                  <span>Max drawdown</span>
+                                  <span className="text-sm font-semibold text-slate-900">{maxDrawdown}</span>
+                                </div>
+                              </div>
                             )}
-                          </div>
-                        </motion.button>
+                            {!selectedFund && (
+                              <p className="text-sm text-slate-600">{fund.description}</p>
+                            )}
+                          </motion.button>
+                        </motion.div>
                       );
                     })}
                   </motion.div>
@@ -533,6 +535,18 @@ export function VerifiedManagers() {
                               </span>
                             </div>
                             <p className="mt-2 text-sm text-slate-600">{selectedFund.description}</p>
+                            <div className="mt-4 grid gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 sm:grid-cols-2">
+                              <div className="flex items-center justify-between">
+                                <span>Profit último año</span>
+                                <span className="text-sm font-semibold text-slate-900">{formattedProfit}</span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span>Max drawdown</span>
+                                <span className="text-sm font-semibold text-slate-900">
+                                  {formattedMaxDrawdown}
+                                </span>
+                              </div>
+                            </div>
                           </div>
                         </div>
                         <button
