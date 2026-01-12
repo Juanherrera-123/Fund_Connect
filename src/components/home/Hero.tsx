@@ -74,7 +74,7 @@ export function Hero() {
               className="igates-gradient-text pb-1 text-4xl font-semibold leading-[1.05] md:text-6xl"
               data-i18n="heroTitle"
             >
-              Conectando capital con gestores verificados
+              Conectando Capital institucional con Fondos Privados
             </h1>
             <p className="text-base text-slate-700 md:text-lg" data-i18n="heroLead">
               Infraestructura institucional para acceder a fondos gestionados con estándares
