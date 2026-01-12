@@ -74,7 +74,10 @@ export function VerifiedManagers() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [qualified, setQualified] = useState(false);
   const [note, setNote] = useState("");
+  const [contactName, setContactName] = useState("");
   const [contactEmail, setContactEmail] = useState("");
+  const [contactPhone, setContactPhone] = useState("");
+  const [investmentAmount, setInvestmentAmount] = useState("");
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const waitlistButtonRef = useRef<HTMLButtonElement | null>(null);
   const waitlistModalRef = useRef<HTMLDivElement | null>(null);
@@ -215,7 +218,6 @@ export function VerifiedManagers() {
     if (!session?.id || session.role === "MasterUser") return null;
     return profiles.find((profile) => profile.id === session.id) ?? null;
   }, [profiles, session]);
-  const shouldCollectEmail = !currentProfile?.email;
 
   const handleApplyFilters = () => {
     setFilters(appliedFilters);
@@ -238,8 +240,11 @@ export function VerifiedManagers() {
     if (!isWaitlistModalOpen) return;
     setQualified(false);
     setNote("");
+    setContactName(currentProfile?.fullName ?? session?.username ?? "");
     setContactEmail(currentProfile?.email ?? "");
-  }, [currentProfile?.email, isWaitlistModalOpen]);
+    setContactPhone(currentProfile?.phone ?? "");
+    setInvestmentAmount("");
+  }, [currentProfile?.email, currentProfile?.fullName, currentProfile?.phone, isWaitlistModalOpen, session?.username]);
 
   useEffect(() => {
     if (!isWaitlistModalOpen) return undefined;
@@ -302,8 +307,10 @@ export function VerifiedManagers() {
       note: note.trim() || null,
       user: {
         role: userRole,
-        name: currentProfile?.fullName ?? session?.username ?? "",
-        email: currentProfile?.email ?? contactEmail.trim(),
+        name: contactName.trim(),
+        email: contactEmail.trim(),
+        phone: contactPhone.trim(),
+        investmentAmount: investmentAmount.trim(),
         country: currentProfile?.country ?? "",
         org: currentProfile?.org ?? null,
       },
@@ -823,20 +830,54 @@ export function VerifiedManagers() {
               </div>
 
               <form className="mt-6 grid gap-4" onSubmit={handleWaitlistSubmit}>
-                {shouldCollectEmail && (
-                  <div className="grid gap-2 text-sm font-medium text-slate-600">
-                    <label htmlFor="waitlist-email">Email</label>
-                    <input
-                      id="waitlist-email"
-                      type="email"
-                      required
-                      className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
-                      value={contactEmail}
-                      onChange={(event) => setContactEmail(event.target.value)}
-                      placeholder="you@example.com"
-                    />
-                  </div>
-                )}
+                <div className="grid gap-2 text-sm font-medium text-slate-600">
+                  <label htmlFor="waitlist-name">Nombre completo</label>
+                  <input
+                    id="waitlist-name"
+                    type="text"
+                    required
+                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
+                    value={contactName}
+                    onChange={(event) => setContactName(event.target.value)}
+                    placeholder="Nombre y apellido"
+                  />
+                </div>
+                <div className="grid gap-2 text-sm font-medium text-slate-600">
+                  <label htmlFor="waitlist-email">Email</label>
+                  <input
+                    id="waitlist-email"
+                    type="email"
+                    required
+                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
+                    value={contactEmail}
+                    onChange={(event) => setContactEmail(event.target.value)}
+                    placeholder="you@example.com"
+                  />
+                </div>
+                <div className="grid gap-2 text-sm font-medium text-slate-600">
+                  <label htmlFor="waitlist-phone">Celular</label>
+                  <input
+                    id="waitlist-phone"
+                    type="tel"
+                    required
+                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
+                    value={contactPhone}
+                    onChange={(event) => setContactPhone(event.target.value)}
+                    placeholder="+57 300 000 0000"
+                  />
+                </div>
+                <div className="grid gap-2 text-sm font-medium text-slate-600">
+                  <label htmlFor="waitlist-investment">Monto destinado a invertir</label>
+                  <input
+                    id="waitlist-investment"
+                    type="text"
+                    required
+                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
+                    value={investmentAmount}
+                    onChange={(event) => setInvestmentAmount(event.target.value)}
+                    placeholder="Ej. USD 50.000"
+                  />
+                </div>
                 <label className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
                   <input
                     type="checkbox"
