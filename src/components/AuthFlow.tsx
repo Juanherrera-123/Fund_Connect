@@ -51,7 +51,7 @@ export function AuthFlow() {
     for (let index = 0; index < surveyQuestions.length; index += 2) {
       groups.push(surveyQuestions.slice(index, index + 2));
     }
-    const surveySteps = groups.map<SignupStep>((group) => ({
+    const surveySteps: SignupStep[] = groups.map((group) => ({
       type: "survey",
       questions: group,
     }));
