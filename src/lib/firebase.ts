@@ -1,4 +1,4 @@
-import { initializeApp } from "firebase/app";
+import { getApp, getApps, initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
@@ -11,7 +11,17 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-const app = initializeApp(firebaseConfig);
+const hasFirebaseConfig = Object.values(firebaseConfig).every(Boolean);
 
-export const auth = getAuth(app);
-export const db = getFirestore(app);
+const getFirebaseApp = () => {
+  if (!hasFirebaseConfig) {
+    throw new Error(
+      "Missing Firebase configuration. Set NEXT_PUBLIC_FIREBASE_* environment variables."
+    );
+  }
+
+  return getApps().length ? getApp() : initializeApp(firebaseConfig);
+};
+
+export const getFirebaseAuth = () => getAuth(getFirebaseApp());
+export const getFirestoreDb = () => getFirestore(getFirebaseApp());
