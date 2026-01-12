@@ -90,7 +90,7 @@ export function Hero() {
               Solicitar acceso institucional
             </Link>
             <Link
-              className="inline-flex items-center justify-center rounded-full border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:text-slate-900"
+              className="inline-flex items-center justify-center rounded-full border border-white/40 bg-white/55 px-6 py-3 text-sm font-semibold text-slate-700 shadow-sm backdrop-blur-md transition-all hover:border-white/60 hover:bg-white/70 hover:text-slate-900 hover:shadow-md"
               href={{ pathname: "/auth", query: { role: "Fund Manager" } }}
               data-i18n="heroCtaManager"
             >
