@@ -97,11 +97,36 @@ export function Hero() {
               Postularse como gestor
             </Link>
           </div>
-          <div className="flex flex-wrap gap-4 text-xs text-slate-600">
-            {trustItems.map((item) => (
-              <span key={item.key} className="rounded-full border border-slate-200/80 px-4 py-2">
-                <span data-i18n={item.key}>{item.label}</span>
-              </span>
+          <div className="mt-6 grid gap-4 text-sm font-medium md:grid-cols-3 md:gap-0">
+            {trustItems.map((item, index) => (
+              <div
+                key={item.key}
+                className="relative flex items-center justify-center px-2 py-3 md:px-6"
+              >
+                <div
+                  className="group flex w-full items-center justify-center text-center opacity-90 transition hover:opacity-100"
+                  style={{ animationDelay: `${index * 140}ms` }}
+                >
+                  <span
+                    className="hero-trust-item text-[rgba(30,64,175,0.9)] transition duration-300 group-hover:igates-gradient-text group-hover:drop-shadow-[0_0_8px_rgba(59,130,246,0.22)] md:text-[15px]"
+                    data-i18n={item.key}
+                  >
+                    {item.label}
+                  </span>
+                </div>
+                {index < trustItems.length - 1 ? (
+                  <>
+                    <span
+                      aria-hidden="true"
+                      className="absolute right-0 top-1/2 hidden h-9 w-px -translate-y-1/2 bg-[linear-gradient(to_bottom,rgba(59,130,246,0.15),rgba(59,130,246,0.45),rgba(59,130,246,0.15))] md:block"
+                    />
+                    <span
+                      aria-hidden="true"
+                      className="absolute bottom-0 left-6 right-6 h-px bg-[linear-gradient(to_right,rgba(59,130,246,0.15),rgba(59,130,246,0.45),rgba(59,130,246,0.15))] md:hidden"
+                    />
+                  </>
+                ) : null}
+              </div>
             ))}
           </div>
         </div>
