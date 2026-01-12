@@ -11,6 +11,7 @@ import {
   baseVerifiedFunds,
   getFundLogoLabel,
 } from "@/lib/igatesData";
+import { parseCapitalAllocation } from "@/lib/fundVisuals";
 import { useLocalStorage } from "@/lib/useLocalStorage";
 import type {
   FundApplication,
@@ -36,6 +37,10 @@ export default function MasterDashboard() {
   const [waitlistRequests, setWaitlistRequests] = useState<WaitlistRequest[]>([]);
   const [pendingWaitlistRequests, setPendingWaitlistRequests] = useState<WaitlistRequest[]>([]);
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
+  const [, setCapitalAllocations] = useLocalStorage<Record<string, number>>(
+    STORAGE_KEYS.capitalAllocations,
+    {}
+  );
   const [activeWaitlistTab, setActiveWaitlistTab] = useState<WaitlistStatus>("PENDING");
   const [waitlistMessage, setWaitlistMessage] = useState("");
   const [waitlistError, setWaitlistError] = useState("");
@@ -262,6 +267,12 @@ export default function MasterDashboard() {
         }),
       });
       if (nextStatus === "APPROVED") {
+        const parsedAllocation = parseCapitalAllocation(request.intendedInvestmentAmount);
+        const allocationDelta = parsedAllocation ?? 1;
+        setCapitalAllocations((prev) => ({
+          ...prev,
+          [request.fundId]: (prev[request.fundId] ?? 0) + allocationDelta,
+        }));
         setWaitlistMessage("Approved — email sent");
       } else {
         setWaitlistMessage(`Rejected ${requesterName}'s waitlist request.`);

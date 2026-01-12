@@ -40,12 +40,25 @@ a {
   .igates-card-frame {
     --igates-border: 2px;
     --igates-radius: 1rem;
+    --igates-frame-gradient: linear-gradient(90deg, #1e3a8a 0%, #2563eb 50%, #38bdf8 100%);
     border-radius: var(--igates-radius);
     padding: var(--igates-border);
-    background: linear-gradient(90deg, #1e3a8a 0%, #2563eb 50%, #38bdf8 100%);
+    background: var(--igates-frame-gradient);
     background-size: 200% 200%;
     animation: igates-border-flow 8s ease-in-out infinite;
     transition: padding 0.2s ease;
+  }
+
+  .igates-card-frame--institutional {
+    --igates-frame-gradient: linear-gradient(90deg, #1e3a8a 0%, #2563eb 50%, #38bdf8 100%);
+  }
+
+  .igates-card-frame--advanced {
+    --igates-frame-gradient: linear-gradient(90deg, #1e3a8a 0%, #2563eb 55%, #38bdf8 82%, #d9c6a6 100%);
+  }
+
+  .igates-card-frame--premium {
+    --igates-frame-gradient: linear-gradient(90deg, #1e3a8a 0%, #2563eb 38%, #bda47d 72%, #e2d1b6 100%);
   }
 
   .igates-card-frame:hover {

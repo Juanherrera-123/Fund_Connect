@@ -9,6 +9,7 @@ export type Fund = {
   risk: string;
   summary: string;
   highlights: string[];
+  capital_allocated?: number;
 };
 
 export type Insight = {
@@ -37,6 +38,7 @@ export const funds: Fund[] = [
     aum: "$650M",
     performance: "+12.4%",
     risk: "Controlled Vol",
+    capital_allocated: 0,
     summary: "Systematic macro with discretionary overlays across rates, FX, and commodities.",
     highlights: ["Daily transparency", "UCITS wrapper", "15+ yrs team"],
   },
@@ -49,6 +51,7 @@ export const funds: Fund[] = [
     aum: "$420M",
     performance: "+9.1%",
     risk: "Low-Medium",
+    capital_allocated: 2750000,
     summary: "Capital solutions across CLO equity/mezzanine with active risk corridors.",
     highlights: ["Verified trustee data", "Quarterly liquidity", "IC-ready reports"],
   },
@@ -61,6 +64,7 @@ export const funds: Fund[] = [
     aum: "$180M",
     performance: "+22.3%",
     risk: "Medium",
+    capital_allocated: 7500000,
     summary: "Market-neutral digital asset strategy with exchange and custody diversification.",
     highlights: ["24/7 monitoring", "Counterparty screens", "SOC2 aligned"],
   },
