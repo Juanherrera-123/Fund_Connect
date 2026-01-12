@@ -27,6 +27,13 @@ a {
   .igates-gradient {
     background: linear-gradient(90deg, #1e3a8a 0%, #2563eb 50%, #38bdf8 100%);
   }
+
+  .hero-trust-item {
+    opacity: 0;
+    transform: translateY(10px);
+    animation: hero-trust-fade 0.6s ease forwards;
+    will-change: opacity, transform;
+  }
 }
 
 @layer components {
@@ -85,9 +92,26 @@ a {
   }
 }
 
+@keyframes hero-trust-fade {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .igates-card-frame {
     animation: none;
+  }
+
+  .hero-trust-item {
+    animation: none;
+    opacity: 1;
+    transform: none;
   }
 }
 
