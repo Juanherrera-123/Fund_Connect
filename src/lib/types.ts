@@ -80,6 +80,7 @@ export type FundApplication = {
   country: string;
   region?: string;
   aum?: string;
+  capital_allocated?: number;
   logoUrl?: string;
   strategy?: string;
   strategyLabel?: string;
@@ -122,6 +123,7 @@ export type MasterNotification = {
 };
 
 export type FundSummary = {
+  id: string;
   name: string;
   strategy: string;
   domicile: string;
@@ -131,6 +133,7 @@ export type FundSummary = {
   performance: string;
   risk: string;
   highlights: string[];
+  capital_allocated?: number;
 };
 
 export type Insight = {

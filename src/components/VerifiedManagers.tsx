@@ -12,6 +12,7 @@ import {
   formatNumber,
   getFundLogoLabel,
 } from "@/lib/igatesData";
+import { getFundFrameClass } from "@/lib/fundVisuals";
 import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { FundApplication, Session, UserProfile } from "@/lib/types";
 
@@ -40,6 +41,7 @@ type VerifiedFund = {
   reportsFrequency: string | null;
   aum: string;
   description: string;
+  capital_allocated: number;
 };
 
 type FilterState = {
@@ -68,6 +70,10 @@ export function VerifiedManagers() {
   const [fundApplications] = useLocalStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
   const [profiles] = useLocalStorage<UserProfile[]>(STORAGE_KEYS.profiles, DEFAULT_FUND_MANAGER_PROFILES);
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
+  const [capitalAllocations] = useLocalStorage<Record<string, number>>(
+    STORAGE_KEYS.capitalAllocations,
+    {}
+  );
   const [filters, setFilters] = useState<FilterState>(initialFilters);
   const [appliedFilters, setAppliedFilters] = useState<FilterState>(initialFilters);
   const [selectedFundId, setSelectedFundId] = useState<string | null>(null);
@@ -130,6 +136,8 @@ export function VerifiedManagers() {
           reportsFrequency: application.reportsFrequency ?? null,
           aum: application.aum || "N/A",
           description: application.description || "Gestor en proceso de verificación.",
+          capital_allocated:
+            capitalAllocations[application.id] ?? application.capital_allocated ?? 0,
         };
       });
 
@@ -166,6 +174,7 @@ export function VerifiedManagers() {
           reportsFrequency: null,
           aum: fund.aum,
           description: fund.description,
+          capital_allocated: capitalAllocations[fund.id] ?? fund.capital_allocated ?? 0,
         };
       }
       return {
@@ -179,7 +188,7 @@ export function VerifiedManagers() {
     const extraFunds = fromStorage.filter((fund) => !baseIds.has(fund.id));
 
     return [...mergedBase, ...extraFunds];
-  }, [fundApplications, profiles]);
+  }, [capitalAllocations, fundApplications, profiles]);
 
   const regions = useMemo(() => {
     return Array.from(new Set(verifiedFunds.map((fund) => fund.region))).sort((a, b) =>
@@ -568,7 +577,11 @@ export function VerifiedManagers() {
 
                       if (!selectedFund) {
                         return (
-                          <motion.div key={fund.id} layout className="igates-card-frame">
+                          <motion.div
+                            key={fund.id}
+                            layout
+                            className={`igates-card-frame ${getFundFrameClass(fund.capital_allocated)}`}
+                          >
                             <motion.button
                               layout
                               type="button"
@@ -606,7 +619,9 @@ export function VerifiedManagers() {
                         <motion.div
                           key={fund.id}
                           layout
-                          className={selectedFund ? "igates-card-frame" : "w-full"}
+                          className={`igates-card-frame ${getFundFrameClass(
+                            fund.capital_allocated
+                          )}`}
                         >
                           <motion.button
                             layout
