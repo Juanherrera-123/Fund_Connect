@@ -11,6 +11,8 @@ type WaitlistRequestPayload = {
   user?: {
     name?: string;
     email?: string;
+    phone?: string;
+    investmentAmount?: string;
     country?: string;
     org?: string | null;
   };
@@ -33,6 +35,9 @@ export async function POST(request: Request) {
 
   const { fundId, fundName, qualified, note, user } = payload;
   const requesterEmail = user?.email?.trim();
+  const requesterName = user?.name?.trim();
+  const requesterPhone = user?.phone?.trim();
+  const intendedInvestmentAmount = user?.investmentAmount?.trim();
 
   if (!fundId || !fundName) {
     return NextResponse.json({ error: "fundId and fundName are required." }, { status: 400 });
@@ -46,6 +51,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Email is required." }, { status: 400 });
   }
 
+  if (!requesterName) {
+    return NextResponse.json({ error: "Full name is required." }, { status: 400 });
+  }
+
+  if (!requesterPhone) {
+    return NextResponse.json({ error: "Phone is required." }, { status: 400 });
+  }
+
+  if (!intendedInvestmentAmount) {
+    return NextResponse.json({ error: "Investment amount is required." }, { status: 400 });
+  }
+
   const requesterRole = getNormalizedRequesterRole(auth.role);
   if (!requesterRole) {
     return NextResponse.json({ error: "Invalid requester role." }, { status: 403 });
@@ -57,7 +74,10 @@ export async function POST(request: Request) {
       fundName,
       requesterId: auth.id,
       requesterRole,
+      requesterName,
       requesterEmail,
+      requesterPhone,
+      intendedInvestmentAmount,
       requesterCountry: user?.country ?? "",
       requesterOrg: user?.org ?? null,
       note: note ?? null,
