@@ -64,6 +64,7 @@ const transition = {
 };
 
 export function VerifiedManagers() {
+  const whatsappNumber = "573181252627";
   const [fundApplications] = useLocalStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
   const [profiles] = useLocalStorage<UserProfile[]>(STORAGE_KEYS.profiles, DEFAULT_FUND_MANAGER_PROFILES);
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
@@ -379,6 +380,12 @@ export function VerifiedManagers() {
   const performanceLinks = selectedFund
     ? Array.from({ length: 3 }, (_, index) => selectedFund.livePerformanceLinks[index] ?? "")
     : [];
+  const whatsappMessage = selectedFund
+    ? `Hola! Me interesa conocer más informacion sobre el fondo "${selectedFund.name}"`
+    : "";
+  const whatsappLink = selectedFund
+    ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`
+    : "#";
 
   const panelMetrics = [
     { label: "Tiempo operando", value: formattedOperatingTime, highlight: true },
@@ -761,12 +768,14 @@ export function VerifiedManagers() {
                           >
                             Join the waitlist
                           </button>
-                          <Link
+                          <a
                             className="inline-flex items-center justify-center rounded-full border border-white/60 bg-white/70 px-6 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-700 shadow-sm backdrop-blur transition hover:border-slate-200 hover:bg-white"
-                            href="/#contact"
+                            href={whatsappLink}
+                            target="_blank"
+                            rel="noreferrer"
                           >
                             Request more information
-                          </Link>
+                          </a>
                         </div>
                       </div>
                     </motion.div>
