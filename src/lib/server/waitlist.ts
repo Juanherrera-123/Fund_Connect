@@ -14,10 +14,10 @@ import {
   type QueryDocumentSnapshot,
 } from "firebase/firestore";
 
-import { db } from "@/lib/firebase";
+import { getFirestoreDb } from "@/lib/firebase";
 import type { WaitlistRequest, WaitlistStatus } from "@/lib/types";
 
-const waitlistCollection = collection(db, "waitlistRequests");
+const getWaitlistCollection = () => collection(getFirestoreDb(), "waitlistRequests");
 // Firestore composite indexes expected:
 // - status + createdAt
 // - fundId + status
@@ -47,6 +47,7 @@ const mapWaitlistDoc = (docSnap: QueryDocumentSnapshot) => ({
 export async function createWaitlistRequest(
   input: CreateWaitlistRequestInput
 ): Promise<WaitlistRequest> {
+  const waitlistCollection = getWaitlistCollection();
   const existingQuery = query(
     waitlistCollection,
     where("fundId", "==", input.fundId),
@@ -88,6 +89,7 @@ export async function createWaitlistRequest(
 export async function listWaitlistRequestsByStatus(
   status: WaitlistStatus
 ): Promise<WaitlistRequest[]> {
+  const waitlistCollection = getWaitlistCollection();
   const statusQuery = query(
     waitlistCollection,
     where("status", "==", status),
@@ -98,6 +100,7 @@ export async function listWaitlistRequestsByStatus(
 }
 
 export async function getWaitlistRequestById(id: string): Promise<WaitlistRequest | null> {
+  const waitlistCollection = getWaitlistCollection();
   const snapshot = await getDoc(doc(waitlistCollection, id));
   if (!snapshot.exists()) {
     return null;
@@ -106,6 +109,7 @@ export async function getWaitlistRequestById(id: string): Promise<WaitlistReques
 }
 
 export async function updateWaitlistStatus(input: UpdateWaitlistStatusInput): Promise<void> {
+  const waitlistCollection = getWaitlistCollection();
   const approvedAt = input.status === "PENDING" ? null : new Date().toISOString();
   await updateDoc(doc(waitlistCollection, input.id), {
     status: input.status,
