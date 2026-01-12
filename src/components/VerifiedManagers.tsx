@@ -208,11 +208,14 @@ export function VerifiedManagers() {
     const winRateValue = filters.winRate ? Number.parseFloat(filters.winRate) : null;
 
     return verifiedFunds.filter((fund) => {
-      const matchesProfit = yearProfitValue === null || fund.yearProfit >= yearProfitValue;
-      const matchesDrawdown = drawdownValue === null || fund.maxDrawdown <= drawdownValue;
+      const matchesProfit =
+        yearProfitValue === null || (fund.yearProfit !== null && fund.yearProfit >= yearProfitValue);
+      const matchesDrawdown =
+        drawdownValue === null || (fund.maxDrawdown !== null && fund.maxDrawdown <= drawdownValue);
       const matchesRegion = !filters.region || fund.region === filters.region;
       const matchesCountry = !filters.country || fund.country === filters.country;
-      const matchesWinRate = winRateValue === null || fund.winRate >= winRateValue;
+      const matchesWinRate =
+        winRateValue === null || (fund.winRate !== null && fund.winRate >= winRateValue);
       return matchesProfit && matchesDrawdown && matchesRegion && matchesCountry && matchesWinRate;
     });
   }, [filters, verifiedFunds]);
@@ -397,7 +400,7 @@ export function VerifiedManagers() {
     ? Array.from({ length: 3 }, (_, index) => selectedFund.livePerformanceLinks[index] ?? "")
     : [];
   const whatsappMessage = selectedFund
-    ? `Hola! Me interesa conocer más informacion sobre el fondo "${selectedFund.name}"`
+    ? `¡Hola! Me interesa conocer más información sobre el fondo "${selectedFund.name}"`
     : "";
   const whatsappLink = selectedFund
     ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`

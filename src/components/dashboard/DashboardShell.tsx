@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { DEFAULT_FUND_MANAGER_PROFILES, STORAGE_KEYS } from "@/lib/igatesData";
 import { useLocalStorage } from "@/lib/useLocalStorage";
-import type { Session, UserProfile } from "@/lib/types";
+import type { Role, Session, UserProfile } from "@/lib/types";
 
 const masterNavItems = [
   {
@@ -266,7 +266,7 @@ export default function DashboardShell({
       return;
     }
 
-    const routeForRole: Record<NonNullable<Session["role"]>, string> = {
+    const routeForRole: Record<Role, string> = {
       MasterUser: "/dashboard/master",
       Investor: "/dashboard/investor",
       "Fund Manager": "/dashboard/manager/overview",

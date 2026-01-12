@@ -20,7 +20,7 @@ export function FundsExploreGrid() {
     {}
   );
   const [funds, setFunds] = useState<FundSummary[]>([]);
-  const [status, setStatus] = useState(strings.fundsExploreLoading);
+  const [status, setStatus] = useState<string>(strings.fundsExploreLoading);
 
   const profile = useMemo(() => {
     if (!session || session.role !== "Investor") return null;
