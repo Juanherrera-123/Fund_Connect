@@ -1,11 +1,13 @@
 declare module "firebase-functions/v2/https" {
-  import type { IncomingMessage, ServerResponse } from "http";
+  import type {IncomingMessage, ServerResponse} from "http";
 
   export type Request = IncomingMessage;
   export interface Response extends ServerResponse {
     send: (body: string) => void;
   }
-  export const onRequest: (handler: (req: Request, res: Response) => void) => unknown;
+  export const onRequest: (
+    handler: (req: Request, res: Response) => void,
+  ) => unknown;
 }
 
 declare module "firebase-functions/logger" {
