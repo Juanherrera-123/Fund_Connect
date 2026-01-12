@@ -51,7 +51,11 @@ export function AuthFlow() {
     for (let index = 0; index < surveyQuestions.length; index += 2) {
       groups.push(surveyQuestions.slice(index, index + 2));
     }
-    return [{ type: "kyc" }, ...groups.map((group) => ({ type: "survey", questions: group }))];
+    const surveySteps: SignupStep[] = groups.map((group) => ({
+      type: "survey",
+      questions: group,
+    }));
+    return [{ type: "kyc" }, ...surveySteps];
   }, [role]);
 
   const totalSteps = role ? steps.length : 4;
