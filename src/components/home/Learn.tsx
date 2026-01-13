@@ -2,42 +2,21 @@ const learnBlocks = [
   {
     titleKey: "learnBlock1Title",
     bodyKey: "learnBlock1Body",
-    title: "Del trading individual a la gestión con historial",
+    title: "De la operativa individual a la gestión con historial",
     body:
-      "Operar de forma individual implica riesgo no sistematizado y ausencia de control externo. La asignación a gestores con track record verificable permite evaluar consistencia, gestión de drawdown y comportamiento en distintos ciclos de mercado antes de comprometer capital.",
+      "Por qué el capital institucional exige estructura, disciplina y continuidad verificable.",
   },
   {
     titleKey: "learnBlock2Title",
     bodyKey: "learnBlock2Body",
     title: "Track record como punto de partida, no como promesa",
-    body:
-      "En entornos institucionales, el historial operativo es el filtro inicial. Rentabilidad, drawdown, correlación y disciplina de ejecución son analizados sobre cuentas reales, no simulaciones ni resultados aislados.",
+    body: "Cómo interpretar historial, drawdowns y ciclos sin caer en marketing de resultados.",
   },
   {
     titleKey: "learnBlock3Title",
     bodyKey: "learnBlock3Body",
     title: "Asignación estructurada, no señales",
-    body:
-      "La asignación de capital se realiza bajo reglas claras de riesgo y ejecución, eliminando decisiones emocionales y garantizando coherencia operativa entre inversores y gestores.",
-  },
-];
-
-const mamDetails = [
-  {
-    key: "learnMamBullet1",
-    text: "El inversor mantiene la custodia total de su capital en una cuenta individual con el broker.",
-  },
-  {
-    key: "learnMamBullet2",
-    text: "El gestor opera de forma remota a través de una estructura MAM, sin acceso a retiros ni custodia.",
-  },
-  {
-    key: "learnMamBullet3",
-    text: "Cada operación se replica proporcionalmente según el capital asignado.",
-  },
-  {
-    key: "learnMamBullet4",
-    text: "La segregación, ejecución y reporting permanecen a nivel broker.",
+    body: "Diferencia entre modelos de asignación profesional y trading discrecional.",
   },
 ];
 
@@ -51,10 +30,10 @@ export function Learn() {
   return (
     <section
       id="learn"
-      className="relative overflow-hidden bg-gradient-to-br from-[#071a3a] via-[#0b2a66] to-[#0aa7ff]/20 py-20 text-white"
+      className="relative overflow-hidden bg-gradient-to-br from-[#050f24] via-[#0b2453] to-[#0b3b6a] py-20 text-white"
     >
       <div
-        className="pointer-events-none absolute inset-0 before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.22),_transparent_60%)] before:opacity-80 before:content-[''] after:absolute after:inset-0 after:bg-[linear-gradient(120deg,_rgba(255,255,255,0.08),_transparent_60%)] after:opacity-30 after:content-['']"
+        className="pointer-events-none absolute inset-0 before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.18),_transparent_62%)] before:opacity-70 before:content-[''] after:absolute after:inset-0 after:bg-[linear-gradient(120deg,_rgba(255,255,255,0.06),_transparent_60%)] after:opacity-20 after:content-['']"
         aria-hidden="true"
       />
       <div className="relative mx-auto max-w-6xl px-6">
@@ -79,45 +58,36 @@ export function Learn() {
             {learnBlocks.map((block) => (
               <div
                 key={block.titleKey}
-                className="group rounded-2xl bg-gradient-to-r from-blue-600 via-cyan-400 to-indigo-500 p-[1px] shadow-[0_10px_30px_rgba(0,0,0,0.25)] transition-shadow duration-200 hover:shadow-[0_12px_34px_rgba(8,145,178,0.35)] bg-[length:200%_200%] motion-safe:animate-[igatesBorderFlow_10s_linear_infinite] motion-reduce:animate-none"
+                className="group rounded-2xl border border-[rgba(80,120,255,0.35)] bg-[rgba(255,255,255,0.07)] shadow-[0_18px_40px_rgba(3,10,24,0.45)] backdrop-blur-[6px] transition duration-300 ease-out hover:-translate-y-0.5 hover:shadow-[0_20px_45px_rgba(3,10,24,0.55),_0_0_18px_rgba(80,120,255,0.25)]"
               >
-                <details className="group/accordion rounded-2xl border border-white/10 bg-white/5 backdrop-blur-[2px] transition duration-200 hover:bg-white/7 group-hover:bg-white/7 group-open/accordion:bg-white/8">
-                  <summary className="relative flex cursor-pointer items-center justify-between gap-4 px-6 py-5 pl-7 text-left text-lg font-semibold text-white/90 marker:content-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#071a3a]">
-                    <span className="absolute left-0 top-4 bottom-4 w-[2px] bg-gradient-to-b from-cyan-300/80 via-blue-500/70 to-indigo-500/70 opacity-0 transition duration-200 group-open/accordion:opacity-100" />
+                <details className="group/accordion rounded-2xl">
+                  <summary className="relative flex cursor-pointer items-center justify-between gap-4 px-6 py-5 pl-7 text-left text-lg font-semibold text-white marker:content-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050f24]">
+                    <span className="absolute left-0 top-4 bottom-4 w-[2px] bg-gradient-to-b from-igates-300/70 via-igates-400/60 to-igates-500/60 opacity-0 transition duration-200 group-open/accordion:opacity-100" />
                     <span data-i18n={block.titleKey}>{block.title}</span>
                     {accordionArrow}
                   </summary>
-                  <div className="px-6 pb-6">
-                    <p className="text-sm leading-relaxed text-white/70" data-i18n={block.bodyKey}>
-                      {block.body}
-                    </p>
+                  <div className="grid grid-rows-[0fr] px-6 pb-0 transition-[grid-template-rows] duration-300 ease-out group-open/accordion:grid-rows-[1fr]">
+                    <div className="overflow-hidden pb-6">
+                      <p className="text-sm leading-relaxed text-slate-200/80" data-i18n={block.bodyKey}>
+                        {block.body}
+                      </p>
+                    </div>
                   </div>
                 </details>
               </div>
             ))}
           </div>
-          <div className="rounded-3xl bg-gradient-to-r from-blue-600 via-cyan-400 to-indigo-500 p-[1px] shadow-[0_10px_30px_rgba(0,0,0,0.25)] bg-[length:200%_200%] motion-safe:animate-[igatesBorderFlow_10s_linear_infinite] motion-reduce:animate-none">
-            <aside className="h-full rounded-3xl border border-white/10 bg-white/5 backdrop-blur-[2px] transition duration-200 hover:bg-white/7">
-              <details className="group/accordion h-full">
-                <summary className="flex cursor-pointer items-center justify-between gap-4 px-8 py-6 text-left text-xl font-semibold text-white/90 marker:content-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#071a3a]">
-                  <span data-i18n="learnMamTitle">Cómo funciona una cuenta MAM</span>
-                  {accordionArrow}
-                </summary>
-                <div className="px-8 pb-6">
-                  <div className="space-y-4 text-sm leading-relaxed text-white/70">
-                    {mamDetails.map((detail) => (
-                      <p key={detail.key} data-i18n={detail.key}>
-                        {detail.text}
-                      </p>
-                    ))}
-                  </div>
-                  <p className="mt-6 text-sm font-semibold text-white" data-i18n="learnMamClosing">
-                    IGATES facilita la conexión, verificación y control. La ejecución ocurre donde debe: en el mercado.
-                  </p>
-                </div>
-              </details>
-            </aside>
-          </div>
+          <aside className="rounded-2xl border border-[rgba(80,120,255,0.35)] bg-[rgba(255,255,255,0.07)] shadow-[0_18px_40px_rgba(3,10,24,0.45)] backdrop-blur-[6px] transition duration-300 ease-out hover:-translate-y-0.5 hover:shadow-[0_20px_45px_rgba(3,10,24,0.55),_0_0_18px_rgba(80,120,255,0.25)]">
+            <div className="flex h-full flex-col gap-4 px-8 py-7">
+              <h3 className="text-xl font-semibold text-white" data-i18n="learnMamTitle">
+                Cómo funciona una cuenta MAM institucional
+              </h3>
+              <p className="text-sm leading-relaxed text-slate-200/80" data-i18n="learnMamBody">
+                Arquitectura operativa, segregación de cuentas, control de riesgo y reporting utilizados por gestores
+                profesionales para escalar capital con transparencia.
+              </p>
+            </div>
+          </aside>
         </div>
       </div>
     </section>
