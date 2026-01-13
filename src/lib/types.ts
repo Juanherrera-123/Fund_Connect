@@ -59,7 +59,7 @@ export type WaitlistRequest = {
   fundId: string;
   fundName: string;
   requesterId: string;
-  requesterRole: "INVESTOR" | "FAMILY_OFFICE";
+  requesterRole: "INVESTOR" | "FAMILY_OFFICE" | "PUBLIC";
   requesterName?: string | null;
   requesterEmail: string;
   requesterPhone?: string | null;
