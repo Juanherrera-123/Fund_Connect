@@ -541,7 +541,7 @@ export function AuthFlow() {
             <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
               <p>
                 <span data-i18n="authMasterUserLabel">MasterUser:</span>{" "}
-                <strong>{MASTER_USER.username}</strong> / <strong>{MASTER_USER.password}</strong>
+                <strong>{MASTER_USER.username}</strong>
               </p>
             </div>
           </form>
