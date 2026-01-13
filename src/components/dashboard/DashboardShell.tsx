@@ -26,7 +26,7 @@ const masterNavItems = [
   {
     label: "Funds",
     labelKey: "dashboardNavFunds",
-    href: "/dashboard/fund-manager",
+    href: "/dashboard/master/funds",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
         <path
@@ -40,7 +40,7 @@ const masterNavItems = [
   {
     label: "Requests",
     labelKey: "dashboardNavRequests",
-    href: "/dashboard/investor",
+    href: "/dashboard/master/requests",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
         <path
@@ -54,7 +54,7 @@ const masterNavItems = [
   {
     label: "Analytics",
     labelKey: "dashboardNavAnalytics",
-    href: "/dashboard/family-office",
+    href: "/dashboard/master/analytics",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
         <path
@@ -276,7 +276,10 @@ export default function DashboardShell({
 
     if (pathname?.startsWith("/dashboard")) {
       const isManagerRoute = pathname?.startsWith("/dashboard/manager");
-      const isMasterRoute = pathname?.startsWith("/dashboard/master");
+      const isMasterRoute =
+        pathname?.startsWith("/dashboard/master") ||
+        pathname?.startsWith("/dashboard/messages") ||
+        pathname?.startsWith("/dashboard/settings");
       const isInvestorRoute = pathname?.startsWith("/dashboard/investor");
       const isFamilyOfficeRoute = pathname?.startsWith("/dashboard/family-office");
 
