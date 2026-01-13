@@ -552,12 +552,6 @@ export function AuthFlow() {
             <p className="min-h-[22px] text-xs text-slate-500" aria-live="polite">
               {loginStatus}
             </p>
-            <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
-              <p>
-                <span data-i18n="authMasterUserLabel">MasterUser:</span>{" "}
-                <strong>{MASTER_USER.username}</strong>
-              </p>
-            </div>
           </form>
         </div>
       </div>
