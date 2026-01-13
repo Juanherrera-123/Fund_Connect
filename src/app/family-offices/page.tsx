@@ -37,20 +37,28 @@ const heroMetrics = [
 
 const architectureCards = [
   {
-    title: "Fondo multi-gestor bajo tu mandato",
-    description: "Configura mandatos, límites y objetivos en una arquitectura única.",
+    title: "Fondo multi-gestor bajo mandato",
+    description:
+      "Construye una estructura diversificada combinando múltiples fondos verificados bajo un único mandato de inversión.",
+    meta: ["Mandato configurable", "Asignación flexible"],
   },
   {
     title: "Control de riesgo centralizado",
-    description: "Monitorea exposición, liquidez y cumplimiento en un solo tablero.",
+    description:
+      "Supervisa exposición, drawdown y límites agregados desde una sola vista, sin perder visibilidad por gestor.",
+    meta: ["Riesgo agregado", "Límites por mandato"],
   },
   {
     title: "Custodia y ejecución institucional",
-    description: "Ejecución segregada con custodios y brokers alineados al mandato.",
+    description:
+      "Capital siempre bajo custodia del broker, con ejecución A-book y segregación total. IGATES nunca toca los fondos.",
+    meta: ["Cuentas segregadas", "Brokers Prime / A-book"],
   },
   {
     title: "Transparencia y trazabilidad total",
-    description: "Audita decisiones, flujos y reportes con visibilidad completa.",
+    description:
+      "Audita decisiones, flujos y performance con reporting verificable, listo para comité e inversionistas.",
+    meta: ["Reporting institucional", "Auditoría continua"],
   },
 ];
 
@@ -164,41 +172,38 @@ export default function FamilyOfficesPage() {
           </div>
         </section>
 
-        <section className="relative overflow-hidden py-20">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#e8f1ff] via-[#bcd3ff] to-[#1e3a8a]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.55),_transparent_55%)]" />
-          <div className="relative mx-auto w-full max-w-6xl px-6">
-            <div className="max-w-3xl space-y-4 text-slate-50">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/70">
-                Arquitectura institucional
-              </p>
-              <h2 className="text-3xl font-semibold text-white md:text-4xl">
-                Arquitecturas de inversión diseñadas para control total.
+        <section className="py-20">
+          <div className="mx-auto w-full max-w-6xl px-6">
+            <div className="max-w-3xl space-y-4">
+              <h2 className="text-3xl font-semibold text-slate-900 md:text-4xl">
+                Arquitecturas de inversión multi-gestor bajo tu control
               </h2>
-              <p className="text-base text-white/80 md:text-lg">
-                Crea un fondo de cobertura privado diversificando capital entre gestores verificados,
+              <p className="text-base text-slate-600 md:text-lg">
+                Diseña un fondo de cobertura privado diversificando capital entre gestores verificados,
                 con reglas claras de riesgo, custodia y ejecución institucional.
               </p>
             </div>
-            <div className="relative mt-12">
-              <div className="absolute left-0 top-1/2 hidden h-px w-full -translate-y-1/2 bg-white/40 lg:block" />
-              <div className="grid gap-6 lg:grid-cols-4 lg:gap-4">
-                {architectureCards.map((card, index) => (
-                  <div
-                    key={card.title}
-                    className="igates-card-frame igates-card-frame--institutional hero-trust-item"
-                    style={{ animationDelay: `${index * 0.12}s` }}
-                  >
-                    <div className="rounded-2xl border border-white/15 bg-white/15 p-6 text-white shadow-lg shadow-[#0b1f5a]/30 backdrop-blur-xl transition hover:-translate-y-1 hover:shadow-2xl">
-                      <div className="text-sm font-semibold uppercase tracking-[0.2em] text-white/60">
-                        {`0${index + 1}`}
-                      </div>
-                      <h3 className="mt-3 text-lg font-semibold">{card.title}</h3>
-                      <p className="mt-3 text-sm text-white/80">{card.description}</p>
+            <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+              {architectureCards.map((card) => (
+                <div key={card.title} className="igates-card-frame igates-card-frame--institutional">
+                  <div className="igates-card flex h-full flex-col gap-4 transition hover:-translate-y-1 hover:shadow-lg hover:shadow-igates-500/10">
+                    <div>
+                      <h3 className="text-lg font-semibold text-slate-900">{card.title}</h3>
+                      <p className="mt-3 text-sm text-slate-600">{card.description}</p>
+                    </div>
+                    <div className="mt-auto flex flex-wrap gap-2 text-xs font-semibold text-slate-600">
+                      {card.meta.map((item) => (
+                        <span
+                          key={item}
+                          className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1"
+                        >
+                          {item}
+                        </span>
+                      ))}
                     </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
           </div>
         </section>
