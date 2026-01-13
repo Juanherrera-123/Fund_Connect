@@ -83,11 +83,22 @@ export function VerifiedManagers() {
   const [note, setNote] = useState("");
   const [contactName, setContactName] = useState("");
   const [contactEmail, setContactEmail] = useState("");
-  const [contactPhone, setContactPhone] = useState("");
+  const [contactPhoneCountry, setContactPhoneCountry] = useState("+57");
+  const [contactPhoneNumber, setContactPhoneNumber] = useState("");
   const [investmentAmount, setInvestmentAmount] = useState("");
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const waitlistButtonRef = useRef<HTMLButtonElement | null>(null);
   const waitlistModalRef = useRef<HTMLDivElement | null>(null);
+  const phoneCountryCodes = [
+    { code: "+57", label: "🇨🇴 Colombia" },
+    { code: "+1", label: "🇺🇸 Estados Unidos" },
+    { code: "+52", label: "🇲🇽 México" },
+    { code: "+34", label: "🇪🇸 España" },
+    { code: "+55", label: "🇧🇷 Brasil" },
+    { code: "+54", label: "🇦🇷 Argentina" },
+    { code: "+56", label: "🇨🇱 Chile" },
+    { code: "+51", label: "🇵🇪 Perú" },
+  ];
 
   const verifiedFunds = useMemo<VerifiedFund[]>(() => {
     const managerProfiles = profiles.filter((profile) => profile.role === "Fund Manager");
@@ -255,7 +266,10 @@ export function VerifiedManagers() {
     setNote("");
     setContactName(currentProfile?.fullName ?? session?.username ?? "");
     setContactEmail(currentProfile?.email ?? "");
-    setContactPhone(currentProfile?.phone ?? "");
+    const rawPhone = currentProfile?.phone ?? "";
+    const phoneMatch = rawPhone.match(/^(\+\d{1,4})\s*(.*)$/);
+    setContactPhoneCountry(phoneMatch?.[1] ?? "+57");
+    setContactPhoneNumber(phoneMatch?.[2] ?? rawPhone);
     setInvestmentAmount("");
   }, [currentProfile?.email, currentProfile?.fullName, currentProfile?.phone, isWaitlistModalOpen, session?.username]);
 
@@ -305,13 +319,13 @@ export function VerifiedManagers() {
     if (!selectedFund || isSubmitting) return;
     setIsSubmitting(true);
 
-    const userRole =
-      currentProfile?.role ?? (session?.role && session.role !== "MasterUser" ? session.role : "Investor");
-    const requesterId = currentProfile?.id ?? session?.id;
-    if (!requesterId || !session?.role || session.role === "MasterUser") {
-      setToastMessage("⚠️ Please log in as an investor or family office to continue.");
-      setIsSubmitting(false);
-      return;
+    const fullPhone = [contactPhoneCountry.trim(), contactPhoneNumber.trim()].filter(Boolean).join(" ");
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+    if (session?.id && session?.role && session.role !== "MasterUser") {
+      headers["x-user-id"] = session.id;
+      headers["x-user-role"] = session.role;
     }
     const payload = {
       fundId: selectedFund.id,
@@ -319,10 +333,9 @@ export function VerifiedManagers() {
       qualified,
       note: note.trim() || null,
       user: {
-        role: userRole,
         name: contactName.trim(),
         email: contactEmail.trim(),
-        phone: contactPhone.trim(),
+        phone: fullPhone,
         investmentAmount: investmentAmount.trim(),
         country: currentProfile?.country ?? "",
         org: currentProfile?.org ?? null,
@@ -332,11 +345,7 @@ export function VerifiedManagers() {
     try {
       const response = await fetch("/api/waitlist/request", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-user-id": requesterId,
-          "x-user-role": session.role,
-        },
+        headers,
         body: JSON.stringify(payload),
       });
       if (!response.ok) {
@@ -883,27 +892,46 @@ export function VerifiedManagers() {
                 </div>
                 <div className="grid gap-2 text-sm font-medium text-slate-600">
                   <label htmlFor="waitlist-phone">Celular</label>
-                  <input
-                    id="waitlist-phone"
-                    type="tel"
-                    required
-                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
-                    value={contactPhone}
-                    onChange={(event) => setContactPhone(event.target.value)}
-                    placeholder="+57 300 000 0000"
-                  />
+                  <div className="grid gap-3 sm:grid-cols-[140px_1fr]">
+                    <select
+                      id="waitlist-phone-country"
+                      required
+                      className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
+                      value={contactPhoneCountry}
+                      onChange={(event) => setContactPhoneCountry(event.target.value)}
+                    >
+                      {phoneCountryCodes.map((option) => (
+                        <option key={option.code} value={option.code}>
+                          {option.label} ({option.code})
+                        </option>
+                      ))}
+                    </select>
+                    <input
+                      id="waitlist-phone"
+                      type="tel"
+                      required
+                      className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
+                      value={contactPhoneNumber}
+                      onChange={(event) => setContactPhoneNumber(event.target.value)}
+                      placeholder="300 000 0000"
+                    />
+                  </div>
                 </div>
                 <div className="grid gap-2 text-sm font-medium text-slate-600">
                   <label htmlFor="waitlist-investment">Monto destinado a invertir</label>
                   <input
                     id="waitlist-investment"
-                    type="text"
+                    type="number"
+                    min={1000}
+                    step={100}
+                    inputMode="numeric"
                     required
                     className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
                     value={investmentAmount}
                     onChange={(event) => setInvestmentAmount(event.target.value)}
-                    placeholder="Ej. USD 50.000"
+                    placeholder="Ej. 1000"
                   />
+                  <p className="text-xs text-slate-500">Monto mínimo: USD 1,000.</p>
                 </div>
                 <label className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
                   <input

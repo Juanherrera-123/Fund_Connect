@@ -29,9 +29,6 @@ export async function POST(request: Request) {
   }
 
   const auth = getAuthContext(request);
-  if (!auth || !isRequesterRole(auth.role)) {
-    return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
-  }
 
   const { fundId, fundName, qualified, note, user } = payload;
   const requesterEmail = user?.email?.trim();
@@ -63,16 +60,27 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Investment amount is required." }, { status: 400 });
   }
 
-  const requesterRole = getNormalizedRequesterRole(auth.role);
-  if (!requesterRole) {
-    return NextResponse.json({ error: "Invalid requester role." }, { status: 403 });
+  const requesterRole =
+    auth && isRequesterRole(auth.role)
+      ? getNormalizedRequesterRole(auth.role) ?? "PUBLIC"
+      : "PUBLIC";
+  const requesterId =
+    requesterRole === "PUBLIC"
+      ? `public:${requesterEmail.toLowerCase()}`
+      : auth?.id ?? `public:${requesterEmail.toLowerCase()}`;
+
+  const numericAmount = Number.parseFloat(
+    intendedInvestmentAmount.replace(/[^0-9.,]/g, "").replace(/,/g, "")
+  );
+  if (!Number.isFinite(numericAmount) || numericAmount < 1000) {
+    return NextResponse.json({ error: "Investment amount must be at least 1000 USD." }, { status: 400 });
   }
 
   try {
     const waitlistRequest = await createWaitlistRequest({
       fundId,
       fundName,
-      requesterId: auth.id,
+      requesterId,
       requesterRole,
       requesterName,
       requesterEmail,
