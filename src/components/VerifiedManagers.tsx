@@ -90,14 +90,14 @@ export function VerifiedManagers() {
   const waitlistButtonRef = useRef<HTMLButtonElement | null>(null);
   const waitlistModalRef = useRef<HTMLDivElement | null>(null);
   const phoneCountryCodes = [
-    { code: "+57", label: "🇨🇴 Colombia" },
-    { code: "+1", label: "🇺🇸 Estados Unidos" },
-    { code: "+52", label: "🇲🇽 México" },
-    { code: "+34", label: "🇪🇸 España" },
-    { code: "+55", label: "🇧🇷 Brasil" },
-    { code: "+54", label: "🇦🇷 Argentina" },
-    { code: "+56", label: "🇨🇱 Chile" },
-    { code: "+51", label: "🇵🇪 Perú" },
+    { code: "+57", flag: "🇨🇴" },
+    { code: "+1", flag: "🇺🇸" },
+    { code: "+52", flag: "🇲🇽" },
+    { code: "+34", flag: "🇪🇸" },
+    { code: "+55", flag: "🇧🇷" },
+    { code: "+54", flag: "🇦🇷" },
+    { code: "+56", flag: "🇨🇱" },
+    { code: "+51", flag: "🇵🇪" },
   ];
 
   const verifiedFunds = useMemo<VerifiedFund[]>(() => {
@@ -320,6 +320,11 @@ export function VerifiedManagers() {
     setIsSubmitting(true);
 
     const fullPhone = [contactPhoneCountry.trim(), contactPhoneNumber.trim()].filter(Boolean).join(" ");
+    const investmentValue = Number(investmentAmount);
+    if (!Number.isFinite(investmentValue) || investmentValue < 1000) {
+      setIsSubmitting(false);
+      return;
+    }
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
     };
@@ -353,7 +358,7 @@ export function VerifiedManagers() {
       }
       await new Promise((resolve) => setTimeout(resolve, 1000));
       setIsWaitlistModalOpen(false);
-      setToastMessage("✅ Request sent. We will reach out soon.");
+      setToastMessage("Solicitud enviada, nuestro equipo estará en contacto contigo pronto.");
     } catch (error) {
       console.error(error);
     } finally {
@@ -408,6 +413,9 @@ export function VerifiedManagers() {
   const performanceLinks = selectedFund
     ? Array.from({ length: 3 }, (_, index) => selectedFund.livePerformanceLinks[index] ?? "")
     : [];
+  const investmentValue = Number(investmentAmount);
+  const isInvestmentInvalid =
+    investmentAmount.trim().length > 0 && (!Number.isFinite(investmentValue) || investmentValue < 1000);
   const whatsappMessage = selectedFund
     ? `¡Hola! Me interesa conocer más información sobre el fondo "${selectedFund.name}"`
     : "";
@@ -902,7 +910,7 @@ export function VerifiedManagers() {
                     >
                       {phoneCountryCodes.map((option) => (
                         <option key={option.code} value={option.code}>
-                          {option.label} ({option.code})
+                          {option.flag} {option.code}
                         </option>
                       ))}
                     </select>
@@ -926,7 +934,12 @@ export function VerifiedManagers() {
                     step={100}
                     inputMode="numeric"
                     required
-                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
+                    aria-invalid={isInvestmentInvalid}
+                    className={`w-full rounded-lg border px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 ${
+                      isInvestmentInvalid
+                        ? "border-rose-400 bg-rose-50 focus:ring-rose-200"
+                        : "border-slate-200 bg-slate-50 focus:ring-igates-500/30"
+                    }`}
                     value={investmentAmount}
                     onChange={(event) => setInvestmentAmount(event.target.value)}
                     placeholder="Ej. 1000"
@@ -942,7 +955,7 @@ export function VerifiedManagers() {
                     onChange={(event) => setQualified(event.target.checked)}
                   />
                   <span>
-                    Declaro que soy un inversionista calificado y entiendo los requisitos de este fondo.
+                    Declaro que entiendo los requisitos de este fondo y los riesgos de inversión.
                   </span>
                 </label>
                 <div className="grid gap-2 text-sm font-medium text-slate-600">
@@ -958,7 +971,7 @@ export function VerifiedManagers() {
                 </div>
                 <button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || isInvestmentInvalid}
                   className="inline-flex w-full items-center justify-center rounded-full bg-igates-500 px-5 py-3 text-xs font-semibold uppercase tracking-[0.12em] text-white shadow-lg shadow-igates-500/30 transition hover:bg-igates-400 disabled:cursor-not-allowed disabled:bg-igates-500/70"
                 >
                   {isSubmitting ? "Sending..." : "Send request"}
