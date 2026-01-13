@@ -1,6 +1,6 @@
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
-import { Compliance } from "@/components/home/Compliance";
+import { MarketInfrastructureSection } from "@/components/home/Compliance";
 import { Contact } from "@/components/home/Contact";
 import { Hero } from "@/components/home/Hero";
 import { Learn } from "@/components/home/Learn";
@@ -14,7 +14,7 @@ export default function HomePage() {
         <Hero />
         <Why />
         <Learn />
-        <Compliance />
+        <MarketInfrastructureSection />
         <Contact />
       </main>
       <Footer />

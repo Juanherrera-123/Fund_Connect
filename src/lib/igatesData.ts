@@ -83,19 +83,28 @@ export const translations = {
     learnPost3Title: "Community brief: operations and compliance",
     learnPost3Time: "This week",
     learnPost3Body: "Q&A on onboarding checklists, data rooms, and audit readiness.",
-    complianceEyebrow: "Market infrastructure",
-    complianceTitle: "Institutional infrastructure, not promises.",
-    complianceBody:
-      "We connect capital with verified managers through A-book and Prime of Prime brokers, under clear rules for execution, risk, and custody. At IGATES, access to managers does not happen in opaque environments or under internalization models. All operations are structured on A-book and Prime of Prime brokers, where execution, fund segregation, and traceability are baseline requirements. IGATES acts as the institutional access and control layer, ensuring every relationship between investor, manager, and broker aligns with real market standards.",
+    complianceEyebrow: "MARKET INFRASTRUCTURE",
+    complianceTitle: "Institutional infrastructure. Real execution, clear rules.",
+    complianceBodyPrimary:
+      "IGATES connects capital with verified managers operating exclusively on institutional infrastructure. No internalization, no opacity, no capital intermediation.",
+    complianceBodySecondary:
+      "All operations are structured on A-book and Prime of Prime brokers, where execution, fund segregation, and traceability are not optional but baseline requirements. IGATES does not custody, receive, or intermediate capital. We act as an institutional access and control layer.",
+    complianceClaimExecution: "A-book / PoP execution",
+    complianceClaimSegregated: "Segregated accounts",
+    complianceClaimReporting: "Verifiable reporting",
+    complianceClaimTraceability: "Auditable traceability",
     complianceIdentityTitle: "Execution and liquidity",
     complianceIdentityBody:
-      "Access to managers who operate exclusively through A-book and Prime of Prime brokers, with direct market execution and no internalization conflicts.",
+      "Access to managers who operate exclusively via A-book and Prime of Prime brokers, with direct market execution, real depth, and no internalization conflicts.",
+    complianceIdentityDetail: "Verified A-book model",
     complianceMonitoringTitle: "Custody and segregation",
     complianceMonitoringBody:
-      "Funds always remain under the broker’s custody in segregated accounts. IGATES does not receive, hold, or intermediate capital.",
+      "Funds always remain under the broker’s custody, in segregated accounts under the investor’s name. IGATES does not receive, hold, or move capital.",
+    complianceMonitoringDetail: "Mandatory segregation",
     complianceGovernanceTitle: "Risk and traceability",
     complianceGovernanceBody:
-      "Structured allocations with drawdown limits, verifiable reporting, and performance tracking on real accounts. Everything auditable, everything traceable.",
+      "Structured allocations with drawdown limits, verifiable reporting, and continuous monitoring on real accounts. Everything auditable. Everything traceable.",
+    complianceGovernanceDetail: "Reporting on real accounts",
     contactEyebrow: "Let's talk",
     contactTitle: "Start your access process.",
     contactLead:
@@ -592,19 +601,28 @@ export const translations = {
     learnPost3Title: "Community brief: operaciones y compliance",
     learnPost3Time: "Esta semana",
     learnPost3Body: "Q&A sobre checklists de onboarding, data rooms y preparación para auditorías.",
-    complianceEyebrow: "Infraestructura de mercado",
-    complianceTitle: "Infraestructura institucional, no promesas.",
-    complianceBody:
-      "Conectamos capital con gestores verificados sobre brokers A-book y Prime of Prime, bajo reglas claras de ejecución, riesgo y custodia. En IGATES, el acceso a gestores no ocurre en un entorno opaco ni bajo modelos de internalización. Toda la operativa se estructura sobre brokers A-book y Prime of Prime, donde la ejecución, la segregación de fondos y la trazabilidad son requisitos básicos. IGATES actúa como capa institucional de acceso y control, asegurando que cada relación entre inversor, gestor y broker esté alineada con estándares reales de mercado.",
+    complianceEyebrow: "INFRAESTRUCTURA DE MERCADO",
+    complianceTitle: "Infraestructura institucional. Ejecución real, reglas claras.",
+    complianceBodyPrimary:
+      "IGATES conecta capital con gestores verificados que operan exclusivamente sobre infraestructura institucional. Sin internalización, sin opacidad, sin intermediación de capital.",
+    complianceBodySecondary:
+      "Toda la operativa se estructura sobre brokers A-book y Prime of Prime, donde la ejecución, la segregación de fondos y la trazabilidad no son opcionales, sino requisitos básicos. IGATES no custodia, no recibe ni intermedia capital. Actuamos como una capa institucional de acceso y control.",
+    complianceClaimExecution: "Ejecución A-book / PoP",
+    complianceClaimSegregated: "Cuentas segregadas",
+    complianceClaimReporting: "Reporting verificable",
+    complianceClaimTraceability: "Trazabilidad auditables",
     complianceIdentityTitle: "Ejecución y liquidez",
     complianceIdentityBody:
-      "Acceso a gestores que operan exclusivamente a través de brokers A-book y Prime of Prime, con ejecución directa a mercado y sin conflictos por internalización.",
+      "Acceso a gestores que operan exclusivamente vía brokers A-book y Prime of Prime, con ejecución directa a mercado, profundidad real y sin conflictos por internalización.",
+    complianceIdentityDetail: "Modelo A-book verificado",
     complianceMonitoringTitle: "Custodia y segregación",
     complianceMonitoringBody:
-      "Los fondos permanecen siempre bajo custodia del broker, en cuentas segregadas. IGATES no recibe, retiene ni intermedia capital.",
+      "Los fondos permanecen siempre bajo custodia del broker, en cuentas segregadas a nombre del inversor. IGATES no recibe, retiene ni mueve capital.",
+    complianceMonitoringDetail: "Segregación obligatoria",
     complianceGovernanceTitle: "Riesgo y trazabilidad",
     complianceGovernanceBody:
-      "Asignaciones estructuradas con límites de drawdown, reporting verificable y seguimiento de performance sobre cuentas reales. Todo auditable, todo trazable.",
+      "Asignaciones estructuradas con límites de drawdown, reporting verificable y seguimiento continuo sobre cuentas reales. Todo auditable. Todo trazable.",
+    complianceGovernanceDetail: "Reporting sobre cuentas reales",
     contactEyebrow: "Conversemos",
     contactTitle: "Inicia tu proceso de acceso.",
     contactLead:
@@ -1107,19 +1125,28 @@ export const translations = {
     learnPost3Title: "Community brief: operações e compliance",
     learnPost3Time: "Esta semana",
     learnPost3Body: "Q&A sobre checklists de onboarding, data rooms e preparação para auditorias.",
-    complianceEyebrow: "Infraestrutura de mercado",
-    complianceTitle: "Infraestrutura institucional, não promessas.",
-    complianceBody:
-      "Conectamos capital com gestores verificados por meio de brokers A-book e Prime of Prime, sob regras claras de execução, risco e custódia. Na IGATES, o acesso a gestores não ocorre em um ambiente opaco nem sob modelos de internalização. Toda a operação é estruturada sobre brokers A-book e Prime of Prime, onde execução, segregação de fundos e rastreabilidade são requisitos básicos. A IGATES atua como camada institucional de acesso e controle, garantindo que cada relação entre investidor, gestor e broker esteja alinhada com padrões reais de mercado.",
+    complianceEyebrow: "INFRAESTRUTURA DE MERCADO",
+    complianceTitle: "Infraestrutura institucional. Execução real, regras claras.",
+    complianceBodyPrimary:
+      "A IGATES conecta capital com gestores verificados que operam exclusivamente sobre infraestrutura institucional. Sem internalização, sem opacidade, sem intermediação de capital.",
+    complianceBodySecondary:
+      "Toda a operação é estruturada sobre brokers A-book e Prime of Prime, onde execução, segregação de fundos e rastreabilidade não são opcionais, mas requisitos básicos. A IGATES não custodia, não recebe nem intermedeia capital. Atuamos como uma camada institucional de acesso e controle.",
+    complianceClaimExecution: "Execução A-book / PoP",
+    complianceClaimSegregated: "Contas segregadas",
+    complianceClaimReporting: "Reporting verificável",
+    complianceClaimTraceability: "Rastreabilidade auditável",
     complianceIdentityTitle: "Execução e liquidez",
     complianceIdentityBody:
-      "Acesso a gestores que operam exclusivamente por meio de brokers A-book e Prime of Prime, com execução direta ao mercado e sem conflitos de internalização.",
+      "Acesso a gestores que operam exclusivamente via brokers A-book e Prime of Prime, com execução direta ao mercado, profundidade real e sem conflitos por internalização.",
+    complianceIdentityDetail: "Modelo A-book verificado",
     complianceMonitoringTitle: "Custódia e segregação",
     complianceMonitoringBody:
-      "Os fundos permanecem sempre sob custódia do broker, em contas segregadas. A IGATES não recebe, retém nem intermedeia capital.",
+      "Os fundos permanecem sempre sob custódia do broker, em contas segregadas em nome do investidor. A IGATES não recebe, retém nem movimenta capital.",
+    complianceMonitoringDetail: "Segregação obrigatória",
     complianceGovernanceTitle: "Risco e rastreabilidade",
     complianceGovernanceBody:
-      "Alocações estruturadas com limites de drawdown, reporting verificável e acompanhamento de performance em contas reais. Tudo auditável, tudo rastreável.",
+      "Alocações estruturadas com limites de drawdown, reporting verificável e acompanhamento contínuo em contas reais. Tudo auditável. Tudo rastreável.",
+    complianceGovernanceDetail: "Reporting sobre contas reais",
     contactEyebrow: "Vamos conversar",
     contactTitle: "Inicie seu processo de acesso.",
     contactLead:
@@ -1620,19 +1647,28 @@ export const translations = {
     learnPost3Title: "Community brief: operazioni e compliance",
     learnPost3Time: "Questa settimana",
     learnPost3Body: "Q&A su checklist di onboarding, data room e preparazione alle audit.",
-    complianceEyebrow: "Infrastruttura di mercato",
-    complianceTitle: "Infrastruttura istituzionale, non promesse.",
-    complianceBody:
-      "Colleghiamo capitale e gestori verificati tramite broker A-book e Prime of Prime, con regole chiare su esecuzione, rischio e custodia. In IGATES, l'accesso ai gestori non avviene in ambienti opachi né con modelli di internalizzazione. Tutta l'operatività è strutturata su broker A-book e Prime of Prime, dove esecuzione, segregazione dei fondi e tracciabilità sono requisiti di base. IGATES agisce come livello istituzionale di accesso e controllo, assicurando che ogni relazione tra investitore, gestore e broker sia allineata a standard reali di mercato.",
+    complianceEyebrow: "INFRASTRUTTURA DI MERCATO",
+    complianceTitle: "Infrastruttura istituzionale. Esecuzione reale, regole chiare.",
+    complianceBodyPrimary:
+      "IGATES collega capitale e gestori verificati che operano esclusivamente su infrastruttura istituzionale. Nessuna internalizzazione, nessuna opacità, nessuna intermediazione di capitale.",
+    complianceBodySecondary:
+      "Tutta l'operatività è strutturata su broker A-book e Prime of Prime, dove esecuzione, segregazione dei fondi e tracciabilità non sono opzionali, ma requisiti di base. IGATES non custodisce, non riceve né intermedia capitale. Agiamo come livello istituzionale di accesso e controllo.",
+    complianceClaimExecution: "Esecuzione A-book / PoP",
+    complianceClaimSegregated: "Conti segregati",
+    complianceClaimReporting: "Reporting verificabile",
+    complianceClaimTraceability: "Tracciabilità auditabile",
     complianceIdentityTitle: "Esecuzione e liquidità",
     complianceIdentityBody:
-      "Accesso a gestori che operano esclusivamente tramite broker A-book e Prime of Prime, con esecuzione diretta a mercato e senza conflitti da internalizzazione.",
+      "Accesso a gestori che operano esclusivamente via broker A-book e Prime of Prime, con esecuzione diretta a mercato, profondità reale e senza conflitti da internalizzazione.",
+    complianceIdentityDetail: "Modello A-book verificato",
     complianceMonitoringTitle: "Custodia e segregazione",
     complianceMonitoringBody:
-      "I fondi restano sempre sotto custodia del broker, in conti segregati. IGATES non riceve, trattiene né intermedia capitale.",
+      "I fondi restano sempre sotto custodia del broker, in conti segregati a nome dell'investitore. IGATES non riceve, trattiene né muove capitale.",
+    complianceMonitoringDetail: "Segregazione obbligatoria",
     complianceGovernanceTitle: "Rischio e tracciabilità",
     complianceGovernanceBody:
-      "Allocazioni strutturate con limiti di drawdown, reporting verificabile e monitoraggio della performance su conti reali. Tutto auditabile, tutto tracciabile.",
+      "Allocazioni strutturate con limiti di drawdown, reporting verificabile e monitoraggio continuo su conti reali. Tutto auditabile. Tutto tracciabile.",
+    complianceGovernanceDetail: "Reporting su conti reali",
     contactEyebrow: "Parliamone",
     contactTitle: "Avvia il tuo processo di accesso.",
     contactLead:
@@ -2131,18 +2167,27 @@ export const translations = {
     learnPost3Time: "本周",
     learnPost3Body: "关于入驻清单、数据室与审计准备的问答。",
     complianceEyebrow: "市场基础设施",
-    complianceTitle: "机构级基础设施，而非承诺。",
-    complianceBody:
-      "我们通过 A-book 与 Prime of Prime 经纪商，将资本连接到已验证的管理人，并遵循清晰的执行、风险与托管规则。在 IGATES，管理人接入不在不透明环境或内部化模式下发生。所有操作建立在 A-book 与 Prime of Prime 经纪商之上，执行、资金隔离与可追溯性是基础要求。IGATES 作为机构级接入与控制层，确保投资人、管理人和经纪商之间的每一层关系都符合真实市场标准。",
+    complianceTitle: "机构级基础设施。真实执行，规则清晰。",
+    complianceBodyPrimary:
+      "IGATES 连接资本与已验证的管理人，且仅在机构级基础设施上运作。不内化、不遮蔽、不进行资本中介。",
+    complianceBodySecondary:
+      "所有操作建立在 A-book 与 Prime of Prime 经纪商之上，执行、资金隔离与可追溯性不是可选项，而是基本要求。IGATES 不托管、不接收、不中介资本。我们作为机构级接入与控制层。",
+    complianceClaimExecution: "A-book / PoP 执行",
+    complianceClaimSegregated: "隔离账户",
+    complianceClaimReporting: "可验证报告",
+    complianceClaimTraceability: "可审计追溯",
     complianceIdentityTitle: "执行与流动性",
     complianceIdentityBody:
-      "接入仅通过 A-book 与 Prime of Prime 经纪商运作的管理人，实现直达市场执行，并避免内部化冲突。",
+      "接入仅通过 A-book 与 Prime of Prime 经纪商运作的管理人，实现直达市场执行、真实深度，并避免内部化冲突。",
+    complianceIdentityDetail: "已验证 A-book 模式",
     complianceMonitoringTitle: "托管与隔离",
     complianceMonitoringBody:
-      "资金始终由经纪商托管并存放在隔离账户中。IGATES 不接收、不留存、不中介资金。",
+      "资金始终由经纪商托管，存放于投资人名下的隔离账户。IGATES 不接收、不留存、不转移资金。",
+    complianceMonitoringDetail: "强制隔离",
     complianceGovernanceTitle: "风险与可追溯性",
     complianceGovernanceBody:
-      "结构化配置包含回撤上限、可验证的报告以及对真实账户业绩的跟踪。全部可审计、全部可追溯。",
+      "结构化配置包含回撤上限、可验证报告与对真实账户的持续跟踪。全部可审计。全部可追溯。",
+    complianceGovernanceDetail: "真实账户报告",
     contactEyebrow: "让我们沟通",
     contactTitle: "开启你的访问流程。",
     contactLead: "告诉我们你的投资委托或策略。我们的团队将协调数据室、尽调请求与安全访问。",
