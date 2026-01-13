@@ -58,9 +58,6 @@ export function Navbar({ floating = false }: NavbarProps) {
             <Link href="/gestores-verificados" data-i18n="navVerifiedManagers">
               Gestores Verificados
             </Link>
-            <Link href="/for-managers" data-i18n="navManagers">
-              Fund Manager
-            </Link>
             <Link href="/family-offices" data-i18n="navFamily">
               Family Offices
             </Link>

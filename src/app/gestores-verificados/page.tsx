@@ -1,4 +1,5 @@
 import { Footer } from "@/components/Footer";
+import { InstitutionalManagerSection } from "@/components/InstitutionalManagerSection";
 import { Navbar } from "@/components/Navbar";
 import { VerifiedManagers } from "@/components/VerifiedManagers";
 
@@ -30,6 +31,7 @@ export default function GestoresVerificadosPage() {
         </section>
 
         <VerifiedManagers />
+        <InstitutionalManagerSection />
       </main>
       <Footer />
     </div>
