@@ -42,22 +42,25 @@ const mamDetails = [
 ];
 
 const accordionArrow = (
-  <span className="text-sm font-semibold text-igates-300 transition-transform duration-200 group-open:rotate-180">
+  <span className="text-sm font-semibold text-white/60 transition-transform duration-200 group-open/accordion:rotate-180">
     ▾
   </span>
 );
 
 export function Learn() {
   return (
-    <section id="learn" className="relative overflow-hidden bg-slate-950 py-20 text-white">
+    <section
+      id="learn"
+      className="relative overflow-hidden bg-gradient-to-br from-[#071a3a] via-[#0b2a66] to-[#0aa7ff]/20 py-20 text-white"
+    >
       <div
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(148,163,184,0.18),_transparent_55%)]"
+        className="pointer-events-none absolute inset-0 before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.22),_transparent_60%)] before:opacity-80 before:content-[''] after:absolute after:inset-0 after:bg-[linear-gradient(120deg,_rgba(255,255,255,0.08),_transparent_60%)] after:opacity-30 after:content-['']"
         aria-hidden="true"
       />
       <div className="relative mx-auto max-w-6xl px-6">
         <div className="max-w-3xl space-y-4">
           <p
-            className="text-xs font-semibold uppercase tracking-[0.35em] text-igates-400"
+            className="text-xs font-semibold uppercase tracking-[0.4em] text-igates-300"
             data-i18n="learnEyebrow"
           >
             Ejecución institucional
@@ -72,44 +75,49 @@ export function Learn() {
           </p>
         </div>
         <div className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
-          <div className="space-y-5">
+          <div className="space-y-4">
             {learnBlocks.map((block) => (
-              <details
+              <div
                 key={block.titleKey}
-                className="group rounded-2xl border border-white/10 bg-gradient-to-br from-white/10 via-white/5 to-transparent"
+                className="group rounded-2xl bg-gradient-to-r from-blue-600 via-cyan-400 to-indigo-500 p-[1px] shadow-[0_10px_30px_rgba(0,0,0,0.25)] transition-shadow duration-200 hover:shadow-[0_12px_34px_rgba(8,145,178,0.35)] bg-[length:200%_200%] motion-safe:animate-[igatesBorderFlow_10s_linear_infinite] motion-reduce:animate-none"
               >
-                <summary className="flex cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left text-lg font-semibold marker:content-none">
-                  <span data-i18n={block.titleKey}>{block.title}</span>
+                <details className="group/accordion rounded-2xl border border-white/10 bg-white/5 backdrop-blur-[2px] transition duration-200 hover:bg-white/7 group-hover:bg-white/7 group-open/accordion:bg-white/8">
+                  <summary className="relative flex cursor-pointer items-center justify-between gap-4 px-6 py-5 pl-7 text-left text-lg font-semibold text-white/90 marker:content-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#071a3a]">
+                    <span className="absolute left-0 top-4 bottom-4 w-[2px] bg-gradient-to-b from-cyan-300/80 via-blue-500/70 to-indigo-500/70 opacity-0 transition duration-200 group-open/accordion:opacity-100" />
+                    <span data-i18n={block.titleKey}>{block.title}</span>
+                    {accordionArrow}
+                  </summary>
+                  <div className="px-6 pb-6">
+                    <p className="text-sm leading-relaxed text-white/70" data-i18n={block.bodyKey}>
+                      {block.body}
+                    </p>
+                  </div>
+                </details>
+              </div>
+            ))}
+          </div>
+          <div className="rounded-3xl bg-gradient-to-r from-blue-600 via-cyan-400 to-indigo-500 p-[1px] shadow-[0_10px_30px_rgba(0,0,0,0.25)] bg-[length:200%_200%] motion-safe:animate-[igatesBorderFlow_10s_linear_infinite] motion-reduce:animate-none">
+            <aside className="h-full rounded-3xl border border-white/10 bg-white/5 backdrop-blur-[2px] transition duration-200 hover:bg-white/7">
+              <details className="group/accordion h-full">
+                <summary className="flex cursor-pointer items-center justify-between gap-4 px-8 py-6 text-left text-xl font-semibold text-white/90 marker:content-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#071a3a]">
+                  <span data-i18n="learnMamTitle">Cómo funciona una cuenta MAM</span>
                   {accordionArrow}
                 </summary>
-                <div className="px-6 pb-6">
-                  <p className="text-sm leading-relaxed text-white/70" data-i18n={block.bodyKey}>
-                    {block.body}
+                <div className="px-8 pb-6">
+                  <div className="space-y-4 text-sm leading-relaxed text-white/70">
+                    {mamDetails.map((detail) => (
+                      <p key={detail.key} data-i18n={detail.key}>
+                        {detail.text}
+                      </p>
+                    ))}
+                  </div>
+                  <p className="mt-6 text-sm font-semibold text-white" data-i18n="learnMamClosing">
+                    IGATES facilita la conexión, verificación y control. La ejecución ocurre donde debe: en el mercado.
                   </p>
                 </div>
               </details>
-            ))}
+            </aside>
           </div>
-          <aside className="rounded-3xl border border-igates-500/30 bg-gradient-to-b from-white/10 via-white/5 to-slate-950/60">
-            <details className="group">
-              <summary className="flex cursor-pointer items-center justify-between gap-4 px-8 py-6 text-left text-xl font-semibold marker:content-none">
-                <span data-i18n="learnMamTitle">Cómo funciona una cuenta MAM</span>
-                {accordionArrow}
-              </summary>
-              <div className="px-8 pb-6">
-                <div className="space-y-4 text-sm leading-relaxed text-white/70">
-                  {mamDetails.map((detail) => (
-                    <p key={detail.key} data-i18n={detail.key}>
-                      {detail.text}
-                    </p>
-                  ))}
-                </div>
-                <p className="mt-6 text-sm font-semibold text-white" data-i18n="learnMamClosing">
-                  IGATES facilita la conexión, verificación y control. La ejecución ocurre donde debe: en el mercado.
-                </p>
-              </div>
-            </details>
-          </aside>
         </div>
       </div>
     </section>
