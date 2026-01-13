@@ -1,6 +1,3 @@
-"use client";
-
-import { useState } from "react";
 import Link from "next/link";
 
 const standardSignals = [
@@ -55,26 +52,7 @@ const standardSignals = [
   },
 ];
 
-const strategyOptions = [
-  "Crédito estructurado",
-  "Macro",
-  "Renta fija",
-  "Renta variable",
-  "Digital assets",
-  "Multi-estrategia",
-];
-
-const aumRanges = [
-  "< USD 10M",
-  "USD 10M – 50M",
-  "USD 50M – 150M",
-  "USD 150M – 500M",
-  "> USD 500M",
-];
-
 export function InstitutionalManagerSection() {
-  const [isOpen, setIsOpen] = useState(false);
-
   return (
     <section className="pb-20 pt-6">
       <div className="mx-auto w-full max-w-6xl px-6">
@@ -105,13 +83,12 @@ export function InstitutionalManagerSection() {
                 </div>
               </div>
               <div className="space-y-4">
-                <button
-                  type="button"
-                  onClick={() => setIsOpen(true)}
+                <Link
+                  href="/auth"
                   className="btn-primary inline-flex w-full items-center justify-center rounded-full px-6 py-3 text-sm font-semibold shadow-sm"
                 >
                   Iniciar evaluación institucional
-                </button>
+                </Link>
                 <Link
                   href="/#contact"
                   className="inline-flex items-center justify-center text-sm font-semibold text-slate-600 transition hover:text-slate-900"
@@ -123,116 +100,6 @@ export function InstitutionalManagerSection() {
           </div>
         </div>
       </div>
-
-      {isOpen ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-6">
-          <div
-            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
-            onClick={() => setIsOpen(false)}
-          />
-          <div className="relative z-10 w-full max-w-xl rounded-3xl border border-slate-200 bg-white/95 p-8 shadow-xl">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-igates-500">
-                  Evaluación institucional
-                </p>
-                <h3 className="mt-2 text-2xl font-semibold text-slate-900">Datos de contacto</h3>
-              </div>
-              <button
-                type="button"
-                className="rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-500"
-                onClick={() => setIsOpen(false)}
-              >
-                Cerrar
-              </button>
-            </div>
-            <form
-              className="mt-6 grid gap-4"
-              onSubmit={(event) => {
-                event.preventDefault();
-                setIsOpen(false);
-              }}
-            >
-              <label className="grid gap-2 text-sm text-slate-700">
-                Nombre completo
-                <input
-                  required
-                  name="fullName"
-                  className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-igates-400 focus:outline-none"
-                  placeholder="Nombre y apellido"
-                />
-              </label>
-              <label className="grid gap-2 text-sm text-slate-700">
-                Firma / vehículo
-                <input
-                  required
-                  name="firm"
-                  className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-igates-400 focus:outline-none"
-                  placeholder="Nombre de la firma"
-                />
-              </label>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <label className="grid gap-2 text-sm text-slate-700">
-                  Tipo de estrategia
-                  <select
-                    required
-                    name="strategy"
-                    className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-igates-400 focus:outline-none"
-                    defaultValue=""
-                  >
-                    <option value="" disabled>
-                      Seleccionar
-                    </option>
-                    {strategyOptions.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label className="grid gap-2 text-sm text-slate-700">
-                  AUM aproximado
-                  <select
-                    required
-                    name="aum"
-                    className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-igates-400 focus:outline-none"
-                    defaultValue=""
-                  >
-                    <option value="" disabled>
-                      Seleccionar
-                    </option>
-                    {aumRanges.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              </div>
-              <label className="grid gap-2 text-sm text-slate-700">
-                Email corporativo
-                <input
-                  required
-                  type="email"
-                  name="email"
-                  className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-igates-400 focus:outline-none"
-                  placeholder="nombre@firma.com"
-                />
-              </label>
-              <p className="text-xs text-slate-500">
-                Nuestro equipo revisa cada solicitud manualmente. Solo contactamos estrategias que encajan con
-                nuestro marco operativo.
-              </p>
-              <button
-                type="submit"
-                className="btn-primary inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold shadow-sm"
-              >
-                Enviar
-              </button>
-            </form>
-          </div>
-        </div>
-      ) : null}
     </section>
   );
 }
