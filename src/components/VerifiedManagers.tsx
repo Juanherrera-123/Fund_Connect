@@ -47,7 +47,6 @@ type VerifiedFund = {
 type FilterState = {
   yearProfit: string;
   drawdown: string;
-  winRate: string;
   region: string;
   country: string;
 };
@@ -55,7 +54,6 @@ type FilterState = {
 const initialFilters: FilterState = {
   yearProfit: "",
   drawdown: "",
-  winRate: "",
   region: "",
   country: "",
 };
@@ -216,7 +214,6 @@ export function VerifiedManagers() {
   const filteredFunds = useMemo(() => {
     const yearProfitValue = filters.yearProfit ? Number.parseFloat(filters.yearProfit) : null;
     const drawdownValue = filters.drawdown ? Number.parseFloat(filters.drawdown) : null;
-    const winRateValue = filters.winRate ? Number.parseFloat(filters.winRate) : null;
 
     return verifiedFunds.filter((fund) => {
       const matchesProfit =
@@ -225,9 +222,7 @@ export function VerifiedManagers() {
         drawdownValue === null || (fund.maxDrawdown !== null && fund.maxDrawdown <= drawdownValue);
       const matchesRegion = !filters.region || fund.region === filters.region;
       const matchesCountry = !filters.country || fund.country === filters.country;
-      const matchesWinRate =
-        winRateValue === null || (fund.winRate !== null && fund.winRate >= winRateValue);
-      return matchesProfit && matchesDrawdown && matchesRegion && matchesCountry && matchesWinRate;
+      return matchesProfit && matchesDrawdown && matchesRegion && matchesCountry;
     });
   }, [filters, verifiedFunds]);
 
@@ -475,7 +470,7 @@ export function VerifiedManagers() {
                 </button>
               </div>
             </div>
-            <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+            <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
               <div className="grid gap-2 text-sm font-medium text-slate-600">
                 <label htmlFor="yearProfit">Year Total Profit (%)</label>
                 <input
@@ -537,19 +532,6 @@ export function VerifiedManagers() {
                     </option>
                   ))}
                 </select>
-              </div>
-              <div className="grid gap-2 text-sm font-medium text-slate-600">
-                <label htmlFor="winRate">Win Rate (%)</label>
-                <input
-                  className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
-                  type="number"
-                  id="winRate"
-                  placeholder="Ej: 55"
-                  value={appliedFilters.winRate}
-                  onChange={(event) =>
-                    setAppliedFilters((prev) => ({ ...prev, winRate: event.target.value }))
-                  }
-                />
               </div>
             </div>
           </div>
