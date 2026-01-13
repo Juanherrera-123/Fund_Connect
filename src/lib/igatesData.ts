@@ -69,20 +69,25 @@ export const translations = {
     whyCard3Alt: "Global managers and diversified strategies graphic",
     whyFooterNote:
       "IGATES is the verification and reporting layer; execution and custody occur via integrated brokers.",
-    learnEyebrow: "Daily forum",
-    learnTitle: "Learning & community",
-    learnLead: "Briefings and highlights to keep you informed every day.",
-    learnPost1Title: "Allocation radar: credit and macro trends",
-    learnPost1Time: "Today",
-    learnPost1Body:
-      "Highlighted threads with allocators on multi-asset liquidity, duration risk, and macro hedges.",
-    learnPost2Title: "Manager spotlight: digital-asset neutrality",
-    learnPost2Time: "Updated daily",
-    learnPost2Body:
-      "Daily summary of risk notes and operational updates from the digital-assets desk.",
-    learnPost3Title: "Community brief: operations and compliance",
-    learnPost3Time: "This week",
-    learnPost3Body: "Q&A on onboarding checklists, data rooms, and audit readiness.",
+    learnEyebrow: "Institutional execution",
+    learnTitle: "How professional capital is executed today.",
+    learnLead:
+      "Modern funds are not built on isolated signals or individual decisions. They are structured around professional execution, managers with verified track records, and allocation models that prioritize control, traceability, and custody.",
+    learnBlock1Title: "From individual trading to track-record management",
+    learnBlock1Body:
+      "Trading individually implies unsystematic risk and no external oversight. Allocating to managers with verified track records allows you to assess consistency, drawdown management, and behavior across market cycles before committing capital.",
+    learnBlock2Title: "Track record as the starting point, not a promise",
+    learnBlock2Body:
+      "In institutional environments, operational history is the first filter. Returns, drawdown, correlation, and execution discipline are reviewed on live accounts, not simulations or isolated results.",
+    learnBlock3Title: "Structured allocation, not signals",
+    learnBlock3Body:
+      "Capital allocation follows clear risk and execution rules, removing emotional decision-making and ensuring operational alignment between investors and managers.",
+    learnMamTitle: "How a MAM account works",
+    learnMamBullet1: "The investor maintains full custody of capital in an individual broker account.",
+    learnMamBullet2: "The manager trades remotely through a MAM structure, with no access to withdrawals or custody.",
+    learnMamBullet3: "Each trade is replicated proportionally based on allocated capital.",
+    learnMamBullet4: "Segregation, execution, and reporting remain at the broker level.",
+    learnMamClosing: "IGATES enables connection, verification, and control. Execution happens where it should: in the market.",
     complianceEyebrow: "Compliance first",
     complianceTitle: "Regulatory-grade controls at every stage.",
     complianceBody:
@@ -575,20 +580,25 @@ export const translations = {
     whyCard3Alt: "Gráfico de gestores globales y estrategias diversificadas",
     whyFooterNote:
       "IGATES es la capa de verificación y reporting; la ejecución y custodia ocurren vía brokers integrados.",
-    learnEyebrow: "Foro diario",
-    learnTitle: "Aprendizaje y comunidad",
-    learnLead: "Briefings y highlights para mantenerte informado cada día.",
-    learnPost1Title: "Radar de asignación: crédito y macro tendencias",
-    learnPost1Time: "Hoy",
-    learnPost1Body:
-      "Hilos destacados con allocators sobre liquidez multi-activo, riesgo de duración y coberturas macro.",
-    learnPost2Title: "Manager spotlight: neutralidad en activos digitales",
-    learnPost2Time: "Actualizado a diario",
-    learnPost2Body:
-      "Resumen diario de notas de riesgo y updates operativos del desk de activos digitales.",
-    learnPost3Title: "Community brief: operaciones y compliance",
-    learnPost3Time: "Esta semana",
-    learnPost3Body: "Q&A sobre checklists de onboarding, data rooms y preparación para auditorías.",
+    learnEyebrow: "Ejecución institucional",
+    learnTitle: "Cómo se ejecuta capital profesional hoy.",
+    learnLead:
+      "Los fondos modernos no se construyen sobre señales aisladas ni decisiones individuales. Se estructuran sobre ejecución profesional, gestores con historial verificable y modelos de asignación que priorizan control, trazabilidad y custodia.",
+    learnBlock1Title: "Del trading individual a la gestión con historial",
+    learnBlock1Body:
+      "Operar de forma individual implica riesgo no sistematizado y ausencia de control externo. La asignación a gestores con track record verificable permite evaluar consistencia, gestión de drawdown y comportamiento en distintos ciclos de mercado antes de comprometer capital.",
+    learnBlock2Title: "Track record como punto de partida, no como promesa",
+    learnBlock2Body:
+      "En entornos institucionales, el historial operativo es el filtro inicial. Rentabilidad, drawdown, correlación y disciplina de ejecución son analizados sobre cuentas reales, no simulaciones ni resultados aislados.",
+    learnBlock3Title: "Asignación estructurada, no señales",
+    learnBlock3Body:
+      "La asignación de capital se realiza bajo reglas claras de riesgo y ejecución, eliminando decisiones emocionales y garantizando coherencia operativa entre inversores y gestores.",
+    learnMamTitle: "Cómo funciona una cuenta MAM",
+    learnMamBullet1: "El inversor mantiene la custodia total de su capital en una cuenta individual con el broker.",
+    learnMamBullet2: "El gestor opera de forma remota a través de una estructura MAM, sin acceso a retiros ni custodia.",
+    learnMamBullet3: "Cada operación se replica proporcionalmente según el capital asignado.",
+    learnMamBullet4: "La segregación, ejecución y reporting permanecen a nivel broker.",
+    learnMamClosing: "IGATES facilita la conexión, verificación y control. La ejecución ocurre donde debe: en el mercado.",
     complianceEyebrow: "Compliance primero",
     complianceTitle: "Controles de grado regulatorio en cada etapa.",
     complianceBody:
@@ -1088,20 +1098,26 @@ export const translations = {
     whyCard3Alt: "Gráfico de gestores globais e estratégias diversificadas",
     whyFooterNote:
       "A IGATES é a camada de verificação e reporting; a execução e custódia ocorrem via brokers integrados.",
-    learnEyebrow: "Fórum diário",
-    learnTitle: "Aprendizado e comunidade",
-    learnLead: "Briefings e destaques para mantê-lo informado todos os dias.",
-    learnPost1Title: "Radar de alocação: crédito e tendências macro",
-    learnPost1Time: "Hoje",
-    learnPost1Body:
-      "Conversas em destaque com allocators sobre liquidez multiativos, risco de duration e hedges macro.",
-    learnPost2Title: "Manager spotlight: neutralidade em ativos digitais",
-    learnPost2Time: "Atualizado diariamente",
-    learnPost2Body:
-      "Resumo diário de notas de risco e atualizações operacionais da mesa de ativos digitais.",
-    learnPost3Title: "Community brief: operações e compliance",
-    learnPost3Time: "Esta semana",
-    learnPost3Body: "Q&A sobre checklists de onboarding, data rooms e preparação para auditorias.",
+    learnEyebrow: "Execução institucional",
+    learnTitle: "Como o capital profissional é executado hoje.",
+    learnLead:
+      "Fundos modernos não são construídos sobre sinais isolados ou decisões individuais. Eles se estruturam em execução profissional, gestores com histórico verificável e modelos de alocação que priorizam controle, rastreabilidade e custódia.",
+    learnBlock1Title: "Do trading individual à gestão com histórico",
+    learnBlock1Body:
+      "Operar individualmente implica risco não sistematizado e ausência de supervisão externa. A alocação em gestores com track record verificável permite avaliar consistência, gestão de drawdown e comportamento em diferentes ciclos de mercado antes de comprometer capital.",
+    learnBlock2Title: "Track record como ponto de partida, não como promessa",
+    learnBlock2Body:
+      "Em ambientes institucionais, o histórico operacional é o primeiro filtro. Rentabilidade, drawdown, correlação e disciplina de execução são avaliados em contas reais, não em simulações ou resultados isolados.",
+    learnBlock3Title: "Alocação estruturada, não sinais",
+    learnBlock3Body:
+      "A alocação de capital segue regras claras de risco e execução, eliminando decisões emocionais e garantindo coerência operacional entre investidores e gestores.",
+    learnMamTitle: "Como funciona uma conta MAM",
+    learnMamBullet1: "O investidor mantém custódia total do capital em uma conta individual no broker.",
+    learnMamBullet2: "O gestor opera remotamente por meio de uma estrutura MAM, sem acesso a retiradas ou custódia.",
+    learnMamBullet3: "Cada operação é replicada proporcionalmente conforme o capital alocado.",
+    learnMamBullet4: "Segregação, execução e reporting permanecem no nível do broker.",
+    learnMamClosing:
+      "A IGATES viabiliza conexão, verificação e controle. A execução ocorre onde deve: no mercado.",
     complianceEyebrow: "Compliance primeiro",
     complianceTitle: "Controles de nível regulatório em cada etapa.",
     complianceBody:
@@ -1599,20 +1615,26 @@ export const translations = {
     whyCard3Alt: "Grafica su gestori globali e strategie diversificate",
     whyFooterNote:
       "IGATES è il livello di verifica e reporting; esecuzione e custodia avvengono tramite broker integrati.",
-    learnEyebrow: "Forum quotidiano",
-    learnTitle: "Formazione e community",
-    learnLead: "Briefing e highlight per restare informato ogni giorno.",
-    learnPost1Title: "Radar allocazioni: credito e trend macro",
-    learnPost1Time: "Oggi",
-    learnPost1Body:
-      "Thread in evidenza con allocators su liquidità multi-asset, rischio di duration e coperture macro.",
-    learnPost2Title: "Manager spotlight: neutralità su asset digitali",
-    learnPost2Time: "Aggiornato quotidianamente",
-    learnPost2Body:
-      "Sintesi giornaliera di note di rischio e aggiornamenti operativi dal desk di asset digitali.",
-    learnPost3Title: "Community brief: operazioni e compliance",
-    learnPost3Time: "Questa settimana",
-    learnPost3Body: "Q&A su checklist di onboarding, data room e preparazione alle audit.",
+    learnEyebrow: "Esecuzione istituzionale",
+    learnTitle: "Come si esegue oggi il capitale professionale.",
+    learnLead:
+      "I fondi moderni non si basano su segnali isolati o decisioni individuali. Si strutturano su esecuzione professionale, gestori con storico verificabile e modelli di allocazione che privilegiano controllo, tracciabilità e custodia.",
+    learnBlock1Title: "Dal trading individuale alla gestione con storico",
+    learnBlock1Body:
+      "Operare individualmente implica rischio non sistematico e assenza di supervisione esterna. L'allocazione a gestori con track record verificato consente di valutare coerenza, gestione del drawdown e comportamento nei diversi cicli di mercato prima di impegnare capitale.",
+    learnBlock2Title: "Track record come punto di partenza, non come promessa",
+    learnBlock2Body:
+      "In ambienti istituzionali, lo storico operativo è il primo filtro. Rendimento, drawdown, correlazione e disciplina di esecuzione vengono analizzati su conti reali, non su simulazioni o risultati isolati.",
+    learnBlock3Title: "Allocazione strutturata, non segnali",
+    learnBlock3Body:
+      "L'allocazione del capitale segue regole chiare di rischio ed esecuzione, eliminando decisioni emotive e garantendo coerenza operativa tra investitori e gestori.",
+    learnMamTitle: "Come funziona un conto MAM",
+    learnMamBullet1: "L'investitore mantiene la piena custodia del capitale in un conto individuale presso il broker.",
+    learnMamBullet2: "Il gestore opera da remoto tramite una struttura MAM, senza accesso a prelievi o custodia.",
+    learnMamBullet3: "Ogni operazione viene replicata in modo proporzionale al capitale allocato.",
+    learnMamBullet4: "Segregazione, esecuzione e reporting restano a livello broker.",
+    learnMamClosing:
+      "IGATES facilita connessione, verifica e controllo. L'esecuzione avviene dove deve: nel mercato.",
     complianceEyebrow: "Compliance first",
     complianceTitle: "Controlli di livello regolatorio in ogni fase.",
     complianceBody:
@@ -2108,18 +2130,25 @@ export const translations = {
     whyCard3Spec: "执行通道",
     whyCard3Alt: "全球管理人与多元化策略图示",
     whyFooterNote: "IGATES 是验证与报告层；执行与托管通过集成券商完成。",
-    learnEyebrow: "每日论坛",
-    learnTitle: "学习与社区",
-    learnLead: "每日简报与要点，助你及时掌握信息。",
-    learnPost1Title: "配置雷达：信用与宏观趋势",
-    learnPost1Time: "今天",
-    learnPost1Body: "与配置方讨论多资产流动性、久期风险与宏观对冲的精选话题。",
-    learnPost2Title: "管理人聚焦：数字资产中性策略",
-    learnPost2Time: "每日更新",
-    learnPost2Body: "数字资产团队风险笔记与运营更新的每日摘要。",
-    learnPost3Title: "社区简报：运营与合规",
-    learnPost3Time: "本周",
-    learnPost3Body: "关于入驻清单、数据室与审计准备的问答。",
+    learnEyebrow: "机构执行",
+    learnTitle: "如今专业资本如何执行。",
+    learnLead:
+      "现代基金并非建立在孤立信号或个人决策之上，而是基于专业执行、可验证业绩的管理人，以及强调控制、可追溯性与托管的配置模型。",
+    learnBlock1Title: "从个人交易到可验证业绩管理",
+    learnBlock1Body:
+      "个人交易意味着非系统性风险与缺乏外部监督。配置至具备可验证业绩记录的管理人，可在承诺资本前评估一致性、回撤管理与不同市场周期下的表现。",
+    learnBlock2Title: "业绩记录是起点，而非承诺",
+    learnBlock2Body:
+      "在机构环境中，运营历史是首要筛选标准。收益、回撤、相关性与执行纪律基于真实账户评估，而非模拟或孤立结果。",
+    learnBlock3Title: "结构化配置，而非信号",
+    learnBlock3Body:
+      "资本配置遵循明确的风险与执行规则，降低情绪化决策，确保投资人与管理人之间的操作一致性。",
+    learnMamTitle: "MAM 账户如何运作",
+    learnMamBullet1: "投资人将资金完全托管在券商的独立账户中。",
+    learnMamBullet2: "管理人通过 MAM 结构远程交易，无权提现或托管。",
+    learnMamBullet3: "每笔交易按分配资本比例进行复制。",
+    learnMamBullet4: "隔离、执行与报告均在券商层面完成。",
+    learnMamClosing: "IGATES 负责连接、验证与控制。执行应发生在市场本身。",
     complianceEyebrow: "合规优先",
     complianceTitle: "每个阶段的监管级控制。",
     complianceBody: "SOC2 就绪基础设施、地理围栏数据驻留与分层权限保护敏感信息。",
