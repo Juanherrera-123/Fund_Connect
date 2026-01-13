@@ -30,6 +30,7 @@ export function AuthFlow() {
   const [stepIndex, setStepIndex] = useState(0);
   const [signupStatus, setSignupStatus] = useState("");
   const [loginStatus, setLoginStatus] = useState("");
+  const [isLoginPasswordVisible, setIsLoginPasswordVisible] = useState(false);
   const [kycAnswers, setKycAnswers] = useState<Record<string, string>>({});
   const [surveyAnswers, setSurveyAnswers] = useState<Record<string, SurveyAnswer>>({});
 
@@ -234,7 +235,10 @@ export function AuthFlow() {
       return;
     }
 
-    if (identifier === MASTER_USER.username && password === MASTER_USER.password) {
+    if (
+      identifier.toLowerCase() === MASTER_USER.username.toLowerCase() &&
+      password === MASTER_USER.password
+    ) {
       setSession({ role: "MasterUser", username: MASTER_USER.username });
       router.push("/dashboard/master");
       return;
@@ -519,14 +523,24 @@ export function AuthFlow() {
             </label>
             <label className="grid gap-2 text-sm font-medium text-slate-600">
               <span data-i18n="authPasswordLabel">Contraseña</span>
-              <input
-                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
-                type="password"
-                name="password"
-                placeholder="••••••••"
-                data-i18n-placeholder="authLoginPasswordPlaceholder"
-                required
-              />
+              <div className="flex items-center gap-2">
+                <input
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
+                  type={isLoginPasswordVisible ? "text" : "password"}
+                  name="password"
+                  placeholder="••••••••"
+                  data-i18n-placeholder="authLoginPasswordPlaceholder"
+                  required
+                />
+                <button
+                  className="rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-600 transition hover:border-slate-300 hover:bg-slate-50"
+                  type="button"
+                  onClick={() => setIsLoginPasswordVisible((prev) => !prev)}
+                  aria-pressed={isLoginPasswordVisible}
+                >
+                  {isLoginPasswordVisible ? "Ocultar" : "Mostrar"}
+                </button>
+              </div>
             </label>
             <button
               className="inline-flex items-center justify-center rounded-full bg-igates-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-igates-500/30 transition hover:bg-igates-400"
