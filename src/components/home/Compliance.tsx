@@ -49,7 +49,7 @@ export function MarketInfrastructureSection() {
       className="relative w-full overflow-hidden bg-[#f6f9ff] py-12 sm:py-16 lg:py-24"
     >
       <div className="absolute inset-0 overflow-hidden" aria-hidden="true" />
-      <div className="relative mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
+      <div className="relative mx-auto w-full max-w-6xl px-5 sm:px-6 lg:px-8">
         <div className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
           <div className="min-w-0 space-y-5">
             <p
@@ -113,7 +113,7 @@ export function MarketInfrastructureTabs() {
             </div>
           </div>
           <div
-            className="flex gap-3 overflow-x-auto pb-2 lg:flex-col"
+            className="flex flex-wrap gap-3 pb-2 lg:flex-col"
             role="tablist"
             aria-label="Infraestructura institucional"
           >
@@ -136,7 +136,7 @@ export function MarketInfrastructureTabs() {
                     aria-controls={`${baseId}-${tab.id}-panel`}
                     id={`${baseId}-${tab.id}-tab`}
                     onClick={() => setSelectedTab(index)}
-                    className={`flex w-full min-w-[min(180px,100%)] items-start gap-3 rounded-[15px] border px-4 py-3 text-left transition-all duration-200 ease-out sm:min-w-[min(220px,100%)] lg:min-w-0 ${
+                    className={`flex w-full min-w-0 items-start gap-3 rounded-[15px] border px-4 py-3 text-left transition-all duration-200 ease-out ${
                       isActive
                         ? "border-transparent bg-white/85 text-slate-900"
                         : "border-slate-200/70 bg-white/60 text-slate-700 hover:border-slate-300/80 hover:bg-white/75"
@@ -149,7 +149,7 @@ export function MarketInfrastructureTabs() {
                     >
                       <Icon className="h-5 w-5" aria-hidden="true" />
                     </span>
-                    <span className="flex-1 space-y-1">
+                    <span className="min-w-0 flex-1 space-y-1">
                       <span className="block text-sm font-semibold" data-i18n={tab.titleKey}>
                         {tab.title}
                       </span>
