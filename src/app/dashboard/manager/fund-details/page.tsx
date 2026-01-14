@@ -53,6 +53,7 @@ export default function FundDetailsPage() {
   const [statusMessage, setStatusMessage] = useState("");
   const [linkFields, setLinkFields] = useState<string[]>(["", "", ""]);
   const [presentationAsset, setPresentationAsset] = useState<FundApplication["presentationAsset"]>(null);
+  const [logoAsset, setLogoAsset] = useState<string | null>(null);
   const [trackRecordStatements, setTrackRecordStatements] = useState<
     FundApplication["trackRecordStatements"]
   >([]);
@@ -91,8 +92,9 @@ export default function FundDetailsPage() {
 
   useEffect(() => {
     setPresentationAsset(existingApplication?.presentationAsset ?? null);
+    setLogoAsset(existingApplication?.logoUrl ?? baseFund?.logoUrl ?? null);
     setTrackRecordStatements(existingApplication?.trackRecordStatements ?? []);
-  }, [existingApplication]);
+  }, [baseFund?.logoUrl, existingApplication]);
 
   if (!profile) {
     return (
@@ -157,6 +159,7 @@ export default function FundDetailsPage() {
       winRatio: winRatio || null,
       riskLevel: riskManagement,
       riskManagement,
+      logoUrl: logoAsset,
       livePerformanceLinks: normalizedLinks,
       presentationAsset,
       trackRecordStatements,
@@ -259,6 +262,45 @@ export default function FundDetailsPage() {
               className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
             />
           </label>
+
+          <div className="md:col-span-2 grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4">
+            <p className="text-xs font-semibold text-slate-600">Logo del fondo</p>
+            <div className="flex flex-wrap items-center gap-4">
+              <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-white text-xs font-semibold text-slate-600">
+                {logoAsset ? (
+                  <img src={logoAsset} alt="Logo del fondo" className="h-full w-full object-cover" />
+                ) : (
+                  <span className="text-center">Sin logo</span>
+                )}
+              </div>
+              <div className="flex flex-1 flex-col gap-2">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={async (event) => {
+                    const file = event.target.files?.[0];
+                    if (!file) return;
+                    try {
+                      const url = await readFileAsDataUrl(file);
+                      setLogoAsset(url);
+                    } catch (error) {
+                      console.error(error);
+                    }
+                  }}
+                  className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+                />
+                {logoAsset && (
+                  <button
+                    type="button"
+                    onClick={() => setLogoAsset(null)}
+                    className="text-left text-xs font-semibold text-rose-500"
+                  >
+                    Quitar logo
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
 
           <label className="flex flex-col gap-2 text-xs font-medium">
             <span className="text-slate-600" data-i18n="dashboardOperatingTimeLabel">
