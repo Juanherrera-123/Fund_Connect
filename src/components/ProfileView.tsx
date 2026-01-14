@@ -9,20 +9,20 @@ import {
   STORAGE_KEYS,
   formatStrategyList,
 } from "@/lib/igatesData";
-import { useLocalStorage } from "@/lib/useLocalStorage";
+import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import type { Session, UserProfile, WaitlistRequest } from "@/lib/types";
 
 export function ProfileView() {
   const router = useRouter();
-  const [profiles] = useLocalStorage<UserProfile[]>(
+  const [profiles] = useFirebaseStorage<UserProfile[]>(
     STORAGE_KEYS.profiles,
     DEFAULT_FUND_MANAGER_PROFILES
   );
-  const [waitlistRequests] = useLocalStorage<WaitlistRequest[]>(
+  const [waitlistRequests] = useFirebaseStorage<WaitlistRequest[]>(
     STORAGE_KEYS.waitlistRequests,
     []
   );
-  const [session, setSession] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
+  const [session, setSession] = useFirebaseStorage<Session>(STORAGE_KEYS.session, null);
   const profile = useMemo(() => {
     if (!session || session.role === "MasterUser") return null;
     return profiles.find((item) => item.id === session.id) ?? null;

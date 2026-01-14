@@ -5,17 +5,17 @@ import { useEffect, useMemo, useState } from "react";
 import { useLanguage } from "@/components/LanguageProvider";
 import { DEFAULT_FUND_MANAGER_PROFILES, apiBase, STORAGE_KEYS } from "@/lib/igatesData";
 import { getFundFrameClass } from "@/lib/fundVisuals";
-import { useLocalStorage } from "@/lib/useLocalStorage";
+import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import type { FundSummary, Session, UserProfile } from "@/lib/types";
 
 export function FundsExploreGrid() {
   const { strings } = useLanguage();
-  const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
-  const [profiles, setProfiles] = useLocalStorage<UserProfile[]>(
+  const [session] = useFirebaseStorage<Session>(STORAGE_KEYS.session, null);
+  const [profiles, setProfiles] = useFirebaseStorage<UserProfile[]>(
     STORAGE_KEYS.profiles,
     DEFAULT_FUND_MANAGER_PROFILES
   );
-  const [capitalAllocations] = useLocalStorage<Record<string, number>>(
+  const [capitalAllocations] = useFirebaseStorage<Record<string, number>>(
     STORAGE_KEYS.capitalAllocations,
     {}
   );

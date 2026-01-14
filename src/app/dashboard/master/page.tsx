@@ -12,7 +12,7 @@ import {
   getFundLogoLabel,
 } from "@/lib/igatesData";
 import { parseCapitalAllocation } from "@/lib/fundVisuals";
-import { useLocalStorage } from "@/lib/useLocalStorage";
+import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import type {
   FundApplication,
   MasterNotification,
@@ -25,19 +25,19 @@ import type {
 const iconClass = "h-4 w-4";
 
 export default function MasterDashboard() {
-  const [profiles, setProfiles] = useLocalStorage<UserProfile[]>(
+  const [profiles, setProfiles] = useFirebaseStorage<UserProfile[]>(
     STORAGE_KEYS.profiles,
     DEFAULT_FUND_MANAGER_PROFILES
   );
-  const [fundApplications, setFundApplications] = useLocalStorage<FundApplication[]>(
+  const [fundApplications, setFundApplications] = useFirebaseStorage<FundApplication[]>(
     STORAGE_KEYS.fundApplications,
     []
   );
-  const [notifications] = useLocalStorage<MasterNotification[]>(STORAGE_KEYS.notifications, []);
+  const [notifications] = useFirebaseStorage<MasterNotification[]>(STORAGE_KEYS.notifications, []);
   const [waitlistRequests, setWaitlistRequests] = useState<WaitlistRequest[]>([]);
   const [pendingWaitlistRequests, setPendingWaitlistRequests] = useState<WaitlistRequest[]>([]);
-  const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
-  const [, setCapitalAllocations] = useLocalStorage<Record<string, number>>(
+  const [session] = useFirebaseStorage<Session>(STORAGE_KEYS.session, null);
+  const [, setCapitalAllocations] = useFirebaseStorage<Record<string, number>>(
     STORAGE_KEYS.capitalAllocations,
     {}
   );

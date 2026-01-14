@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { STORAGE_KEYS } from "@/lib/igatesData";
-import { useLocalStorage } from "@/lib/useLocalStorage";
+import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import type { ContactRequest, WaitlistRequest } from "@/lib/types";
 
 type ContactMessage = {
@@ -13,7 +13,7 @@ type ContactMessage = {
 };
 
 export default function MessagesDashboard() {
-  const [contactRequests] = useLocalStorage<ContactRequest[]>(STORAGE_KEYS.contactRequests, []);
+  const [contactRequests] = useFirebaseStorage<ContactRequest[]>(STORAGE_KEYS.contactRequests, []);
   const [selectedId, setSelectedId] = useState<string | null>(contactRequests[0]?.id ?? null);
   const [waitlistRequests, setWaitlistRequests] = useState<WaitlistRequest[]>([]);
   const [waitlistError, setWaitlistError] = useState<string | null>(null);

@@ -9,7 +9,7 @@ import {
   countryFlags,
 } from "@/lib/igatesData";
 import { useLanguage } from "@/components/LanguageProvider";
-import { useLocalStorage } from "@/lib/useLocalStorage";
+import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import type { FundApplication, Session, UserProfile } from "@/lib/types";
 
 const riskOptions = [
@@ -41,12 +41,12 @@ const readFileAsDataUrl = (file: File) =>
 
 export default function FundDetailsPage() {
   const { strings } = useLanguage();
-  const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
-  const [profiles, setProfiles] = useLocalStorage<UserProfile[]>(
+  const [session] = useFirebaseStorage<Session>(STORAGE_KEYS.session, null);
+  const [profiles, setProfiles] = useFirebaseStorage<UserProfile[]>(
     STORAGE_KEYS.profiles,
     DEFAULT_FUND_MANAGER_PROFILES
   );
-  const [fundApplications, setFundApplications] = useLocalStorage<FundApplication[]>(
+  const [fundApplications, setFundApplications] = useFirebaseStorage<FundApplication[]>(
     STORAGE_KEYS.fundApplications,
     []
   );

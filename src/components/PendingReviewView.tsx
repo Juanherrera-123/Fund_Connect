@@ -3,13 +3,13 @@
 import { useMemo } from "react";
 
 import { DEFAULT_FUND_MANAGER_PROFILES, STORAGE_KEYS } from "@/lib/igatesData";
-import { useLocalStorage } from "@/lib/useLocalStorage";
+import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import type { FundApplication, Session, UserProfile } from "@/lib/types";
 
 export function PendingReviewView() {
-  const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
-  const [profiles] = useLocalStorage<UserProfile[]>(STORAGE_KEYS.profiles, DEFAULT_FUND_MANAGER_PROFILES);
-  const [fundApplications] = useLocalStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
+  const [session] = useFirebaseStorage<Session>(STORAGE_KEYS.session, null);
+  const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, DEFAULT_FUND_MANAGER_PROFILES);
+  const [fundApplications] = useFirebaseStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
 
   const profile = useMemo(() => {
     if (!session || session.role !== "Fund Manager") return null;

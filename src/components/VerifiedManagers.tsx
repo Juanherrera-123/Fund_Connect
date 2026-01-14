@@ -14,7 +14,7 @@ import {
   getFundLogoLabel,
 } from "@/lib/igatesData";
 import { getFundFrameClass } from "@/lib/fundVisuals";
-import { useLocalStorage } from "@/lib/useLocalStorage";
+import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import type { FundApplication, Session, UserProfile } from "@/lib/types";
 
 type VerifiedFund = {
@@ -70,10 +70,10 @@ const transition = {
 export function VerifiedManagers() {
   const { strings } = useLanguage();
   const whatsappNumber = "573181252627";
-  const [fundApplications] = useLocalStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
-  const [profiles] = useLocalStorage<UserProfile[]>(STORAGE_KEYS.profiles, DEFAULT_FUND_MANAGER_PROFILES);
-  const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
-  const [capitalAllocations] = useLocalStorage<Record<string, number>>(
+  const [fundApplications] = useFirebaseStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
+  const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, DEFAULT_FUND_MANAGER_PROFILES);
+  const [session] = useFirebaseStorage<Session>(STORAGE_KEYS.session, null);
+  const [capitalAllocations] = useFirebaseStorage<Record<string, number>>(
     STORAGE_KEYS.capitalAllocations,
     {}
   );

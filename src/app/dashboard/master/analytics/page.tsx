@@ -4,7 +4,7 @@ import { useMemo } from "react";
 
 import ChartCard from "@/components/dashboard/ChartCard";
 import { DEFAULT_FUND_MANAGER_PROFILES, STORAGE_KEYS, baseVerifiedFunds } from "@/lib/igatesData";
-import { useLocalStorage } from "@/lib/useLocalStorage";
+import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import type { FundApplication, UserProfile } from "@/lib/types";
 
 const lineLegend = [
@@ -19,8 +19,8 @@ const donutLegend = [
 ];
 
 export default function MasterAnalyticsPage() {
-  const [fundApplications] = useLocalStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
-  const [profiles] = useLocalStorage<UserProfile[]>(
+  const [fundApplications] = useFirebaseStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
+  const [profiles] = useFirebaseStorage<UserProfile[]>(
     STORAGE_KEYS.profiles,
     DEFAULT_FUND_MANAGER_PROFILES
   );

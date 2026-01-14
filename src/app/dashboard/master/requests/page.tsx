@@ -4,7 +4,7 @@ import { useMemo } from "react";
 
 import DataTable, { StatusCell } from "@/components/dashboard/DataTable";
 import { DEFAULT_FUND_MANAGER_PROFILES, STORAGE_KEYS } from "@/lib/igatesData";
-import { useLocalStorage } from "@/lib/useLocalStorage";
+import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import type { UserProfile, WaitlistRequest, WaitlistStatus } from "@/lib/types";
 
 const statusConfig: Record<WaitlistStatus, { label: string; tone: "warning" | "success" | "danger" }> =
@@ -15,11 +15,11 @@ const statusConfig: Record<WaitlistStatus, { label: string; tone: "warning" | "s
   };
 
 export default function MasterRequestsPage() {
-  const [waitlistRequests] = useLocalStorage<WaitlistRequest[]>(
+  const [waitlistRequests] = useFirebaseStorage<WaitlistRequest[]>(
     STORAGE_KEYS.waitlistRequests,
     []
   );
-  const [profiles] = useLocalStorage<UserProfile[]>(
+  const [profiles] = useFirebaseStorage<UserProfile[]>(
     STORAGE_KEYS.profiles,
     DEFAULT_FUND_MANAGER_PROFILES
   );

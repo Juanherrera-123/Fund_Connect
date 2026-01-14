@@ -11,7 +11,7 @@ import {
   SURVEY_DEFINITIONS,
   getStrategyLabel,
 } from "@/lib/igatesData";
-import { useLocalStorage } from "@/lib/useLocalStorage";
+import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import type { MasterNotification, Session, SurveyAnswer, UserProfile } from "@/lib/types";
 
 const requiredKycFields = ["fullName", "email", "phone", "country", "role", "password"] as const;
@@ -34,12 +34,12 @@ export function AuthFlow() {
   const [kycAnswers, setKycAnswers] = useState<Record<string, string>>({});
   const [surveyAnswers, setSurveyAnswers] = useState<Record<string, SurveyAnswer>>({});
 
-  const [profiles, setProfiles] = useLocalStorage<UserProfile[]>(
+  const [profiles, setProfiles] = useFirebaseStorage<UserProfile[]>(
     STORAGE_KEYS.profiles,
     DEFAULT_FUND_MANAGER_PROFILES
   );
-  const [, setSession] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
-  const [notifications, setNotifications] = useLocalStorage<MasterNotification[]>(
+  const [, setSession] = useFirebaseStorage<Session>(STORAGE_KEYS.session, null);
+  const [notifications, setNotifications] = useFirebaseStorage<MasterNotification[]>(
     STORAGE_KEYS.notifications,
     []
   );
