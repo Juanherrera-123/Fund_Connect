@@ -402,7 +402,7 @@ export function VerifiedManagers() {
   const formattedOperatingTime = selectedFund?.operatingTime
     ? `${selectedFund.operatingTime} años`
     : "—";
-  const formattedProfit = formatNumber(selectedFund?.monthlyProfit ?? null, "%");
+  const formattedYearProfit = formatNumber(selectedFund?.yearProfit ?? null, "%");
   const formattedDrawdownTarget = formatNumber(selectedFund?.drawdownTarget ?? null, "%");
   const formattedMaxDrawdown = formatNumber(selectedFund?.maxDrawdown ?? null, "%");
   const formattedTrades = formatNumber(selectedFund?.tradesPerMonth ?? null, "", 0);
@@ -432,7 +432,7 @@ export function VerifiedManagers() {
 
   const panelMetrics = [
     { label: "Tiempo operando", value: formattedOperatingTime, tone: "neutral" },
-    { label: "Profit mensual (último año)", value: formattedProfit, tone: "positive" },
+    { label: "Rendimiento último año", value: formattedYearProfit, tone: "positive" },
     { label: "Drawdown target", value: formattedDrawdownTarget, tone: "neutral" },
     { label: "Max drawdown", value: formattedMaxDrawdown, tone: "neutral" },
     { label: "Trades mensuales", value: formattedTrades, tone: "neutral" },
@@ -622,7 +622,7 @@ export function VerifiedManagers() {
                               <p className="text-sm text-slate-600">{fund.description}</p>
                               <div className="mt-auto grid gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-3 text-xs font-semibold text-slate-600 sm:grid-cols-2">
                                 <div className="flex items-center justify-between">
-                                  <span>Profit último año</span>
+                                  <span>Rendimiento último año</span>
                                   <span className="text-sm font-semibold text-slate-900">{yearlyProfit}</span>
                                 </div>
                                 <div className="flex items-center justify-between">
@@ -680,7 +680,7 @@ export function VerifiedManagers() {
                               {selectedFund && (
                                 <div className="grid gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-600">
                                   <div className="flex items-center justify-between">
-                                    <span>Profit último año</span>
+                                    <span>Rendimiento último año</span>
                                     <span className="text-sm font-semibold text-slate-900">{yearlyProfit}</span>
                                   </div>
                                   <div className="flex items-center justify-between">
@@ -729,8 +729,10 @@ export function VerifiedManagers() {
                             <p className="mt-2 text-sm text-slate-600">{selectedFund.description}</p>
                             <div className="mt-4 grid gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 sm:grid-cols-2">
                               <div className="flex items-center justify-between">
-                                <span>Profit último año</span>
-                                <span className="text-sm font-semibold text-slate-900">{formattedProfit}</span>
+                                <span>Rendimiento último año</span>
+                                <span className="text-sm font-semibold text-slate-900">
+                                  {formattedYearProfit}
+                                </span>
                               </div>
                               <div className="flex items-center justify-between">
                                 <span>Max drawdown</span>
