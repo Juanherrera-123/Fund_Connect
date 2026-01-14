@@ -405,7 +405,7 @@ export function VerifiedManagers() {
   const formattedOperatingTime = selectedFund?.operatingTime
     ? `${selectedFund.operatingTime} ${strings.verifiedManagersYearsSuffix}`
     : "—";
-  const formattedProfit = formatNumber(selectedFund?.monthlyProfit ?? null, "%");
+  const formattedYearProfit = formatNumber(selectedFund?.yearProfit ?? null, "%");
   const formattedDrawdownTarget = formatNumber(selectedFund?.drawdownTarget ?? null, "%");
   const formattedMaxDrawdown = formatNumber(selectedFund?.maxDrawdown ?? null, "%");
   const formattedTrades = formatNumber(selectedFund?.tradesPerMonth ?? null, "", 0);
