@@ -92,6 +92,7 @@ export type FundApplication = {
   monthlyProfit?: number | null;
   maxDrawdown?: number | null;
   winRate?: number | null;
+  winRatio?: string | null;
   volatility?: number | null;
   riskLevel?: string | null;
   operatingTime?: string;
@@ -99,6 +100,12 @@ export type FundApplication = {
   tradesPerMonth?: number | null;
   riskManagement?: string | null;
   livePerformanceLinks?: string[];
+  presentationAsset?: {
+    type: "pdf" | "video";
+    name: string;
+    url: string;
+  } | null;
+  trackRecordStatements?: { name: string; url: string }[];
   minInvestment?: string;
   performanceFee?: string;
   subscriptionFee?: string;

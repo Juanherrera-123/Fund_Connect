@@ -30,11 +30,14 @@ type VerifiedFund = {
   drawdownTarget: number | null;
   maxDrawdown: number | null;
   winRate: number | null;
+  winRatio: string | null;
   volatility: number | null;
   operatingTime: string | null;
   tradesPerMonth: number | null;
   riskManagement: string | null;
   livePerformanceLinks: string[];
+  presentationAsset: FundApplication["presentationAsset"];
+  trackRecordStatements: FundApplication["trackRecordStatements"];
   minInvestment: string | null;
   performanceFee: string | null;
   subscriptionFee: string | null;
@@ -134,11 +137,14 @@ export function VerifiedManagers() {
           drawdownTarget: application.drawdownTarget ?? null,
           maxDrawdown: application.maxDrawdown ?? null,
           winRate: application.winRate ?? null,
+          winRatio: application.winRatio ?? null,
           volatility: application.volatility ?? null,
           operatingTime: application.operatingTime ?? null,
           tradesPerMonth: application.tradesPerMonth ?? null,
           riskManagement: application.riskManagement ?? application.riskLevel ?? null,
           livePerformanceLinks: application.livePerformanceLinks ?? [],
+          presentationAsset: application.presentationAsset ?? null,
+          trackRecordStatements: application.trackRecordStatements ?? [],
           minInvestment: application.minInvestment ?? null,
           performanceFee: application.performanceFee ?? null,
           subscriptionFee: application.subscriptionFee ?? null,
@@ -172,11 +178,14 @@ export function VerifiedManagers() {
           drawdownTarget: null,
           maxDrawdown: fund.maxDrawdown,
           winRate: fund.winRate,
+          winRatio: null,
           volatility: fund.volatility,
           operatingTime: null,
           tradesPerMonth: null,
           riskManagement: fund.riskLevel,
           livePerformanceLinks: [],
+          presentationAsset: null,
+          trackRecordStatements: [],
           minInvestment: null,
           performanceFee: null,
           subscriptionFee: null,
@@ -396,6 +405,8 @@ export function VerifiedManagers() {
   const formattedDrawdownTarget = formatNumber(selectedFund?.drawdownTarget ?? null, "%");
   const formattedMaxDrawdown = formatNumber(selectedFund?.maxDrawdown ?? null, "%");
   const formattedTrades = formatNumber(selectedFund?.tradesPerMonth ?? null, "", 0);
+  const formattedWinRate = formatNumber(selectedFund?.winRate ?? null, "%");
+  const formattedWinRatio = selectedFund?.winRatio || "—";
   const formattedRisk = selectedFund?.riskManagement ?? "—";
   const formattedMinInvestment = selectedFund?.minInvestment || "—";
   const formattedPerformanceFee = selectedFund?.performanceFee
@@ -424,6 +435,8 @@ export function VerifiedManagers() {
     { label: "Drawdown target", value: formattedDrawdownTarget, highlight: true },
     { label: "Max drawdown", value: formattedMaxDrawdown, highlight: true },
     { label: "Trades mensuales", value: formattedTrades },
+    { label: "Win rate", value: formattedWinRate },
+    { label: "Win ratio", value: formattedWinRatio },
     { label: "Gestión de riesgo", value: formattedRisk },
   ];
 
@@ -763,6 +776,62 @@ export function VerifiedManagers() {
                             </li>
                           ))}
                         </ul>
+                        <div className="mt-4 border-t border-slate-200 pt-4">
+                          <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
+                            Track record statement
+                          </p>
+                          {selectedFund.trackRecordStatements?.length ? (
+                            <ul className="mt-3 grid gap-2 text-xs text-slate-600">
+                              {selectedFund.trackRecordStatements.map((statement, index) => (
+                                <li key={`statement-${index}`}>
+                                  <a
+                                    className="break-all underline"
+                                    href={statement.url}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                  >
+                                    {statement.name || `Track record ${index + 1}`}
+                                  </a>
+                                </li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <p className="mt-2 text-xs text-slate-500">Sin documentos cargados.</p>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4">
+                        <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
+                          Presentación / operativa
+                        </p>
+                        {selectedFund.presentationAsset ? (
+                          <div className="mt-3 grid gap-3 text-xs text-slate-600">
+                            <a
+                              className="break-all underline"
+                              href={selectedFund.presentationAsset.url}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              {selectedFund.presentationAsset.name}
+                            </a>
+                            {selectedFund.presentationAsset.type === "video" ? (
+                              <video
+                                controls
+                                className="w-full rounded-xl border border-slate-200 bg-slate-100"
+                                src={selectedFund.presentationAsset.url}
+                              />
+                            ) : (
+                              <iframe
+                                className="h-64 w-full rounded-xl border border-slate-200 bg-slate-100"
+                                src={selectedFund.presentationAsset.url}
+                                title="Presentación PDF"
+                              />
+                            )}
+                          </div>
+                        ) : (
+                          <p className="mt-2 text-xs text-slate-500">Sin presentación cargada.</p>
+                        )}
                       </div>
 
                       <div className="mt-4">

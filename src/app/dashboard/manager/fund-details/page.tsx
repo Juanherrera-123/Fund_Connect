@@ -31,6 +31,14 @@ const parseNumericValue = (value: FormDataEntryValue | null) => {
   return Number.isNaN(parsed) ? null : parsed;
 };
 
+const readFileAsDataUrl = (file: File) =>
+  new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result ?? ""));
+    reader.onerror = () => reject(new Error("No se pudo leer el archivo."));
+    reader.readAsDataURL(file);
+  });
+
 export default function FundDetailsPage() {
   const { strings } = useLanguage();
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
@@ -44,6 +52,10 @@ export default function FundDetailsPage() {
   );
   const [statusMessage, setStatusMessage] = useState("");
   const [linkFields, setLinkFields] = useState<string[]>(["", "", ""]);
+  const [presentationAsset, setPresentationAsset] = useState<FundApplication["presentationAsset"]>(null);
+  const [trackRecordStatements, setTrackRecordStatements] = useState<
+    FundApplication["trackRecordStatements"]
+  >([]);
 
   const profile = useMemo(() => {
     if (!session || session.role !== "Fund Manager") return null;
@@ -77,6 +89,11 @@ export default function FundDetailsPage() {
     setLinkFields(nextLinks);
   }, [existingApplication]);
 
+  useEffect(() => {
+    setPresentationAsset(existingApplication?.presentationAsset ?? null);
+    setTrackRecordStatements(existingApplication?.trackRecordStatements ?? []);
+  }, [existingApplication]);
+
   if (!profile) {
     return (
       <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
@@ -100,6 +117,7 @@ export default function FundDetailsPage() {
     const performanceFee = String(formData.get("performanceFee") || "").trim();
     const subscriptionFee = String(formData.get("subscriptionFee") || "").trim();
     const reportsFrequency = String(formData.get("reportsFrequency") || "").trim();
+    const winRatio = String(formData.get("winRatio") || "").trim();
     const normalizedLinks = linkFields.map((link) => link.trim()).filter(Boolean);
 
     if (!fundName || !description || !operatingTime || !country || !riskManagement || !reportsFrequency) {
@@ -135,10 +153,13 @@ export default function FundDetailsPage() {
       drawdownTarget: parseNumericValue(formData.get("drawdownTarget")),
       maxDrawdown: parseNumericValue(formData.get("maxDrawdown")),
       tradesPerMonth: parseNumericValue(formData.get("tradesPerMonth")),
-      winRate: parseNumericValue(formData.get("tradesPerMonth")),
+      winRate: parseNumericValue(formData.get("winRate")),
+      winRatio: winRatio || null,
       riskLevel: riskManagement,
       riskManagement,
       livePerformanceLinks: normalizedLinks,
+      presentationAsset,
+      trackRecordStatements,
       minInvestment,
       performanceFee,
       subscriptionFee,
@@ -278,6 +299,32 @@ export default function FundDetailsPage() {
           </label>
 
           <label className="flex flex-col gap-2 text-xs font-medium">
+            <span className="text-slate-600">Win rate</span>
+            <div className="flex items-center rounded-lg border border-slate-200 px-3 py-2 text-sm">
+              <input
+                type="number"
+                step="0.01"
+                name="winRate"
+                defaultValue={existingApplication?.winRate ?? baseFund?.winRate ?? ""}
+                placeholder="Ej: 60"
+                className="w-full bg-transparent text-sm outline-none"
+              />
+              <span className="ml-2 text-slate-500">%</span>
+            </div>
+          </label>
+
+          <label className="flex flex-col gap-2 text-xs font-medium">
+            <span className="text-slate-600">Win ratio</span>
+            <input
+              type="text"
+              name="winRatio"
+              defaultValue={existingApplication?.winRatio ?? ""}
+              placeholder="Ej: 1.8:1"
+              className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
+            />
+          </label>
+
+          <label className="flex flex-col gap-2 text-xs font-medium">
             <span className="text-slate-600" data-i18n="dashboardDrawdownTargetLabel">
               Drawdown target
             </span>
@@ -368,6 +415,85 @@ export default function FundDetailsPage() {
                 }
                 className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
               />
+            ))}
+          </div>
+
+          <div className="md:col-span-2 grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4">
+            <p className="text-xs font-semibold text-slate-600">Presentación / operativa</p>
+            <input
+              type="file"
+              accept="application/pdf,video/mp4"
+              onChange={async (event) => {
+                const file = event.target.files?.[0];
+                if (!file) return;
+                try {
+                  const url = await readFileAsDataUrl(file);
+                  const nextAsset = {
+                    type: file.type === "video/mp4" ? "video" : "pdf",
+                    name: file.name,
+                    url,
+                  } as const;
+                  setPresentationAsset(nextAsset);
+                } catch (error) {
+                  console.error(error);
+                }
+              }}
+              className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+            />
+            {presentationAsset && (
+              <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-600">
+                <span>{presentationAsset.name}</span>
+                <button
+                  type="button"
+                  onClick={() => setPresentationAsset(null)}
+                  className="text-xs font-semibold text-rose-500"
+                >
+                  Quitar
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div className="md:col-span-2 grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4">
+            <p className="text-xs font-semibold text-slate-600">Track record statement (PDF)</p>
+            {[0, 1].map((index) => (
+              <div key={`track-record-${index}`} className="grid gap-2">
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={async (event) => {
+                    const file = event.target.files?.[0];
+                    if (!file) return;
+                    try {
+                      const url = await readFileAsDataUrl(file);
+                      setTrackRecordStatements((prev) => {
+                        const next = [...(prev ?? [])];
+                        next[index] = { name: file.name, url };
+                        return next.filter(Boolean);
+                      });
+                    } catch (error) {
+                      console.error(error);
+                    }
+                  }}
+                  className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+                />
+                {trackRecordStatements?.[index] && (
+                  <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-600">
+                    <span>{trackRecordStatements[index]?.name}</span>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setTrackRecordStatements((prev) =>
+                          (prev ?? []).filter((_, position) => position !== index)
+                        )
+                      }
+                      className="text-xs font-semibold text-rose-500"
+                    >
+                      Quitar
+                    </button>
+                  </div>
+                )}
+              </div>
             ))}
           </div>
 
