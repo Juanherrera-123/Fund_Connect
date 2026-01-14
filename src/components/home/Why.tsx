@@ -46,8 +46,8 @@ const iconClasses = "h-4 w-4";
 
 export function Why() {
   return (
-    <section id="why" className="bg-white py-16">
-      <div className="mx-auto max-w-6xl px-6">
+    <section id="why" className="bg-white py-12 sm:py-16 lg:py-24">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="mx-auto max-w-3xl space-y-4 text-center">
           <p
             className="text-xs font-semibold uppercase tracking-[0.35em] text-igates-500"
@@ -55,11 +55,11 @@ export function Why() {
           >
             Propósito Estratégico
           </p>
-          <h2 className="text-3xl font-semibold text-slate-900" data-i18n="whyTitle">
+          <h2 className="text-3xl font-semibold text-slate-900 sm:text-4xl lg:text-5xl" data-i18n="whyTitle">
             ¿Por qué existe IGATES?
           </h2>
         </div>
-        <div className="mt-12 grid gap-6 lg:grid-cols-3">
+        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {purposeCards.map((card) => (
             <div key={card.titleKey} className="igates-card-frame">
               <article className="igates-card grid gap-5">
@@ -97,7 +97,7 @@ export function Why() {
             </div>
           ))}
         </div>
-        <p className="mt-8 max-w-2xl text-center text-sm text-slate-500 mx-auto" data-i18n="whyFooterNote">
+        <p className="mx-auto mt-8 max-w-2xl text-center text-sm text-slate-500" data-i18n="whyFooterNote">
           IGATES es la capa de verificación y reporting; la ejecución y custodia ocurren vía
           brokers integrados.
         </p>

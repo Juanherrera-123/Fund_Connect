@@ -24,7 +24,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body>
+      <body className="overflow-x-hidden">
         <LanguageProvider>{children}</LanguageProvider>
       </body>
     </html>

@@ -442,7 +442,7 @@ export function VerifiedManagers() {
         </div>
       )}
       <section className="py-6" aria-labelledby="filtersTitle">
-        <div className="mx-auto w-full max-w-6xl px-6">
+        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm" id="filtersPanel">
             <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200/70 pb-4">
               <div>
@@ -455,14 +455,14 @@ export function VerifiedManagers() {
               </div>
               <div className="flex flex-wrap gap-2">
                 <button
-                  className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+                  className="inline-flex w-full items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 sm:w-auto"
                   type="button"
                   onClick={handleResetFilters}
                 >
                   Reset
                 </button>
                 <button
-                  className="inline-flex items-center justify-center rounded-full bg-igates-500 px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-white shadow-lg shadow-igates-500/30 transition hover:bg-igates-400"
+                  className="inline-flex w-full items-center justify-center rounded-full bg-igates-500 px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-white shadow-lg shadow-igates-500/30 transition hover:bg-igates-400 sm:w-auto"
                   type="button"
                   onClick={handleApplyFilters}
                 >
@@ -470,7 +470,7 @@ export function VerifiedManagers() {
                 </button>
               </div>
             </div>
-            <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
               <div className="grid gap-2 text-sm font-medium text-slate-600">
                 <label htmlFor="yearProfit">Year Total Profit (%)</label>
                 <input
@@ -538,11 +538,13 @@ export function VerifiedManagers() {
         </div>
       </section>
 
-      <section className="py-12" id="asesoria">
-        <div className="mx-auto w-full max-w-6xl px-6">
+      <section className="py-12 sm:py-16 lg:py-24" id="asesoria">
+        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
           <div className="max-w-3xl space-y-3">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-igates-500">Panel de gestores</p>
-            <h2 className="text-2xl font-semibold text-slate-900">Fondos verificados listos para diligencia</h2>
+            <h2 className="text-2xl font-semibold text-slate-900 sm:text-3xl lg:text-4xl">
+              Fondos verificados listos para diligencia
+            </h2>
             <p className="text-sm text-slate-600">Selecciona un fondo para ver el detalle curado.</p>
           </div>
 
@@ -557,14 +559,16 @@ export function VerifiedManagers() {
               >
                 <motion.div
                   layout
-                  className={selectedFund ? "max-h-[72vh] overflow-y-auto pr-2" : ""}
+                  className={`${selectedFund ? "lg:max-h-[72vh] lg:overflow-y-auto lg:pr-2" : ""} ${
+                    selectedFund ? "order-2 lg:order-1" : ""
+                  }`}
                 >
                   <motion.div
                     layout
                     className={
                       selectedFund
                         ? "flex flex-col gap-3"
-                        : "grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
+                        : "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
                     }
                   >
                     {!filteredFunds.length && (
@@ -690,7 +694,7 @@ export function VerifiedManagers() {
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: 40 }}
                       transition={transition}
-                      className="relative flex h-full flex-col rounded-2xl border border-slate-200 bg-slate-50/60 p-6"
+                      className="relative order-1 flex h-full flex-col rounded-2xl border border-slate-200 bg-slate-50/60 p-5 sm:p-6 lg:order-2"
                     >
                       <div className="flex flex-wrap items-start justify-between gap-4">
                         <div className="flex items-start gap-4">
@@ -788,12 +792,12 @@ export function VerifiedManagers() {
                             ref={waitlistButtonRef}
                             type="button"
                             onClick={openWaitlistModal}
-                            className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-igates-500 to-igates-400 px-6 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-white shadow-lg shadow-igates-500/30 transition hover:from-igates-400 hover:to-igates-500"
+                            className="inline-flex w-full items-center justify-center rounded-full bg-gradient-to-r from-igates-500 to-igates-400 px-6 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-white shadow-lg shadow-igates-500/30 transition hover:from-igates-400 hover:to-igates-500 sm:w-auto"
                           >
                             Join the waitlist
                           </button>
                           <a
-                            className="inline-flex items-center justify-center rounded-full border border-white/60 bg-white/70 px-6 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-700 shadow-sm backdrop-blur transition hover:border-slate-200 hover:bg-white"
+                            className="inline-flex w-full items-center justify-center rounded-full border border-white/60 bg-white/70 px-6 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-700 shadow-sm backdrop-blur transition hover:border-slate-200 hover:bg-white sm:w-auto"
                             href={whatsappLink}
                             target="_blank"
                             rel="noreferrer"

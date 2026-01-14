@@ -61,7 +61,7 @@ export function Hero() {
           WebkitBackdropFilter: "blur(6px) saturate(105%)",
         }}
       />
-      <div className="relative z-10 mx-auto grid h-full max-w-6xl gap-10 px-6 pt-24 pb-14 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:pt-28 lg:pb-16">
+      <div className="relative z-10 mx-auto grid h-full max-w-6xl gap-10 px-4 pt-24 pb-14 sm:px-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:pt-28 lg:pb-16">
         <div className="space-y-6">
           <p
             className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-600"
@@ -71,26 +71,26 @@ export function Hero() {
           </p>
           <div className="space-y-3">
             <h1
-              className="igates-gradient-text pb-1 text-4xl font-semibold leading-[1.05] md:text-6xl"
+              className="igates-gradient-text break-words pb-1 text-3xl font-semibold leading-[1.05] sm:text-4xl lg:text-5xl"
               data-i18n="heroTitle"
             >
               Conectando Capital institucional con Fondos Privados
             </h1>
-            <p className="text-base text-slate-700 md:text-lg" data-i18n="heroLead">
+            <p className="text-base text-slate-700 sm:text-lg" data-i18n="heroLead">
               Infraestructura institucional para acceder a fondos gestionados con estándares
               profesionales.
             </p>
           </div>
           <div className="flex flex-wrap gap-4">
             <Link
-              className="btn-primary inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold shadow-lg shadow-igates-500/30 transition"
+              className="btn-primary inline-flex w-full items-center justify-center rounded-full px-6 py-3 text-sm font-semibold shadow-lg shadow-igates-500/30 transition sm:w-auto"
               href={{ pathname: "/auth", query: { role: "Family Office" } }}
               data-i18n="heroCtaInvestor"
             >
               Solicitar acceso institucional
             </Link>
             <Link
-              className="inline-flex items-center justify-center rounded-full border border-white/40 bg-white/55 px-6 py-3 text-sm font-semibold text-slate-700 shadow-sm backdrop-blur-md transition-all hover:border-white/60 hover:bg-white/70 hover:text-slate-900 hover:shadow-md"
+              className="inline-flex w-full items-center justify-center rounded-full border border-white/40 bg-white/55 px-6 py-3 text-sm font-semibold text-slate-700 shadow-sm backdrop-blur-md transition-all hover:border-white/60 hover:bg-white/70 hover:text-slate-900 hover:shadow-md sm:w-auto"
               href={{ pathname: "/auth", query: { role: "Fund Manager" } }}
               data-i18n="heroCtaManager"
             >
