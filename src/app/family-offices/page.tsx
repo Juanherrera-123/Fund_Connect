@@ -37,36 +37,56 @@ const heroMetrics = [
 
 const architectureCards = [
   {
+    titleKey: "familyArchitectureCard1Title",
     title: "Fondo multi-gestor bajo mandato",
+    descriptionKey: "familyArchitectureCard1Body",
     description:
       "Construye una estructura diversificada combinando múltiples fondos verificados bajo un único mandato de inversión.",
-    meta: ["Mandato configurable", "Asignación flexible"],
+    meta: [
+      { key: "familyArchitectureCard1Meta1", label: "Mandato configurable" },
+      { key: "familyArchitectureCard1Meta2", label: "Asignación flexible" },
+    ],
   },
   {
+    titleKey: "familyArchitectureCard2Title",
     title: "Control de riesgo centralizado",
+    descriptionKey: "familyArchitectureCard2Body",
     description:
       "Supervisa exposición, drawdown y límites agregados desde una sola vista, sin perder visibilidad por gestor.",
-    meta: ["Riesgo agregado", "Límites por mandato"],
+    meta: [
+      { key: "familyArchitectureCard2Meta1", label: "Riesgo agregado" },
+      { key: "familyArchitectureCard2Meta2", label: "Límites por mandato" },
+    ],
   },
   {
+    titleKey: "familyArchitectureCard3Title",
     title: "Custodia y ejecución institucional",
+    descriptionKey: "familyArchitectureCard3Body",
     description:
       "Capital siempre bajo custodia del broker, con ejecución A-book y segregación total. IGATES nunca toca los fondos.",
-    meta: ["Cuentas segregadas", "Brokers Prime / A-book"],
+    meta: [
+      { key: "familyArchitectureCard3Meta1", label: "Cuentas segregadas" },
+      { key: "familyArchitectureCard3Meta2", label: "Brokers Prime / A-book" },
+    ],
   },
   {
+    titleKey: "familyArchitectureCard4Title",
     title: "Transparencia y trazabilidad total",
+    descriptionKey: "familyArchitectureCard4Body",
     description:
       "Audita decisiones, flujos y performance con reporting verificable, listo para comité e inversionistas.",
-    meta: ["Reporting institucional", "Auditoría continua"],
+    meta: [
+      { key: "familyArchitectureCard4Meta1", label: "Reporting institucional" },
+      { key: "familyArchitectureCard4Meta2", label: "Auditoría continua" },
+    ],
   },
 ];
 
 const diligenceSteps = [
-  "Curated diligence of verified managers",
-  "Mandate and allocation design",
-  "Institutional implementation (segregated accounts, execution)",
-  "Continuous oversight and risk monitoring",
+  { key: "familyFlowStep1", label: "Curated diligence of verified managers" },
+  { key: "familyFlowStep2", label: "Mandate and allocation design" },
+  { key: "familyFlowStep3", label: "Institutional implementation (segregated accounts, execution)" },
+  { key: "familyFlowStep4", label: "Continuous oversight and risk monitoring" },
 ];
 
 export default function FamilyOfficesPage() {
@@ -175,29 +195,34 @@ export default function FamilyOfficesPage() {
         <section className="py-20">
           <div className="mx-auto w-full max-w-6xl px-6">
             <div className="max-w-3xl space-y-4">
-              <h2 className="text-3xl font-semibold text-slate-900 md:text-4xl">
+              <h2 className="text-3xl font-semibold text-slate-900 md:text-4xl" data-i18n="familyArchitectureTitle">
                 Arquitecturas de inversión multi-gestor bajo tu control
               </h2>
-              <p className="text-base text-slate-600 md:text-lg">
+              <p className="text-base text-slate-600 md:text-lg" data-i18n="familyArchitectureLead">
                 Diseña un fondo de cobertura privado diversificando capital entre gestores verificados,
                 con reglas claras de riesgo, custodia y ejecución institucional.
               </p>
             </div>
             <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
               {architectureCards.map((card) => (
-                <div key={card.title} className="igates-card-frame igates-card-frame--institutional">
+                <div key={card.titleKey} className="igates-card-frame igates-card-frame--institutional">
                   <div className="igates-card flex h-full flex-col gap-4 transition hover:-translate-y-1 hover:shadow-lg hover:shadow-igates-500/10">
                     <div>
-                      <h3 className="text-lg font-semibold text-slate-900">{card.title}</h3>
-                      <p className="mt-3 text-sm text-slate-600">{card.description}</p>
+                      <h3 className="text-lg font-semibold text-slate-900" data-i18n={card.titleKey}>
+                        {card.title}
+                      </h3>
+                      <p className="mt-3 text-sm text-slate-600" data-i18n={card.descriptionKey}>
+                        {card.description}
+                      </p>
                     </div>
                     <div className="mt-auto flex flex-wrap gap-2 text-xs font-semibold text-slate-600">
                       {card.meta.map((item) => (
                         <span
-                          key={item}
+                          key={item.key}
                           className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1"
+                          data-i18n={item.key}
                         >
-                          {item}
+                          {item.label}
                         </span>
                       ))}
                     </div>
@@ -211,10 +236,13 @@ export default function FamilyOfficesPage() {
         <section className="py-20">
           <div className="mx-auto w-full max-w-6xl px-6">
             <div className="max-w-3xl space-y-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-igates-500">
+              <p
+                className="text-xs font-semibold uppercase tracking-[0.2em] text-igates-500"
+                data-i18n="familyFlowEyebrow"
+              >
                 Flujo institucional
               </p>
-              <h2 className="text-3xl font-semibold text-slate-900 md:text-4xl">
+              <h2 className="text-3xl font-semibold text-slate-900 md:text-4xl" data-i18n="familyFlowTitle">
                 De la diligencia a la asignación, sin fricción.
               </h2>
             </div>
@@ -223,13 +251,15 @@ export default function FamilyOfficesPage() {
               <div className="absolute left-0 right-0 top-6 hidden h-px bg-slate-200 lg:block" />
               {diligenceSteps.map((step, index) => (
                 <li
-                  key={step}
+                  key={step.key}
                   className="relative flex gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-igates-500/40 hover:shadow-md"
                 >
                   <div className="flex h-10 w-10 items-center justify-center rounded-full border border-igates-500/30 bg-igates-500/10 text-sm font-semibold text-igates-600">
                     {index + 1}
                   </div>
-                  <p className="text-sm text-slate-600">{step}</p>
+                  <p className="text-sm text-slate-600" data-i18n={step.key}>
+                    {step.label}
+                  </p>
                 </li>
               ))}
             </ol>
@@ -240,12 +270,13 @@ export default function FamilyOfficesPage() {
           <div className="mx-auto w-full max-w-5xl px-6">
             <div className="igates-institutional-frame">
               <div className="igates-institutional-surface flex flex-col items-start gap-6 px-8 py-10 sm:flex-row sm:items-center sm:justify-between">
-                <h2 className="text-2xl font-semibold text-slate-900 md:text-3xl">
+                <h2 className="text-2xl font-semibold text-slate-900 md:text-3xl" data-i18n="familyCtaTitle">
                   Diseña tu estructura de inversión institucional.
                 </h2>
                 <Link
                   className="btn-primary inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold shadow-lg shadow-igates-500/30"
                   href="/#contact"
+                  data-i18n="familyCtaButton"
                 >
                   Solicitar diseño institucional
                 </Link>

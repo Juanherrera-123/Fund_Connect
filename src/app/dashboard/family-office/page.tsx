@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import StatusBadge from "@/components/dashboard/StatusBadge";
+import { useLanguage } from "@/components/LanguageProvider";
 import { DEFAULT_FUND_MANAGER_PROFILES, STORAGE_KEYS, apiBase } from "@/lib/igatesData";
 import { getFundFrameClass } from "@/lib/fundVisuals";
 import { useLocalStorage } from "@/lib/useLocalStorage";
@@ -10,13 +11,8 @@ import type { FundSummary, Session, UserProfile, WaitlistRequest, WaitlistStatus
 
 const cardClass = "rounded-2xl border border-slate-200 bg-white p-5 shadow-sm";
 
-const statusConfig: Record<WaitlistStatus, { label: string; tone: "neutral" | "success" | "danger" }> = {
-  PENDING: { label: "Pending", tone: "neutral" },
-  APPROVED: { label: "Approved", tone: "success" },
-  REJECTED: { label: "Rejected", tone: "danger" },
-};
-
 export default function FamilyOfficeDashboard() {
+  const { language, options, strings } = useLanguage();
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const [profiles, setProfiles] = useLocalStorage<UserProfile[]>(
     STORAGE_KEYS.profiles,
@@ -31,15 +27,34 @@ export default function FamilyOfficeDashboard() {
     {}
   );
   const [funds, setFunds] = useState<FundSummary[]>([]);
-  const [status, setStatus] = useState("Loading funds...");
+  const [status, setStatus] = useState<"loading" | "error" | "idle">("loading");
   const [activeFund, setActiveFund] = useState<FundSummary | null>(null);
   const [requestNotes, setRequestNotes] = useState("");
-  const [feedback, setFeedback] = useState("");
+  const [feedbackKey, setFeedbackKey] = useState<"" | "alreadyRequested" | "submitted">("");
 
   const profile = useMemo(() => {
     if (!session || session.role !== "Family Office") return null;
     return profiles.find((item) => item.id === session.id) ?? null;
   }, [profiles, session]);
+
+  const locale = options[language]?.locale ?? "en";
+
+  const statusText = useMemo(() => {
+    if (status === "loading") return strings.fundsExploreLoading;
+    if (status === "error") return strings.fundsExploreLoadError;
+    return "";
+  }, [status, strings.fundsExploreLoadError, strings.fundsExploreLoading]);
+
+  const statusConfig = useMemo<
+    Record<WaitlistStatus, { label: string; tone: "neutral" | "success" | "danger" }>
+  >(
+    () => ({
+      PENDING: { label: strings.dashboardStatusPending, tone: "neutral" },
+      APPROVED: { label: strings.dashboardStatusApproved, tone: "success" },
+      REJECTED: { label: strings.dashboardStatusRejected, tone: "danger" },
+    }),
+    [strings.dashboardStatusApproved, strings.dashboardStatusPending, strings.dashboardStatusRejected]
+  );
 
   useEffect(() => {
     if (!profile) return;
@@ -51,12 +66,12 @@ export default function FamilyOfficeDashboard() {
         const data = (await response.json()) as FundSummary[];
         if (isMounted) {
           setFunds(data);
-          setStatus("");
+          setStatus("idle");
         }
       } catch (error) {
         console.error(error);
         if (isMounted) {
-          setStatus("Unable to load funds.");
+          setStatus("error");
         }
       }
     };
@@ -85,7 +100,7 @@ export default function FamilyOfficeDashboard() {
     if (!profile || !activeFund) return;
     const existing = requestByFundId.get(activeFund.id);
     if (existing) {
-      setFeedback("You already requested this fund.");
+      setFeedbackKey("alreadyRequested");
       return;
     }
 
@@ -120,13 +135,13 @@ export default function FamilyOfficeDashboard() {
     );
     setActiveFund(null);
     setRequestNotes("");
-    setFeedback("Waitlist request submitted.");
+    setFeedbackKey("submitted");
   };
 
   if (!profile) {
     return (
       <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-        Please sign in as a family office user to view this dashboard.
+        {strings.dashboardFamilyLoginPrompt}
       </div>
     );
   }
@@ -138,60 +153,60 @@ export default function FamilyOfficeDashboard() {
           className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500"
           data-i18n="dashboardLabel"
         >
-          Dashboard
+          {strings.dashboardLabel}
         </p>
-        <h1 className="text-2xl font-semibold text-slate-900">Family Office workspace</h1>
-        <p className="text-sm text-slate-600">
-          Review your profile, browse funds, and manage waitlist requests for your organization.
-        </p>
+        <h1 className="text-2xl font-semibold text-slate-900">{strings.dashboardFamilyTitle}</h1>
+        <p className="text-sm text-slate-600">{strings.dashboardFamilyLead}</p>
       </header>
 
-      {feedback ? (
+      {feedbackKey ? (
         <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-          {feedback}
+          {feedbackKey === "alreadyRequested"
+            ? strings.dashboardWaitlistAlreadyRequested
+            : strings.dashboardWaitlistSubmitted}
         </div>
       ) : null}
 
       <section className="grid gap-4 lg:grid-cols-[minmax(0,1fr),minmax(0,1fr)]">
         <div className={cardClass}>
-          <h2 className="text-sm font-semibold text-slate-700">My profile</h2>
+          <h2 className="text-sm font-semibold text-slate-700">{strings.dashboardProfileTitle}</h2>
           <div className="mt-4 grid gap-3 text-sm text-slate-600">
             <div className="flex items-center justify-between">
-              <span>Organization</span>
+              <span>{strings.dashboardProfileOrganizationLabel}</span>
               <span className="font-semibold text-slate-900">{profile.org ?? "—"}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span>Contact</span>
+              <span>{strings.dashboardProfileContactLabel}</span>
               <span className="font-semibold text-slate-900">{profile.fullName}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span>Email</span>
+              <span>{strings.dashboardProfileEmailLabel}</span>
               <span className="font-semibold text-slate-900">{profile.email}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span>Country</span>
+              <span>{strings.dashboardProfileCountryLabel}</span>
               <span className="font-semibold text-slate-900">{profile.country}</span>
             </div>
           </div>
         </div>
 
         <div className={cardClass}>
-          <h2 className="text-sm font-semibold text-slate-700">Mandate overview</h2>
+          <h2 className="text-sm font-semibold text-slate-700">{strings.dashboardMandateTitle}</h2>
           <div className="mt-4 grid gap-3 text-sm text-slate-600">
             <div className="flex items-center justify-between">
-              <span>Management role</span>
+              <span>{strings.dashboardMandateRoleLabel}</span>
               <span className="font-semibold text-slate-900">
                 {profile.familyOfficePreferences?.managementRole ?? "—"}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span>Diversification</span>
+              <span>{strings.dashboardMandateDiversificationLabel}</span>
               <span className="font-semibold text-slate-900">
                 {profile.familyOfficePreferences?.diversificationLevel ?? "—"}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span>Reporting</span>
+              <span>{strings.dashboardMandateReportingLabel}</span>
               <span className="font-semibold text-slate-900">
                 {profile.familyOfficePreferences?.reportingCustomization ?? "—"}
               </span>
@@ -202,9 +217,11 @@ export default function FamilyOfficeDashboard() {
 
       <section className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-slate-700">Browse funds</h2>
+          <h2 className="text-sm font-semibold text-slate-700">{strings.dashboardBrowseFundsTitle}</h2>
           <span className="text-xs text-slate-500">
-            {funds.length ? `${funds.length} funds` : status}
+            {funds.length
+              ? strings.dashboardFundsCountLabel.replace("{count}", String(funds.length))
+              : statusText}
           </span>
         </div>
         <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
@@ -237,7 +254,7 @@ export default function FamilyOfficeDashboard() {
                   <p className="text-sm text-slate-600">{fund.summary}</p>
                   <div className="flex flex-wrap gap-2">
                     <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600">
-                      AUM {fund.aum}
+                      {strings.fundsLabelAum} {fund.aum}
                     </span>
                     <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600">
                       {fund.performance}
@@ -250,7 +267,7 @@ export default function FamilyOfficeDashboard() {
                       onClick={() => setActiveFund(fund)}
                       disabled={Boolean(existingRequest)}
                     >
-                      {existingRequest ? "Requested" : "Join waitlist"}
+                      {existingRequest ? strings.fundsExploreWaitlisted : strings.fundsExploreJoinWaitlist}
                     </button>
                     {config ? <StatusBadge label={config.label} tone={config.tone} /> : null}
                   </div>
@@ -262,14 +279,14 @@ export default function FamilyOfficeDashboard() {
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-sm font-semibold text-slate-700">My waitlist requests</h2>
+        <h2 className="text-sm font-semibold text-slate-700">{strings.dashboardWaitlistRequestsTitle}</h2>
         <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
           <table className="w-full text-left text-xs">
             <thead className="bg-slate-50 text-[0.7rem] uppercase tracking-wide text-slate-500">
               <tr>
-                <th className="px-4 py-2">Fund</th>
-                <th className="px-4 py-2">Submitted</th>
-                <th className="px-4 py-2">Status</th>
+                <th className="px-4 py-2">{strings.dashboardColumnFund}</th>
+                <th className="px-4 py-2">{strings.dashboardColumnSubmitted}</th>
+                <th className="px-4 py-2">{strings.dashboardColumnStatus}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -282,7 +299,7 @@ export default function FamilyOfficeDashboard() {
                         <span className="font-semibold text-slate-900">{request.fundName}</span>
                       </td>
                       <td className="px-4 py-2">
-                        {new Date(request.createdAt).toLocaleDateString("en-US")}
+                        {new Date(request.createdAt).toLocaleDateString(locale)}
                       </td>
                       <td className="px-4 py-2">
                         <StatusBadge label={config.label} tone={config.tone} />
@@ -293,7 +310,7 @@ export default function FamilyOfficeDashboard() {
               ) : (
                 <tr>
                   <td className="px-4 py-6 text-center text-xs font-medium text-slate-500" colSpan={3}>
-                    No waitlist requests yet.
+                    {strings.dashboardWaitlistEmpty}
                   </td>
                 </tr>
               )}
@@ -305,12 +322,13 @@ export default function FamilyOfficeDashboard() {
       {activeFund ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 px-4">
           <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-xl">
-            <h3 className="text-lg font-semibold text-slate-900">Join waitlist</h3>
+            <h3 className="text-lg font-semibold text-slate-900">{strings.dashboardWaitlistJoinTitle}</h3>
             <p className="mt-2 text-sm text-slate-600">
-              Confirm your waitlist request for <span className="font-semibold">{activeFund.name}</span>.
+              {strings.dashboardWaitlistConfirmLead}{" "}
+              <span className="font-semibold">{activeFund.name}</span>.
             </p>
             <label className="mt-4 block text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-              Notes (optional)
+              {strings.dashboardWaitlistNotesLabel}
             </label>
             <textarea
               className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700"
@@ -327,14 +345,14 @@ export default function FamilyOfficeDashboard() {
                   setRequestNotes("");
                 }}
               >
-                Cancel
+                {strings.dashboardWaitlistCancel}
               </button>
               <button
                 className="rounded-full bg-igates-500 px-5 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-white shadow-lg shadow-igates-500/30 transition hover:bg-igates-400"
                 type="button"
                 onClick={handleSubmitRequest}
               >
-                Submit request
+                {strings.dashboardWaitlistSubmit}
               </button>
             </div>
           </div>
