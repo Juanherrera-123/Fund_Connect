@@ -105,7 +105,7 @@ export default function MasterDashboard() {
 
     const waitlistEntries = pendingWaitlistRequests.map((request) => ({
       id: request.id,
-      investor: requesterNameById.get(request.requesterId) ?? "—",
+      investor: request.requesterName ?? requesterNameById.get(request.requesterId) ?? "—",
       fund: request.fundName,
       country: request.requesterCountry ?? "—",
       status: request.status,
@@ -168,7 +168,14 @@ export default function MasterDashboard() {
       }
       setWaitlistError("");
       try {
-        const response = await fetch(`/api/admin/waitlist?status=${status}`);
+        const headers: Record<string, string> = {};
+        if (session?.id && session?.role) {
+          headers["x-user-id"] = session.id;
+          headers["x-user-role"] = session.role;
+        }
+        const response = await fetch(`/api/admin/waitlist?status=${status}`, {
+          headers,
+        });
         if (!response.ok) {
           throw new Error("Unable to load waitlist requests.");
         }
@@ -187,7 +194,7 @@ export default function MasterDashboard() {
         }
       }
     },
-    []
+    [session?.id, session?.role]
   );
 
   useEffect(() => {
@@ -267,8 +274,10 @@ export default function MasterDashboard() {
         }),
       });
       if (nextStatus === "APPROVED") {
-        const parsedAllocation = parseCapitalAllocation(request.intendedInvestmentAmount);
-        const allocationDelta = parsedAllocation ?? 1;
+        const allocationDelta =
+          typeof request.amount === "number"
+            ? request.amount
+            : parseCapitalAllocation(request.intendedInvestmentAmount) ?? 1;
         setCapitalAllocations((prev) => ({
           ...prev,
           [request.fundId]: (prev[request.fundId] ?? 0) + allocationDelta,
@@ -474,8 +483,10 @@ export default function MasterDashboard() {
                   {selectedWaitlistRequest.fundName}
                 </p>
                 <p className="text-[0.7rem] text-slate-500">
-                  {data.requesterNameById.get(selectedWaitlistRequest.requesterId) ?? "—"} ·{" "}
-                  {selectedWaitlistRequest.requesterEmail}
+                  {selectedWaitlistRequest.requesterName ??
+                    data.requesterNameById.get(selectedWaitlistRequest.requesterId) ??
+                    "—"}{" "}
+                  · {selectedWaitlistRequest.requesterEmail}
                 </p>
               </div>
               <button
@@ -498,11 +509,13 @@ export default function MasterDashboard() {
           <table className="min-w-[520px] w-full text-left text-xs">
             <thead className="bg-slate-50 text-[0.7rem] uppercase tracking-wide text-slate-500">
               <tr>
-                <th className="px-4 py-2">Fund</th>
                 <th className="px-4 py-2">Requester</th>
-                <th className="px-4 py-2">Role</th>
-                <th className="px-4 py-2">Country</th>
-                <th className="px-4 py-2">Date</th>
+                <th className="px-4 py-2">Fund</th>
+                <th className="px-4 py-2">Email</th>
+                <th className="px-4 py-2">Phone</th>
+                <th className="px-4 py-2">Amount</th>
+                <th className="px-4 py-2">Notes</th>
+                <th className="px-4 py-2">Created</th>
                 <th className="px-4 py-2">Status</th>
                 <th className="px-4 py-2 text-right">Actions</th>
               </tr>
@@ -511,27 +524,41 @@ export default function MasterDashboard() {
               {filteredWaitlist.length ? (
                 filteredWaitlist.map((request) => {
                   const config = statusConfig[request.status];
+                  const formattedAmount =
+                    typeof request.amount === "number"
+                      ? request.amount.toLocaleString("en-US")
+                      : request.intendedInvestmentAmount ?? "—";
+                  const formattedCreatedAt = request.createdAt
+                    ? new Date(request.createdAt).toLocaleString("es-ES", {
+                        dateStyle: "medium",
+                        timeStyle: "short",
+                      })
+                    : "—";
                   return (
                     <tr key={request.id} className="text-slate-700">
                       <td className="px-4 py-2">
-                        <span className="font-semibold text-slate-900">{request.fundName}</span>
-                      </td>
-                      <td className="px-4 py-2">
                         <div className="grid gap-1">
                           <span className="font-semibold text-slate-900">
-                            {data.requesterNameById.get(request.requesterId) ?? "—"}
+                            {request.requesterName ??
+                              data.requesterNameById.get(request.requesterId) ??
+                              "—"}
                           </span>
                           <span className="text-[0.7rem] text-slate-500">
-                            {request.requesterEmail}
+                            {request.requesterRole.replace("_", " ").toLowerCase()}
                           </span>
                         </div>
                       </td>
-                      <td className="px-4 py-2 capitalize">
-                        {request.requesterRole.replace("_", " ").toLowerCase()}
-                      </td>
-                      <td className="px-4 py-2">{request.requesterCountry ?? "—"}</td>
                       <td className="px-4 py-2">
-                        {new Date(request.createdAt).toLocaleDateString("en-US")}
+                        <span className="font-semibold text-slate-900">{request.fundName}</span>
+                      </td>
+                      <td className="px-4 py-2">{request.requesterEmail}</td>
+                      <td className="px-4 py-2">{request.requesterPhone ?? "—"}</td>
+                      <td className="px-4 py-2">{formattedAmount}</td>
+                      <td className="px-4 py-2">
+                        <span className="line-clamp-2">{request.note ?? "—"}</span>
+                      </td>
+                      <td className="px-4 py-2">
+                        {formattedCreatedAt}
                       </td>
                       <td className="px-4 py-2">
                         <StatusBadge label={config.label} tone={config.tone} />
@@ -560,7 +587,7 @@ export default function MasterDashboard() {
                 })
               ) : (
                 <tr>
-                  <td className="px-4 py-6 text-center text-xs font-medium text-slate-500" colSpan={7}>
+                  <td className="px-4 py-6 text-center text-xs font-medium text-slate-500" colSpan={9}>
                     No waitlist requests in this view.
                   </td>
                 </tr>

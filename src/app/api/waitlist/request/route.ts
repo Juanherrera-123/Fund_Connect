@@ -8,6 +8,7 @@ type WaitlistRequestPayload = {
   fundName?: string;
   qualified?: boolean;
   note?: string | null;
+  fundMinimum?: string | null;
   user?: {
     name?: string;
     email?: string;
@@ -30,7 +31,7 @@ export async function POST(request: Request) {
 
   const auth = getAuthContext(request);
 
-  const { fundId, fundName, qualified, note, user } = payload;
+  const { fundId, fundName, qualified, note, user, fundMinimum } = payload;
   const requesterEmail = user?.email?.trim();
   const requesterName = user?.name?.trim();
   const requesterPhone = user?.phone?.trim();
@@ -46,6 +47,11 @@ export async function POST(request: Request) {
 
   if (!requesterEmail) {
     return NextResponse.json({ error: "Email is required." }, { status: 400 });
+  }
+
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailPattern.test(requesterEmail)) {
+    return NextResponse.json({ error: "Invalid email format." }, { status: 400 });
   }
 
   if (!requesterName) {
@@ -75,6 +81,15 @@ export async function POST(request: Request) {
   if (!Number.isFinite(numericAmount) || numericAmount < 1000) {
     return NextResponse.json({ error: "Investment amount must be at least 1000 USD." }, { status: 400 });
   }
+  if (fundMinimum) {
+    const minimumValue = Number.parseFloat(fundMinimum.replace(/[^0-9.,]/g, "").replace(/,/g, ""));
+    if (Number.isFinite(minimumValue) && numericAmount < minimumValue) {
+      return NextResponse.json(
+        { error: "Investment amount must meet the fund minimum." },
+        { status: 400 }
+      );
+    }
+  }
 
   try {
     const waitlistRequest = await createWaitlistRequest({
@@ -86,6 +101,7 @@ export async function POST(request: Request) {
       requesterEmail,
       requesterPhone,
       intendedInvestmentAmount,
+      amount: numericAmount,
       requesterCountry: user?.country ?? "",
       requesterOrg: user?.org ?? null,
       note: note ?? null,

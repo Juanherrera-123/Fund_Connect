@@ -64,6 +64,7 @@ export type WaitlistRequest = {
   requesterEmail: string;
   requesterPhone?: string | null;
   intendedInvestmentAmount?: string | null;
+  amount?: number | null;
   requesterCountry: string;
   requesterOrg?: string | null;
   note?: string | null;
