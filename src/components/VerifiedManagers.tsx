@@ -431,14 +431,14 @@ export function VerifiedManagers() {
     : "#";
 
   const panelMetrics = [
-    { label: "Tiempo operando", value: formattedOperatingTime, highlight: true },
-    { label: "Profit mensual (último año)", value: formattedProfit, highlight: true },
-    { label: "Drawdown target", value: formattedDrawdownTarget, highlight: true },
-    { label: "Max drawdown", value: formattedMaxDrawdown, highlight: true },
-    { label: "Trades mensuales", value: formattedTrades },
-    { label: "Win rate", value: formattedWinRate },
-    { label: "Win ratio", value: formattedWinRatio },
-    { label: "Gestión de riesgo", value: formattedRisk },
+    { label: "Tiempo operando", value: formattedOperatingTime, tone: "neutral" },
+    { label: "Profit mensual (último año)", value: formattedProfit, tone: "positive" },
+    { label: "Drawdown target", value: formattedDrawdownTarget, tone: "neutral" },
+    { label: "Max drawdown", value: formattedMaxDrawdown, tone: "neutral" },
+    { label: "Trades mensuales", value: formattedTrades, tone: "neutral" },
+    { label: "Win rate", value: formattedWinRate, tone: "positive" },
+    { label: "Win ratio", value: formattedWinRatio, tone: "neutral" },
+    { label: "Gestión de riesgo", value: formattedRisk, tone: "neutral" },
   ];
 
   const terms = [
@@ -757,7 +757,11 @@ export function VerifiedManagers() {
                             className="rounded-xl border border-slate-200 bg-white p-4"
                           >
                             <p className="text-xs uppercase tracking-[0.2em] text-slate-500">{item.label}</p>
-                            <p className={`mt-2 text-lg font-semibold ${item.highlight ? "text-slate-900" : "text-slate-700"}`}>
+                            <p
+                              className={`mt-2 text-xl font-semibold sm:text-2xl ${
+                                item.tone === "positive" ? "text-emerald-600" : "text-blue-700"
+                              }`}
+                            >
                               {item.value}
                             </p>
                           </div>
