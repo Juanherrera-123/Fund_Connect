@@ -524,7 +524,7 @@ export function AuthFlow() {
                 className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
                 type="text"
                 name="identifier"
-                placeholder="Sebastian_ACY o tu correo"
+                placeholder="tu correo"
                 data-i18n-placeholder="authLoginIdentifierPlaceholder"
                 required
               />
