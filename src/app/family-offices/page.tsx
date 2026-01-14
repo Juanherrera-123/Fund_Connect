@@ -195,10 +195,13 @@ export default function FamilyOfficesPage() {
         <section className="py-12 sm:py-16 lg:py-24">
           <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
             <div className="max-w-3xl space-y-4">
-              <h2 className="text-3xl font-semibold text-slate-900 sm:text-4xl lg:text-5xl">
+              <h2
+                className="text-3xl font-semibold text-slate-900 sm:text-4xl lg:text-5xl"
+                data-i18n="familyArchitectureTitle"
+              >
                 Arquitecturas de inversión multi-gestor bajo tu control
               </h2>
-              <p className="text-base text-slate-600 sm:text-lg">
+              <p className="text-base text-slate-600 sm:text-lg" data-i18n="familyArchitectureLead">
                 Diseña un fondo de cobertura privado diversificando capital entre gestores verificados,
                 con reglas claras de riesgo, custodia y ejecución institucional.
               </p>
@@ -243,7 +246,7 @@ export default function FamilyOfficesPage() {
                 Flujo institucional
               </p>
               <h2 className="text-3xl font-semibold text-slate-900 sm:text-4xl lg:text-5xl">
-                De la diligencia a la asignación, sin fricción.
+                <span data-i18n="familyFlowTitle">De la diligencia a la asignación, sin fricción.</span>
               </h2>
             </div>
             <ol className="relative mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -270,7 +273,10 @@ export default function FamilyOfficesPage() {
           <div className="mx-auto w-full max-w-5xl px-4 sm:px-6">
             <div className="igates-institutional-frame">
               <div className="igates-institutional-surface flex flex-col items-start gap-6 px-8 py-10 sm:flex-row sm:items-center sm:justify-between">
-                <h2 className="text-2xl font-semibold text-slate-900 sm:text-3xl lg:text-4xl">
+                <h2
+                  className="text-2xl font-semibold text-slate-900 sm:text-3xl lg:text-4xl"
+                  data-i18n="familyCtaTitle"
+                >
                   Diseña tu estructura de inversión institucional.
                 </h2>
                 <Link
