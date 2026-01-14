@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { AnimatePresence, MotionConfig, motion } from "framer-motion";
 
+import { useLanguage } from "@/components/LanguageProvider";
 import {
   STORAGE_KEYS,
   baseVerifiedFunds,
@@ -67,6 +68,7 @@ const transition = {
 };
 
 export function VerifiedManagers() {
+  const { strings } = useLanguage();
   const whatsappNumber = "573181252627";
   const [fundApplications] = useLocalStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
   const [profiles] = useLocalStorage<UserProfile[]>(STORAGE_KEYS.profiles, DEFAULT_FUND_MANAGER_PROFILES);
@@ -131,7 +133,8 @@ export function VerifiedManagers() {
             application.strategyLabel ||
             application.strategy ||
             "Multi-Strategy",
-          riskLevel: application.riskLevel || application.riskManagement || "En revisión",
+          riskLevel:
+            application.riskLevel || application.riskManagement || strings.verifiedManagersRiskPending,
           yearProfit: application.yearProfit ?? application.monthlyProfit ?? null,
           monthlyProfit: application.monthlyProfit ?? application.yearProfit ?? null,
           drawdownTarget: application.drawdownTarget ?? null,
@@ -150,7 +153,7 @@ export function VerifiedManagers() {
           subscriptionFee: application.subscriptionFee ?? null,
           reportsFrequency: application.reportsFrequency ?? null,
           aum: application.aum || "N/A",
-          description: application.description || "Gestor en proceso de verificación.",
+          description: application.description || strings.verifiedManagersDescriptionFallback,
           capital_allocated:
             capitalAllocations[application.id] ?? application.capital_allocated ?? 0,
         };
@@ -206,7 +209,7 @@ export function VerifiedManagers() {
     const extraFunds = fromStorage.filter((fund) => !baseIds.has(fund.id));
 
     return [...mergedBase, ...extraFunds];
-  }, [capitalAllocations, fundApplications, profiles]);
+  }, [capitalAllocations, fundApplications, profiles, strings.verifiedManagersDescriptionFallback, strings.verifiedManagersRiskPending]);
 
   const regions = useMemo(() => {
     return Array.from(new Set(verifiedFunds.map((fund) => fund.region))).sort((a, b) =>
@@ -400,7 +403,7 @@ export function VerifiedManagers() {
   );
 
   const formattedOperatingTime = selectedFund?.operatingTime
-    ? `${selectedFund.operatingTime} años`
+    ? `${selectedFund.operatingTime} ${strings.verifiedManagersYearsSuffix}`
     : "—";
   const formattedProfit = formatNumber(selectedFund?.monthlyProfit ?? null, "%");
   const formattedDrawdownTarget = formatNumber(selectedFund?.drawdownTarget ?? null, "%");
@@ -424,28 +427,48 @@ export function VerifiedManagers() {
   const isInvestmentInvalid =
     investmentAmount.trim().length > 0 && (!Number.isFinite(investmentValue) || investmentValue < 1000);
   const whatsappMessage = selectedFund
-    ? `¡Hola! Me interesa conocer más información sobre el fondo "${selectedFund.name}"`
+    ? strings.verifiedManagersWhatsappMessage.replace("{fundName}", selectedFund.name)
     : "";
   const whatsappLink = selectedFund
     ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`
     : "#";
 
   const panelMetrics = [
-    { label: "Tiempo operando", value: formattedOperatingTime, highlight: true },
-    { label: "Profit mensual (último año)", value: formattedProfit, highlight: true },
-    { label: "Drawdown target", value: formattedDrawdownTarget, highlight: true },
-    { label: "Max drawdown", value: formattedMaxDrawdown, highlight: true },
-    { label: "Trades mensuales", value: formattedTrades },
-    { label: "Win rate", value: formattedWinRate },
-    { label: "Win ratio", value: formattedWinRatio },
-    { label: "Gestión de riesgo", value: formattedRisk },
+    {
+      labelKey: "verifiedManagersMetricOperatingTime",
+      label: "Tiempo operando",
+      value: formattedOperatingTime,
+      highlight: true,
+    },
+    {
+      labelKey: "verifiedManagersMetricMonthlyProfit",
+      label: "Profit mensual (último año)",
+      value: formattedProfit,
+      highlight: true,
+    },
+    {
+      labelKey: "verifiedManagersMetricDrawdownTarget",
+      label: "Drawdown target",
+      value: formattedDrawdownTarget,
+      highlight: true,
+    },
+    {
+      labelKey: "verifiedManagersMetricMaxDrawdown",
+      label: "Max drawdown",
+      value: formattedMaxDrawdown,
+      highlight: true,
+    },
+    { labelKey: "verifiedManagersMetricMonthlyTrades", label: "Trades mensuales", value: formattedTrades },
+    { labelKey: "verifiedManagersMetricWinRate", label: "Win rate", value: formattedWinRate },
+    { labelKey: "verifiedManagersMetricWinRatio", label: "Win ratio", value: formattedWinRatio },
+    { labelKey: "verifiedManagersMetricRiskManagement", label: "Gestión de riesgo", value: formattedRisk },
   ];
 
   const terms = [
-    { label: "Min investment", value: formattedMinInvestment },
-    { label: "Performance fee", value: formattedPerformanceFee },
-    { label: "Subscription fee", value: formattedSubscriptionFee },
-    { label: "Reports", value: formattedReports },
+    { labelKey: "verifiedManagersTermsMinInvestment", label: "Min investment", value: formattedMinInvestment },
+    { labelKey: "verifiedManagersTermsPerformanceFee", label: "Performance fee", value: formattedPerformanceFee },
+    { labelKey: "verifiedManagersTermsSubscriptionFee", label: "Subscription fee", value: formattedSubscriptionFee },
+    { labelKey: "verifiedManagersTermsReports", label: "Reports", value: formattedReports },
   ];
 
   return (
@@ -460,10 +483,14 @@ export function VerifiedManagers() {
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm" id="filtersPanel">
             <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200/70 pb-4">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-igates-500" id="filtersTitle">
+                <p
+                  className="text-xs font-semibold uppercase tracking-[0.2em] text-igates-500"
+                  id="filtersTitle"
+                  data-i18n="verifiedManagersFiltersTitle"
+                >
                   Search settings
                 </p>
-                <p className="mt-2 text-sm text-slate-500">
+                <p className="mt-2 text-sm text-slate-500" data-i18n="verifiedManagersFiltersLead">
                   Ajusta umbrales mínimos y riesgo objetivo.
                 </p>
               </div>
@@ -472,6 +499,7 @@ export function VerifiedManagers() {
                   className="inline-flex w-full items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 sm:w-auto"
                   type="button"
                   onClick={handleResetFilters}
+                  data-i18n="verifiedManagersFiltersReset"
                 >
                   Reset
                 </button>
@@ -479,6 +507,7 @@ export function VerifiedManagers() {
                   className="inline-flex w-full items-center justify-center rounded-full bg-igates-500 px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-white shadow-lg shadow-igates-500/30 transition hover:bg-igates-400 sm:w-auto"
                   type="button"
                   onClick={handleApplyFilters}
+                  data-i18n="verifiedManagersFiltersApply"
                 >
                   Apply filters
                 </button>
@@ -486,12 +515,15 @@ export function VerifiedManagers() {
             </div>
             <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
               <div className="grid gap-2 text-sm font-medium text-slate-600">
-                <label htmlFor="yearProfit">Year Total Profit (%)</label>
+                <label htmlFor="yearProfit" data-i18n="verifiedManagersFilterYearProfitLabel">
+                  Year Total Profit (%)
+                </label>
                 <input
                   className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
                   type="number"
                   id="yearProfit"
                   placeholder="Ej: 10"
+                  data-i18n-placeholder="verifiedManagersFilterYearProfitPlaceholder"
                   value={appliedFilters.yearProfit}
                   onChange={(event) =>
                     setAppliedFilters((prev) => ({ ...prev, yearProfit: event.target.value }))
@@ -499,12 +531,15 @@ export function VerifiedManagers() {
                 />
               </div>
               <div className="grid gap-2 text-sm font-medium text-slate-600">
-                <label htmlFor="drawdown">Max Drawdown (%)</label>
+                <label htmlFor="drawdown" data-i18n="verifiedManagersFilterDrawdownLabel">
+                  Max Drawdown (%)
+                </label>
                 <input
                   className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
                   type="number"
                   id="drawdown"
                   placeholder="Ej: 12"
+                  data-i18n-placeholder="verifiedManagersFilterDrawdownPlaceholder"
                   value={appliedFilters.drawdown}
                   onChange={(event) =>
                     setAppliedFilters((prev) => ({ ...prev, drawdown: event.target.value }))
@@ -512,7 +547,9 @@ export function VerifiedManagers() {
                 />
               </div>
               <div className="grid gap-2 text-sm font-medium text-slate-600">
-                <label htmlFor="regionFilter">Región</label>
+                <label htmlFor="regionFilter" data-i18n="verifiedManagersFilterRegionLabel">
+                  Región
+                </label>
                 <select
                   className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
                   id="regionFilter"
@@ -521,7 +558,9 @@ export function VerifiedManagers() {
                     setAppliedFilters((prev) => ({ ...prev, region: event.target.value }))
                   }
                 >
-                  <option value="">Cualquiera</option>
+                  <option value="" data-i18n="verifiedManagersFilterRegionAnyOption">
+                    Cualquiera
+                  </option>
                   {regions.map((region) => (
                     <option key={region} value={region}>
                       {region}
@@ -530,7 +569,9 @@ export function VerifiedManagers() {
                 </select>
               </div>
               <div className="grid gap-2 text-sm font-medium text-slate-600">
-                <label htmlFor="countryFilter">País</label>
+                <label htmlFor="countryFilter" data-i18n="verifiedManagersFilterCountryLabel">
+                  País
+                </label>
                 <select
                   className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
                   id="countryFilter"
@@ -539,7 +580,9 @@ export function VerifiedManagers() {
                     setAppliedFilters((prev) => ({ ...prev, country: event.target.value }))
                   }
                 >
-                  <option value="">Cualquiera</option>
+                  <option value="" data-i18n="verifiedManagersFilterCountryAnyOption">
+                    Cualquiera
+                  </option>
                   {countries.map((country) => (
                     <option key={country} value={country}>
                       {(countryFlags[country] || "🌍") + " " + country}
@@ -555,11 +598,15 @@ export function VerifiedManagers() {
       <section className="py-12 sm:py-16 lg:py-24" id="asesoria">
         <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
           <div className="max-w-3xl space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-igates-500">Panel de gestores</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-igates-500" data-i18n="verifiedManagersPanelEyebrow">
+              Panel de gestores
+            </p>
             <h2 className="text-2xl font-semibold text-slate-900 sm:text-3xl lg:text-4xl">
-              Fondos verificados listos para diligencia
+              <span data-i18n="verifiedManagersPanelTitle">Fondos verificados listos para diligencia</span>
             </h2>
-            <p className="text-sm text-slate-600">Selecciona un fondo para ver el detalle curado.</p>
+            <p className="text-sm text-slate-600" data-i18n="verifiedManagersPanelLead">
+              Selecciona un fondo para ver el detalle curado.
+            </p>
           </div>
 
           <MotionConfig transition={transition}>
@@ -586,7 +633,7 @@ export function VerifiedManagers() {
                     }
                   >
                     {!filteredFunds.length && (
-                      <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
+                      <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-500" data-i18n="verifiedManagersNoFunds">
                         No hay fondos con estos criterios.
                       </div>
                     )}
@@ -622,11 +669,11 @@ export function VerifiedManagers() {
                               <p className="text-sm text-slate-600">{fund.description}</p>
                               <div className="mt-auto grid gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-3 text-xs font-semibold text-slate-600 sm:grid-cols-2">
                                 <div className="flex items-center justify-between">
-                                  <span>Profit último año</span>
+                                  <span data-i18n="verifiedManagersMetricProfitYear">Profit último año</span>
                                   <span className="text-sm font-semibold text-slate-900">{yearlyProfit}</span>
                                 </div>
                                 <div className="flex items-center justify-between">
-                                  <span>Max drawdown</span>
+                                  <span data-i18n="verifiedManagersMetricMaxDrawdown">Max drawdown</span>
                                   <span className="text-sm font-semibold text-slate-900">{maxDrawdown}</span>
                                 </div>
                               </div>
@@ -680,11 +727,11 @@ export function VerifiedManagers() {
                               {selectedFund && (
                                 <div className="grid gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-600">
                                   <div className="flex items-center justify-between">
-                                    <span>Profit último año</span>
+                                    <span data-i18n="verifiedManagersMetricProfitYear">Profit último año</span>
                                     <span className="text-sm font-semibold text-slate-900">{yearlyProfit}</span>
                                   </div>
                                   <div className="flex items-center justify-between">
-                                    <span>Max drawdown</span>
+                                    <span data-i18n="verifiedManagersMetricMaxDrawdown">Max drawdown</span>
                                     <span className="text-sm font-semibold text-slate-900">{maxDrawdown}</span>
                                   </div>
                                 </div>
@@ -729,11 +776,11 @@ export function VerifiedManagers() {
                             <p className="mt-2 text-sm text-slate-600">{selectedFund.description}</p>
                             <div className="mt-4 grid gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 sm:grid-cols-2">
                               <div className="flex items-center justify-between">
-                                <span>Profit último año</span>
+                                <span data-i18n="verifiedManagersMetricProfitYear">Profit último año</span>
                                 <span className="text-sm font-semibold text-slate-900">{formattedProfit}</span>
                               </div>
                               <div className="flex items-center justify-between">
-                                <span>Max drawdown</span>
+                                <span data-i18n="verifiedManagersMetricMaxDrawdown">Max drawdown</span>
                                 <span className="text-sm font-semibold text-slate-900">
                                   {formattedMaxDrawdown}
                                 </span>
@@ -745,6 +792,7 @@ export function VerifiedManagers() {
                           type="button"
                           onClick={() => setSelectedFundId(null)}
                           className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-600 transition hover:border-slate-300 hover:bg-slate-50"
+                          data-i18n="verifiedManagersBackToAll"
                         >
                           Back to all funds
                         </button>
@@ -753,10 +801,12 @@ export function VerifiedManagers() {
                       <div className="mt-6 grid gap-3 md:grid-cols-2">
                         {panelMetrics.map((item) => (
                           <div
-                            key={item.label}
+                            key={item.labelKey}
                             className="rounded-xl border border-slate-200 bg-white p-4"
                           >
-                            <p className="text-xs uppercase tracking-[0.2em] text-slate-500">{item.label}</p>
+                            <p className="text-xs uppercase tracking-[0.2em] text-slate-500" data-i18n={item.labelKey}>
+                              {item.label}
+                            </p>
                             <p className={`mt-2 text-lg font-semibold ${item.highlight ? "text-slate-900" : "text-slate-700"}`}>
                               {item.value}
                             </p>
@@ -765,7 +815,7 @@ export function VerifiedManagers() {
                       </div>
 
                       <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4">
-                        <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
+                        <p className="text-xs uppercase tracking-[0.2em] text-slate-500" data-i18n="verifiedManagersLiveTrackingTitle">
                           Live performance tracking
                         </p>
                         <ul className="mt-3 grid gap-2 text-xs text-slate-600">
@@ -776,13 +826,18 @@ export function VerifiedManagers() {
                                   {link}
                                 </a>
                               ) : (
-                                <span>Link Myfxbook {index + 1}: —</span>
+                                <span>
+                                  {strings.verifiedManagersLiveLinkLabel.replace(
+                                    "{index}",
+                                    String(index + 1)
+                                  )}
+                                </span>
                               )}
                             </li>
                           ))}
                         </ul>
                         <div className="mt-4 border-t border-slate-200 pt-4">
-                          <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
+                          <p className="text-xs uppercase tracking-[0.2em] text-slate-500" data-i18n="verifiedManagersTrackRecordTitle">
                             Track record statement
                           </p>
                           {selectedFund.trackRecordStatements?.length ? (
@@ -795,19 +850,25 @@ export function VerifiedManagers() {
                                     target="_blank"
                                     rel="noreferrer"
                                   >
-                                    {statement.name || `Track record ${index + 1}`}
+                                    {statement.name ||
+                                      strings.verifiedManagersTrackRecordItem.replace(
+                                        "{index}",
+                                        String(index + 1)
+                                      )}
                                   </a>
                                 </li>
                               ))}
                             </ul>
                           ) : (
-                            <p className="mt-2 text-xs text-slate-500">Sin documentos cargados.</p>
+                            <p className="mt-2 text-xs text-slate-500" data-i18n="verifiedManagersTrackRecordEmpty">
+                              Sin documentos cargados.
+                            </p>
                           )}
                         </div>
                       </div>
 
                       <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4">
-                        <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
+                        <p className="text-xs uppercase tracking-[0.2em] text-slate-500" data-i18n="verifiedManagersPresentationTitle">
                           Presentación / operativa
                         </p>
                         {selectedFund.presentationAsset ? (
@@ -835,21 +896,25 @@ export function VerifiedManagers() {
                             )}
                           </div>
                         ) : (
-                          <p className="mt-2 text-xs text-slate-500">Sin presentación cargada.</p>
+                          <p className="mt-2 text-xs text-slate-500" data-i18n="verifiedManagersPresentationEmpty">
+                            Sin presentación cargada.
+                          </p>
                         )}
                       </div>
 
                       <div className="mt-4">
-                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500" data-i18n="verifiedManagersTermsTitle">
                           Términos
                         </p>
                         <div className="mt-3 grid gap-3 md:grid-cols-2">
                           {terms.map((item) => (
                             <div
-                              key={item.label}
+                              key={item.labelKey}
                               className="rounded-xl border border-slate-200 bg-white p-4"
                             >
-                              <p className="text-xs uppercase tracking-[0.2em] text-slate-500">{item.label}</p>
+                              <p className="text-xs uppercase tracking-[0.2em] text-slate-500" data-i18n={item.labelKey}>
+                                {item.label}
+                              </p>
                               <p className="mt-2 text-sm font-semibold text-slate-900">{item.value}</p>
                             </div>
                           ))}
@@ -863,6 +928,7 @@ export function VerifiedManagers() {
                             type="button"
                             onClick={openWaitlistModal}
                             className="inline-flex w-full items-center justify-center rounded-full bg-gradient-to-r from-igates-500 to-igates-400 px-6 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-white shadow-lg shadow-igates-500/30 transition hover:from-igates-400 hover:to-igates-500 sm:w-auto"
+                            data-i18n="verifiedManagersJoinWaitlist"
                           >
                             Join the waitlist
                           </button>
@@ -871,6 +937,7 @@ export function VerifiedManagers() {
                             href={whatsappLink}
                             target="_blank"
                             rel="noreferrer"
+                            data-i18n="verifiedManagersRequestInfo"
                           >
                             Request more information
                           </a>
@@ -910,14 +977,16 @@ export function VerifiedManagers() {
             >
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-igates-500">
-                    Waitlist request
+                  <p
+                    className="text-xs font-semibold uppercase tracking-[0.2em] text-igates-500"
+                  >
+                    {strings.verifiedManagersWaitlistEyebrow}
                   </p>
                   <h3 className="mt-2 text-xl font-semibold text-slate-900" id="waitlist-modal-title">
-                    Join {selectedFund.name}
+                    {strings.verifiedManagersWaitlistTitle.replace("{fundName}", selectedFund.name)}
                   </h3>
                   <p className="mt-2 text-sm text-slate-600">
-                    Confirma tu elegibilidad y añade un mensaje opcional para el equipo.
+                    {strings.verifiedManagersWaitlistLead}
                   </p>
                 </div>
                 <button
@@ -925,13 +994,13 @@ export function VerifiedManagers() {
                   onClick={closeWaitlistModal}
                   className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-slate-600 transition hover:border-slate-300 hover:bg-slate-50"
                 >
-                  Close
+                  {strings.verifiedManagersWaitlistClose}
                 </button>
               </div>
 
               <form className="mt-6 grid gap-4" onSubmit={handleWaitlistSubmit}>
                 <div className="grid gap-2 text-sm font-medium text-slate-600">
-                  <label htmlFor="waitlist-name">Nombre completo</label>
+                  <label htmlFor="waitlist-name">{strings.verifiedManagersWaitlistNameLabel}</label>
                   <input
                     id="waitlist-name"
                     type="text"
@@ -939,11 +1008,11 @@ export function VerifiedManagers() {
                     className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
                     value={contactName}
                     onChange={(event) => setContactName(event.target.value)}
-                    placeholder="Nombre y apellido"
+                    placeholder={strings.verifiedManagersWaitlistNamePlaceholder}
                   />
                 </div>
                 <div className="grid gap-2 text-sm font-medium text-slate-600">
-                  <label htmlFor="waitlist-email">Email</label>
+                  <label htmlFor="waitlist-email">{strings.verifiedManagersWaitlistEmailLabel}</label>
                   <input
                     id="waitlist-email"
                     type="email"
@@ -955,7 +1024,7 @@ export function VerifiedManagers() {
                   />
                 </div>
                 <div className="grid gap-2 text-sm font-medium text-slate-600">
-                  <label htmlFor="waitlist-phone">Celular</label>
+                  <label htmlFor="waitlist-phone">{strings.verifiedManagersWaitlistPhoneLabel}</label>
                   <div className="grid gap-3 sm:grid-cols-[140px_1fr]">
                     <select
                       id="waitlist-phone-country"
@@ -982,7 +1051,7 @@ export function VerifiedManagers() {
                   </div>
                 </div>
                 <div className="grid gap-2 text-sm font-medium text-slate-600">
-                  <label htmlFor="waitlist-investment">Monto destinado a invertir</label>
+                  <label htmlFor="waitlist-investment">{strings.verifiedManagersWaitlistInvestmentLabel}</label>
                   <input
                     id="waitlist-investment"
                     type="number"
@@ -998,9 +1067,9 @@ export function VerifiedManagers() {
                     }`}
                     value={investmentAmount}
                     onChange={(event) => setInvestmentAmount(event.target.value)}
-                    placeholder="Ej. 1000"
+                    placeholder={strings.verifiedManagersWaitlistInvestmentPlaceholder}
                   />
-                  <p className="text-xs text-slate-500">Monto mínimo: USD 1,000.</p>
+                  <p className="text-xs text-slate-500">{strings.verifiedManagersWaitlistInvestmentNote}</p>
                 </div>
                 <label className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
                   <input
@@ -1011,16 +1080,16 @@ export function VerifiedManagers() {
                     onChange={(event) => setQualified(event.target.checked)}
                   />
                   <span>
-                    Declaro que entiendo los requisitos de este fondo y los riesgos de inversión.
+                    {strings.verifiedManagersWaitlistQualifiedLabel}
                   </span>
                 </label>
                 <div className="grid gap-2 text-sm font-medium text-slate-600">
-                  <label htmlFor="waitlist-note">Note (optional)</label>
+                  <label htmlFor="waitlist-note">{strings.verifiedManagersWaitlistNoteLabel}</label>
                   <textarea
                     id="waitlist-note"
                     rows={3}
                     className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
-                    placeholder="Añade un contexto adicional si aplica."
+                    placeholder={strings.verifiedManagersWaitlistNotePlaceholder}
                     value={note}
                     onChange={(event) => setNote(event.target.value)}
                   />
@@ -1030,7 +1099,7 @@ export function VerifiedManagers() {
                   disabled={isSubmitting || isInvestmentInvalid}
                   className="inline-flex w-full items-center justify-center rounded-full bg-igates-500 px-5 py-3 text-xs font-semibold uppercase tracking-[0.12em] text-white shadow-lg shadow-igates-500/30 transition hover:bg-igates-400 disabled:cursor-not-allowed disabled:bg-igates-500/70"
                 >
-                  {isSubmitting ? "Sending..." : "Send request"}
+                  {isSubmitting ? strings.verifiedManagersWaitlistSubmitting : strings.verifiedManagersWaitlistSubmit}
                 </button>
               </form>
             </motion.div>
