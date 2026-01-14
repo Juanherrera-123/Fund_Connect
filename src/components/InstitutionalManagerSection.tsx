@@ -2,6 +2,7 @@ import Link from "next/link";
 
 const standardSignals = [
   {
+    key: "managersInstitutionalSignal1",
     title: "Ejecución real en broker regulado",
     icon: (
       <svg
@@ -17,6 +18,7 @@ const standardSignals = [
     ),
   },
   {
+    key: "managersInstitutionalSignal2",
     title: "Historial verificable (no señales)",
     icon: (
       <svg
@@ -36,6 +38,7 @@ const standardSignals = [
     ),
   },
   {
+    key: "managersInstitutionalSignal3",
     title: "Modelo de riesgo definido",
     icon: (
       <svg
@@ -60,14 +63,20 @@ export function InstitutionalManagerSection() {
           <div className="igates-institutional-surface rounded-[calc(2.5rem-1px)] px-6 py-8 sm:px-12 sm:py-12">
             <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
               <div className="space-y-6">
-                <p className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-600">
+                <p
+                  className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-600"
+                  data-i18n="managersInstitutionalEyebrow"
+                >
                   PARA GESTORES DE FONDOS
                 </p>
                 <div className="space-y-3">
-                  <h2 className="text-3xl font-semibold text-slate-900 sm:text-4xl lg:text-5xl">
+                  <h2
+                    className="text-3xl font-semibold text-slate-900 sm:text-4xl lg:text-5xl"
+                    data-i18n="managersInstitutionalTitle"
+                  >
                     Distribución institucional. Solo para estrategias listas.
                   </h2>
-                  <p className="max-w-2xl text-base text-slate-700">
+                  <p className="max-w-2xl text-base text-slate-700" data-i18n="managersInstitutionalLead">
                     IGATES trabaja con un número limitado de gestores que operan bajo ejecución A-book, cuentas
                     segregadas y reporting verificable. Si tu estrategia cumple estándares institucionales,
                     iniciamos un proceso de evaluación privada.
@@ -77,7 +86,9 @@ export function InstitutionalManagerSection() {
                   {standardSignals.map((signal) => (
                     <span key={signal.title} className="igates-chip gap-2 rounded-full border-slate-200/80 bg-white/70">
                       {signal.icon}
-                      <span className="text-[11px] text-slate-700">{signal.title}</span>
+                      <span className="text-[11px] text-slate-700" data-i18n={signal.key}>
+                        {signal.title}
+                      </span>
                     </span>
                   ))}
                 </div>
@@ -86,12 +97,14 @@ export function InstitutionalManagerSection() {
                 <Link
                   href="/auth"
                   className="btn-primary inline-flex w-full items-center justify-center rounded-full px-6 py-3 text-sm font-semibold shadow-sm"
+                  data-i18n="managersInstitutionalCta"
                 >
                   Iniciar evaluación institucional
                 </Link>
                 <Link
                   href="/#contact"
                   className="inline-flex items-center justify-center text-sm font-semibold text-slate-600 transition hover:text-slate-900"
+                  data-i18n="managersInstitutionalSecondaryCta"
                 >
                   Hablar con el equipo IGATES →
                 </Link>
