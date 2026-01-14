@@ -360,9 +360,10 @@ export function VerifiedManagers() {
       if (!response.ok) {
         throw new Error("Failed to send waitlist request.");
       }
-      await new Promise((resolve) => setTimeout(resolve, 1000));
       setIsWaitlistModalOpen(false);
-      setToastMessage("Solicitud enviada, nuestro equipo estará en contacto contigo pronto.");
+      setToastMessage(
+        "Su solicitud fue enviada con éxito, estaremos en contacto en las siguientes 24 horas."
+      );
     } catch (error) {
       console.error(error);
     } finally {
