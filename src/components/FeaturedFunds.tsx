@@ -5,15 +5,15 @@ import { useMemo } from "react";
 import { useLanguage } from "@/components/LanguageProvider";
 import { STORAGE_KEYS, baseVerifiedFunds, formatPercent } from "@/lib/igatesData";
 import { getFundFrameClass } from "@/lib/fundVisuals";
-import { useLocalStorage } from "@/lib/useLocalStorage";
+import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import type { FundApplication, FundSummary } from "@/lib/types";
 
 const DEFAULT_HIGHLIGHT_KEYS = ["fundsHighlight1", "fundsHighlight2", "fundsHighlight3"] as const;
 
 export function FeaturedFunds() {
   const { strings } = useLanguage();
-  const [fundApplications] = useLocalStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
-  const [capitalAllocations] = useLocalStorage<Record<string, number>>(
+  const [fundApplications] = useFirebaseStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
+  const [capitalAllocations] = useFirebaseStorage<Record<string, number>>(
     STORAGE_KEYS.capitalAllocations,
     {}
   );

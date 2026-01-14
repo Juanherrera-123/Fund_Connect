@@ -4,11 +4,11 @@ import { useMemo } from "react";
 
 import StatusBadge from "@/components/dashboard/StatusBadge";
 import { MASTER_USER, STORAGE_KEYS, baseVerifiedFunds, getFundLogoLabel } from "@/lib/igatesData";
-import { useLocalStorage } from "@/lib/useLocalStorage";
+import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import type { FundApplication } from "@/lib/types";
 
 export default function SettingsDashboard() {
-  const [fundApplications] = useLocalStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
+  const [fundApplications] = useFirebaseStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
 
   const verifiedFunds = useMemo(() => {
     const verifiedFromApplications = fundApplications

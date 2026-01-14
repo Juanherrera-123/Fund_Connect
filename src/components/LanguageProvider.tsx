@@ -4,7 +4,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo } from "reac
 import { usePathname } from "next/navigation";
 
 import { languageOptions, translations, type LanguageKey, STORAGE_KEYS } from "@/lib/igatesData";
-import { useLocalStorage } from "@/lib/useLocalStorage";
+import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 
 type LanguageContextValue = {
   language: LanguageKey;
@@ -16,7 +16,7 @@ type LanguageContextValue = {
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguageState] = useLocalStorage<LanguageKey>(
+  const [language, setLanguageState] = useFirebaseStorage<LanguageKey>(
     STORAGE_KEYS.preferredLanguage,
     "es"
   );

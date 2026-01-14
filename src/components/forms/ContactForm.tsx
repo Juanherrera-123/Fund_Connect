@@ -5,13 +5,13 @@ import { useRef } from "react";
 import { useLanguage } from "@/components/LanguageProvider";
 import { STORAGE_KEYS } from "@/lib/igatesData";
 import { useApiForm } from "@/lib/useApiForm";
-import { useLocalStorage } from "@/lib/useLocalStorage";
+import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import type { ContactRequest } from "@/lib/types";
 
 export function ContactForm() {
   const formRef = useRef<HTMLFormElement | null>(null);
   const { strings } = useLanguage();
-  const [contactRequests, setContactRequests] = useLocalStorage<ContactRequest[]>(
+  const [contactRequests, setContactRequests] = useFirebaseStorage<ContactRequest[]>(
     STORAGE_KEYS.contactRequests,
     []
   );
