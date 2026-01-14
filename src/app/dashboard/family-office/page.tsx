@@ -263,8 +263,8 @@ export default function FamilyOfficeDashboard() {
 
       <section className="flex flex-col gap-3">
         <h2 className="text-sm font-semibold text-slate-700">My waitlist requests</h2>
-        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-          <table className="w-full text-left text-xs">
+        <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+          <table className="min-w-[520px] w-full text-left text-xs">
             <thead className="bg-slate-50 text-[0.7rem] uppercase tracking-wide text-slate-500">
               <tr>
                 <th className="px-4 py-2">Fund</th>

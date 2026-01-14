@@ -101,7 +101,7 @@ export default function FamilyOfficesPage() {
               WebkitBackdropFilter: "blur(6px) saturate(105%)",
             }}
           />
-          <div className="relative z-10 mx-auto grid h-full max-w-6xl gap-10 px-6 pt-24 pb-14 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:pt-28 lg:pb-16">
+          <div className="relative z-10 mx-auto grid h-full max-w-6xl gap-10 px-4 pt-24 pb-14 sm:px-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:pt-28 lg:pb-16">
             <div className="space-y-6">
               <p
                 className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-600"
@@ -111,12 +111,12 @@ export default function FamilyOfficesPage() {
               </p>
               <div className="space-y-3">
                 <h1
-                  className="igates-gradient-text pb-1 text-4xl font-semibold leading-[1.05] md:text-6xl"
+                  className="igates-gradient-text break-words pb-1 text-3xl font-semibold leading-[1.05] sm:text-4xl lg:text-5xl"
                   data-i18n="familyHeroTitle"
                 >
                   Institutional Access for Modern Family Offices.
                 </h1>
-                <p className="text-base text-slate-700 md:text-lg" data-i18n="familyHeroLead">
+                <p className="text-base text-slate-700 sm:text-lg" data-i18n="familyHeroLead">
                   Simplify manager discovery, diligence, and allocation workflows.
                 </p>
               </div>
@@ -153,7 +153,7 @@ export default function FamilyOfficesPage() {
                     </div>
                   ))}
                 </div>
-                <div className="mt-4 flex items-center justify-between gap-3">
+                <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
                   <p
                     className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500"
                     data-i18n="heroMetricsLabel"
@@ -161,7 +161,7 @@ export default function FamilyOfficesPage() {
                     Métricas consolidadas
                   </p>
                   <Link
-                    className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-igates-500 to-cyan-400 px-4 py-2 text-xs font-semibold text-white shadow-sm"
+                    className="inline-flex w-full items-center justify-center rounded-full bg-gradient-to-r from-igates-500 to-cyan-400 px-4 py-2 text-xs font-semibold text-white shadow-sm sm:w-auto"
                     href="/#plataforma"
                   >
                     <span data-i18n="heroMetricsCta">Ver estadísticas completas</span>
@@ -172,18 +172,18 @@ export default function FamilyOfficesPage() {
           </div>
         </section>
 
-        <section className="py-20">
-          <div className="mx-auto w-full max-w-6xl px-6">
+        <section className="py-12 sm:py-16 lg:py-24">
+          <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
             <div className="max-w-3xl space-y-4">
-              <h2 className="text-3xl font-semibold text-slate-900 md:text-4xl">
+              <h2 className="text-3xl font-semibold text-slate-900 sm:text-4xl lg:text-5xl">
                 Arquitecturas de inversión multi-gestor bajo tu control
               </h2>
-              <p className="text-base text-slate-600 md:text-lg">
+              <p className="text-base text-slate-600 sm:text-lg">
                 Diseña un fondo de cobertura privado diversificando capital entre gestores verificados,
                 con reglas claras de riesgo, custodia y ejecución institucional.
               </p>
             </div>
-            <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {architectureCards.map((card) => (
                 <div key={card.title} className="igates-card-frame igates-card-frame--institutional">
                   <div className="igates-card flex h-full flex-col gap-4 transition hover:-translate-y-1 hover:shadow-lg hover:shadow-igates-500/10">
@@ -208,17 +208,17 @@ export default function FamilyOfficesPage() {
           </div>
         </section>
 
-        <section className="py-20">
-          <div className="mx-auto w-full max-w-6xl px-6">
+        <section className="py-12 sm:py-16 lg:py-24">
+          <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
             <div className="max-w-3xl space-y-4">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-igates-500">
                 Flujo institucional
               </p>
-              <h2 className="text-3xl font-semibold text-slate-900 md:text-4xl">
+              <h2 className="text-3xl font-semibold text-slate-900 sm:text-4xl lg:text-5xl">
                 De la diligencia a la asignación, sin fricción.
               </h2>
             </div>
-            <ol className="relative mt-10 grid gap-6 lg:grid-cols-4">
+            <ol className="relative mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               <div className="absolute left-4 top-4 hidden h-[calc(100%-2rem)] w-px bg-slate-200 lg:hidden" />
               <div className="absolute left-0 right-0 top-6 hidden h-px bg-slate-200 lg:block" />
               {diligenceSteps.map((step, index) => (
@@ -236,15 +236,15 @@ export default function FamilyOfficesPage() {
           </div>
         </section>
 
-        <section className="py-16">
-          <div className="mx-auto w-full max-w-5xl px-6">
+        <section className="py-12 sm:py-16 lg:py-20">
+          <div className="mx-auto w-full max-w-5xl px-4 sm:px-6">
             <div className="igates-institutional-frame">
               <div className="igates-institutional-surface flex flex-col items-start gap-6 px-8 py-10 sm:flex-row sm:items-center sm:justify-between">
-                <h2 className="text-2xl font-semibold text-slate-900 md:text-3xl">
+                <h2 className="text-2xl font-semibold text-slate-900 sm:text-3xl lg:text-4xl">
                   Diseña tu estructura de inversión institucional.
                 </h2>
                 <Link
-                  className="btn-primary inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold shadow-lg shadow-igates-500/30"
+                  className="btn-primary inline-flex w-full items-center justify-center rounded-full px-6 py-3 text-sm font-semibold shadow-lg shadow-igates-500/30 sm:w-auto"
                   href="/#contact"
                 >
                   Solicitar diseño institucional
