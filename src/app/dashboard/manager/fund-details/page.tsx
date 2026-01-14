@@ -159,7 +159,7 @@ export default function FundDetailsPage() {
       winRatio: winRatio || null,
       riskLevel: riskManagement,
       riskManagement,
-      logoUrl: logoAsset,
+      logoUrl: logoAsset ?? undefined,
       livePerformanceLinks: normalizedLinks,
       presentationAsset,
       trackRecordStatements,
