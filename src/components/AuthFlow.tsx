@@ -45,6 +45,14 @@ export function AuthFlow() {
   );
 
   const role = kycAnswers.role as keyof typeof SURVEY_DEFINITIONS | undefined;
+  const roleLabels = useMemo(
+    () => ({
+      Investor: strings.authRoleInvestor,
+      "Fund Manager": strings.authRoleFundManager,
+      "Family Office": strings.authRoleFamilyOffice,
+    }),
+    [strings.authRoleFamilyOffice, strings.authRoleFundManager, strings.authRoleInvestor]
+  );
 
   const steps = useMemo<SignupStep[]>(() => {
     const surveyQuestions = role ? SURVEY_DEFINITIONS[role] : [];
@@ -185,8 +193,8 @@ export function AuthFlow() {
       const nextNotification: MasterNotification = {
         id: `notif-${Date.now()}`,
         type: "fund-manager-profile",
-        title: "Nuevo gestor pendiente",
-        message: `${baseProfile.fullName} envió su perfil de gestor.`,
+        title: strings.masterNotificationManagerPendingTitle,
+        message: strings.masterNotificationManagerPendingMessage.replace("{name}", baseProfile.fullName),
         createdAt: new Date().toISOString(),
       };
       setNotifications([nextNotification, ...notifications]);
@@ -296,7 +304,7 @@ export function AuthFlow() {
           onClick={() => setActiveTab("signup")}
           data-i18n="authTabSignup"
         >
-          Sign Up
+          {strings.authTabSignup}
         </button>
         <button
           className={`flex-1 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition ${
@@ -310,7 +318,7 @@ export function AuthFlow() {
           onClick={() => setActiveTab("login")}
           data-i18n="authTabLogin"
         >
-          Log In
+          {strings.authTabLogin}
         </button>
       </div>
 
@@ -391,7 +399,7 @@ export function AuthFlow() {
                     </option>
                     {Object.keys(SURVEY_DEFINITIONS).map((roleOption) => (
                       <option key={roleOption} value={roleOption}>
-                        {roleOption}
+                        {roleLabels[roleOption as keyof typeof roleLabels] ?? roleOption}
                       </option>
                     ))}
                   </select>
@@ -488,7 +496,7 @@ export function AuthFlow() {
               disabled={stepIndex === 0}
               data-i18n="authBack"
             >
-              Back
+              {strings.authBack}
             </button>
             <button
               className="inline-flex items-center justify-center rounded-full bg-igates-500 px-6 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-white shadow-lg shadow-igates-500/30 transition hover:bg-igates-400"
@@ -496,7 +504,7 @@ export function AuthFlow() {
               onClick={handleNext}
               data-i18n={stepIndex === steps.length - 1 ? "authCompleteOnboarding" : "authNext"}
             >
-              {stepIndex === steps.length - 1 ? "Complete onboarding" : "Next"}
+              {stepIndex === steps.length - 1 ? strings.authCompleteOnboarding : strings.authNext}
             </button>
           </div>
           <p className="mt-3 min-h-[22px] text-xs text-slate-500" aria-live="polite">
@@ -538,7 +546,7 @@ export function AuthFlow() {
                   onClick={() => setIsLoginPasswordVisible((prev) => !prev)}
                   aria-pressed={isLoginPasswordVisible}
                 >
-                  {isLoginPasswordVisible ? "Ocultar" : "Mostrar"}
+                  {isLoginPasswordVisible ? strings.authHidePassword : strings.authShowPassword}
                 </button>
               </div>
             </label>
@@ -547,7 +555,7 @@ export function AuthFlow() {
               type="submit"
               data-i18n="authTabLogin"
             >
-              Log In
+              {strings.authTabLogin}
             </button>
             <p className="min-h-[22px] text-xs text-slate-500" aria-live="polite">
               {loginStatus}
