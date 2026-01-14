@@ -9,12 +9,12 @@ export default function GestoresVerificadosPage() {
       <Navbar />
       <main>
         <section className="py-8">
-          <div className="mx-auto w-full max-w-6xl px-6">
+          <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
             <div className="igates-institutional-frame shadow-[0_26px_60px_-48px_rgba(15,23,42,0.5)]">
-              <div className="igates-institutional-surface rounded-[calc(2rem-1px)] px-6 py-7 sm:px-8 sm:py-8">
+              <div className="igates-institutional-surface rounded-[calc(2rem-1px)] px-4 py-6 sm:px-8 sm:py-8">
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   <div className="space-y-3">
-                    <h1 className="text-3xl font-semibold text-slate-900" data-i18n="verifiedManagersTitle">
+                    <h1 className="text-3xl font-semibold text-slate-900 sm:text-4xl lg:text-5xl" data-i18n="verifiedManagersTitle">
                       Gestores verificados
                     </h1>
                     <p className="max-w-2xl text-sm text-slate-600" data-i18n="verifiedManagersLead">

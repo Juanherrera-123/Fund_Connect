@@ -54,17 +54,17 @@ const standardSignals = [
 
 export function InstitutionalManagerSection() {
   return (
-    <section className="pb-20 pt-6">
-      <div className="mx-auto w-full max-w-6xl px-6">
+    <section className="pb-12 pt-6 sm:pb-16 lg:pb-24">
+      <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
         <div className="igates-institutional-frame shadow-[0_30px_60px_-45px_rgba(15,23,42,0.55)]">
-          <div className="igates-institutional-surface rounded-[calc(2.5rem-1px)] px-8 py-10 sm:px-12 sm:py-12">
+          <div className="igates-institutional-surface rounded-[calc(2.5rem-1px)] px-6 py-8 sm:px-12 sm:py-12">
             <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
               <div className="space-y-6">
                 <p className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-600">
                   PARA GESTORES DE FONDOS
                 </p>
                 <div className="space-y-3">
-                  <h2 className="text-3xl font-semibold text-slate-900 md:text-4xl">
+                  <h2 className="text-3xl font-semibold text-slate-900 sm:text-4xl lg:text-5xl">
                     Distribución institucional. Solo para estrategias listas.
                   </h2>
                   <p className="max-w-2xl text-base text-slate-700">

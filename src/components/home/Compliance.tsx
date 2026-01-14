@@ -44,8 +44,11 @@ const claims = [
 
 export function MarketInfrastructureSection() {
   return (
-    <section id="compliance" className="bg-[#f6f9ff] py-20">
-      <div className="mx-auto max-w-6xl px-6">
+    <section
+      id="compliance"
+      className="overflow-hidden bg-[#f6f9ff] py-12 sm:py-16 lg:py-24"
+    >
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
           <div className="space-y-5">
             <p
@@ -55,7 +58,7 @@ export function MarketInfrastructureSection() {
               INFRAESTRUCTURA DE MERCADO
             </p>
             <h2
-              className="text-3xl font-semibold text-slate-900 sm:text-4xl"
+              className="text-3xl font-semibold text-slate-900 sm:text-4xl lg:text-5xl"
               data-i18n="complianceTitle"
             >
               Infraestructura institucional. Ejecución real, reglas claras.
@@ -98,7 +101,7 @@ export function MarketInfrastructureTabs() {
   const baseId = useId();
 
   return (
-    <div className="rounded-[28px] bg-gradient-to-br from-white/60 via-white/80 to-slate-50/80 p-4">
+    <div className="w-full max-w-full rounded-[28px] bg-gradient-to-br from-white/60 via-white/80 to-slate-50/80 p-4">
       <div className="relative overflow-hidden rounded-[28px] bg-gradient-to-r from-blue-500/30 via-cyan-400/30 to-violet-500/30 p-[1px] shadow-[0_16px_32px_rgba(15,23,42,0.08)]">
         <div className="rounded-[27px] bg-white/80 p-6 backdrop-blur-[2px]">
           <div className="relative mb-5">
@@ -130,7 +133,7 @@ export function MarketInfrastructureTabs() {
                     aria-controls={`${baseId}-${tab.id}-panel`}
                     id={`${baseId}-${tab.id}-tab`}
                     onClick={() => setSelectedTab(index)}
-                    className={`flex w-full min-w-[220px] items-start gap-3 rounded-[15px] border px-4 py-3 text-left transition-all duration-200 ease-out lg:min-w-0 ${
+                    className={`flex w-full min-w-[180px] items-start gap-3 rounded-[15px] border px-4 py-3 text-left transition-all duration-200 ease-out sm:min-w-[220px] lg:min-w-0 ${
                       isActive
                         ? "border-transparent bg-white/85 text-slate-900"
                         : "border-slate-200/70 bg-white/60 text-slate-700 hover:border-slate-300/80 hover:bg-white/75"

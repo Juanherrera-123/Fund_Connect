@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -16,6 +17,9 @@ export function Navbar({ floating = false }: NavbarProps) {
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const { strings } = useLanguage();
   const positionClassName = floating ? "fixed top-4" : "sticky top-0";
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuPanelRef = useRef<HTMLDivElement | null>(null);
+  const menuButtonRef = useRef<HTMLButtonElement | null>(null);
 
   const authLink = (() => {
     if (!session) {
@@ -37,10 +41,39 @@ export function Navbar({ floating = false }: NavbarProps) {
     return { label: strings.navAuthProfile, href: "/profile", key: "navAuthProfile" };
   })();
 
+  useEffect(() => {
+    if (!isMenuOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsMenuOpen(false);
+      }
+    };
+
+    const handlePointerDown = (event: MouseEvent | TouchEvent) => {
+      const target = event.target as Node;
+      if (menuPanelRef.current?.contains(target)) return;
+      if (menuButtonRef.current?.contains(target)) return;
+      setIsMenuOpen(false);
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("touchstart", handlePointerDown);
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("touchstart", handlePointerDown);
+      document.body.style.overflow = "";
+    };
+  }, [isMenuOpen]);
+
   return (
     <header className={`${positionClassName} left-0 right-0 z-50 isolate`}>
       <div className="mx-auto w-full max-w-7xl px-4">
-        <div className="flex h-16 flex-nowrap items-center justify-between gap-6 rounded-2xl border border-white/30 bg-white/55 px-6 shadow-sm backdrop-blur-md">
+        <div className="relative flex h-16 flex-nowrap items-center justify-between gap-6 rounded-2xl border border-white/30 bg-white/55 px-4 shadow-sm backdrop-blur-md sm:px-6">
           <Link
             className="flex flex-shrink-0 items-center gap-2 font-extrabold tracking-[0.08em] text-slate-900"
             href="/"
@@ -66,14 +99,80 @@ export function Navbar({ floating = false }: NavbarProps) {
             </Link>
           </nav>
           <div className="flex flex-shrink-0 items-center gap-3">
-            <LanguageSwitcher />
+            <div className="hidden lg:flex">
+              <LanguageSwitcher />
+            </div>
             <Link
-              className="btn-primary inline-flex items-center justify-center whitespace-nowrap rounded-full px-6 py-3 text-sm font-semibold leading-none shadow-lg shadow-igates-500/30 transition"
+              className="btn-primary hidden items-center justify-center whitespace-nowrap rounded-full px-6 py-3 text-sm font-semibold leading-none shadow-lg shadow-igates-500/30 transition lg:inline-flex"
               href={authLink.href}
               data-i18n={authLink.key}
             >
               {authLink.label}
             </Link>
+            <button
+              ref={menuButtonRef}
+              type="button"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/50 bg-white/70 text-slate-700 shadow-sm backdrop-blur transition hover:bg-white lg:hidden"
+              aria-label="Open navigation menu"
+              aria-expanded={isMenuOpen}
+              aria-controls="mobile-menu"
+              onClick={() => setIsMenuOpen((prev) => !prev)}
+            >
+              {isMenuOpen ? (
+                <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
+                  <path
+                    d="M6 6l12 12M18 6l-12 12"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              ) : (
+                <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
+                  <path
+                    d="M4 7h16M4 12h16M4 17h16"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              )}
+            </button>
+          </div>
+          <div
+            id="mobile-menu"
+            ref={menuPanelRef}
+            className={`absolute left-4 right-4 top-[calc(100%+8px)] z-40 rounded-2xl border border-white/40 bg-white/70 p-4 shadow-xl backdrop-blur-xl transition-all duration-200 lg:hidden ${
+              isMenuOpen ? "translate-y-0 opacity-100" : "pointer-events-none -translate-y-2 opacity-0"
+            }`}
+            aria-hidden={!isMenuOpen}
+          >
+            <nav className="grid gap-3 text-sm font-semibold uppercase tracking-[0.08em] text-slate-700">
+              <Link
+                href="/gestores-verificados"
+                data-i18n="navVerifiedManagers"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Gestores Verificados
+              </Link>
+              <Link href="/family-offices" data-i18n="navFamily" onClick={() => setIsMenuOpen(false)}>
+                Family Offices
+              </Link>
+              <Link href="/#contact" data-i18n="navContact" onClick={() => setIsMenuOpen(false)}>
+                Contact
+              </Link>
+            </nav>
+            <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-white/50 pt-4">
+              <LanguageSwitcher />
+              <Link
+                className="btn-primary inline-flex w-full items-center justify-center whitespace-nowrap rounded-full px-6 py-3 text-sm font-semibold leading-none shadow-lg shadow-igates-500/30 transition sm:w-auto"
+                href={authLink.href}
+                data-i18n={authLink.key}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {authLink.label}
+              </Link>
+            </div>
           </div>
         </div>
       </div>
