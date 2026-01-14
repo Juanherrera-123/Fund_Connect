@@ -3,8 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { STORAGE_KEYS } from "@/lib/igatesData";
-import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
-import type { ContactRequest, WaitlistRequest } from "@/lib/types";
+import { useLocalStorage } from "@/lib/useLocalStorage";
+import type { ContactRequest, Session, WaitlistRequest } from "@/lib/types";
 
 type ContactMessage = {
   id: string;
@@ -18,6 +18,7 @@ export default function MessagesDashboard() {
   const [waitlistRequests, setWaitlistRequests] = useState<WaitlistRequest[]>([]);
   const [waitlistError, setWaitlistError] = useState<string | null>(null);
   const [waitlistLoading, setWaitlistLoading] = useState(false);
+  const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
 
   const contactMessages = useMemo<ContactMessage[]>(() => {
     return contactRequests.map((request) => {
@@ -55,7 +56,12 @@ export default function MessagesDashboard() {
       setWaitlistLoading(true);
       setWaitlistError(null);
       try {
-        const response = await fetch("/api/admin/waitlist?status=PENDING");
+        const headers: Record<string, string> = {};
+        if (session?.id && session?.role) {
+          headers["x-user-id"] = session.id;
+          headers["x-user-role"] = session.role;
+        }
+        const response = await fetch("/api/admin/waitlist?status=PENDING", { headers });
         if (!response.ok) {
           throw new Error("Unable to load waitlist requests.");
         }
@@ -79,7 +85,7 @@ export default function MessagesDashboard() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [session?.id, session?.role]);
 
   return (
     <>
@@ -201,29 +207,45 @@ export default function MessagesDashboard() {
               {waitlistError}
             </div>
           ) : waitlistRequests.length ? (
-            waitlistRequests.map((request) => (
-              <div
-                key={request.id}
-                className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3"
-              >
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <p className="text-xs font-semibold text-slate-900">{request.requesterName}</p>
-                  <span className="rounded-full bg-slate-200 px-2 py-0.5 text-[11px] font-semibold text-slate-600">
-                    {request.fundName}
-                  </span>
+            waitlistRequests.map((request) => {
+              const formattedAmount =
+                typeof request.amount === "number"
+                  ? request.amount.toLocaleString("en-US")
+                  : request.intendedInvestmentAmount ?? "—";
+              const formattedCreatedAt = request.createdAt
+                ? new Date(request.createdAt).toLocaleString("es-ES", {
+                    dateStyle: "medium",
+                    timeStyle: "short",
+                  })
+                : "—";
+              return (
+                <div
+                  key={request.id}
+                  className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3"
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <p className="text-xs font-semibold text-slate-900">
+                      {request.requesterName ?? "—"}
+                    </p>
+                    <span className="rounded-full bg-slate-200 px-2 py-0.5 text-[11px] font-semibold text-slate-600">
+                      {request.fundName}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-xs text-slate-500">
+                    {request.requesterEmail} · {request.requesterPhone ?? "Sin teléfono"}
+                  </p>
+                  <p className="mt-2 text-xs text-slate-500">
+                    Monto: {formattedAmount} · País: {request.requesterCountry || "—"}
+                  </p>
+                  <p className="mt-1 text-xs text-slate-500">
+                    Recibido: {formattedCreatedAt}
+                  </p>
+                  {request.note ? (
+                    <p className="mt-2 text-xs text-slate-600">Nota: {request.note}</p>
+                  ) : null}
                 </div>
-                <p className="mt-1 text-xs text-slate-500">
-                  {request.requesterEmail} · {request.requesterPhone ?? "Sin teléfono"}
-                </p>
-                <p className="mt-2 text-xs text-slate-500">
-                  Monto: {request.intendedInvestmentAmount ?? "—"} · País:{" "}
-                  {request.requesterCountry || "—"}
-                </p>
-                {request.note ? (
-                  <p className="mt-2 text-xs text-slate-600">Nota: {request.note}</p>
-                ) : null}
-              </div>
-            ))
+              );
+            })
           ) : (
             <div className="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-400">
               Sin solicitudes de waitlist por ahora.

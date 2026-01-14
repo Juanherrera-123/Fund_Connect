@@ -67,6 +67,12 @@ const transition = {
   ease: [0.22, 1, 0.36, 1],
 };
 
+const resolveMinimumInvestment = (minInvestment?: string | null, fallback = 1000) => {
+  if (!minInvestment) return fallback;
+  const parsed = Number.parseFloat(minInvestment.replace(/[^0-9.,]/g, "").replace(/,/g, ""));
+  return Number.isFinite(parsed) ? parsed : fallback;
+};
+
 export function VerifiedManagers() {
   const { strings } = useLanguage();
   const whatsappNumber = "573181252627";
@@ -89,7 +95,8 @@ export function VerifiedManagers() {
   const [contactPhoneCountry, setContactPhoneCountry] = useState("+57");
   const [contactPhoneNumber, setContactPhoneNumber] = useState("");
   const [investmentAmount, setInvestmentAmount] = useState("");
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [waitlistError, setWaitlistError] = useState<string | null>(null);
+  const [toastMessage, setToastMessage] = useState<{ message: string; tone: "success" | "error" } | null>(null);
   const waitlistButtonRef = useRef<HTMLButtonElement | null>(null);
   const waitlistModalRef = useRef<HTMLDivElement | null>(null);
   const phoneCountryCodes = [
@@ -271,6 +278,7 @@ export function VerifiedManagers() {
     if (!isWaitlistModalOpen) return;
     setQualified(false);
     setNote("");
+    setWaitlistError(null);
     setContactName(currentProfile?.fullName ?? session?.username ?? "");
     setContactEmail(currentProfile?.email ?? "");
     const rawPhone = currentProfile?.phone ?? "";
@@ -317,7 +325,7 @@ export function VerifiedManagers() {
     if (!toastMessage) return undefined;
     const timeout = window.setTimeout(() => {
       setToastMessage(null);
-    }, 3200);
+    }, 4800);
     return () => window.clearTimeout(timeout);
   }, [toastMessage]);
 
@@ -325,10 +333,17 @@ export function VerifiedManagers() {
     event.preventDefault();
     if (!selectedFund || isSubmitting) return;
     setIsSubmitting(true);
+    setWaitlistError(null);
 
     const fullPhone = [contactPhoneCountry.trim(), contactPhoneNumber.trim()].filter(Boolean).join(" ");
     const investmentValue = Number(investmentAmount);
-    if (!Number.isFinite(investmentValue) || investmentValue < 1000) {
+    const minimumInvestmentValue = resolveMinimumInvestment(selectedFund.minInvestment);
+    if (!Number.isFinite(investmentValue) || investmentValue < minimumInvestmentValue) {
+      setWaitlistError("No se pudo enviar la solicitud. Intenta nuevamente.");
+      setToastMessage({
+        message: "No se pudo enviar la solicitud. Intenta nuevamente.",
+        tone: "error",
+      });
       setIsSubmitting(false);
       return;
     }
@@ -344,6 +359,7 @@ export function VerifiedManagers() {
       fundName: selectedFund.name,
       qualified,
       note: note.trim() || null,
+      fundMinimum: selectedFund.minInvestment ?? null,
       user: {
         name: contactName.trim(),
         email: contactEmail.trim(),
@@ -364,11 +380,18 @@ export function VerifiedManagers() {
         throw new Error("Failed to send waitlist request.");
       }
       setIsWaitlistModalOpen(false);
-      setToastMessage(
-        "Su solicitud fue enviada con éxito, estaremos en contacto en las siguientes 24 horas."
-      );
+      setToastMessage({
+        message:
+          "Solicitud enviada con éxito. Estaremos en contacto en un plazo máximo de 24 horas.",
+        tone: "success",
+      });
     } catch (error) {
       console.error(error);
+      setWaitlistError("No se pudo enviar la solicitud. Intenta nuevamente.");
+      setToastMessage({
+        message: "No se pudo enviar la solicitud. Intenta nuevamente.",
+        tone: "error",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -424,8 +447,10 @@ export function VerifiedManagers() {
     ? Array.from({ length: 3 }, (_, index) => selectedFund.livePerformanceLinks[index] ?? "")
     : [];
   const investmentValue = Number(investmentAmount);
+  const resolvedMinimum = resolveMinimumInvestment(selectedFund?.minInvestment);
   const isInvestmentInvalid =
-    investmentAmount.trim().length > 0 && (!Number.isFinite(investmentValue) || investmentValue < 1000);
+    investmentAmount.trim().length > 0 &&
+    (!Number.isFinite(investmentValue) || investmentValue < resolvedMinimum);
   const whatsappMessage = selectedFund
     ? strings.verifiedManagersWhatsappMessage.replace("{fundName}", selectedFund.name)
     : "";
@@ -474,8 +499,15 @@ export function VerifiedManagers() {
   return (
     <>
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800 shadow-lg" aria-live="polite">
-          {toastMessage}
+        <div
+          className={`fixed bottom-4 right-4 z-50 rounded-2xl border bg-white/70 px-4 py-3 text-sm font-semibold shadow-xl backdrop-blur-xl ${
+            toastMessage.tone === "success"
+              ? "border-emerald-200 text-emerald-800"
+              : "border-rose-200 text-rose-700"
+          }`}
+          aria-live="polite"
+        >
+          {toastMessage.message}
         </div>
       )}
       <section className="py-6" aria-labelledby="filtersTitle">
@@ -1094,6 +1126,11 @@ export function VerifiedManagers() {
                     onChange={(event) => setNote(event.target.value)}
                   />
                 </div>
+                {waitlistError ? (
+                  <div className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-600">
+                    {waitlistError}
+                  </div>
+                ) : null}
                 <button
                   type="submit"
                   disabled={isSubmitting || isInvestmentInvalid}
