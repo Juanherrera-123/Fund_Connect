@@ -9,7 +9,6 @@ import {
   STORAGE_KEYS,
   baseVerifiedFunds,
   countryFlags,
-  DEFAULT_FUND_MANAGER_PROFILES,
   formatNumber,
   getFundLogoLabel,
 } from "@/lib/igatesData";
@@ -77,8 +76,8 @@ const resolveMinimumInvestment = (minInvestment?: string | null, fallback = 1000
 export function VerifiedManagers() {
   const { strings } = useLanguage();
   const whatsappNumber = "573181252627";
-  const fundApplications = useFundsCollection();
-  const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, DEFAULT_FUND_MANAGER_PROFILES);
+  const [fundApplications] = useFirebaseStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
+  const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const [capitalAllocations] = useFirebaseStorage<Record<string, number>>(
     STORAGE_KEYS.capitalAllocations,
@@ -122,102 +121,100 @@ export function VerifiedManagers() {
     const resolveManagerProfile = (fundId: string, managerId?: string) =>
       (managerId ? managerById.get(managerId) : null) ?? managerByFundId.get(fundId) ?? null;
 
-    const fromStorage = fundApplications
-      .filter((application) => application.status === "verified")
-      .map((application) => {
-        const managerProfile = resolveManagerProfile(application.id, application.managerId);
-        const profileDetails = managerProfile?.fundManagerProfile;
+    const mapApplicationToFund = (application: FundApplication): VerifiedFund => {
+      const managerProfile = resolveManagerProfile(application.id, application.managerId);
+      const profileDetails = managerProfile?.fundManagerProfile;
 
-        return {
-          id: application.id,
-          name: application.fundName,
-          country: application.country || "Global",
-          logoLabel: getFundLogoLabel(application.fundName),
-          logoUrl: application.logoUrl ?? null,
-          region: application.region || "Global",
-          strategy:
-            profileDetails?.strategyTypeLabel ||
-            profileDetails?.strategyType ||
-            application.strategyLabel ||
-            application.strategy ||
-            "Multi-Strategy",
-          riskLevel:
-            application.riskLevel || application.riskManagement || strings.verifiedManagersRiskPending,
-          yearProfit: application.yearProfit ?? application.monthlyProfit ?? null,
-          monthlyProfit: application.monthlyProfit ?? application.yearProfit ?? null,
-          drawdownTarget: application.drawdownTarget ?? null,
-          maxDrawdown: application.maxDrawdown ?? null,
-          winRate: application.winRate ?? null,
-          winRatio: application.winRatio ?? null,
-          volatility: application.volatility ?? null,
-          operatingTime: application.operatingTime ?? null,
-          tradesPerMonth: application.tradesPerMonth ?? null,
-          riskManagement: application.riskManagement ?? application.riskLevel ?? null,
-          livePerformanceLinks: application.livePerformanceLinks ?? [],
-          presentationAsset: application.presentationAsset ?? null,
-          trackRecordStatements: application.trackRecordStatements ?? [],
-          minInvestment: application.minInvestment ?? null,
-          performanceFee: application.performanceFee ?? null,
-          subscriptionFee: application.subscriptionFee ?? null,
-          reportsFrequency: application.reportsFrequency ?? null,
-          aum: application.aum || "N/A",
-          description: application.description || strings.verifiedManagersDescriptionFallback,
-          capital_allocated:
-            capitalAllocations[application.id] ?? application.capital_allocated ?? 0,
-        };
-      });
-
-    const overridesById = new Map(fromStorage.map((fund) => [fund.id, fund]));
-    const mergedBase = baseVerifiedFunds.map((fund) => {
-      const override = overridesById.get(fund.id);
-      if (!override) {
-        const managerProfile = managerByFundId.get(fund.id);
-        const profileDetails = managerProfile?.fundManagerProfile;
-
-        return {
-          id: fund.id,
-          name: fund.name,
-          country: fund.country,
-          logoLabel: fund.logoLabel,
-          logoUrl: fund.logoUrl ?? null,
-          region: fund.region,
-          strategy:
-            profileDetails?.strategyTypeLabel || profileDetails?.strategyType || fund.strategy,
-          riskLevel: fund.riskLevel,
-          yearProfit: fund.yearProfit,
-          monthlyProfit: fund.yearProfit,
-          drawdownTarget: null,
-          maxDrawdown: fund.maxDrawdown,
-          winRate: fund.winRate,
-          winRatio: null,
-          volatility: fund.volatility,
-          operatingTime: null,
-          tradesPerMonth: null,
-          riskManagement: fund.riskLevel,
-          livePerformanceLinks: [],
-          presentationAsset: null,
-          trackRecordStatements: [],
-          minInvestment: null,
-          performanceFee: null,
-          subscriptionFee: null,
-          reportsFrequency: null,
-          aum: fund.aum,
-          description: fund.description,
-          capital_allocated: capitalAllocations[fund.id] ?? fund.capital_allocated ?? 0,
-        };
-      }
       return {
-        ...override,
-        logoLabel: override.logoLabel || fund.logoLabel,
-        logoUrl: override.logoUrl ?? fund.logoUrl ?? null,
+        id: application.id,
+        name: application.fundName,
+        country: application.country || "Global",
+        logoLabel: getFundLogoLabel(application.fundName),
+        logoUrl: application.logoUrl ?? null,
+        region: application.region || "Global",
+        strategy:
+          profileDetails?.strategyTypeLabel ||
+          profileDetails?.strategyType ||
+          application.strategyLabel ||
+          application.strategy ||
+          "Multi-Strategy",
+        riskLevel:
+          application.riskLevel || application.riskManagement || strings.verifiedManagersRiskPending,
+        yearProfit: application.yearProfit ?? application.monthlyProfit ?? null,
+        monthlyProfit: application.monthlyProfit ?? application.yearProfit ?? null,
+        drawdownTarget: application.drawdownTarget ?? null,
+        maxDrawdown: application.maxDrawdown ?? null,
+        winRate: application.winRate ?? null,
+        winRatio: application.winRatio ?? null,
+        volatility: application.volatility ?? null,
+        operatingTime: application.operatingTime ?? null,
+        tradesPerMonth: application.tradesPerMonth ?? null,
+        riskManagement: application.riskManagement ?? application.riskLevel ?? null,
+        livePerformanceLinks: application.livePerformanceLinks ?? [],
+        presentationAsset: application.presentationAsset ?? null,
+        trackRecordStatements: application.trackRecordStatements ?? [],
+        minInvestment: application.minInvestment ?? null,
+        performanceFee: application.performanceFee ?? null,
+        subscriptionFee: application.subscriptionFee ?? null,
+        reportsFrequency: application.reportsFrequency ?? null,
+        aum: application.aum || "N/A",
+        description: application.description || strings.verifiedManagersDescriptionFallback,
+        capital_allocated:
+          capitalAllocations[application.id] ?? application.capital_allocated ?? 0,
       };
-    });
+    };
 
+    const verifiedApplications = fundApplications.filter(
+      (application) => application.status === "verified"
+    );
+    const applicationById = new Map(
+      verifiedApplications.map((application) => [application.id, mapApplicationToFund(application)])
+    );
     const baseIds = new Set(baseVerifiedFunds.map((fund) => fund.id));
-    const extraFunds = fromStorage.filter((fund) => !baseIds.has(fund.id));
 
-    return [...mergedBase, ...extraFunds];
-  }, [capitalAllocations, fundApplications, profiles, strings.verifiedManagersDescriptionFallback, strings.verifiedManagersRiskPending]);
+    return [
+      ...baseVerifiedFunds.map((fund) => ({
+        id: fund.id,
+        name: fund.name,
+        country: fund.country,
+        logoLabel: fund.logoLabel,
+        logoUrl: fund.logoUrl,
+        region: fund.region,
+        strategy: fund.strategy,
+        riskLevel: fund.riskLevel,
+        yearProfit: fund.yearProfit,
+        monthlyProfit: null,
+        drawdownTarget: null,
+        maxDrawdown: fund.maxDrawdown,
+        winRate: null,
+        winRatio: null,
+        volatility: fund.volatility ?? null,
+        operatingTime: null,
+        tradesPerMonth: null,
+        riskManagement: null,
+        livePerformanceLinks: [],
+        presentationAsset: null,
+        trackRecordStatements: [],
+        minInvestment: null,
+        performanceFee: null,
+        subscriptionFee: null,
+        reportsFrequency: null,
+        aum: fund.aum,
+        description: fund.description,
+        capital_allocated: capitalAllocations[fund.id] ?? fund.capital_allocated ?? 0,
+        ...applicationById.get(fund.id),
+      })),
+      ...verifiedApplications
+        .filter((application) => !baseIds.has(application.id))
+        .map((application) => mapApplicationToFund(application)),
+    ];
+  }, [
+    capitalAllocations,
+    fundApplications,
+    profiles,
+    strings.verifiedManagersDescriptionFallback,
+    strings.verifiedManagersRiskPending,
+  ]);
 
   const regions = useMemo(() => {
     return Array.from(new Set(verifiedFunds.map((fund) => fund.region))).sort((a, b) =>

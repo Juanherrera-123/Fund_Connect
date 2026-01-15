@@ -3,8 +3,7 @@
 import { useMemo } from "react";
 
 import ChartCard from "@/components/dashboard/ChartCard";
-import { useFundsCollection } from "@/lib/funds";
-import { DEFAULT_FUND_MANAGER_PROFILES, STORAGE_KEYS, baseVerifiedFunds } from "@/lib/igatesData";
+import { STORAGE_KEYS } from "@/lib/igatesData";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import type { UserProfile } from "@/lib/types";
 
@@ -20,28 +19,22 @@ const donutLegend = [
 ];
 
 export default function MasterAnalyticsPage() {
-  const fundApplications = useFundsCollection();
-  const [profiles] = useFirebaseStorage<UserProfile[]>(
-    STORAGE_KEYS.profiles,
-    DEFAULT_FUND_MANAGER_PROFILES
-  );
+  const [fundApplications] = useFirebaseStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
+  const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
 
   const analytics = useMemo(() => {
     const pendingFunds = fundApplications.filter((application) => application.status === "pending");
     const verifiedFromApplications = fundApplications.filter(
       (application) => application.status === "verified"
     );
-    const baseIds = new Set(baseVerifiedFunds.map((fund) => fund.id));
-    const verifiedCount =
-      baseVerifiedFunds.length +
-      verifiedFromApplications.filter((application) => !baseIds.has(application.id)).length;
+    const verifiedCount = verifiedFromApplications.length;
 
     return {
       activeFundsCount: verifiedCount,
       pendingFundsCount: pendingFunds.length,
       roleCounts: {
         investors: profiles.filter((profile) => profile.role === "Investor").length,
-        managers: verifiedCount,
+        managers: profiles.filter((profile) => profile.role === "Fund Manager").length,
         familyOffices: profiles.filter((profile) => profile.role === "Family Office").length,
       },
     };

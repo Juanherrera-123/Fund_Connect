@@ -13,7 +13,13 @@ import {
 } from "@/lib/igatesData";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import { useLocalStorage } from "@/lib/useLocalStorage";
-import type { MasterNotification, Session, SurveyAnswer, UserProfile } from "@/lib/types";
+import type {
+  MasterNotification,
+  MasterUserCredentials,
+  Session,
+  SurveyAnswer,
+  UserProfile,
+} from "@/lib/types";
 
 const requiredKycFields = ["fullName", "email", "phone", "country", "role", "password"] as const;
 
@@ -37,7 +43,11 @@ export function AuthFlow() {
 
   const [profiles, setProfiles] = useFirebaseStorage<UserProfile[]>(
     STORAGE_KEYS.profiles,
-    DEFAULT_FUND_MANAGER_PROFILES
+    []
+  );
+  const [masterUser] = useFirebaseStorage<MasterUserCredentials>(
+    STORAGE_KEYS.masterUser,
+    MASTER_USER
   );
   const [, setSession] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const [notifications, setNotifications] = useFirebaseStorage<MasterNotification[]>(
@@ -244,18 +254,37 @@ export function AuthFlow() {
       return;
     }
 
+    const activeMasterUser = masterUser?.username ? masterUser : MASTER_USER;
+
     if (
-      identifier.toLowerCase() === MASTER_USER.username.toLowerCase() &&
-      password === MASTER_USER.password
+      identifier.toLowerCase() === activeMasterUser.username.toLowerCase() &&
+      password === activeMasterUser.password
     ) {
-      setSession({ role: "MasterUser", username: MASTER_USER.username });
+      setSession({ role: "MasterUser", username: activeMasterUser.username });
       router.push("/dashboard/master");
       return;
     }
 
+    const normalizedIdentifier = identifier.toLowerCase();
     const match = profiles.find(
-      (profile) => profile.email.toLowerCase() === identifier.toLowerCase() && profile.password === password
+      (profile) => profile.email.toLowerCase() === normalizedIdentifier && profile.password === password
     );
+
+    if (!match) {
+      const seededMatch = DEFAULT_FUND_MANAGER_PROFILES.find(
+        (profile) =>
+          profile.email.toLowerCase() === normalizedIdentifier && profile.password === password
+      );
+
+      if (seededMatch) {
+        if (!profiles.some((profile) => profile.id === seededMatch.id)) {
+          setProfiles([...profiles, seededMatch]);
+        }
+        setSession({ id: seededMatch.id, role: seededMatch.role });
+        router.push("/dashboard/manager/overview");
+        return;
+      }
+    }
 
     if (!match) {
       setLoginStatus(strings.authStatusInvalidCredentials);

@@ -1,16 +1,15 @@
 "use client";
 
 import StatusBadge from "@/components/dashboard/StatusBadge";
-import { useFundsCollection } from "@/lib/funds";
-import { DEFAULT_FUND_MANAGER_PROFILES, STORAGE_KEYS, baseVerifiedFunds } from "@/lib/igatesData";
+import { STORAGE_KEYS } from "@/lib/igatesData";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { Session, UserProfile } from "@/lib/types";
 
 export default function FundManagerSettings() {
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
-  const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, DEFAULT_FUND_MANAGER_PROFILES);
-  const fundApplications = useFundsCollection();
+  const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
+  const [fundApplications] = useFirebaseStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
 
   const profile =
     session?.role === "Fund Manager"
@@ -27,12 +26,9 @@ export default function FundManagerSettings() {
     );
   }
 
-  const baseFund = profile.fundId
-    ? baseVerifiedFunds.find((fund) => fund.id === profile.fundId)
-    : null;
   const application = fundApplications.find((item) => item.managerId === profile.id);
-  const fundName = application?.fundName ?? baseFund?.name ?? "—";
-  const fundStatus = application?.status ?? (baseFund ? "verified" : "pending");
+  const fundName = application?.fundName ?? "—";
+  const fundStatus = application?.status ?? "pending";
 
   return (
     <>

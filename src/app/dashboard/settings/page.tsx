@@ -3,8 +3,9 @@
 import { useMemo } from "react";
 
 import StatusBadge from "@/components/dashboard/StatusBadge";
-import { useFundsCollection } from "@/lib/funds";
-import { MASTER_USER, baseVerifiedFunds, getFundLogoLabel } from "@/lib/igatesData";
+import { MASTER_USER, STORAGE_KEYS, getFundLogoLabel } from "@/lib/igatesData";
+import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
+import type { FundApplication } from "@/lib/types";
 
 export default function SettingsDashboard() {
   const fundApplications = useFundsCollection();
@@ -20,25 +21,7 @@ export default function SettingsDashboard() {
         strategy: application.strategyLabel || application.strategy || "Multi-Strategy",
         logoLabel: getFundLogoLabel(application.fundName),
       }));
-    const baseIds = new Set(baseVerifiedFunds.map((fund) => fund.id));
-    const overrides = new Map(verifiedFromApplications.map((fund) => [fund.id, fund]));
-
-    return [
-      ...baseVerifiedFunds.map((fund) => {
-        const override = overrides.get(fund.id);
-        return (
-          override ?? {
-            id: fund.id,
-            name: fund.name,
-            country: fund.country,
-            aum: fund.aum,
-            strategy: fund.strategy,
-            logoLabel: fund.logoLabel,
-          }
-        );
-      }),
-      ...verifiedFromApplications.filter((fund) => !baseIds.has(fund.id)),
-    ];
+    return verifiedFromApplications;
   }, [fundApplications]);
 
   const pendingFundsCount = fundApplications.filter((application) => application.status === "pending").length;

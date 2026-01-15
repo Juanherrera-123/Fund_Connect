@@ -6,9 +6,7 @@ import DataTable, { StatusCell } from "@/components/dashboard/DataTable";
 import StatusBadge from "@/components/dashboard/StatusBadge";
 import DashboardOverview from "@/components/dashboard/DashboardOverview";
 import {
-  DEFAULT_FUND_MANAGER_PROFILES,
   STORAGE_KEYS,
-  baseVerifiedFunds,
   getFundLogoLabel,
 } from "@/lib/igatesData";
 import { updateFundApplicationStatus, useFundsCollection } from "@/lib/funds";
@@ -22,7 +20,7 @@ const iconClass = "h-4 w-4";
 export default function MasterDashboard() {
   const [profiles, setProfiles] = useFirebaseStorage<UserProfile[]>(
     STORAGE_KEYS.profiles,
-    DEFAULT_FUND_MANAGER_PROFILES
+    []
   );
   const fundApplications = useFundsCollection();
   const [notifications] = useFirebaseStorage<MasterNotification[]>(STORAGE_KEYS.notifications, []);
@@ -47,49 +45,16 @@ export default function MasterDashboard() {
       (application) => application.status === "verified"
     );
     const pendingFunds = fundApplications.filter((application) => application.status === "pending");
-    const verifiedById = new Map(
-      verifiedFromApplications.map((application) => [
-        application.id,
-        {
-          id: application.id,
-          name: application.fundName,
-          managerId: application.managerId,
-          country: application.country || "Global",
-          aum: application.aum || "N/A",
-          strategy: application.strategyLabel || application.strategy || "Multi-Strategy",
-          logoLabel: getFundLogoLabel(application.fundName),
-        },
-      ])
-    );
 
-    const baseIds = new Set(baseVerifiedFunds.map((fund) => fund.id));
-    const verifiedFunds = [
-      ...baseVerifiedFunds.map((fund) => {
-        const override = verifiedById.get(fund.id);
-        return (
-          override ?? {
-            id: fund.id,
-            name: fund.name,
-            managerId: null,
-            country: fund.country,
-            aum: fund.aum,
-            strategy: fund.strategy,
-            logoLabel: fund.logoLabel,
-          }
-        );
-      }),
-      ...verifiedFromApplications
-        .filter((application) => !baseIds.has(application.id))
-        .map((application) => ({
-          id: application.id,
-          name: application.fundName,
-          managerId: application.managerId,
-          country: application.country || "Global",
-          aum: application.aum || "N/A",
-          strategy: application.strategyLabel || application.strategy || "Multi-Strategy",
-          logoLabel: getFundLogoLabel(application.fundName),
-        })),
-    ];
+    const verifiedFunds = verifiedFromApplications.map((application) => ({
+      id: application.id,
+      name: application.fundName,
+      managerId: application.managerId,
+      country: application.country || "Global",
+      aum: application.aum || "N/A",
+      strategy: application.strategyLabel || application.strategy || "Multi-Strategy",
+      logoLabel: getFundLogoLabel(application.fundName),
+    }));
 
     const requesterNameById = new Map(
       profiles.map((profile) => [profile.id, profile.fullName])
@@ -112,7 +77,7 @@ export default function MasterDashboard() {
 
     const roleCounts = {
       investors: profiles.filter((profile) => profile.role === "Investor").length,
-      managers: verifiedFunds.length,
+      managers: profiles.filter((profile) => profile.role === "Fund Manager").length,
       familyOffices: profiles.filter((profile) => profile.role === "Family Office").length,
     };
 
