@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import { STORAGE_KEYS } from "@/lib/igatesData";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import { useLocalStorage } from "@/lib/useLocalStorage";
-import type { Session, UserProfile } from "@/lib/types";
+import type { FundApplication, Session, UserProfile } from "@/lib/types";
 
 export function PendingReviewView() {
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
@@ -44,7 +44,7 @@ export function PendingReviewView() {
           </span>
         </span>
         <p className="mt-2 text-xs text-slate-500" data-i18n="pendingReviewMasterNote">
-          Revisión por MasterUser.
+          Revisión por el usuario maestro.
         </p>
       </div>
       <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
