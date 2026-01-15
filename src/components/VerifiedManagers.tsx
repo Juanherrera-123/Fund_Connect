@@ -7,7 +7,6 @@ import { AnimatePresence, MotionConfig, motion } from "framer-motion";
 import { useLanguage } from "@/components/LanguageProvider";
 import {
   STORAGE_KEYS,
-  baseVerifiedFunds,
   countryFlags,
   formatNumber,
   getFundLogoLabel,
@@ -77,13 +76,9 @@ const resolveMinimumInvestment = (minInvestment?: string | null, fallback = 1000
 export function VerifiedManagers() {
   const { strings } = useLanguage();
   const whatsappNumber = "573181252627";
-  const [fundApplications] = useFirebaseStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
+  const fundApplications = useFundsCollection();
   const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
-  const [capitalAllocations] = useFirebaseStorage<Record<string, number>>(
-    STORAGE_KEYS.capitalAllocations,
-    {}
-  );
   const [filters, setFilters] = useState<FilterState>(initialFilters);
   const [appliedFilters, setAppliedFilters] = useState<FilterState>(initialFilters);
   const [selectedFundId, setSelectedFundId] = useState<string | null>(null);
@@ -160,57 +155,16 @@ export function VerifiedManagers() {
         reportsFrequency: application.reportsFrequency ?? null,
         aum: application.aum || "N/A",
         description: application.description || strings.verifiedManagersDescriptionFallback,
-        capital_allocated:
-          capitalAllocations[application.id] ?? application.capital_allocated ?? 0,
+        capital_allocated: application.capital_allocated ?? 0,
       };
     };
 
     const verifiedApplications = fundApplications.filter(
       (application) => application.status === "verified"
     );
-    const applicationById = new Map(
-      verifiedApplications.map((application) => [application.id, mapApplicationToFund(application)])
-    );
-    const baseIds = new Set(baseVerifiedFunds.map((fund) => fund.id));
 
-    return [
-      ...baseVerifiedFunds.map((fund) => ({
-        id: fund.id,
-        name: fund.name,
-        country: fund.country,
-        logoLabel: fund.logoLabel,
-        logoUrl: fund.logoUrl,
-        region: fund.region,
-        strategy: fund.strategy,
-        riskLevel: fund.riskLevel,
-        yearProfit: fund.yearProfit,
-        monthlyProfit: null,
-        drawdownTarget: null,
-        maxDrawdown: fund.maxDrawdown,
-        winRate: null,
-        winRatio: null,
-        volatility: fund.volatility ?? null,
-        operatingTime: null,
-        tradesPerMonth: null,
-        riskManagement: null,
-        livePerformanceLinks: [],
-        presentationAsset: null,
-        trackRecordStatements: [],
-        minInvestment: null,
-        performanceFee: null,
-        subscriptionFee: null,
-        reportsFrequency: null,
-        aum: fund.aum,
-        description: fund.description,
-        capital_allocated: capitalAllocations[fund.id] ?? fund.capital_allocated ?? 0,
-        ...applicationById.get(fund.id),
-      })),
-      ...verifiedApplications
-        .filter((application) => !baseIds.has(application.id))
-        .map((application) => mapApplicationToFund(application)),
-    ];
+    return verifiedApplications.map((application) => mapApplicationToFund(application));
   }, [
-    capitalAllocations,
     fundApplications,
     profiles,
     strings.verifiedManagersDescriptionFallback,
