@@ -1,6 +1,6 @@
-import { getApp, getApps, initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { getApp, getApps, initializeApp, type FirebaseApp } from "firebase/app";
+import { getAuth, type Auth } from "firebase/auth";
+import { getFirestore, type Firestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -18,17 +18,44 @@ const requiredFirebaseConfig = {
   appId: firebaseConfig.appId,
 };
 
-const hasFirebaseConfig = Object.values(requiredFirebaseConfig).every(Boolean);
+export const hasFirebaseConfig = Object.values(requiredFirebaseConfig).every(Boolean);
 
-const getFirebaseApp = () => {
+const missingConfigMessage =
+  "Missing Firebase configuration. Set NEXT_PUBLIC_FIREBASE_* environment variables.";
+let hasWarnedMissingConfig = false;
+
+const warnMissingConfig = () => {
+  if (hasWarnedMissingConfig) return;
+  hasWarnedMissingConfig = true;
+  console.warn(missingConfigMessage);
+};
+
+const getFirebaseApp = (): FirebaseApp | null => {
   if (!hasFirebaseConfig) {
-    throw new Error(
-      "Missing Firebase configuration. Set NEXT_PUBLIC_FIREBASE_* environment variables."
-    );
+    if (typeof window === "undefined") {
+      throw new Error(missingConfigMessage);
+    }
+    warnMissingConfig();
+    return null;
   }
 
   return getApps().length ? getApp() : initializeApp(firebaseConfig);
 };
 
-export const getFirebaseAuth = () => getAuth(getFirebaseApp());
-export const getFirestoreDb = () => getFirestore(getFirebaseApp());
+export const getFirebaseAuth = (): Auth | null => {
+  const app = getFirebaseApp();
+  return app ? getAuth(app) : null;
+};
+
+export const getFirestoreDb = (): Firestore | null => {
+  const app = getFirebaseApp();
+  return app ? getFirestore(app) : null;
+};
+
+export const requireFirestoreDb = (): Firestore => {
+  const db = getFirestoreDb();
+  if (!db) {
+    throw new Error(missingConfigMessage);
+  }
+  return db;
+};
