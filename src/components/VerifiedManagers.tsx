@@ -13,8 +13,8 @@ import {
   formatNumber,
   getFundLogoLabel,
 } from "@/lib/igatesData";
+import { useFundsCollection } from "@/lib/funds";
 import { getFundFrameClass } from "@/lib/fundVisuals";
-import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { FundApplication, Session, UserProfile } from "@/lib/types";
 
@@ -77,7 +77,7 @@ const resolveMinimumInvestment = (minInvestment?: string | null, fallback = 1000
 export function VerifiedManagers() {
   const { strings } = useLanguage();
   const whatsappNumber = "573181252627";
-  const [fundApplications] = useFirebaseStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
+  const fundApplications = useFundsCollection();
   const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, DEFAULT_FUND_MANAGER_PROFILES);
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const [capitalAllocations] = useFirebaseStorage<Record<string, number>>(

@@ -2,15 +2,16 @@
 
 import { useMemo } from "react";
 
+import { useFundsCollection } from "@/lib/funds";
 import { DEFAULT_FUND_MANAGER_PROFILES, STORAGE_KEYS, baseVerifiedFunds } from "@/lib/igatesData";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import { useLocalStorage } from "@/lib/useLocalStorage";
-import type { FundApplication, Session, UserProfile } from "@/lib/types";
+import type { Session, UserProfile } from "@/lib/types";
 
 export default function FundManagerMessages() {
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, DEFAULT_FUND_MANAGER_PROFILES);
-  const [fundApplications] = useFirebaseStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
+  const fundApplications = useFundsCollection();
 
   const profile = useMemo(() => {
     if (!session || session.role !== "Fund Manager") return null;

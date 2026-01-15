@@ -8,6 +8,7 @@ import {
   baseVerifiedFunds,
   countryFlags,
 } from "@/lib/igatesData";
+import { upsertFundApplication, useFundsCollection } from "@/lib/funds";
 import { useLanguage } from "@/components/LanguageProvider";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import { useLocalStorage } from "@/lib/useLocalStorage";
@@ -47,10 +48,7 @@ export default function FundDetailsPage() {
     STORAGE_KEYS.profiles,
     DEFAULT_FUND_MANAGER_PROFILES
   );
-  const [fundApplications, setFundApplications] = useFirebaseStorage<FundApplication[]>(
-    STORAGE_KEYS.fundApplications,
-    []
-  );
+  const fundApplications = useFundsCollection();
   const [statusMessage, setStatusMessage] = useState("");
   const [linkFields, setLinkFields] = useState<string[]>(["", "", ""]);
   const [presentationAsset, setPresentationAsset] = useState<FundApplication["presentationAsset"]>(null);
@@ -107,7 +105,7 @@ export default function FundDetailsPage() {
     );
   }
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setStatusMessage("");
     const formData = new FormData(event.currentTarget);
@@ -171,15 +169,13 @@ export default function FundDetailsPage() {
       operatingTime,
     };
 
-    setFundApplications((prev) => {
-      const existingIndex = prev.findIndex((application) => application.id === fundId);
-      if (existingIndex >= 0) {
-        const next = [...prev];
-        next[existingIndex] = payload;
-        return next;
-      }
-      return [payload, ...prev];
-    });
+    try {
+      await upsertFundApplication(payload);
+    } catch (error) {
+      console.error("Unable to save fund application", error);
+      setStatusMessage(strings.formStatusError);
+      return;
+    }
 
     if (!profile.fundId) {
       setProfiles((prev) =>

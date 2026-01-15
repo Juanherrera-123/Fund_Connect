@@ -11,17 +11,11 @@ import {
   baseVerifiedFunds,
   getFundLogoLabel,
 } from "@/lib/igatesData";
+import { updateFundApplicationStatus, useFundsCollection } from "@/lib/funds";
 import { parseCapitalAllocation } from "@/lib/fundVisuals";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import { useLocalStorage } from "@/lib/useLocalStorage";
-import type {
-  FundApplication,
-  MasterNotification,
-  Session,
-  UserProfile,
-  WaitlistRequest,
-  WaitlistStatus,
-} from "@/lib/types";
+import type { MasterNotification, Session, UserProfile, WaitlistRequest, WaitlistStatus } from "@/lib/types";
 
 const iconClass = "h-4 w-4";
 
@@ -30,10 +24,7 @@ export default function MasterDashboard() {
     STORAGE_KEYS.profiles,
     DEFAULT_FUND_MANAGER_PROFILES
   );
-  const [fundApplications, setFundApplications] = useFirebaseStorage<FundApplication[]>(
-    STORAGE_KEYS.fundApplications,
-    []
-  );
+  const fundApplications = useFundsCollection();
   const [notifications] = useFirebaseStorage<MasterNotification[]>(STORAGE_KEYS.notifications, []);
   const [waitlistRequests, setWaitlistRequests] = useState<WaitlistRequest[]>([]);
   const [pendingWaitlistRequests, setPendingWaitlistRequests] = useState<WaitlistRequest[]>([]);
@@ -138,11 +129,9 @@ export default function MasterDashboard() {
   }, [fundApplications, notifications, pendingWaitlistRequests, profiles]);
 
   const handleApproveFund = (row: { id: string }) => {
-    setFundApplications((prev) =>
-      prev.map((application) =>
-        application.id === row.id ? { ...application, status: "verified" } : application
-      )
-    );
+    void updateFundApplicationStatus(row.id, "verified").catch((error) => {
+      console.error("Unable to approve fund", error);
+    });
   };
 
   const handleApproveManager = (row: { id: string }) => {
