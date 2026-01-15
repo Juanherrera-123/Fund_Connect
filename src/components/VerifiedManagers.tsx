@@ -7,6 +7,7 @@ import { AnimatePresence, MotionConfig, motion } from "framer-motion";
 import { useLanguage } from "@/components/LanguageProvider";
 import {
   STORAGE_KEYS,
+  baseVerifiedFunds,
   countryFlags,
   formatNumber,
   getFundLogoLabel,
@@ -120,52 +121,93 @@ export function VerifiedManagers() {
     const resolveManagerProfile = (fundId: string, managerId?: string) =>
       (managerId ? managerById.get(managerId) : null) ?? managerByFundId.get(fundId) ?? null;
 
-    const fromStorage = fundApplications
-      .filter((application) => application.status === "verified")
-      .map((application) => {
-        const managerProfile = resolveManagerProfile(application.id, application.managerId);
-        const profileDetails = managerProfile?.fundManagerProfile;
+    const mapApplicationToFund = (application: FundApplication): VerifiedFund => {
+      const managerProfile = resolveManagerProfile(application.id, application.managerId);
+      const profileDetails = managerProfile?.fundManagerProfile;
 
-        return {
-          id: application.id,
-          name: application.fundName,
-          country: application.country || "Global",
-          logoLabel: getFundLogoLabel(application.fundName),
-          logoUrl: application.logoUrl ?? null,
-          region: application.region || "Global",
-          strategy:
-            profileDetails?.strategyTypeLabel ||
-            profileDetails?.strategyType ||
-            application.strategyLabel ||
-            application.strategy ||
-            "Multi-Strategy",
-          riskLevel:
-            application.riskLevel || application.riskManagement || strings.verifiedManagersRiskPending,
-          yearProfit: application.yearProfit ?? application.monthlyProfit ?? null,
-          monthlyProfit: application.monthlyProfit ?? application.yearProfit ?? null,
-          drawdownTarget: application.drawdownTarget ?? null,
-          maxDrawdown: application.maxDrawdown ?? null,
-          winRate: application.winRate ?? null,
-          winRatio: application.winRatio ?? null,
-          volatility: application.volatility ?? null,
-          operatingTime: application.operatingTime ?? null,
-          tradesPerMonth: application.tradesPerMonth ?? null,
-          riskManagement: application.riskManagement ?? application.riskLevel ?? null,
-          livePerformanceLinks: application.livePerformanceLinks ?? [],
-          presentationAsset: application.presentationAsset ?? null,
-          trackRecordStatements: application.trackRecordStatements ?? [],
-          minInvestment: application.minInvestment ?? null,
-          performanceFee: application.performanceFee ?? null,
-          subscriptionFee: application.subscriptionFee ?? null,
-          reportsFrequency: application.reportsFrequency ?? null,
-          aum: application.aum || "N/A",
-          description: application.description || strings.verifiedManagersDescriptionFallback,
-          capital_allocated:
-            capitalAllocations[application.id] ?? application.capital_allocated ?? 0,
-        };
-      });
+      return {
+        id: application.id,
+        name: application.fundName,
+        country: application.country || "Global",
+        logoLabel: getFundLogoLabel(application.fundName),
+        logoUrl: application.logoUrl ?? null,
+        region: application.region || "Global",
+        strategy:
+          profileDetails?.strategyTypeLabel ||
+          profileDetails?.strategyType ||
+          application.strategyLabel ||
+          application.strategy ||
+          "Multi-Strategy",
+        riskLevel:
+          application.riskLevel || application.riskManagement || strings.verifiedManagersRiskPending,
+        yearProfit: application.yearProfit ?? application.monthlyProfit ?? null,
+        monthlyProfit: application.monthlyProfit ?? application.yearProfit ?? null,
+        drawdownTarget: application.drawdownTarget ?? null,
+        maxDrawdown: application.maxDrawdown ?? null,
+        winRate: application.winRate ?? null,
+        winRatio: application.winRatio ?? null,
+        volatility: application.volatility ?? null,
+        operatingTime: application.operatingTime ?? null,
+        tradesPerMonth: application.tradesPerMonth ?? null,
+        riskManagement: application.riskManagement ?? application.riskLevel ?? null,
+        livePerformanceLinks: application.livePerformanceLinks ?? [],
+        presentationAsset: application.presentationAsset ?? null,
+        trackRecordStatements: application.trackRecordStatements ?? [],
+        minInvestment: application.minInvestment ?? null,
+        performanceFee: application.performanceFee ?? null,
+        subscriptionFee: application.subscriptionFee ?? null,
+        reportsFrequency: application.reportsFrequency ?? null,
+        aum: application.aum || "N/A",
+        description: application.description || strings.verifiedManagersDescriptionFallback,
+        capital_allocated:
+          capitalAllocations[application.id] ?? application.capital_allocated ?? 0,
+      };
+    };
 
-    return fromStorage;
+    const verifiedApplications = fundApplications.filter(
+      (application) => application.status === "verified"
+    );
+    const applicationById = new Map(
+      verifiedApplications.map((application) => [application.id, mapApplicationToFund(application)])
+    );
+    const baseIds = new Set(baseVerifiedFunds.map((fund) => fund.id));
+
+    return [
+      ...baseVerifiedFunds.map((fund) => ({
+        id: fund.id,
+        name: fund.name,
+        country: fund.country,
+        logoLabel: fund.logoLabel,
+        logoUrl: fund.logoUrl,
+        region: fund.region,
+        strategy: fund.strategy,
+        riskLevel: fund.riskLevel,
+        yearProfit: fund.yearProfit,
+        monthlyProfit: null,
+        drawdownTarget: null,
+        maxDrawdown: fund.maxDrawdown,
+        winRate: null,
+        winRatio: null,
+        volatility: fund.volatility ?? null,
+        operatingTime: null,
+        tradesPerMonth: null,
+        riskManagement: null,
+        livePerformanceLinks: [],
+        presentationAsset: null,
+        trackRecordStatements: [],
+        minInvestment: null,
+        performanceFee: null,
+        subscriptionFee: null,
+        reportsFrequency: null,
+        aum: fund.aum,
+        description: fund.description,
+        capital_allocated: capitalAllocations[fund.id] ?? fund.capital_allocated ?? 0,
+        ...applicationById.get(fund.id),
+      })),
+      ...verifiedApplications
+        .filter((application) => !baseIds.has(application.id))
+        .map((application) => mapApplicationToFund(application)),
+    ];
   }, [
     capitalAllocations,
     fundApplications,
