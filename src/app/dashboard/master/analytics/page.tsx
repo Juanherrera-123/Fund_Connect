@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import ChartCard from "@/components/dashboard/ChartCard";
 import { STORAGE_KEYS } from "@/lib/igatesData";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
-import type { UserProfile } from "@/lib/types";
+import type { FundApplication, UserProfile } from "@/lib/types";
 
 const lineLegend = [
   { label: "Active funds", labelKey: "dashboardLegendActiveFunds", color: "bg-emerald-500" },
