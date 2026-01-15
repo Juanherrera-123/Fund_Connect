@@ -3904,7 +3904,7 @@ export const DEFAULT_FUND_MANAGER_PROFILES: UserProfile[] = baseVerifiedFunds.ma
 
   return {
     id: `fund-manager-${fund.id}`,
-    fullName: isBrennaFund ? "Brenna Goncalvez" : `${fund.name} Management`,
+    fullName: isBrennaFund ? "Brenna Goncalves" : `${fund.name} Management`,
     email: isBrennaFund ? "brenna.investtrader@gmail.com" : `manager+${fund.id}@igatesfunds.com`,
     phone: "+00 000 000 000",
     country: fund.country,
