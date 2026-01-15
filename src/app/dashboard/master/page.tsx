@@ -12,6 +12,7 @@ import {
   getFundLogoLabel,
 } from "@/lib/igatesData";
 import { parseCapitalAllocation } from "@/lib/fundVisuals";
+import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import { useLocalStorage } from "@/lib/useLocalStorage";
 import type {
   FundApplication,
