@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import StatusBadge from "@/components/dashboard/StatusBadge";
 import { useLanguage } from "@/components/LanguageProvider";
-import { DEFAULT_FUND_MANAGER_PROFILES, STORAGE_KEYS, apiBase } from "@/lib/igatesData";
+import { STORAGE_KEYS, apiBase } from "@/lib/igatesData";
 import { getFundFrameClass } from "@/lib/fundVisuals";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import { useLocalStorage } from "@/lib/useLocalStorage";
@@ -17,7 +17,7 @@ export default function FamilyOfficeDashboard() {
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const [profiles, setProfiles] = useFirebaseStorage<UserProfile[]>(
     STORAGE_KEYS.profiles,
-    DEFAULT_FUND_MANAGER_PROFILES
+    []
   );
   const [waitlistRequests, setWaitlistRequests] = useFirebaseStorage<WaitlistRequest[]>(
     STORAGE_KEYS.waitlistRequests,

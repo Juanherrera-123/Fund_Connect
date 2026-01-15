@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-import { DEFAULT_FUND_MANAGER_PROFILES, STORAGE_KEYS } from "@/lib/igatesData";
+import { STORAGE_KEYS } from "@/lib/igatesData";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { Role, Session, UserProfile } from "@/lib/types";
@@ -238,10 +238,7 @@ export default function DashboardShell({
   const pathname = usePathname();
   const router = useRouter();
   const [session, setSession] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
-  const [profiles] = useFirebaseStorage<UserProfile[]>(
-    STORAGE_KEYS.profiles,
-    DEFAULT_FUND_MANAGER_PROFILES
-  );
+  const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
   const sessionRole = session?.role;
   const navItems =
     sessionRole === "Fund Manager"

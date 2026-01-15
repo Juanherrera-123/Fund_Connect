@@ -4,7 +4,7 @@ import { useMemo } from "react";
 
 import DataTable, { StatusCell } from "@/components/dashboard/DataTable";
 import KpiCard from "@/components/dashboard/KpiCard";
-import { DEFAULT_FUND_MANAGER_PROFILES, STORAGE_KEYS, baseVerifiedFunds } from "@/lib/igatesData";
+import { STORAGE_KEYS } from "@/lib/igatesData";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import type { FundApplication, UserProfile } from "@/lib/types";
 
@@ -12,7 +12,7 @@ const iconClass = "h-4 w-4";
 
 export default function FundManagerDashboard() {
   const [fundApplications] = useFirebaseStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
-  const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, DEFAULT_FUND_MANAGER_PROFILES);
+  const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
 
   const data = useMemo(() => {
     const pendingFunds = fundApplications.filter((application) => application.status === "pending");
@@ -23,40 +23,12 @@ export default function FundManagerDashboard() {
       profiles.map((profile) => [profile.id, profile.fullName])
     );
 
-    const baseIds = new Set(baseVerifiedFunds.map((fund) => fund.id));
-    const verifiedFromApplicationsMap = new Map(
-      verifiedFromApplications.map((application) => [
-        application.id,
-        {
-          id: application.id,
-          name: application.fundName,
-          manager: managerNameById.get(application.managerId) ?? "Gestor registrado",
-          status: "Verificado",
-        },
-      ])
-    );
-
-    const verifiedFunds = [
-      ...baseVerifiedFunds.map((fund) => {
-        const override = verifiedFromApplicationsMap.get(fund.id);
-        return (
-          override ?? {
-            id: fund.id,
-            name: fund.name,
-            manager: "Equipo IGATES",
-            status: "Verificado",
-          }
-        );
-      }),
-      ...verifiedFromApplications
-        .filter((application) => !baseIds.has(application.id))
-        .map((application) => ({
-          id: application.id,
-          name: application.fundName,
-          manager: managerNameById.get(application.managerId) ?? "Gestor registrado",
-          status: "Verificado",
-        })),
-    ];
+    const verifiedFunds = verifiedFromApplications.map((application) => ({
+      id: application.id,
+      name: application.fundName,
+      manager: managerNameById.get(application.managerId) ?? "Gestor registrado",
+      status: "Verificado",
+    }));
 
     return {
       pendingFunds,

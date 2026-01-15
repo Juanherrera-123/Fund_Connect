@@ -4,21 +4,14 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 
-import {
-  DEFAULT_FUND_MANAGER_PROFILES,
-  STORAGE_KEYS,
-  formatStrategyList,
-} from "@/lib/igatesData";
+import { STORAGE_KEYS, formatStrategyList } from "@/lib/igatesData";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { Session, UserProfile, WaitlistRequest } from "@/lib/types";
 
 export function ProfileView() {
   const router = useRouter();
-  const [profiles] = useFirebaseStorage<UserProfile[]>(
-    STORAGE_KEYS.profiles,
-    DEFAULT_FUND_MANAGER_PROFILES
-  );
+  const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
   const [waitlistRequests] = useFirebaseStorage<WaitlistRequest[]>(
     STORAGE_KEYS.waitlistRequests,
     []
