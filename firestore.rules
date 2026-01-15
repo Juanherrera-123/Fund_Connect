@@ -12,6 +12,10 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    match /appStorage/{documentId} {
+      allow read, write: if true;
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }
