@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { STORAGE_KEYS } from "@/lib/igatesData";
+import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { ContactRequest, Session, WaitlistRequest } from "@/lib/types";
 
