@@ -6,14 +6,14 @@ import StatusBadge from "@/components/dashboard/StatusBadge";
 import { useLanguage } from "@/components/LanguageProvider";
 import { DEFAULT_FUND_MANAGER_PROFILES, STORAGE_KEYS, apiBase } from "@/lib/igatesData";
 import { getFundFrameClass } from "@/lib/fundVisuals";
-import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
+import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { FundSummary, Session, UserProfile, WaitlistRequest, WaitlistStatus } from "@/lib/types";
 
 const cardClass = "rounded-2xl border border-slate-200 bg-white p-5 shadow-sm";
 
 export default function FamilyOfficeDashboard() {
   const { language, options, strings } = useLanguage();
-  const [session] = useFirebaseStorage<Session>(STORAGE_KEYS.session, null);
+  const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const [profiles, setProfiles] = useFirebaseStorage<UserProfile[]>(
     STORAGE_KEYS.profiles,
     DEFAULT_FUND_MANAGER_PROFILES

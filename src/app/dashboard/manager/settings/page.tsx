@@ -2,11 +2,11 @@
 
 import StatusBadge from "@/components/dashboard/StatusBadge";
 import { DEFAULT_FUND_MANAGER_PROFILES, STORAGE_KEYS, baseVerifiedFunds } from "@/lib/igatesData";
-import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
+import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { FundApplication, Session, UserProfile } from "@/lib/types";
 
 export default function FundManagerSettings() {
-  const [session] = useFirebaseStorage<Session>(STORAGE_KEYS.session, null);
+  const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, DEFAULT_FUND_MANAGER_PROFILES);
   const [fundApplications] = useFirebaseStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
 
