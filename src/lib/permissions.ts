@@ -8,8 +8,8 @@ export const rolePermissions: Record<Role, string[]> = {
     "waitlists:manage",
   ],
   Investor: ["funds:view", "waitlists:join", "reports:view"],
-  FundManager: ["funds:create", "funds:update", "reports:upload"],
-  FamilyOffice: ["funds:view", "reports:view", "messages:send"],
+  "Fund Manager": ["funds:create", "funds:update", "reports:upload"],
+  "Family Office": ["funds:view", "reports:view", "messages:send"],
 };
 
 export function canAccess(role: Role, permission: string) {

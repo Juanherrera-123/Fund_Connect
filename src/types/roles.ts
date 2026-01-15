@@ -1,8 +1,8 @@
 export const roles = [
   "MasterUser",
   "Investor",
-  "FundManager",
-  "FamilyOffice",
+  "Fund Manager",
+  "Family Office",
 ] as const;
 
 export type Role = (typeof roles)[number];
