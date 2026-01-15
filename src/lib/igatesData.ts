@@ -3792,6 +3792,7 @@ export const STORAGE_KEYS = {
   profiles: "igatesUserProfiles",
   session: "igatesCurrentSession",
   notifications: "igatesMasterNotifications",
+  masterUser: "igatesMasterUser",
   fundApplications: "igatesFundApplications",
   waitlistRequests: "igatesWaitlistRequests",
   contactRequests: "igatesContactRequests",

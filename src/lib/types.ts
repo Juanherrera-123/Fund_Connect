@@ -1,5 +1,11 @@
 export type Role = "Investor" | "Fund Manager" | "Family Office" | "MasterUser";
 
+export type MasterUserCredentials = {
+  username: string;
+  password: string;
+  role: "MasterUser";
+};
+
 export type Session = {
   id?: string;
   role: Role;
