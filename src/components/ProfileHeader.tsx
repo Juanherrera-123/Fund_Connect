@@ -3,11 +3,11 @@
 import { useMemo } from "react";
 
 import { DEFAULT_FUND_MANAGER_PROFILES, STORAGE_KEYS } from "@/lib/igatesData";
-import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
+import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { Session, UserProfile } from "@/lib/types";
 
 export function ProfileHeader() {
-  const [session] = useFirebaseStorage<Session>(STORAGE_KEYS.session, null);
+  const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, DEFAULT_FUND_MANAGER_PROFILES);
 
   const profile = useMemo(() => {

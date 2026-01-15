@@ -12,7 +12,7 @@ import {
   getFundLogoLabel,
 } from "@/lib/igatesData";
 import { parseCapitalAllocation } from "@/lib/fundVisuals";
-import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
+import { useLocalStorage } from "@/lib/useLocalStorage";
 import type {
   FundApplication,
   MasterNotification,
@@ -36,7 +36,7 @@ export default function MasterDashboard() {
   const [notifications] = useFirebaseStorage<MasterNotification[]>(STORAGE_KEYS.notifications, []);
   const [waitlistRequests, setWaitlistRequests] = useState<WaitlistRequest[]>([]);
   const [pendingWaitlistRequests, setPendingWaitlistRequests] = useState<WaitlistRequest[]>([]);
-  const [session] = useFirebaseStorage<Session>(STORAGE_KEYS.session, null);
+  const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const [, setCapitalAllocations] = useFirebaseStorage<Record<string, number>>(
     STORAGE_KEYS.capitalAllocations,
     {}
