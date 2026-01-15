@@ -12,7 +12,13 @@ import {
 } from "@/lib/igatesData";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import { useLocalStorage } from "@/lib/useLocalStorage";
-import type { MasterNotification, Session, SurveyAnswer, UserProfile } from "@/lib/types";
+import type {
+  MasterNotification,
+  MasterUserCredentials,
+  Session,
+  SurveyAnswer,
+  UserProfile,
+} from "@/lib/types";
 
 const requiredKycFields = ["fullName", "email", "phone", "country", "role", "password"] as const;
 
@@ -37,6 +43,10 @@ export function AuthFlow() {
   const [profiles, setProfiles] = useFirebaseStorage<UserProfile[]>(
     STORAGE_KEYS.profiles,
     []
+  );
+  const [masterUser] = useFirebaseStorage<MasterUserCredentials>(
+    STORAGE_KEYS.masterUser,
+    MASTER_USER
   );
   const [, setSession] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const [notifications, setNotifications] = useFirebaseStorage<MasterNotification[]>(
@@ -243,11 +253,13 @@ export function AuthFlow() {
       return;
     }
 
+    const activeMasterUser = masterUser?.username ? masterUser : MASTER_USER;
+
     if (
-      identifier.toLowerCase() === MASTER_USER.username.toLowerCase() &&
-      password === MASTER_USER.password
+      identifier.toLowerCase() === activeMasterUser.username.toLowerCase() &&
+      password === activeMasterUser.password
     ) {
-      setSession({ role: "MasterUser", username: MASTER_USER.username });
+      setSession({ role: "MasterUser", username: activeMasterUser.username });
       router.push("/dashboard/master");
       return;
     }
