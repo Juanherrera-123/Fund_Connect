@@ -14,6 +14,7 @@ import {
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import { useLocalStorage } from "@/lib/useLocalStorage";
 import type {
+  FundApplication,
   MasterNotification,
   MasterUserCredentials,
   Session,
@@ -48,6 +49,10 @@ export function AuthFlow() {
   const [masterUser] = useFirebaseStorage<MasterUserCredentials>(
     STORAGE_KEYS.masterUser,
     MASTER_USER
+  );
+  const [fundApplications, setFundApplications] = useFirebaseStorage<FundApplication[]>(
+    STORAGE_KEYS.fundApplications,
+    []
   );
   const [, setSession] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const [notifications, setNotifications] = useFirebaseStorage<MasterNotification[]>(
@@ -190,6 +195,7 @@ export function AuthFlow() {
     }
 
     if (role === "Fund Manager") {
+      const fundId = `fund-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
       const managerProfile = {
         strategyType: surveyAnswers.strategyType as string,
         strategyTypeLabel: getStrategyLabel(surveyAnswers.strategyType as string),
@@ -200,7 +206,25 @@ export function AuthFlow() {
         status: "pending-review" as const,
       };
       baseProfile.fundManagerProfile = managerProfile;
-      baseProfile.onboarding = { ...baseProfile.onboarding, fundManagerProfile: managerProfile };
+      baseProfile.onboarding = {
+        ...baseProfile.onboarding,
+        fundManagerProfile: managerProfile,
+        fundId,
+      };
+      baseProfile.fundId = fundId;
+      const draftFundApplication: FundApplication = {
+        id: fundId,
+        fundName: `Fondo de ${baseProfile.fullName}`,
+        country: baseProfile.country,
+        region: "Global",
+        aum: "Pendiente",
+        strategy: managerProfile.strategyType ?? "Multi-Strategy",
+        strategyLabel: managerProfile.strategyTypeLabel ?? "Multi-Strategy",
+        description: managerProfile.strategyDescription || "Pendiente de completar.",
+        status: "pending",
+        managerId: baseProfile.id,
+        submittedAt: new Date().toISOString(),
+      };
       const nextNotification: MasterNotification = {
         id: `notif-${Date.now()}`,
         type: "fund-manager-profile",
@@ -209,6 +233,12 @@ export function AuthFlow() {
         createdAt: new Date().toISOString(),
       };
       setNotifications([nextNotification, ...notifications]);
+      setFundApplications((prev) => {
+        if (prev.some((application) => application.managerId === baseProfile.id)) {
+          return prev;
+        }
+        return [draftFundApplication, ...prev];
+      });
     }
 
     if (role === "Family Office") {
