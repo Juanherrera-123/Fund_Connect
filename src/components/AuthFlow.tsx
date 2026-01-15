@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 import { useLanguage } from "@/components/LanguageProvider";
 import {
+  DEFAULT_FUND_MANAGER_PROFILES,
   MASTER_USER,
   STORAGE_KEYS,
   SURVEY_DEFINITIONS,
@@ -264,9 +265,26 @@ export function AuthFlow() {
       return;
     }
 
+    const normalizedIdentifier = identifier.toLowerCase();
     const match = profiles.find(
-      (profile) => profile.email.toLowerCase() === identifier.toLowerCase() && profile.password === password
+      (profile) => profile.email.toLowerCase() === normalizedIdentifier && profile.password === password
     );
+
+    if (!match) {
+      const seededMatch = DEFAULT_FUND_MANAGER_PROFILES.find(
+        (profile) =>
+          profile.email.toLowerCase() === normalizedIdentifier && profile.password === password
+      );
+
+      if (seededMatch) {
+        if (!profiles.some((profile) => profile.id === seededMatch.id)) {
+          setProfiles([...profiles, seededMatch]);
+        }
+        setSession({ id: seededMatch.id, role: seededMatch.role });
+        router.push("/dashboard/manager/overview");
+        return;
+      }
+    }
 
     if (!match) {
       setLoginStatus(strings.authStatusInvalidCredentials);
