@@ -3,16 +3,17 @@
 import { useMemo } from "react";
 
 import { useLanguage } from "@/components/LanguageProvider";
+import { useFundsCollection } from "@/lib/funds";
 import { STORAGE_KEYS, baseVerifiedFunds, formatPercent } from "@/lib/igatesData";
 import { getFundFrameClass } from "@/lib/fundVisuals";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
-import type { FundApplication, FundSummary } from "@/lib/types";
+import type { FundSummary } from "@/lib/types";
 
 const DEFAULT_HIGHLIGHT_KEYS = ["fundsHighlight1", "fundsHighlight2", "fundsHighlight3"] as const;
 
 export function FeaturedFunds() {
   const { strings } = useLanguage();
-  const [fundApplications] = useFirebaseStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
+  const fundApplications = useFundsCollection();
   const [capitalAllocations] = useFirebaseStorage<Record<string, number>>(
     STORAGE_KEYS.capitalAllocations,
     {}

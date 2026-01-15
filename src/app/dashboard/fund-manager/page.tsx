@@ -6,7 +6,7 @@ import DataTable, { StatusCell } from "@/components/dashboard/DataTable";
 import KpiCard from "@/components/dashboard/KpiCard";
 import { STORAGE_KEYS } from "@/lib/igatesData";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
-import type { FundApplication, UserProfile } from "@/lib/types";
+import type { UserProfile } from "@/lib/types";
 
 const iconClass = "h-4 w-4";
 

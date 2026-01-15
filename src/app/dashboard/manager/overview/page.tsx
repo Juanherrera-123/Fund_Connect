@@ -7,7 +7,7 @@ import KpiCard from "@/components/dashboard/KpiCard";
 import { STORAGE_KEYS } from "@/lib/igatesData";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import { useLocalStorage } from "@/lib/useLocalStorage";
-import type { FundApplication, Session, UserProfile } from "@/lib/types";
+import type { Session, UserProfile } from "@/lib/types";
 
 const iconClass = "h-4 w-4";
 
