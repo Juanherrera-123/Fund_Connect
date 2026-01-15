@@ -7,16 +7,16 @@ import {
   where,
 } from "firebase/firestore";
 
-import { getFirestoreDb } from "@/lib/firebase";
+import { requireFirestoreDb } from "@/lib/firebase";
 
-const getFundsCollection = () => collection(getFirestoreDb(), "funds");
+const getFundsCollection = () => collection(requireFirestoreDb(), "funds");
 
 export function fundsCollection() {
   return getFundsCollection();
 }
 
 export async function getFundById(id: string) {
-  const db = getFirestoreDb();
+  const db = requireFirestoreDb();
   const snapshot = await getDoc(doc(db, "funds", id));
   return snapshot.exists() ? snapshot.data() : null;
 }

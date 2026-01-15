@@ -1,12 +1,12 @@
 import type { Firestore } from "firebase/firestore";
 
-import { getFirestoreDb } from "@/lib/firebase";
+import { requireFirestoreDb } from "@/lib/firebase";
 
 let cachedDb: Firestore | null = null;
 
 export const getServerFirestore = () => {
   if (!cachedDb) {
-    cachedDb = getFirestoreDb();
+    cachedDb = requireFirestoreDb();
   }
 
   return cachedDb;

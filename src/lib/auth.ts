@@ -11,6 +11,12 @@ export type SessionUser = {
 const auth = getFirebaseAuth();
 
 export function subscribeToAuth(callback: (session: SessionUser | null) => void) {
+  if (!auth) {
+    console.warn("Skipping auth subscription (missing Firebase configuration).");
+    callback(null);
+    return () => {};
+  }
+
   return onAuthStateChanged(auth, async (user) => {
     if (!user) {
       callback(null);

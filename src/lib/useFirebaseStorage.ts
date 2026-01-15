@@ -13,7 +13,11 @@ type StoredPayload<T> = {
   updatedAt?: unknown;
 };
 
-const getStorageDoc = (key: string) => doc(getFirestoreDb(), "appStorage", key);
+const getStorageDoc = (key: string) => {
+  const db = getFirestoreDb();
+  if (!db) return null;
+  return doc(db, "appStorage", key);
+};
 
 export function useFirebaseStorage<T>(key: string, initialValue: T): [T, SetValue<T>] {
   const [storedValue, setStoredValue] = useState<T>(initialValue);
@@ -25,6 +29,9 @@ export function useFirebaseStorage<T>(key: string, initialValue: T): [T, SetValu
 
     try {
       const docRef = getStorageDoc(key);
+      if (!docRef) {
+        return;
+      }
       unsubscribe = onSnapshot(
         docRef,
         (snapshot) => {
@@ -65,6 +72,10 @@ export function useFirebaseStorage<T>(key: string, initialValue: T): [T, SetValu
         if (typeof window !== "undefined") {
           try {
             const docRef = getStorageDoc(key);
+            if (!docRef) {
+              console.warn(`Skipping Firebase write for ${key} (missing configuration).`);
+              return nextValue;
+            }
             void setDoc(
               docRef,
               {

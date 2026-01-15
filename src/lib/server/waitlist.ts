@@ -16,10 +16,10 @@ import {
   type QueryDocumentSnapshot,
 } from "firebase/firestore";
 
-import { getFirestoreDb } from "@/lib/firebase";
+import { requireFirestoreDb } from "@/lib/firebase";
 import type { WaitlistRequest, WaitlistStatus } from "@/lib/types";
 
-const getWaitlistCollection = () => collection(getFirestoreDb(), "waitlistRequests");
+const getWaitlistCollection = () => collection(requireFirestoreDb(), "waitlistRequests");
 // Firestore composite indexes expected:
 // - status + createdAt
 // - fundId + status
