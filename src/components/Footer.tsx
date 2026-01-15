@@ -3,7 +3,7 @@ import Link from "next/link";
 export function Footer() {
   return (
     <footer className="border-t border-slate-200 bg-white">
-      <div className="mx-auto grid w-full max-w-6xl gap-8 px-6 py-12 md:grid-cols-4">
+      <div className="mx-auto grid w-full max-w-6xl gap-8 px-6 py-12 sm:grid-cols-2 md:grid-cols-5">
         <div>
           <Link
             className="inline-flex items-center"
@@ -62,6 +62,60 @@ export function Footer() {
           </Link>
           <Link className="hover:text-slate-900" href="/#contact" data-i18n="footerInvestorRelations">
             Investor Relations
+          </Link>
+        </div>
+        <div className="grid gap-2 text-sm text-slate-600">
+          <h5 className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-900" data-i18n="footerLegalTitle">
+            Abeas Data / Legal
+          </h5>
+          <Link
+            className="hover:text-slate-900"
+            href="/legal/abeas-data#proteccion-de-datos"
+            data-i18n="footerLegalDataProtection"
+          >
+            Protección de Datos (Habeas Data)
+          </Link>
+          <Link
+            className="hover:text-slate-900"
+            href="/legal/abeas-data#seguridad-informacion"
+            data-i18n="footerLegalSecurity"
+          >
+            Seguridad de la Información
+          </Link>
+          <Link
+            className="hover:text-slate-900"
+            href="/legal/abeas-data#custodia-ejecucion-riesgo"
+            data-i18n="footerLegalCustody"
+          >
+            Custodia, Ejecución y Riesgo
+          </Link>
+          <Link
+            className="hover:text-slate-900"
+            href="/legal/abeas-data#condiciones-uso"
+            data-i18n="footerLegalTerms"
+          >
+            Condiciones de Uso
+          </Link>
+          <Link
+            className="hover:text-slate-900"
+            href="/legal/abeas-data#limitacion-responsabilidad"
+            data-i18n="footerLegalLiability"
+          >
+            Limitación de Responsabilidad
+          </Link>
+          <Link
+            className="hover:text-slate-900"
+            href="/legal/abeas-data#cumplimiento-marco-operativo"
+            data-i18n="footerLegalCompliance"
+          >
+            Cumplimiento y Marco Operativo
+          </Link>
+          <Link
+            className="hover:text-slate-900"
+            href="/legal/abeas-data#contacto-derechos"
+            data-i18n="footerLegalContact"
+          >
+            Contacto y Ejercicio de Derechos
           </Link>
         </div>
       </div>

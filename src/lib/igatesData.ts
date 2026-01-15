@@ -209,6 +209,41 @@ export const translations = {
     footerInvestorRelations: "Investor Relations",
     footerRights: "© 2024 IGATES. All rights reserved.",
     footerPrivacy: "Privacy & Security",
+    footerLegalTitle: "Abeas Data / Legal",
+    footerLegalDataProtection: "Data Protection (Habeas Data)",
+    footerLegalSecurity: "Information Security",
+    footerLegalCustody: "Custody, Execution & Risk",
+    footerLegalTerms: "Terms of Use",
+    footerLegalLiability: "Limitation of Liability",
+    footerLegalCompliance: "Compliance & Operating Framework",
+    footerLegalContact: "Contact & Rights Exercise",
+    legalEyebrow: "Abeas Data / Legal",
+    legalTitle: "Abeas Data / Legal",
+    legalSubtitle:
+      "Institutional policies and conditions describing IGATES operations, capital custody, and personal data processing within the curated access model.",
+    legalTocTitle: "Index",
+    legalSectionDataTitle: "Data protection and data subject rights (Habeas Data)",
+    legalSectionDataBody:
+      "IGATES recognizes the importance of personal data protection and processes information only for verification, due diligence, operational coordination, and institutional communications. We do not sell data or authorize its use for purposes unrelated to the curated access model. Data subjects may exercise rights of access, update, rectification, deletion, revocation, and opposition under applicable regulations.",
+    legalSectionSecurityTitle: "Information security policy",
+    legalSectionSecurityBody:
+      "We apply technical and administrative controls aligned with institutional standards: role governance, encryption in transit and at rest, least-privilege access, and continuous event monitoring. We conduct periodic reviews, incident management, and third-party assessments to preserve integrity, availability, and confidentiality of information.",
+    legalSectionCustodyTitle: "Capital custody, execution, and risk management",
+    legalSectionCustodyBody:
+      "IGATES is not a broker or custodian. Capital remains in segregated accounts under the investor’s name with A-book and Prime of Prime brokers, under MAM structures managed by verified managers. IGATES does not execute orders or receive funds; it coordinates operational access and verification. The investor assumes the economic risk associated with the strategy and market conditions.",
+    legalSectionUseTitle: "Platform terms of use",
+    legalSectionUseBody:
+      "Platform access is limited to authorized users who provide truthful information and use the service for lawful purposes. Unauthorized access, system interference, or any use that compromises security or ecosystem integrity is prohibited. IGATES may suspend or restrict access in cases of noncompliance or operational risk.",
+    legalSectionLiabilityTitle: "Limitation of liability",
+    legalSectionLiabilityBody:
+      "Information provided is for informational purposes and does not constitute financial, legal, or tax advice. IGATES does not guarantee results or returns and is not responsible for losses arising from investment decisions, third-party actions, external operational failures, or force majeure events.",
+    legalSectionComplianceTitle: "Compliance and operating framework",
+    legalSectionComplianceBody:
+      "IGATES operates as an institutional access, verification, and coordination layer, without acting as a fund, investment vehicle, or custodian. The operating framework aligns with applicable regulatory requirements and market standards, with updates as compliance conditions evolve.",
+    legalSectionContactTitle: "Contact and exercise of rights",
+    legalSectionContactBody:
+      "Requests related to personal data, compliance, or platform use must be sent through IGATES official channels. We address requests within reasonable timeframes under applicable regulations and maintain traceability for each case.",
+    legalUpdated: "Last updated: 2026",
     managersHeroEyebrow: "For Managers",
     managersHeroTitle: "Purpose-built distribution for elite strategies.",
     managersHeroLead: "Connect with verified global allocators using IGATES’ institutional infrastructure.",
@@ -894,6 +929,41 @@ export const translations = {
     footerInvestorRelations: "Relación con inversionistas",
     footerRights: "© 2024 IGATES. Todos los derechos reservados.",
     footerPrivacy: "Privacidad y seguridad",
+    footerLegalTitle: "Abeas Data / Legal",
+    footerLegalDataProtection: "Protección de Datos (Habeas Data)",
+    footerLegalSecurity: "Seguridad de la Información",
+    footerLegalCustody: "Custodia, Ejecución y Riesgo",
+    footerLegalTerms: "Condiciones de Uso",
+    footerLegalLiability: "Limitación de Responsabilidad",
+    footerLegalCompliance: "Cumplimiento y Marco Operativo",
+    footerLegalContact: "Contacto y Ejercicio de Derechos",
+    legalEyebrow: "Abeas Data / Legal",
+    legalTitle: "Abeas Data / Legal",
+    legalSubtitle:
+      "Políticas y condiciones institucionales que describen la operación de IGATES, la custodia de capital y el tratamiento de datos personales en el modelo de acceso curado.",
+    legalTocTitle: "Índice",
+    legalSectionDataTitle: "Protección de datos y derechos del titular (Habeas Data)",
+    legalSectionDataBody:
+      "IGATES reconoce la importancia de la protección de datos personales y trata la información únicamente para procesos de verificación, debida diligencia, coordinación operativa y comunicaciones institucionales. No comercializamos datos ni autorizamos su uso con fines no vinculados al modelo de acceso curado. Los titulares pueden ejercer derechos de acceso, actualización, rectificación, supresión, revocatoria y oposición conforme a la normativa aplicable.",
+    legalSectionSecurityTitle: "Política de seguridad de la información",
+    legalSectionSecurityBody:
+      "Aplicamos controles técnicos y administrativos alineados con estándares institucionales: gobierno de roles, cifrado en tránsito y en reposo, principio de mínimo privilegio y monitoreo continuo de eventos. Realizamos revisiones periódicas, gestión de incidentes y evaluación de terceros para mantener la integridad, disponibilidad y confidencialidad de la información.",
+    legalSectionCustodyTitle: "Custodia de capital, ejecución y gestión de riesgo",
+    legalSectionCustodyBody:
+      "IGATES no es broker ni custodio. El capital permanece en cuentas segregadas a nombre del inversionista en brokers A-book y Prime of Prime, bajo estructuras MAM administradas por gestores verificados. IGATES no ejecuta órdenes ni recibe fondos; coordina el acceso operativo y la verificación. El inversionista asume el riesgo económico asociado a la estrategia y a las condiciones de mercado.",
+    legalSectionUseTitle: "Condiciones de uso de la plataforma",
+    legalSectionUseBody:
+      "El acceso a la plataforma se limita a usuarios autorizados que proporcionen información veraz y utilicen el servicio con fines lícitos. Se prohíbe el acceso no autorizado, la interferencia con sistemas y cualquier uso que comprometa la seguridad o la integridad del ecosistema. IGATES podrá suspender o restringir accesos ante incumplimientos o riesgos operativos.",
+    legalSectionLiabilityTitle: "Limitación de responsabilidad",
+    legalSectionLiabilityBody:
+      "La información entregada tiene fines informativos y no constituye asesoría financiera, legal o tributaria. IGATES no garantiza resultados ni rendimientos, y no es responsable por pérdidas derivadas de decisiones de inversión, acciones de terceros, fallas operativas externas o eventos de fuerza mayor.",
+    legalSectionComplianceTitle: "Cumplimiento y marco operativo",
+    legalSectionComplianceBody:
+      "IGATES opera como capa institucional de acceso, verificación y coordinación, sin constituirse como fondo, vehículo de inversión o custodio. El marco operativo se ajusta a requerimientos regulatorios y a estándares de mercado aplicables, con actualizaciones cuando cambien las condiciones de cumplimiento.",
+    legalSectionContactTitle: "Contacto y ejercicio de derechos",
+    legalSectionContactBody:
+      "Las solicitudes relacionadas con datos personales, cumplimiento o uso de la plataforma deben enviarse a los canales oficiales de IGATES. Atendemos requerimientos en tiempos razonables conforme a la normativa aplicable y registramos la trazabilidad de cada gestión.",
+    legalUpdated: "Última actualización: 2026",
     managersHeroEyebrow: "Para gestores",
     managersHeroTitle: "Distribución diseñada para estrategias élite.",
     managersHeroLead:
@@ -1587,6 +1657,41 @@ export const translations = {
     footerInvestorRelations: "Relações com investidores",
     footerRights: "© 2024 IGATES. Todos os direitos reservados.",
     footerPrivacy: "Privacidade e segurança",
+    footerLegalTitle: "Abeas Data / Legal",
+    footerLegalDataProtection: "Proteção de Dados (Habeas Data)",
+    footerLegalSecurity: "Segurança da Informação",
+    footerLegalCustody: "Custódia, Execução e Risco",
+    footerLegalTerms: "Condições de Uso",
+    footerLegalLiability: "Limitação de Responsabilidade",
+    footerLegalCompliance: "Conformidade e Marco Operacional",
+    footerLegalContact: "Contato e Exercício de Direitos",
+    legalEyebrow: "Abeas Data / Legal",
+    legalTitle: "Abeas Data / Legal",
+    legalSubtitle:
+      "Políticas e condições institucionais que descrevem a operação da IGATES, a custódia de capital e o tratamento de dados pessoais no modelo de acesso curado.",
+    legalTocTitle: "Índice",
+    legalSectionDataTitle: "Proteção de dados e direitos do titular (Habeas Data)",
+    legalSectionDataBody:
+      "A IGATES reconhece a importância da proteção de dados pessoais e trata as informações apenas para processos de verificação, due diligence, coordenação operacional e comunicações institucionais. Não comercializamos dados nem autorizamos seu uso para fins não relacionados ao modelo de acesso curado. Os titulares podem exercer direitos de acesso, atualização, retificação, exclusão, revogação e oposição conforme a legislação aplicável.",
+    legalSectionSecurityTitle: "Política de segurança da informação",
+    legalSectionSecurityBody:
+      "Aplicamos controles técnicos e administrativos alinhados a padrões institucionais: governança de papéis, criptografia em trânsito e em repouso, princípio do menor privilégio e monitoramento contínuo de eventos. Realizamos revisões periódicas, gestão de incidentes e avaliação de terceiros para manter integridade, disponibilidade e confidencialidade das informações.",
+    legalSectionCustodyTitle: "Custódia de capital, execução e gestão de risco",
+    legalSectionCustodyBody:
+      "A IGATES não é broker nem custodiante. O capital permanece em contas segregadas em nome do investidor em brokers A-book e Prime of Prime, sob estruturas MAM administradas por gestores verificados. A IGATES não executa ordens nem recebe fundos; coordena o acesso operacional e a verificação. O investidor assume o risco econômico associado à estratégia e às condições de mercado.",
+    legalSectionUseTitle: "Condições de uso da plataforma",
+    legalSectionUseBody:
+      "O acesso à plataforma é limitado a usuários autorizados que forneçam informações verídicas e utilizem o serviço para fins lícitos. É proibido o acesso não autorizado, a interferência em sistemas e qualquer uso que comprometa a segurança ou a integridade do ecossistema. A IGATES poderá suspender ou restringir acessos diante de descumprimentos ou riscos operacionais.",
+    legalSectionLiabilityTitle: "Limitação de responsabilidade",
+    legalSectionLiabilityBody:
+      "As informações fornecidas têm caráter informativo e não constituem assessoria financeira, jurídica ou tributária. A IGATES não garante resultados nem retornos e não se responsabiliza por perdas decorrentes de decisões de investimento, ações de terceiros, falhas operacionais externas ou eventos de força maior.",
+    legalSectionComplianceTitle: "Conformidade e marco operacional",
+    legalSectionComplianceBody:
+      "A IGATES opera como camada institucional de acesso, verificação e coordenação, sem se constituir como fundo, veículo de investimento ou custodiante. O marco operacional se ajusta a requisitos regulatórios e a padrões de mercado aplicáveis, com atualizações quando mudarem as condições de conformidade.",
+    legalSectionContactTitle: "Contato e exercício de direitos",
+    legalSectionContactBody:
+      "Solicitações relacionadas a dados pessoais, conformidade ou uso da plataforma devem ser enviadas aos canais oficiais da IGATES. Atendemos os requerimentos em prazos razoáveis conforme a legislação aplicável e registramos a rastreabilidade de cada gestão.",
+    legalUpdated: "Última atualização: 2026",
     managersHeroEyebrow: "Para gestores",
     managersHeroTitle: "Distribuição feita para estratégias de elite.",
     managersHeroLead:
@@ -2278,6 +2383,41 @@ export const translations = {
     footerInvestorRelations: "Relazioni con gli investitori",
     footerRights: "© 2024 IGATES. Tutti i diritti riservati.",
     footerPrivacy: "Privacy e sicurezza",
+    footerLegalTitle: "Abeas Data / Legal",
+    footerLegalDataProtection: "Data Protection (Habeas Data)",
+    footerLegalSecurity: "Information Security",
+    footerLegalCustody: "Custody, Execution & Risk",
+    footerLegalTerms: "Terms of Use",
+    footerLegalLiability: "Limitation of Liability",
+    footerLegalCompliance: "Compliance & Operating Framework",
+    footerLegalContact: "Contact & Rights Exercise",
+    legalEyebrow: "Abeas Data / Legal",
+    legalTitle: "Abeas Data / Legal",
+    legalSubtitle:
+      "Institutional policies and conditions describing IGATES operations, capital custody, and personal data processing within the curated access model.",
+    legalTocTitle: "Index",
+    legalSectionDataTitle: "Data protection and data subject rights (Habeas Data)",
+    legalSectionDataBody:
+      "IGATES recognizes the importance of personal data protection and processes information only for verification, due diligence, operational coordination, and institutional communications. We do not sell data or authorize its use for purposes unrelated to the curated access model. Data subjects may exercise rights of access, update, rectification, deletion, revocation, and opposition under applicable regulations.",
+    legalSectionSecurityTitle: "Information security policy",
+    legalSectionSecurityBody:
+      "We apply technical and administrative controls aligned with institutional standards: role governance, encryption in transit and at rest, least-privilege access, and continuous event monitoring. We conduct periodic reviews, incident management, and third-party assessments to preserve integrity, availability, and confidentiality of information.",
+    legalSectionCustodyTitle: "Capital custody, execution, and risk management",
+    legalSectionCustodyBody:
+      "IGATES is not a broker or custodian. Capital remains in segregated accounts under the investor’s name with A-book and Prime of Prime brokers, under MAM structures managed by verified managers. IGATES does not execute orders or receive funds; it coordinates operational access and verification. The investor assumes the economic risk associated with the strategy and market conditions.",
+    legalSectionUseTitle: "Platform terms of use",
+    legalSectionUseBody:
+      "Platform access is limited to authorized users who provide truthful information and use the service for lawful purposes. Unauthorized access, system interference, or any use that compromises security or ecosystem integrity is prohibited. IGATES may suspend or restrict access in cases of noncompliance or operational risk.",
+    legalSectionLiabilityTitle: "Limitation of liability",
+    legalSectionLiabilityBody:
+      "Information provided is for informational purposes and does not constitute financial, legal, or tax advice. IGATES does not guarantee results or returns and is not responsible for losses arising from investment decisions, third-party actions, external operational failures, or force majeure events.",
+    legalSectionComplianceTitle: "Compliance and operating framework",
+    legalSectionComplianceBody:
+      "IGATES operates as an institutional access, verification, and coordination layer, without acting as a fund, investment vehicle, or custodian. The operating framework aligns with applicable regulatory requirements and market standards, with updates as compliance conditions evolve.",
+    legalSectionContactTitle: "Contact and exercise of rights",
+    legalSectionContactBody:
+      "Requests related to personal data, compliance, or platform use must be sent through IGATES official channels. We address requests within reasonable timeframes under applicable regulations and maintain traceability for each case.",
+    legalUpdated: "Last updated: 2026",
     managersHeroEyebrow: "Per gestori",
     managersHeroTitle: "Distribuzione pensata per strategie d'élite.",
     managersHeroLead:
@@ -2960,6 +3100,41 @@ export const translations = {
     footerInvestorRelations: "投资者关系",
     footerRights: "© 2024 IGATES。保留所有权利。",
     footerPrivacy: "隐私与安全",
+    footerLegalTitle: "Abeas Data / Legal",
+    footerLegalDataProtection: "Data Protection (Habeas Data)",
+    footerLegalSecurity: "Information Security",
+    footerLegalCustody: "Custody, Execution & Risk",
+    footerLegalTerms: "Terms of Use",
+    footerLegalLiability: "Limitation of Liability",
+    footerLegalCompliance: "Compliance & Operating Framework",
+    footerLegalContact: "Contact & Rights Exercise",
+    legalEyebrow: "Abeas Data / Legal",
+    legalTitle: "Abeas Data / Legal",
+    legalSubtitle:
+      "Institutional policies and conditions describing IGATES operations, capital custody, and personal data processing within the curated access model.",
+    legalTocTitle: "Index",
+    legalSectionDataTitle: "Data protection and data subject rights (Habeas Data)",
+    legalSectionDataBody:
+      "IGATES recognizes the importance of personal data protection and processes information only for verification, due diligence, operational coordination, and institutional communications. We do not sell data or authorize its use for purposes unrelated to the curated access model. Data subjects may exercise rights of access, update, rectification, deletion, revocation, and opposition under applicable regulations.",
+    legalSectionSecurityTitle: "Information security policy",
+    legalSectionSecurityBody:
+      "We apply technical and administrative controls aligned with institutional standards: role governance, encryption in transit and at rest, least-privilege access, and continuous event monitoring. We conduct periodic reviews, incident management, and third-party assessments to preserve integrity, availability, and confidentiality of information.",
+    legalSectionCustodyTitle: "Capital custody, execution, and risk management",
+    legalSectionCustodyBody:
+      "IGATES is not a broker or custodian. Capital remains in segregated accounts under the investor’s name with A-book and Prime of Prime brokers, under MAM structures managed by verified managers. IGATES does not execute orders or receive funds; it coordinates operational access and verification. The investor assumes the economic risk associated with the strategy and market conditions.",
+    legalSectionUseTitle: "Platform terms of use",
+    legalSectionUseBody:
+      "Platform access is limited to authorized users who provide truthful information and use the service for lawful purposes. Unauthorized access, system interference, or any use that compromises security or ecosystem integrity is prohibited. IGATES may suspend or restrict access in cases of noncompliance or operational risk.",
+    legalSectionLiabilityTitle: "Limitation of liability",
+    legalSectionLiabilityBody:
+      "Information provided is for informational purposes and does not constitute financial, legal, or tax advice. IGATES does not guarantee results or returns and is not responsible for losses arising from investment decisions, third-party actions, external operational failures, or force majeure events.",
+    legalSectionComplianceTitle: "Compliance and operating framework",
+    legalSectionComplianceBody:
+      "IGATES operates as an institutional access, verification, and coordination layer, without acting as a fund, investment vehicle, or custodian. The operating framework aligns with applicable regulatory requirements and market standards, with updates as compliance conditions evolve.",
+    legalSectionContactTitle: "Contact and exercise of rights",
+    legalSectionContactBody:
+      "Requests related to personal data, compliance, or platform use must be sent through IGATES official channels. We address requests within reasonable timeframes under applicable regulations and maintain traceability for each case.",
+    legalUpdated: "Last updated: 2026",
     managersHeroEyebrow: "面向管理人",
     managersHeroTitle: "为顶级策略打造的分销体系。",
     managersHeroLead: "通过 IGATES 的机构级基础设施连接全球已验证配置方。",
