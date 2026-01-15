@@ -34,7 +34,6 @@ export default function FundManagerOverview() {
 
     return {
       name: application?.fundName ?? baseFund?.name ?? "Tu fondo",
-      capitalPrepared: application?.aum ?? baseFund?.aum ?? "—",
       monthlyProfit: application?.monthlyProfit ?? application?.yearProfit ?? baseFund?.yearProfit ?? null,
       maxDrawdown: application?.maxDrawdown ?? baseFund?.maxDrawdown ?? null,
       status: application?.status ?? (baseFund ? "verified" : "pending"),
@@ -52,23 +51,6 @@ export default function FundManagerOverview() {
   }
 
   const kpis = [
-    {
-      label: "Capital preparado",
-      labelKey: "dashboardManagerCapitalPrepared",
-      value: fundSnapshot?.capitalPrepared ?? "—",
-      icon: (
-        <svg viewBox="0 0 20 20" className={iconClass} aria-hidden>
-          <path d="M4 6h12v9H4z" fill="currentColor" opacity="0.2" />
-          <path
-            d="M7 6V4h6v2"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-          />
-        </svg>
-      ),
-    },
     {
       label: "Profit mensual",
       labelKey: "dashboardManagerMonthlyProfit",
