@@ -483,6 +483,9 @@ export default function MasterDashboard() {
                     typeof request.amount === "number"
                       ? request.amount.toLocaleString("en-US")
                       : request.intendedInvestmentAmount ?? "—";
+                  const requesterRoleLabel = request.requesterRole
+                    ? request.requesterRole.replace("_", " ").toLowerCase()
+                    : "—";
                   const formattedCreatedAt = request.createdAt
                     ? new Date(request.createdAt).toLocaleString("es-ES", {
                         dateStyle: "medium",
@@ -499,7 +502,7 @@ export default function MasterDashboard() {
                               "—"}
                           </span>
                           <span className="text-[0.7rem] text-slate-500">
-                            {request.requesterRole.replace("_", " ").toLowerCase()}
+                            {requesterRoleLabel}
                           </span>
                         </div>
                       </td>
