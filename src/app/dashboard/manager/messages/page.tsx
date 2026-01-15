@@ -2,14 +2,14 @@
 
 import { useMemo } from "react";
 
-import { DEFAULT_FUND_MANAGER_PROFILES, STORAGE_KEYS, baseVerifiedFunds } from "@/lib/igatesData";
+import { STORAGE_KEYS } from "@/lib/igatesData";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { FundApplication, Session, UserProfile } from "@/lib/types";
 
 export default function FundManagerMessages() {
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
-  const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, DEFAULT_FUND_MANAGER_PROFILES);
+  const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
   const [fundApplications] = useFirebaseStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
 
   const profile = useMemo(() => {
@@ -19,14 +19,14 @@ export default function FundManagerMessages() {
 
   const fundInfo = useMemo(() => {
     if (!profile) return null;
-    const baseFund = profile.fundId
-      ? baseVerifiedFunds.find((fund) => fund.id === profile.fundId)
-      : null;
     const application = fundApplications.find((item) => item.managerId === profile.id);
+    if (!application) {
+      return null;
+    }
     return {
-      id: application?.id ?? baseFund?.id ?? profile.id,
-      title: application?.fundName ?? baseFund?.name ?? "Tu fondo",
-      subtitle: application?.strategyLabel ?? baseFund?.strategy ?? "Multi-Strategy",
+      id: application.id,
+      title: application.fundName,
+      subtitle: application.strategyLabel ?? application.strategy ?? "Multi-Strategy",
     };
   }, [fundApplications, profile]);
 

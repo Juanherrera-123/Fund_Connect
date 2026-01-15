@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 import { useLanguage } from "@/components/LanguageProvider";
 import {
-  DEFAULT_FUND_MANAGER_PROFILES,
   MASTER_USER,
   STORAGE_KEYS,
   SURVEY_DEFINITIONS,
@@ -37,7 +36,7 @@ export function AuthFlow() {
 
   const [profiles, setProfiles] = useFirebaseStorage<UserProfile[]>(
     STORAGE_KEYS.profiles,
-    DEFAULT_FUND_MANAGER_PROFILES
+    []
   );
   const [, setSession] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const [notifications, setNotifications] = useFirebaseStorage<MasterNotification[]>(

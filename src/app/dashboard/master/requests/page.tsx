@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 
 import DataTable, { StatusCell } from "@/components/dashboard/DataTable";
-import { DEFAULT_FUND_MANAGER_PROFILES, STORAGE_KEYS } from "@/lib/igatesData";
+import { STORAGE_KEYS } from "@/lib/igatesData";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import type { UserProfile, WaitlistRequest, WaitlistStatus } from "@/lib/types";
 
@@ -21,7 +21,7 @@ export default function MasterRequestsPage() {
   );
   const [profiles] = useFirebaseStorage<UserProfile[]>(
     STORAGE_KEYS.profiles,
-    DEFAULT_FUND_MANAGER_PROFILES
+    []
   );
 
   const rows = useMemo(() => {

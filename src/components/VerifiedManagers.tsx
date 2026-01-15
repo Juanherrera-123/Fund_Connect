@@ -7,9 +7,7 @@ import { AnimatePresence, MotionConfig, motion } from "framer-motion";
 import { useLanguage } from "@/components/LanguageProvider";
 import {
   STORAGE_KEYS,
-  baseVerifiedFunds,
   countryFlags,
-  DEFAULT_FUND_MANAGER_PROFILES,
   formatNumber,
   getFundLogoLabel,
 } from "@/lib/igatesData";
@@ -78,7 +76,7 @@ export function VerifiedManagers() {
   const { strings } = useLanguage();
   const whatsappNumber = "573181252627";
   const [fundApplications] = useFirebaseStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
-  const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, DEFAULT_FUND_MANAGER_PROFILES);
+  const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const [capitalAllocations] = useFirebaseStorage<Record<string, number>>(
     STORAGE_KEYS.capitalAllocations,
@@ -167,57 +165,14 @@ export function VerifiedManagers() {
         };
       });
 
-    const overridesById = new Map(fromStorage.map((fund) => [fund.id, fund]));
-    const mergedBase = baseVerifiedFunds.map((fund) => {
-      const override = overridesById.get(fund.id);
-      if (!override) {
-        const managerProfile = managerByFundId.get(fund.id);
-        const profileDetails = managerProfile?.fundManagerProfile;
-
-        return {
-          id: fund.id,
-          name: fund.name,
-          country: fund.country,
-          logoLabel: fund.logoLabel,
-          logoUrl: fund.logoUrl ?? null,
-          region: fund.region,
-          strategy:
-            profileDetails?.strategyTypeLabel || profileDetails?.strategyType || fund.strategy,
-          riskLevel: fund.riskLevel,
-          yearProfit: fund.yearProfit,
-          monthlyProfit: fund.yearProfit,
-          drawdownTarget: null,
-          maxDrawdown: fund.maxDrawdown,
-          winRate: fund.winRate,
-          winRatio: null,
-          volatility: fund.volatility,
-          operatingTime: null,
-          tradesPerMonth: null,
-          riskManagement: fund.riskLevel,
-          livePerformanceLinks: [],
-          presentationAsset: null,
-          trackRecordStatements: [],
-          minInvestment: null,
-          performanceFee: null,
-          subscriptionFee: null,
-          reportsFrequency: null,
-          aum: fund.aum,
-          description: fund.description,
-          capital_allocated: capitalAllocations[fund.id] ?? fund.capital_allocated ?? 0,
-        };
-      }
-      return {
-        ...override,
-        logoLabel: override.logoLabel || fund.logoLabel,
-        logoUrl: override.logoUrl ?? fund.logoUrl ?? null,
-      };
-    });
-
-    const baseIds = new Set(baseVerifiedFunds.map((fund) => fund.id));
-    const extraFunds = fromStorage.filter((fund) => !baseIds.has(fund.id));
-
-    return [...mergedBase, ...extraFunds];
-  }, [capitalAllocations, fundApplications, profiles, strings.verifiedManagersDescriptionFallback, strings.verifiedManagersRiskPending]);
+    return fromStorage;
+  }, [
+    capitalAllocations,
+    fundApplications,
+    profiles,
+    strings.verifiedManagersDescriptionFallback,
+    strings.verifiedManagersRiskPending,
+  ]);
 
   const regions = useMemo(() => {
     return Array.from(new Set(verifiedFunds.map((fund) => fund.region))).sort((a, b) =>

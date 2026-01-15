@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useMemo } from "react";
 
 import KpiCard from "@/components/dashboard/KpiCard";
-import { DEFAULT_FUND_MANAGER_PROFILES, STORAGE_KEYS, baseVerifiedFunds } from "@/lib/igatesData";
+import { STORAGE_KEYS } from "@/lib/igatesData";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { FundApplication, Session, UserProfile } from "@/lib/types";
@@ -13,7 +13,7 @@ const iconClass = "h-4 w-4";
 
 export default function FundManagerOverview() {
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
-  const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, DEFAULT_FUND_MANAGER_PROFILES);
+  const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
   const [fundApplications] = useFirebaseStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
 
   const profile = useMemo(() => {
@@ -23,9 +23,6 @@ export default function FundManagerOverview() {
 
   const fundSnapshot = useMemo(() => {
     if (!profile) return null;
-    const baseFund = profile.fundId
-      ? baseVerifiedFunds.find((fund) => fund.id === profile.fundId)
-      : null;
     const applicationById = profile.fundId
       ? fundApplications.find((application) => application.id === profile.fundId)
       : null;
@@ -33,10 +30,10 @@ export default function FundManagerOverview() {
     const application = applicationById ?? applicationByManager ?? null;
 
     return {
-      name: application?.fundName ?? baseFund?.name ?? "Tu fondo",
-      monthlyProfit: application?.monthlyProfit ?? application?.yearProfit ?? baseFund?.yearProfit ?? null,
-      maxDrawdown: application?.maxDrawdown ?? baseFund?.maxDrawdown ?? null,
-      status: application?.status ?? (baseFund ? "verified" : "pending"),
+      name: application?.fundName ?? "Tu fondo",
+      monthlyProfit: application?.monthlyProfit ?? application?.yearProfit ?? null,
+      maxDrawdown: application?.maxDrawdown ?? null,
+      status: application?.status ?? "pending",
     };
   }, [fundApplications, profile]);
 

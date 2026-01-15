@@ -3,9 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import {
-  DEFAULT_FUND_MANAGER_PROFILES,
   STORAGE_KEYS,
-  baseVerifiedFunds,
   countryFlags,
 } from "@/lib/igatesData";
 import { useLanguage } from "@/components/LanguageProvider";
@@ -45,7 +43,7 @@ export default function FundDetailsPage() {
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const [profiles, setProfiles] = useFirebaseStorage<UserProfile[]>(
     STORAGE_KEYS.profiles,
-    DEFAULT_FUND_MANAGER_PROFILES
+    []
   );
   const [fundApplications, setFundApplications] = useFirebaseStorage<FundApplication[]>(
     STORAGE_KEYS.fundApplications,
@@ -63,11 +61,6 @@ export default function FundDetailsPage() {
     if (!session || session.role !== "Fund Manager") return null;
     return profiles.find((item) => item.id === session.id) ?? null;
   }, [profiles, session]);
-
-  const baseFund = useMemo(() => {
-    if (!profile?.fundId) return null;
-    return baseVerifiedFunds.find((fund) => fund.id === profile.fundId) ?? null;
-  }, [profile]);
 
   const existingApplication = useMemo(() => {
     if (!profile) return null;
@@ -93,9 +86,9 @@ export default function FundDetailsPage() {
 
   useEffect(() => {
     setPresentationAsset(existingApplication?.presentationAsset ?? null);
-    setLogoAsset(existingApplication?.logoUrl ?? baseFund?.logoUrl ?? null);
+    setLogoAsset(existingApplication?.logoUrl ?? null);
     setTrackRecordStatements(existingApplication?.trackRecordStatements ?? []);
-  }, [baseFund?.logoUrl, existingApplication]);
+  }, [existingApplication]);
 
   if (!profile) {
     return (
@@ -134,19 +127,17 @@ export default function FundDetailsPage() {
     }
 
     const fundId = profile.fundId ?? existingApplication?.id ?? `fund-${Date.now()}`;
-    const isBaseFund = baseVerifiedFunds.some((fund) => fund.id === fundId);
-    const status =
-      existingApplication?.status === "verified" || isBaseFund ? "verified" : "pending";
+    const status = existingApplication?.status === "verified" ? "verified" : "pending";
     const strategyLabel = profile.fundManagerProfile?.strategyTypeLabel ?? profile.fundManagerProfile?.strategyType;
 
     const payload: FundApplication = {
       id: fundId,
       fundName,
       country,
-      region: existingApplication?.region ?? baseFund?.region ?? "Global",
-      aum: existingApplication?.aum ?? baseFund?.aum ?? "N/A",
-      strategy: existingApplication?.strategy ?? baseFund?.strategy ?? profile.fundManagerProfile?.strategyType ?? "Multi-Strategy",
-      strategyLabel: existingApplication?.strategyLabel ?? baseFund?.strategy ?? strategyLabel ?? "Multi-Strategy",
+      region: existingApplication?.region ?? "Global",
+      aum: existingApplication?.aum ?? "N/A",
+      strategy: existingApplication?.strategy ?? profile.fundManagerProfile?.strategyType ?? "Multi-Strategy",
+      strategyLabel: existingApplication?.strategyLabel ?? strategyLabel ?? "Multi-Strategy",
       description,
       status,
       managerId: profile.id,
@@ -224,7 +215,7 @@ export default function FundDetailsPage() {
             </span>
             <input
               name="fundName"
-              defaultValue={existingApplication?.fundName ?? baseFund?.name ?? ""}
+              defaultValue={existingApplication?.fundName ?? ""}
               required
               className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
             />
@@ -236,7 +227,7 @@ export default function FundDetailsPage() {
             </span>
             <select
               name="country"
-              defaultValue={existingApplication?.country ?? baseFund?.country ?? ""}
+              defaultValue={existingApplication?.country ?? ""}
               required
               className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
             >
@@ -258,7 +249,7 @@ export default function FundDetailsPage() {
             <textarea
               name="description"
               rows={3}
-              defaultValue={existingApplication?.description ?? baseFund?.description ?? ""}
+              defaultValue={existingApplication?.description ?? ""}
               required
               className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
             />
@@ -348,7 +339,7 @@ export default function FundDetailsPage() {
                 type="number"
                 step="0.01"
                 name="winRate"
-                defaultValue={existingApplication?.winRate ?? baseFund?.winRate ?? ""}
+                defaultValue={existingApplication?.winRate ?? ""}
                 placeholder="Ej: 60"
                 className="w-full bg-transparent text-sm outline-none"
               />
@@ -394,7 +385,7 @@ export default function FundDetailsPage() {
                 type="number"
                 step="0.01"
                 name="maxDrawdown"
-                defaultValue={existingApplication?.maxDrawdown ?? baseFund?.maxDrawdown ?? ""}
+                defaultValue={existingApplication?.maxDrawdown ?? ""}
                 placeholder="Ej: 8"
                 data-i18n-placeholder="dashboardExamplePercent"
                 className="w-full bg-transparent text-sm outline-none"
