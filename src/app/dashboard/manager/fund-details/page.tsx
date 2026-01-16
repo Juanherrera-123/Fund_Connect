@@ -9,7 +9,6 @@ import {
 import { upsertFundApplication, useFundsCollection } from "@/lib/funds";
 import { useLanguage } from "@/components/LanguageProvider";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
-import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { FundApplication, Session, UserProfile } from "@/lib/types";
 
 const riskOptions = [
@@ -41,7 +40,7 @@ const readFileAsDataUrl = (file: File) =>
 
 export default function FundDetailsPage() {
   const { strings } = useLanguage();
-  const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
+  const [session] = useFirebaseStorage<Session>(STORAGE_KEYS.session, null);
   const [profiles, setProfiles] = useFirebaseStorage<UserProfile[]>(
     STORAGE_KEYS.profiles,
     []
