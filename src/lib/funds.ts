@@ -71,12 +71,18 @@ export async function updateFundApplicationStatus(id: string, status: FundApplic
   }
 
   const docRef = doc(db, "funds", id);
-  await setDoc(
-    docRef,
-    {
-      status,
-      updatedAt: serverTimestamp(),
-    },
-    { merge: true }
-  );
+  try {
+    await setDoc(
+      docRef,
+      {
+        status,
+        updatedAt: serverTimestamp(),
+      },
+      { merge: true }
+    );
+    console.log("[Funds] Fund status updated:", id, status);
+  } catch (error) {
+    console.error("[Funds] Unable to update fund status:", id, error);
+    throw error;
+  }
 }

@@ -116,18 +116,32 @@ export default function MasterDashboard() {
     );
   };
 
-  const handleApproveManager = (row: { id: string }) => {
+  const handleApproveManager = async (managerId: string) => {
+    const profile = profiles.find((item) => item.id === managerId);
+    const fundId =
+      profile?.fundId ??
+      fundApplications.find((application) => application.managerId === managerId)?.id ??
+      null;
+    console.log("[Master Approve] managerId:", managerId, "fundId:", fundId);
+    try {
+      if (fundId) {
+        await updateFundApplicationStatus(fundId, "verified");
+        console.log("[Master Approve] fund status set to verified:", fundId);
+      }
+    } catch (error) {
+      console.error("[Master Approve] Unable to approve manager fund:", error);
+    }
     setProfiles((prev) =>
-      prev.map((profile) =>
-        profile.id === row.id
+      prev.map((item) =>
+        item.id === managerId
           ? {
-              ...profile,
+              ...item,
               fundManagerProfile: {
-                ...profile.fundManagerProfile,
+                ...item.fundManagerProfile,
                 status: "verified",
               },
             }
-          : profile
+          : item
       )
     );
   };
@@ -801,7 +815,7 @@ export default function MasterDashboard() {
             titleKey="dashboardFundManagersTitle"
             actionLabel="Approve"
             actionLabelKey="dashboardApproveAction"
-            onAction={handleApproveManager}
+            onAction={(row) => handleApproveManager(row.id)}
             columns={[
               { key: "name", label: "Name", labelKey: "dashboardColumnName" },
               { key: "email", label: "Email", labelKey: "dashboardColumnEmail" },
