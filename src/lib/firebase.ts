@@ -1,6 +1,6 @@
 import { getApp, getApps, initializeApp, type FirebaseApp } from "firebase/app";
 import { getAuth, type Auth } from "firebase/auth";
-import { initializeFirestore, type Firestore, type FirestoreSettings } from "firebase/firestore";
+import { getFirestore, initializeFirestore, type Firestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -54,9 +54,20 @@ export const getFirebaseAuth = (): Auth | null => {
 export const getFirestoreDb = (): Firestore | null => {
   const app = getFirebaseApp();
   if (!app) return null;
-  if (firestoreInstance) return firestoreInstance;
-  firestoreInstance = initializeFirestore(app, firestoreSettings);
-  return firestoreInstance;
+try {
+  return getFirestore(app);
+} catch (error) {
+  console.warn("Firestore not initialized, falling back to long polling.", error);
+}
+
+if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
+  console.log("[Firestore] Using long polling");
+}
+
+return initializeFirestore(app, {
+  experimentalForceLongPolling: true,
+  useFetchStreams: false,
+});
 };
 
 export const requireFirestoreDb = (): Firestore => {
