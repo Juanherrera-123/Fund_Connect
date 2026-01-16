@@ -1,6 +1,6 @@
 import { getApp, getApps, initializeApp, type FirebaseApp } from "firebase/app";
 import { getAuth, type Auth } from "firebase/auth";
-import { getFirestore, type Firestore } from "firebase/firestore";
+import { initializeFirestore, type Firestore, type FirestoreSettings } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -23,6 +23,7 @@ export const hasFirebaseConfig = Object.values(requiredFirebaseConfig).every(Boo
 const missingConfigMessage =
   "Missing Firebase configuration. Set NEXT_PUBLIC_FIREBASE_* environment variables.";
 let hasWarnedMissingConfig = false;
+let firestoreInstance: Firestore | null = null;
 
 const warnMissingConfig = () => {
   if (hasWarnedMissingConfig) return;
@@ -49,7 +50,13 @@ export const getFirebaseAuth = (): Auth | null => {
 
 export const getFirestoreDb = (): Firestore | null => {
   const app = getFirebaseApp();
-  return app ? getFirestore(app) : null;
+  if (!app) return null;
+  if (firestoreInstance) return firestoreInstance;
+  const firestoreSettings: FirestoreSettings = {
+    experimentalForceLongPolling: true,
+  };
+  firestoreInstance = initializeFirestore(app, firestoreSettings);
+  return firestoreInstance;
 };
 
 export const requireFirestoreDb = (): Firestore => {

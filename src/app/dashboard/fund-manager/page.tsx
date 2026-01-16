@@ -5,13 +5,14 @@ import { useMemo } from "react";
 import DataTable, { StatusCell } from "@/components/dashboard/DataTable";
 import KpiCard from "@/components/dashboard/KpiCard";
 import { STORAGE_KEYS } from "@/lib/igatesData";
+import { useFundsCollection } from "@/lib/funds";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
-import type { FundApplication, UserProfile } from "@/lib/types";
+import type { UserProfile } from "@/lib/types";
 
 const iconClass = "h-4 w-4";
 
 export default function FundManagerDashboard() {
-  const [fundApplications] = useFirebaseStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
+  const fundApplications = useFundsCollection();
   const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
 
   const data = useMemo(() => {
