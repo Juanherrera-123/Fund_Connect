@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { useLanguage } from "@/components/LanguageProvider";
@@ -9,6 +9,7 @@ import {
   STORAGE_KEYS,
   SURVEY_DEFINITIONS,
   countryFlags,
+  languageOptions,
   getStrategyLabel,
 } from "@/lib/igatesData";
 import { upsertFundApplication } from "@/lib/funds";
@@ -49,6 +50,11 @@ const parseNumericValue = (value: string) => {
   return Number.isNaN(parsed) ? null : parsed;
 };
 
+const getFlagEmoji = (code: string) =>
+  code
+    .toUpperCase()
+    .replace(/./g, (char) => String.fromCodePoint(127397 + char.charCodeAt(0)));
+
 const readFileAsDataUrl = (file: File) =>
   new Promise<string>((resolve, reject) => {
     const reader = new FileReader();
@@ -60,13 +66,16 @@ const readFileAsDataUrl = (file: File) =>
 export function AuthFlow() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { strings } = useLanguage();
+  const { strings, language } = useLanguage();
   const [activeTab, setActiveTab] = useState<"signup" | "login">("signup");
   const [stepIndex, setStepIndex] = useState(0);
   const [signupStatus, setSignupStatus] = useState("");
   const [loginStatus, setLoginStatus] = useState("");
   const [isLoginPasswordVisible, setIsLoginPasswordVisible] = useState(false);
   const [kycAnswers, setKycAnswers] = useState<Record<string, string>>({});
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [phoneCountryCode, setPhoneCountryCode] = useState("");
   const [surveyAnswers, setSurveyAnswers] = useState<Record<string, SurveyAnswer>>({});
   const [fundDetails, setFundDetails] = useState({
     fundName: "",
@@ -134,6 +143,34 @@ export function AuthFlow() {
   const totalSteps = role ? steps.length : 4;
   const currentStep = steps[stepIndex] ?? steps[0];
 
+  const countryOptions = useMemo(() => {
+    const fallback = Object.entries(countryFlags).map(([country, flag]) => ({
+      code: country.slice(0, 2).toUpperCase(),
+      name: country,
+      flag,
+    }));
+    if (
+      typeof Intl === "undefined" ||
+      typeof Intl.supportedValuesOf !== "function" ||
+      typeof Intl.DisplayNames !== "function"
+    ) {
+      return fallback;
+    }
+    try {
+      const locale = languageOptions[language]?.locale ?? "en";
+      const displayNames = new Intl.DisplayNames([locale], { type: "region" });
+      return Intl.supportedValuesOf("region")
+        .map((code) => ({
+          code,
+          name: displayNames.of(code) ?? code,
+          flag: getFlagEmoji(code),
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name));
+    } catch (error) {
+      return fallback;
+    }
+  }, [language]);
+
   useEffect(() => {
     setStepIndex(0);
   }, [role]);
@@ -148,18 +185,56 @@ export function AuthFlow() {
     }
   }, [searchParams]);
 
-  const updateKyc = (field: string, value: string) => {
+  const updateKyc = useCallback((field: string, value: string) => {
     setKycAnswers((prev) => ({ ...prev, [field]: value }));
-  };
+  }, []);
 
   const updateSurvey = (id: string, value: SurveyAnswer) => {
     setSurveyAnswers((prev) => ({ ...prev, [id]: value }));
   };
 
+  useEffect(() => {
+    if (!phoneCountryCode && countryOptions.length) {
+      setPhoneCountryCode(countryOptions[0].code);
+    }
+  }, [countryOptions, phoneCountryCode]);
+
+  useEffect(() => {
+    if (!phoneCountryCode && !phoneNumber) return;
+    const fullPhone = [phoneCountryCode, phoneNumber].filter(Boolean).join(" ").trim();
+    updateKyc("phone", fullPhone);
+  }, [phoneCountryCode, phoneNumber, updateKyc]);
+
   const validateKyc = () => {
     const missing = requiredKycFields.filter((field) => !kycAnswers[field]);
+    if (!confirmPassword.trim()) {
+      missing.push("confirmPassword");
+    }
+    if (!phoneCountryCode || !phoneNumber.trim()) {
+      missing.push("phone");
+    }
     if (missing.length) {
       setSignupStatus(strings.authStatusMissingFields);
+      return false;
+    }
+    const missingRequirements: string[] = [];
+    if (!/[A-Z]/.test(kycAnswers.password || "")) {
+      missingRequirements.push(strings.authPasswordRequirementUppercase);
+    }
+    if (!/[0-9]/.test(kycAnswers.password || "")) {
+      missingRequirements.push(strings.authPasswordRequirementNumber);
+    }
+    if (!/[^A-Za-z0-9]/.test(kycAnswers.password || "")) {
+      missingRequirements.push(strings.authPasswordRequirementSymbol);
+    }
+    if (missingRequirements.length) {
+      setSignupStatus(
+        `${strings.authStatusPasswordRequirements} ${missingRequirements.join(", ")}`
+      );
+      return false;
+    }
+    if (kycAnswers.password !== confirmPassword) {
+      setSignupStatus(strings.authStatusPasswordMismatch);
       return false;
     }
     return true;
@@ -495,29 +570,49 @@ export function AuthFlow() {
                 </label>
                 <label className="grid gap-2 text-sm font-medium text-slate-600">
                   <span data-i18n="authPhoneLabel">Teléfono</span>
-                  <input
-                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
-                    type="tel"
-                    name="phone"
-                    placeholder="+34 600 000 000"
-                    data-i18n-placeholder="authPhonePlaceholder"
-                    value={kycAnswers.phone ?? ""}
-                    onChange={(event) => updateKyc("phone", event.target.value)}
-                    required
-                  />
+                  <div className="flex gap-2">
+                    <select
+                      className="min-w-[120px] rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
+                      aria-label={strings.authPhoneCountryCodeLabel}
+                      value={phoneCountryCode}
+                      onChange={(event) => setPhoneCountryCode(event.target.value)}
+                      required
+                    >
+                      {countryOptions.map((option) => (
+                        <option key={option.code} value={option.code}>
+                          {option.flag} {option.code} · {option.name}
+                        </option>
+                      ))}
+                    </select>
+                    <input
+                      className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
+                      type="tel"
+                      name="phone"
+                      placeholder="600 000 000"
+                      value={phoneNumber}
+                      onChange={(event) => setPhoneNumber(event.target.value)}
+                      required
+                    />
+                  </div>
                 </label>
                 <label className="grid gap-2 text-sm font-medium text-slate-600">
                   <span data-i18n="authCountryLabel">País</span>
-                  <input
-                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
-                    type="text"
+                  <select
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
                     name="country"
-                    placeholder="País"
-                    data-i18n-placeholder="authCountryPlaceholder"
+                    required
                     value={kycAnswers.country ?? ""}
                     onChange={(event) => updateKyc("country", event.target.value)}
-                    required
-                  />
+                  >
+                    <option value="" data-i18n="authCountryPlaceholder">
+                      País
+                    </option>
+                    {countryOptions.map((option) => (
+                      <option key={option.code} value={option.name}>
+                        {option.flag} {option.name}
+                      </option>
+                    ))}
+                  </select>
                 </label>
                 <label className="grid gap-2 text-sm font-medium text-slate-600">
                   <span data-i18n="authRoleLabel">Tipo de perfil</span>
@@ -548,6 +643,19 @@ export function AuthFlow() {
                     data-i18n-placeholder="authPasswordPlaceholder"
                     value={kycAnswers.password ?? ""}
                     onChange={(event) => updateKyc("password", event.target.value)}
+                    required
+                  />
+                </label>
+                <label className="grid gap-2 text-sm font-medium text-slate-600">
+                  <span data-i18n="authConfirmPasswordLabel">Confirmar contraseña</span>
+                  <input
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
+                    type="password"
+                    name="confirmPassword"
+                    placeholder="Repite tu contraseña"
+                    data-i18n-placeholder="authConfirmPasswordPlaceholder"
+                    value={confirmPassword}
+                    onChange={(event) => setConfirmPassword(event.target.value)}
                     required
                   />
                 </label>
