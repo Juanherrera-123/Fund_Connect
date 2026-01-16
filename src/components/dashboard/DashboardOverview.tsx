@@ -177,14 +177,13 @@ export default function DashboardOverview({
             <DataTable
               title="Pending fund approvals"
               titleKey="dashboardPendingFundApprovals"
-              actionLabel="Approve"
-              actionLabelKey="dashboardApproveAction"
+              actionLabel="Review"
+              actionLabelKey="dashboardReviewAction"
               onAction={onPendingFundAction}
               columns={[
-                { key: "fund", label: "Fund", labelKey: "dashboardColumnFund" },
-                { key: "manager", label: "Manager", labelKey: "dashboardColumnManager" },
-                { key: "submitted", label: "Submitted", labelKey: "dashboardColumnSubmitted" },
+                { key: "manager", label: "Name", labelKey: "dashboardColumnName" },
                 { key: "status", label: "Status", labelKey: "dashboardColumnStatus" },
+                { key: "submitted", label: "Submitted", labelKey: "dashboardColumnSubmitted" },
               ]}
               rows={pendingFundRows.map((row) => ({
                 ...row,

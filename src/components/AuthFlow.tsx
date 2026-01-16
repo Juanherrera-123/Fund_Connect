@@ -5,14 +5,14 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 import { useLanguage } from "@/components/LanguageProvider";
 import {
-  DEFAULT_FUND_MANAGER_PROFILES,
   MASTER_USER,
   STORAGE_KEYS,
   SURVEY_DEFINITIONS,
+  countryFlags,
   getStrategyLabel,
 } from "@/lib/igatesData";
+import { upsertFundApplication } from "@/lib/funds";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
-import { useLocalStorage } from "@/lib/useLocalStorage";
 import type {
   FundApplication,
   MasterNotification,
@@ -28,7 +28,34 @@ type SurveyQuestion = (typeof SURVEY_DEFINITIONS)[keyof typeof SURVEY_DEFINITION
 
 type SignupStep =
   | { type: "kyc" }
-  | { type: "survey"; questions: SurveyQuestion[] };
+  | { type: "survey"; questions: SurveyQuestion[] }
+  | { type: "fund-details" };
+
+const riskOptions = [
+  { label: "Controlado", labelKey: "dashboardRiskControlled" },
+  { label: "Medio", labelKey: "dashboardRiskMedium" },
+  { label: "Arriesgado", labelKey: "dashboardRiskAggressive" },
+];
+const reportOptions = [
+  { label: "Semanal", labelKey: "dashboardReportWeekly" },
+  { label: "Quincenal", labelKey: "dashboardReportBiweekly" },
+  { label: "Mensual", labelKey: "dashboardReportMonthly" },
+];
+
+const parseNumericValue = (value: string) => {
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  const parsed = Number.parseFloat(trimmed);
+  return Number.isNaN(parsed) ? null : parsed;
+};
+
+const readFileAsDataUrl = (file: File) =>
+  new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result ?? ""));
+    reader.onerror = () => reject(new Error("No se pudo leer el archivo."));
+    reader.readAsDataURL(file);
+  });
 
 export function AuthFlow() {
   const router = useRouter();
@@ -41,6 +68,28 @@ export function AuthFlow() {
   const [isLoginPasswordVisible, setIsLoginPasswordVisible] = useState(false);
   const [kycAnswers, setKycAnswers] = useState<Record<string, string>>({});
   const [surveyAnswers, setSurveyAnswers] = useState<Record<string, SurveyAnswer>>({});
+  const [fundDetails, setFundDetails] = useState({
+    fundName: "",
+    country: "",
+    description: "",
+    operatingTime: "",
+    monthlyProfit: "",
+    winRate: "",
+    winRatio: "",
+    drawdownTarget: "",
+    maxDrawdown: "",
+    tradesPerMonth: "",
+    riskManagement: "",
+    minInvestment: "",
+    performanceFee: "",
+    subscriptionFee: "",
+    reportsFrequency: "",
+  });
+  const [fundLinks, setFundLinks] = useState<string[]>(["", "", ""]);
+  const [presentationAsset, setPresentationAsset] = useState<
+    FundApplication["presentationAsset"]
+  >(null);
+  const [logoAsset, setLogoAsset] = useState<string | null>(null);
 
   const [profiles, setProfiles] = useFirebaseStorage<UserProfile[]>(
     STORAGE_KEYS.profiles,
@@ -54,7 +103,7 @@ export function AuthFlow() {
     STORAGE_KEYS.fundApplications,
     []
   );
-  const [, setSession] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
+  const [, setSession] = useFirebaseStorage<Session>(STORAGE_KEYS.session, null);
   const [notifications, setNotifications] = useFirebaseStorage<MasterNotification[]>(
     STORAGE_KEYS.notifications,
     []
@@ -80,6 +129,9 @@ export function AuthFlow() {
       type: "survey",
       questions: group,
     }));
+    if (role === "Fund Manager") {
+      return [{ type: "kyc" }, ...surveySteps, { type: "fund-details" }];
+    }
     return [{ type: "kyc" }, ...surveySteps];
   }, [role]);
 
@@ -133,6 +185,27 @@ export function AuthFlow() {
     return isValid;
   };
 
+  const validateFundDetails = () => {
+    const requiredFields = [
+      fundDetails.fundName,
+      fundDetails.country,
+      fundDetails.description,
+      fundDetails.operatingTime,
+      fundDetails.riskManagement,
+      fundDetails.reportsFrequency,
+    ];
+    if (requiredFields.some((value) => !value.trim())) {
+      setSignupStatus(strings.dashboardFundDetailsRequiredFields);
+      return false;
+    }
+    const hasLinks = fundLinks.some((link) => link.trim().length > 0);
+    if (!hasLinks) {
+      setSignupStatus(strings.dashboardFundDetailsAddLink);
+      return false;
+    }
+    return true;
+  };
+
   const handleNext = () => {
     setSignupStatus("");
     if (currentStep.type === "kyc") {
@@ -142,14 +215,21 @@ export function AuthFlow() {
       return;
     }
 
-    if (!validateSurvey(currentStep.questions)) return;
-
-    if (stepIndex === steps.length - 1) {
-      completeSignup();
+    if (currentStep.type === "survey") {
+      if (!validateSurvey(currentStep.questions)) return;
+      if (stepIndex === steps.length - 1) {
+        completeSignup();
+        return;
+      }
+      setStepIndex((prev) => Math.min(prev + 1, steps.length - 1));
       return;
     }
 
-    setStepIndex((prev) => Math.min(prev + 1, steps.length - 1));
+    if (currentStep.type === "fund-details") {
+      if (!validateFundDetails()) return;
+      completeSignup();
+      return;
+    }
   };
 
   const handleBack = () => {
@@ -196,6 +276,7 @@ export function AuthFlow() {
 
     if (role === "Fund Manager") {
       const fundId = `fund-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
+      const normalizedLinks = fundLinks.map((link) => link.trim()).filter(Boolean);
       const managerProfile = {
         strategyType: surveyAnswers.strategyType as string,
         strategyTypeLabel: getStrategyLabel(surveyAnswers.strategyType as string),
@@ -209,21 +290,39 @@ export function AuthFlow() {
       baseProfile.onboarding = {
         ...baseProfile.onboarding,
         fundManagerProfile: managerProfile,
+        fundDetails,
         fundId,
       };
       baseProfile.fundId = fundId;
       const draftFundApplication: FundApplication = {
         id: fundId,
-        fundName: `Fondo de ${baseProfile.fullName}`,
-        country: baseProfile.country,
+        fundName: fundDetails.fundName,
+        country: fundDetails.country,
         region: "Global",
         aum: "Pendiente",
         strategy: managerProfile.strategyType ?? "Multi-Strategy",
         strategyLabel: managerProfile.strategyTypeLabel ?? "Multi-Strategy",
-        description: managerProfile.strategyDescription || "Pendiente de completar.",
+        description: fundDetails.description || managerProfile.strategyDescription || "Pendiente de completar.",
         status: "pending",
         managerId: baseProfile.id,
         submittedAt: new Date().toISOString(),
+        logoUrl: logoAsset ?? undefined,
+        monthlyProfit: parseNumericValue(fundDetails.monthlyProfit),
+        yearProfit: parseNumericValue(fundDetails.monthlyProfit),
+        winRate: parseNumericValue(fundDetails.winRate),
+        winRatio: fundDetails.winRatio || null,
+        drawdownTarget: parseNumericValue(fundDetails.drawdownTarget),
+        maxDrawdown: parseNumericValue(fundDetails.maxDrawdown),
+        tradesPerMonth: parseNumericValue(fundDetails.tradesPerMonth),
+        riskLevel: fundDetails.riskManagement || null,
+        riskManagement: fundDetails.riskManagement || null,
+        livePerformanceLinks: normalizedLinks,
+        presentationAsset,
+        minInvestment: fundDetails.minInvestment || null,
+        performanceFee: fundDetails.performanceFee || null,
+        subscriptionFee: fundDetails.subscriptionFee || null,
+        reportsFrequency: fundDetails.reportsFrequency || null,
+        operatingTime: fundDetails.operatingTime || undefined,
       };
       const nextNotification: MasterNotification = {
         id: `notif-${Date.now()}`,
@@ -233,6 +332,7 @@ export function AuthFlow() {
         createdAt: new Date().toISOString(),
       };
       setNotifications([nextNotification, ...notifications]);
+      void upsertFundApplication(draftFundApplication);
       setFundApplications((prev) => {
         if (prev.some((application) => application.managerId === baseProfile.id)) {
           return prev;
@@ -299,22 +399,6 @@ export function AuthFlow() {
     const match = profiles.find(
       (profile) => profile.email.toLowerCase() === normalizedIdentifier && profile.password === password
     );
-
-    if (!match) {
-      const seededMatch = DEFAULT_FUND_MANAGER_PROFILES.find(
-        (profile) =>
-          profile.email.toLowerCase() === normalizedIdentifier && profile.password === password
-      );
-
-      if (seededMatch) {
-        if (!profiles.some((profile) => profile.id === seededMatch.id)) {
-          setProfiles([...profiles, seededMatch]);
-        }
-        setSession({ id: seededMatch.id, role: seededMatch.role });
-        router.push("/dashboard/manager/overview");
-        return;
-      }
-    }
 
     if (!match) {
       setLoginStatus(strings.authStatusInvalidCredentials);
@@ -388,7 +472,7 @@ export function AuthFlow() {
             {strings.authStepLabel} {stepIndex + 1} {strings.authStepOf} {totalSteps}
           </div>
           <form
-            className="mt-4 grid gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-5"
+            className="mt-4 grid gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-5 md:grid-cols-2"
             autoComplete="off"
           >
             {currentStep.type === "kyc" && (
@@ -547,6 +631,338 @@ export function AuthFlow() {
                   )}
                 </div>
               ))}
+            {currentStep.type === "fund-details" && (
+              <>
+                <div className="md:col-span-2 grid gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+                  <span data-i18n="dashboardTitleFundDetails">Detalles del fondo</span>
+                </div>
+                <label className="grid gap-2 text-sm font-medium text-slate-600">
+                  <span data-i18n="dashboardFundNameLabel">Nombre del fondo</span>
+                  <input
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
+                    type="text"
+                    value={fundDetails.fundName}
+                    onChange={(event) =>
+                      setFundDetails((prev) => ({ ...prev, fundName: event.target.value }))
+                    }
+                    required
+                  />
+                </label>
+                <label className="grid gap-2 text-sm font-medium text-slate-600">
+                  <span data-i18n="dashboardCountryLabel">País</span>
+                  <select
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
+                    value={fundDetails.country}
+                    onChange={(event) =>
+                      setFundDetails((prev) => ({ ...prev, country: event.target.value }))
+                    }
+                    required
+                  >
+                    <option value="" data-i18n="dashboardSelectPlaceholder">
+                      Selecciona
+                    </option>
+                    {Object.entries(countryFlags).map(([country, flag]) => (
+                      <option key={country} value={country}>
+                        {flag} {country}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="md:col-span-2 grid gap-2 text-sm font-medium text-slate-600">
+                  <span data-i18n="dashboardDescriptionLabel">Descripción</span>
+                  <textarea
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
+                    rows={3}
+                    value={fundDetails.description}
+                    onChange={(event) =>
+                      setFundDetails((prev) => ({ ...prev, description: event.target.value }))
+                    }
+                    required
+                  />
+                </label>
+                <div className="md:col-span-2 grid gap-3 rounded-xl border border-slate-200 bg-white p-4">
+                  <p className="text-xs font-semibold text-slate-600">Logo del fondo</p>
+                  <div className="flex flex-wrap items-center gap-4">
+                    <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-slate-50 text-xs font-semibold text-slate-500">
+                      {logoAsset ? (
+                        <img src={logoAsset} alt="Logo del fondo" className="h-full w-full object-cover" />
+                      ) : (
+                        <span className="text-center">Sin logo</span>
+                      )}
+                    </div>
+                    <div className="flex flex-1 flex-col gap-2">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={async (event) => {
+                          const file = event.target.files?.[0];
+                          if (!file) return;
+                          const url = await readFileAsDataUrl(file);
+                          setLogoAsset(url);
+                        }}
+                        className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+                      />
+                      {logoAsset && (
+                        <button
+                          type="button"
+                          onClick={() => setLogoAsset(null)}
+                          className="text-left text-xs font-semibold text-rose-500"
+                        >
+                          Quitar logo
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <label className="grid gap-2 text-sm font-medium text-slate-600">
+                  <span data-i18n="dashboardOperatingTimeLabel">Tiempo operando</span>
+                  <div className="flex items-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
+                    <input
+                      className="w-full bg-transparent text-sm text-slate-900 focus:outline-none"
+                      type="number"
+                      placeholder="Ej: 3"
+                      data-i18n-placeholder="dashboardExampleYears"
+                      value={fundDetails.operatingTime}
+                      onChange={(event) =>
+                        setFundDetails((prev) => ({ ...prev, operatingTime: event.target.value }))
+                      }
+                      required
+                    />
+                    <span className="ml-2 text-slate-500" data-i18n="dashboardYearsLabel">
+                      años
+                    </span>
+                  </div>
+                </label>
+                <label className="grid gap-2 text-sm font-medium text-slate-600">
+                  <span data-i18n="dashboardMonthlyProfitLabel">Profit mensual (último año)</span>
+                  <div className="flex items-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
+                    <input
+                      className="w-full bg-transparent text-sm text-slate-900 focus:outline-none"
+                      type="number"
+                      step="0.01"
+                      placeholder="Ej: 2.4"
+                      data-i18n-placeholder="dashboardExamplePercent"
+                      value={fundDetails.monthlyProfit}
+                      onChange={(event) =>
+                        setFundDetails((prev) => ({ ...prev, monthlyProfit: event.target.value }))
+                      }
+                    />
+                    <span className="ml-2 text-slate-500">%</span>
+                  </div>
+                </label>
+                <label className="grid gap-2 text-sm font-medium text-slate-600">
+                  <span>Win rate</span>
+                  <div className="flex items-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
+                    <input
+                      className="w-full bg-transparent text-sm text-slate-900 focus:outline-none"
+                      type="number"
+                      step="0.01"
+                      placeholder="Ej: 60"
+                      value={fundDetails.winRate}
+                      onChange={(event) =>
+                        setFundDetails((prev) => ({ ...prev, winRate: event.target.value }))
+                      }
+                    />
+                    <span className="ml-2 text-slate-500">%</span>
+                  </div>
+                </label>
+                <label className="grid gap-2 text-sm font-medium text-slate-600">
+                  <span>Win ratio</span>
+                  <input
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
+                    type="text"
+                    placeholder="Ej: 1.8:1"
+                    value={fundDetails.winRatio}
+                    onChange={(event) =>
+                      setFundDetails((prev) => ({ ...prev, winRatio: event.target.value }))
+                    }
+                  />
+                </label>
+                <label className="grid gap-2 text-sm font-medium text-slate-600">
+                  <span data-i18n="dashboardDrawdownTargetLabel">Drawdown target</span>
+                  <div className="flex items-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
+                    <input
+                      className="w-full bg-transparent text-sm text-slate-900 focus:outline-none"
+                      type="number"
+                      step="0.01"
+                      placeholder="Ej: 5"
+                      data-i18n-placeholder="dashboardExamplePercent"
+                      value={fundDetails.drawdownTarget}
+                      onChange={(event) =>
+                        setFundDetails((prev) => ({ ...prev, drawdownTarget: event.target.value }))
+                      }
+                    />
+                    <span className="ml-2 text-slate-500">%</span>
+                  </div>
+                </label>
+                <label className="grid gap-2 text-sm font-medium text-slate-600">
+                  <span data-i18n="dashboardMaxDrawdownLabel">Max drawdown</span>
+                  <div className="flex items-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
+                    <input
+                      className="w-full bg-transparent text-sm text-slate-900 focus:outline-none"
+                      type="number"
+                      step="0.01"
+                      placeholder="Ej: 8"
+                      data-i18n-placeholder="dashboardExamplePercent"
+                      value={fundDetails.maxDrawdown}
+                      onChange={(event) =>
+                        setFundDetails((prev) => ({ ...prev, maxDrawdown: event.target.value }))
+                      }
+                    />
+                    <span className="ml-2 text-slate-500">%</span>
+                  </div>
+                </label>
+                <label className="grid gap-2 text-sm font-medium text-slate-600">
+                  <span data-i18n="dashboardTradesLabel">Trades mensuales</span>
+                  <input
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
+                    type="number"
+                    step="0.01"
+                    placeholder="Ej: 60"
+                    data-i18n-placeholder="dashboardExampleTrades"
+                    value={fundDetails.tradesPerMonth}
+                    onChange={(event) =>
+                      setFundDetails((prev) => ({ ...prev, tradesPerMonth: event.target.value }))
+                    }
+                  />
+                </label>
+                <label className="grid gap-2 text-sm font-medium text-slate-600">
+                  <span data-i18n="dashboardRiskLabel">Gestión de riesgo</span>
+                  <select
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
+                    value={fundDetails.riskManagement}
+                    onChange={(event) =>
+                      setFundDetails((prev) => ({ ...prev, riskManagement: event.target.value }))
+                    }
+                    required
+                  >
+                    <option value="" data-i18n="dashboardSelectPlaceholder">
+                      Selecciona
+                    </option>
+                    {riskOptions.map((option) => (
+                      <option key={option.label} value={option.label} data-i18n={option.labelKey}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <div className="md:col-span-2 grid gap-3 rounded-xl border border-slate-200 bg-white p-4">
+                  <p className="text-xs font-semibold text-slate-600" data-i18n="dashboardLiveTracking">
+                    Live performance tracking
+                  </p>
+                  {fundLinks.map((link, index) => (
+                    <input
+                      key={`link-${index}`}
+                      type="url"
+                      placeholder={`${strings.dashboardMyfxbookLink} ${index + 1}`}
+                      value={link}
+                      onChange={(event) =>
+                        setFundLinks((prev) =>
+                          prev.map((item, position) =>
+                            position === index ? event.target.value : item
+                          )
+                        )
+                      }
+                      className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+                    />
+                  ))}
+                </div>
+                <div className="md:col-span-2 grid gap-3 rounded-xl border border-slate-200 bg-white p-4">
+                  <p className="text-xs font-semibold text-slate-600">Presentación (PDF opcional)</p>
+                  <input
+                    type="file"
+                    accept="application/pdf"
+                    onChange={async (event) => {
+                      const file = event.target.files?.[0];
+                      if (!file) return;
+                      const url = await readFileAsDataUrl(file);
+                      setPresentationAsset({ type: "pdf", name: file.name, url });
+                    }}
+                    className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+                  />
+                  {presentationAsset && (
+                    <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
+                      <span>{presentationAsset.name}</span>
+                      <button
+                        type="button"
+                        onClick={() => setPresentationAsset(null)}
+                        className="text-xs font-semibold text-rose-500"
+                      >
+                        Quitar
+                      </button>
+                    </div>
+                  )}
+                </div>
+                <label className="grid gap-2 text-sm font-medium text-slate-600">
+                  <span data-i18n="dashboardMinInvestmentLabel">Min investment</span>
+                  <div className="flex items-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
+                    <input
+                      className="w-full bg-transparent text-sm text-slate-900 focus:outline-none"
+                      type="number"
+                      placeholder="Ej: 50000"
+                      data-i18n-placeholder="dashboardExampleAmount"
+                      value={fundDetails.minInvestment}
+                      onChange={(event) =>
+                        setFundDetails((prev) => ({ ...prev, minInvestment: event.target.value }))
+                      }
+                    />
+                    <span className="ml-2 text-slate-500">USD</span>
+                  </div>
+                </label>
+                <label className="grid gap-2 text-sm font-medium text-slate-600">
+                  <span data-i18n="dashboardPerformanceFeeLabel">Performance fee</span>
+                  <div className="flex items-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
+                    <input
+                      className="w-full bg-transparent text-sm text-slate-900 focus:outline-none"
+                      type="number"
+                      placeholder="Ej: 20"
+                      data-i18n-placeholder="dashboardExamplePercent"
+                      value={fundDetails.performanceFee}
+                      onChange={(event) =>
+                        setFundDetails((prev) => ({ ...prev, performanceFee: event.target.value }))
+                      }
+                    />
+                    <span className="ml-2 text-slate-500">%</span>
+                  </div>
+                </label>
+                <label className="grid gap-2 text-sm font-medium text-slate-600">
+                  <span data-i18n="dashboardSubscriptionFeeLabel">Subscription fee</span>
+                  <div className="flex items-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
+                    <input
+                      className="w-full bg-transparent text-sm text-slate-900 focus:outline-none"
+                      type="number"
+                      placeholder="Ej: 1"
+                      data-i18n-placeholder="dashboardExamplePercent"
+                      value={fundDetails.subscriptionFee}
+                      onChange={(event) =>
+                        setFundDetails((prev) => ({ ...prev, subscriptionFee: event.target.value }))
+                      }
+                    />
+                    <span className="ml-2 text-slate-500">%</span>
+                  </div>
+                </label>
+                <label className="grid gap-2 text-sm font-medium text-slate-600">
+                  <span data-i18n="dashboardReportsLabel">Reports</span>
+                  <select
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
+                    value={fundDetails.reportsFrequency}
+                    onChange={(event) =>
+                      setFundDetails((prev) => ({ ...prev, reportsFrequency: event.target.value }))
+                    }
+                    required
+                  >
+                    <option value="" data-i18n="dashboardSelectPlaceholder">
+                      Selecciona
+                    </option>
+                    {reportOptions.map((option) => (
+                      <option key={option.label} value={option.label} data-i18n={option.labelKey}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </>
+            )}
           </form>
           <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
             <button

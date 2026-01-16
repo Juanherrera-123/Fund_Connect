@@ -5,11 +5,10 @@ import { useMemo } from "react";
 
 import { STORAGE_KEYS, formatStrategyList } from "@/lib/igatesData";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
-import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { Session, UserProfile } from "@/lib/types";
 
 export function FamilyDashboardContent() {
-  const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
+  const [session] = useFirebaseStorage<Session>(STORAGE_KEYS.session, null);
   const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
 
   const profile = useMemo(() => {
