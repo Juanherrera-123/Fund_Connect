@@ -25,7 +25,8 @@ const requiredFirebaseConfig = {
 };
 
 export const hasFirebaseConfig = Object.values(requiredFirebaseConfig).every(Boolean);
-
+console.log("🔥 hasFirebaseConfig:", hasFirebaseConfig);
+console.log("🔥 firebaseConfig:", firebaseConfig);
 const missingConfigMessage =
   "Missing Firebase configuration. Set NEXT_PUBLIC_FIREBASE_* environment variables.";
 let hasWarnedMissingConfig = false;
