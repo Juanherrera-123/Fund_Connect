@@ -12,7 +12,6 @@ import {
 import { updateFundApplicationStatus, useFundsCollection } from "@/lib/funds";
 import { parseCapitalAllocation } from "@/lib/fundVisuals";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
-import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { MasterNotification, Session, UserProfile, WaitlistRequest, WaitlistStatus } from "@/lib/types";
 
 const iconClass = "h-4 w-4";
@@ -26,7 +25,7 @@ export default function MasterDashboard() {
   const [notifications] = useFirebaseStorage<MasterNotification[]>(STORAGE_KEYS.notifications, []);
   const [waitlistRequests, setWaitlistRequests] = useState<WaitlistRequest[]>([]);
   const [pendingWaitlistRequests, setPendingWaitlistRequests] = useState<WaitlistRequest[]>([]);
-  const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
+  const [session] = useFirebaseStorage<Session>(STORAGE_KEYS.session, null);
   const [, setCapitalAllocations] = useFirebaseStorage<Record<string, number>>(
     STORAGE_KEYS.capitalAllocations,
     {}
@@ -38,6 +37,9 @@ export default function MasterDashboard() {
   const [selectedWaitlistRequest, setSelectedWaitlistRequest] = useState<WaitlistRequest | null>(
     null
   );
+  const [selectedPendingFund, setSelectedPendingFund] = useState<
+    (typeof fundApplications)[number] | null
+  >(null);
   const [lastRefreshAt, setLastRefreshAt] = useState<Date | null>(null);
 
   const data = useMemo(() => {
@@ -93,10 +95,25 @@ export default function MasterDashboard() {
     };
   }, [fundApplications, notifications, pendingWaitlistRequests, profiles]);
 
-  const handleApproveFund = (row: { id: string }) => {
-    void updateFundApplicationStatus(row.id, "verified").catch((error) => {
+  const handleApproveFund = (fundId: string) => {
+    void updateFundApplicationStatus(fundId, "verified").catch((error) => {
       console.error("Unable to approve fund", error);
     });
+    const managerId =
+      data.pendingFunds.find((fund) => fund.id === fundId)?.managerId ?? null;
+    setProfiles((prev) =>
+      prev.map((profile) =>
+        profile.fundId === fundId || (managerId && profile.id === managerId)
+          ? {
+              ...profile,
+              fundManagerProfile: {
+                ...(profile.fundManagerProfile ?? {}),
+                status: "verified",
+              },
+            }
+          : profile
+      )
+    );
   };
 
   const handleApproveManager = (row: { id: string }) => {
@@ -113,6 +130,11 @@ export default function MasterDashboard() {
           : profile
       )
     );
+  };
+
+  const handlePendingFundReview = (row: { id: string }) => {
+    const fund = data.pendingFunds.find((application) => application.id === row.id) ?? null;
+    setSelectedPendingFund(fund);
   };
 
   const fetchWaitlistRequests = useCallback(
@@ -274,8 +296,8 @@ export default function MasterDashboard() {
       ),
     },
     {
-      label: "Funds in review",
-      labelKey: "dashboardKpiFundsReview",
+      label: "Inactive funds",
+      labelKey: "dashboardKpiInactiveFunds",
       value: `${data.pendingFunds.length}`,
       icon: (
         <svg viewBox="0 0 20 20" className={iconClass} aria-hidden>
@@ -327,11 +349,10 @@ export default function MasterDashboard() {
 
   const pendingFundRows = data.pendingFunds.map((application) => ({
     id: application.id,
-    fund: application.fundName,
     manager: data.managerNameById.get(application.managerId) ?? "Gestor registrado",
     submitted: new Date(application.submittedAt).toLocaleDateString("es-ES"),
-    statusLabel: "En revisión",
-    statusLabelKey: "dashboardStatusInReview",
+    statusLabel: "Pendiente",
+    statusLabelKey: "dashboardStatusPending",
     statusTone: "warning" as const,
   }));
 
@@ -365,6 +386,12 @@ export default function MasterDashboard() {
     statusTone: "neutral" as const,
   }));
 
+  const selectedManagerProfile = selectedPendingFund
+    ? profiles.find((profile) => profile.id === selectedPendingFund.managerId) ??
+      profiles.find((profile) => profile.fundId === selectedPendingFund.id) ??
+      null
+    : null;
+
   return (
     <>
       <DashboardOverview
@@ -378,8 +405,215 @@ export default function MasterDashboard() {
         activeFundsCount={data.verifiedFunds.length}
         pendingFundsCount={data.pendingFunds.length}
         roleCounts={data.roleCounts}
-        onPendingFundAction={handleApproveFund}
+        onPendingFundAction={handlePendingFundReview}
       />
+      {selectedPendingFund ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 px-4 py-6">
+          <div className="w-full max-w-3xl rounded-2xl bg-white shadow-xl">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-6 py-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                  Solicitud de fondo
+                </p>
+                <h3 className="text-lg font-semibold text-slate-900">
+                  {selectedPendingFund.fundName}
+                </h3>
+                <p className="text-xs text-slate-500">
+                  Gestor: {selectedManagerProfile?.fullName ?? "Gestor registrado"} ·{" "}
+                  {new Date(selectedPendingFund.submittedAt).toLocaleDateString("es-ES")}
+                </p>
+              </div>
+              <button
+                type="button"
+                className="rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-500 hover:border-slate-300"
+                onClick={() => setSelectedPendingFund(null)}
+              >
+                Cerrar
+              </button>
+            </div>
+            <div className="max-h-[70vh] overflow-y-auto px-6 py-5 text-sm text-slate-600">
+              <div className="grid gap-6">
+                <div>
+                  <h4 className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                    Información del gestor
+                  </h4>
+                  <div className="mt-3 grid gap-2 text-xs text-slate-600">
+                    <p>
+                      <span className="font-semibold text-slate-700">Nombre:</span>{" "}
+                      {selectedManagerProfile?.fullName ?? "—"}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-slate-700">Email:</span>{" "}
+                      {selectedManagerProfile?.email ?? "—"}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-slate-700">Teléfono:</span>{" "}
+                      {selectedManagerProfile?.phone ?? "—"}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-slate-700">País:</span>{" "}
+                      {selectedManagerProfile?.country ?? "—"}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-slate-700">Estrategia:</span>{" "}
+                      {selectedManagerProfile?.fundManagerProfile?.strategyTypeLabel ??
+                        selectedManagerProfile?.fundManagerProfile?.strategyType ??
+                        "—"}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-slate-700">Capital:</span>{" "}
+                      {selectedManagerProfile?.fundManagerProfile?.capitalStatus ?? "—"}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-slate-700">Track record:</span>{" "}
+                      {selectedManagerProfile?.fundManagerProfile?.trackRecordLength ?? "—"}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-slate-700">Estructura:</span>{" "}
+                      {selectedManagerProfile?.fundManagerProfile?.operatingStructure ?? "—"}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-slate-700">Descripción:</span>{" "}
+                      {selectedManagerProfile?.fundManagerProfile?.strategyDescription ?? "—"}
+                    </p>
+                  </div>
+                </div>
+                <div>
+                  <h4 className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                    Métricas del fondo
+                  </h4>
+                  <div className="mt-3 grid gap-2 text-xs text-slate-600">
+                    <p>
+                      <span className="font-semibold text-slate-700">Nombre del fondo:</span>{" "}
+                      {selectedPendingFund.fundName}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-slate-700">País:</span>{" "}
+                      {selectedPendingFund.country}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-slate-700">Descripción:</span>{" "}
+                      {selectedPendingFund.description || "—"}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-slate-700">Tiempo operando:</span>{" "}
+                      {selectedPendingFund.operatingTime ?? "—"}{" "}
+                      {selectedPendingFund.operatingTime ? "años" : ""}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-slate-700">Profit mensual:</span>{" "}
+                      {selectedPendingFund.monthlyProfit ?? "—"}
+                      {typeof selectedPendingFund.monthlyProfit === "number" ? "%" : ""}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-slate-700">Win rate:</span>{" "}
+                      {selectedPendingFund.winRate ?? "—"}
+                      {typeof selectedPendingFund.winRate === "number" ? "%" : ""}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-slate-700">Win ratio:</span>{" "}
+                      {selectedPendingFund.winRatio ?? "—"}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-slate-700">Drawdown target:</span>{" "}
+                      {selectedPendingFund.drawdownTarget ?? "—"}
+                      {typeof selectedPendingFund.drawdownTarget === "number" ? "%" : ""}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-slate-700">Max drawdown:</span>{" "}
+                      {selectedPendingFund.maxDrawdown ?? "—"}
+                      {typeof selectedPendingFund.maxDrawdown === "number" ? "%" : ""}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-slate-700">Trades mensuales:</span>{" "}
+                      {selectedPendingFund.tradesPerMonth ?? "—"}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-slate-700">Gestión de riesgo:</span>{" "}
+                      {selectedPendingFund.riskManagement ?? selectedPendingFund.riskLevel ?? "—"}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-slate-700">Min investment:</span>{" "}
+                      {selectedPendingFund.minInvestment ?? "—"}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-slate-700">Performance fee:</span>{" "}
+                      {selectedPendingFund.performanceFee ?? "—"}
+                      {selectedPendingFund.performanceFee ? "%" : ""}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-slate-700">Subscription fee:</span>{" "}
+                      {selectedPendingFund.subscriptionFee ?? "—"}
+                      {selectedPendingFund.subscriptionFee ? "%" : ""}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-slate-700">Reports:</span>{" "}
+                      {selectedPendingFund.reportsFrequency ?? "—"}
+                    </p>
+                    <div>
+                      <span className="font-semibold text-slate-700">Links Myfxbook:</span>
+                      <ul className="mt-2 list-disc pl-5 text-xs text-slate-500">
+                        {selectedPendingFund.livePerformanceLinks?.length ? (
+                          selectedPendingFund.livePerformanceLinks.map((link) => (
+                            <li key={link}>
+                              <a
+                                href={link}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-igates-600 hover:underline"
+                              >
+                                {link}
+                              </a>
+                            </li>
+                          ))
+                        ) : (
+                          <li>—</li>
+                        )}
+                      </ul>
+                    </div>
+                    <div>
+                      <span className="font-semibold text-slate-700">Presentación:</span>
+                      <div className="mt-2 text-xs text-slate-500">
+                        {selectedPendingFund.presentationAsset ? (
+                          <a
+                            href={selectedPendingFund.presentationAsset.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-igates-600 hover:underline"
+                          >
+                            {selectedPendingFund.presentationAsset.name}
+                          </a>
+                        ) : (
+                          "—"
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 px-6 py-4">
+              <button
+                type="button"
+                className="rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600 hover:border-slate-300"
+                onClick={() => setSelectedPendingFund(null)}
+              >
+                No aprobar
+              </button>
+              <button
+                type="button"
+                className="rounded-full bg-emerald-500 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-400"
+                onClick={() => {
+                  handleApproveFund(selectedPendingFund.id);
+                  setSelectedPendingFund(null);
+                }}
+              >
+                Aprobar
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
       <section className="flex flex-col gap-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>

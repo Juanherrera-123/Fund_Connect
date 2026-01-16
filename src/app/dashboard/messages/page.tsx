@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 
 import { STORAGE_KEYS } from "@/lib/igatesData";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
-import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { ContactRequest, Session, WaitlistRequest } from "@/lib/types";
 
 type ContactMessage = {
@@ -19,7 +18,7 @@ export default function MessagesDashboard() {
   const [waitlistRequests, setWaitlistRequests] = useState<WaitlistRequest[]>([]);
   const [waitlistError, setWaitlistError] = useState<string | null>(null);
   const [waitlistLoading, setWaitlistLoading] = useState(false);
-  const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
+  const [session] = useFirebaseStorage<Session>(STORAGE_KEYS.session, null);
 
   const contactMessages = useMemo<ContactMessage[]>(() => {
     return contactRequests.map((request) => {
