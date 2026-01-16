@@ -71,7 +71,6 @@ export const getFirestoreDb = (): Firestore | null => {
 
   return initializeFirestore(app, {
     ...firestoreSettings,
-    useFetchStreams: false,
   });
 };
 
