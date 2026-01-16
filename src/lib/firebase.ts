@@ -24,6 +24,9 @@ const missingConfigMessage =
   "Missing Firebase configuration. Set NEXT_PUBLIC_FIREBASE_* environment variables.";
 let hasWarnedMissingConfig = false;
 let firestoreInstance: Firestore | null = null;
+const firestoreSettings = {
+  experimentalForceLongPolling: true,
+} satisfies FirestoreSettings;
 
 const warnMissingConfig = () => {
   if (hasWarnedMissingConfig) return;
