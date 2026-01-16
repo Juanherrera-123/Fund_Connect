@@ -99,10 +99,6 @@ export function AuthFlow() {
     STORAGE_KEYS.masterUser,
     MASTER_USER
   );
-  const [fundApplications, setFundApplications] = useFirebaseStorage<FundApplication[]>(
-    STORAGE_KEYS.fundApplications,
-    []
-  );
   const [, setSession] = useFirebaseStorage<Session>(STORAGE_KEYS.session, null);
   const [notifications, setNotifications] = useFirebaseStorage<MasterNotification[]>(
     STORAGE_KEYS.notifications,
@@ -333,12 +329,6 @@ export function AuthFlow() {
       };
       setNotifications([nextNotification, ...notifications]);
       void upsertFundApplication(draftFundApplication);
-      setFundApplications((prev) => {
-        if (prev.some((application) => application.managerId === baseProfile.id)) {
-          return prev;
-        }
-        return [draftFundApplication, ...prev];
-      });
     }
 
     if (role === "Family Office") {

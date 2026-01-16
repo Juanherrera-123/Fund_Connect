@@ -6,15 +6,13 @@ import { useMemo } from "react";
 
 import { STORAGE_KEYS, formatStrategyList } from "@/lib/igatesData";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
-import type { Session, UserProfile, WaitlistRequest } from "@/lib/types";
+import { useWaitlistCollection } from "@/lib/waitlist";
+import type { Session, UserProfile } from "@/lib/types";
 
 export function ProfileView() {
   const router = useRouter();
   const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
-  const [waitlistRequests] = useFirebaseStorage<WaitlistRequest[]>(
-    STORAGE_KEYS.waitlistRequests,
-    []
-  );
+  const waitlistRequests = useWaitlistCollection();
   const [session, setSession] = useFirebaseStorage<Session>(STORAGE_KEYS.session, null);
   const profile = useMemo(() => {
     if (!session || session.role === "MasterUser") return null;
