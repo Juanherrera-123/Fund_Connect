@@ -23,6 +23,7 @@ export const hasFirebaseConfig = Object.values(requiredFirebaseConfig).every(Boo
 const missingConfigMessage =
   "Missing Firebase configuration. Set NEXT_PUBLIC_FIREBASE_* environment variables.";
 let hasWarnedMissingConfig = false;
+let firestoreInstance: Firestore | null = null;
 
 const warnMissingConfig = () => {
   if (hasWarnedMissingConfig) return;
@@ -50,18 +51,20 @@ export const getFirebaseAuth = (): Auth | null => {
 export const getFirestoreDb = (): Firestore | null => {
   const app = getFirebaseApp();
   if (!app) return null;
-  try {
-    return getFirestore(app);
-  } catch (error) {
-    console.warn("Firestore not initialized, falling back to long polling.", error);
-  }
-  if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
-    console.log("[Firestore] Using long polling:", true);
-  }
-  return initializeFirestore(app, {
-    experimentalForceLongPolling: true,
-    useFetchStreams: false,
-  });
+try {
+  return getFirestore(app);
+} catch (error) {
+  console.warn("Firestore not initialized, falling back to long polling.", error);
+}
+
+if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
+  console.log("[Firestore] Using long polling");
+}
+
+return initializeFirestore(app, {
+  experimentalForceLongPolling: true,
+  useFetchStreams: false,
+});
 };
 
 export const requireFirestoreDb = (): Firestore => {
