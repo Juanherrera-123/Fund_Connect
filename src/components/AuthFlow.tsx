@@ -318,10 +318,10 @@ export function AuthFlow() {
         riskManagement: fundDetails.riskManagement || null,
         livePerformanceLinks: normalizedLinks,
         presentationAsset,
-        minInvestment: fundDetails.minInvestment || null,
-        performanceFee: fundDetails.performanceFee || null,
-        subscriptionFee: fundDetails.subscriptionFee || null,
-        reportsFrequency: fundDetails.reportsFrequency || null,
+        minInvestment: fundDetails.minInvestment || undefined,
+        performanceFee: fundDetails.performanceFee || undefined,
+        subscriptionFee: fundDetails.subscriptionFee || undefined,
+        reportsFrequency: fundDetails.reportsFrequency || undefined,
         operatingTime: fundDetails.operatingTime || undefined,
       };
       const nextNotification: MasterNotification = {
