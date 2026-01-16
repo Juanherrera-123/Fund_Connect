@@ -7,6 +7,7 @@ import { useLanguage } from "@/components/LanguageProvider";
 import { STORAGE_KEYS, apiBase } from "@/lib/igatesData";
 import { getFundFrameClass } from "@/lib/fundVisuals";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
+import { createWaitlistRequest, useWaitlistCollection } from "@/lib/waitlist";
 import type { FundSummary, Session, UserProfile, WaitlistRequest, WaitlistStatus } from "@/lib/types";
 
 const cardClass = "rounded-2xl border border-slate-200 bg-white p-5 shadow-sm";
@@ -18,10 +19,7 @@ export default function InvestorDashboard() {
     STORAGE_KEYS.profiles,
     []
   );
-  const [waitlistRequests, setWaitlistRequests] = useFirebaseStorage<WaitlistRequest[]>(
-    STORAGE_KEYS.waitlistRequests,
-    []
-  );
+  const waitlistRequests = useWaitlistCollection();
   const [capitalAllocations] = useFirebaseStorage<Record<string, number>>(
     STORAGE_KEYS.capitalAllocations,
     {}
@@ -96,7 +94,7 @@ export default function InvestorDashboard() {
     return map;
   }, [myRequests]);
 
-  const handleSubmitRequest = () => {
+  const handleSubmitRequest = async () => {
     if (!profile || !activeFund) return;
     const existing = requestByFundId.get(activeFund.id);
     if (existing) {
@@ -104,25 +102,25 @@ export default function InvestorDashboard() {
       return;
     }
 
-    const now = new Date().toISOString();
-    const newRequest: WaitlistRequest = {
-      id: `waitlist-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
-      createdAt: now,
-      requesterId: profile.id,
-      requesterRole: "INVESTOR",
-      requesterEmail: profile.email,
-      requesterCountry: profile.country,
-      requesterOrg: profile.org ?? null,
-      fundId: activeFund.id,
-      fundName: activeFund.name,
-      status: "PENDING",
-      approvedAt: null,
-      approvedBy: null,
-      decisionNote: null,
-      note: requestNotes.trim() ? requestNotes.trim() : null,
-    };
-
-    setWaitlistRequests((prev) => [newRequest, ...prev]);
+    try {
+      await createWaitlistRequest({
+        fundId: activeFund.id,
+        fundName: activeFund.name,
+        requesterId: profile.id,
+        requesterRole: "INVESTOR",
+        requesterName: profile.fullName,
+        requesterEmail: profile.email,
+        requesterPhone: profile.phone ?? null,
+        intendedInvestmentAmount: null,
+        requesterCountry: profile.country,
+        requesterOrg: profile.org ?? null,
+        note: requestNotes.trim() ? requestNotes.trim() : null,
+      });
+      setFeedbackKey("submitted");
+    } catch (error) {
+      console.error("Unable to create waitlist request.", error);
+      return;
+    }
     setProfiles((prev) =>
       prev.map((item) =>
         item.id === profile.id
@@ -135,7 +133,6 @@ export default function InvestorDashboard() {
     );
     setActiveFund(null);
     setRequestNotes("");
-    setFeedbackKey("submitted");
   };
 
   if (!profile) {

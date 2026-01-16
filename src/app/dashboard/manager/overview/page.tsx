@@ -5,15 +5,16 @@ import { useMemo } from "react";
 
 import KpiCard from "@/components/dashboard/KpiCard";
 import { STORAGE_KEYS } from "@/lib/igatesData";
+import { useFundsCollection } from "@/lib/funds";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
-import type { FundApplication, Session, UserProfile } from "@/lib/types";
+import type { Session, UserProfile } from "@/lib/types";
 
 const iconClass = "h-4 w-4";
 
 export default function FundManagerOverview() {
   const [session] = useFirebaseStorage<Session>(STORAGE_KEYS.session, null);
   const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
-  const [fundApplications] = useFirebaseStorage<FundApplication[]>(STORAGE_KEYS.fundApplications, []);
+  const fundApplications = useFundsCollection();
 
   const profile = useMemo(() => {
     if (!session || session.role !== "Fund Manager") return null;
