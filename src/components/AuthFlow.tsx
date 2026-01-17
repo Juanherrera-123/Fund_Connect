@@ -159,7 +159,10 @@ export function AuthFlow() {
     try {
       const locale = languageOptions[language]?.locale ?? "en";
       const displayNames = new Intl.DisplayNames([locale], { type: "region" });
-      return Intl.supportedValuesOf("region")
+      const supportedRegions = (
+        Intl as typeof Intl & { supportedValuesOf: (key: "region") => string[] }
+      ).supportedValuesOf("region");
+      return supportedRegions
         .map((code) => ({
           code,
           name: displayNames.of(code) ?? code,
