@@ -209,7 +209,7 @@ export function AuthFlow() {
   }, [phoneCountryCode, phoneNumber, updateKyc]);
 
   const validateKyc = () => {
-    const missing = requiredKycFields.filter((field) => !kycAnswers[field]);
+    const missing: string[] = requiredKycFields.filter((field) => !kycAnswers[field]);
     if (!confirmPassword.trim()) {
       missing.push("confirmPassword");
     }
