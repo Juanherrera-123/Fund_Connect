@@ -3770,13 +3770,6 @@ export const SURVEY_DEFINITIONS = {
         { label: "En proceso de estructuración", value: "En proceso de estructuración" },
       ],
     },
-    {
-      id: "strategyDescription",
-      label: "Strategy Description",
-      type: "text",
-      prompt:
-        "Describe tu estrategia en 2–4 líneas. Incluye instrumentos operados, horizonte típico y cómo gestionas el riesgo.",
-    },
   ],
   "Family Office": [
     {
