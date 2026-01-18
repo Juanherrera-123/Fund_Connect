@@ -8,7 +8,11 @@ export type MasterUserCredentials = {
 
 export type Session = {
   id?: string;
-  role: Role;
+  uid?: string;
+  email?: string | null;
+  role: Role | "user";
+  status?: string;
+  authenticatedAt?: string;
   username?: string;
 } | null;
 

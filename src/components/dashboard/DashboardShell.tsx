@@ -1,9 +1,11 @@
 "use client";
 
+import { signOut } from "firebase/auth";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
+import { getFirebaseAuth } from "@/lib/firebase";
 import { STORAGE_KEYS } from "@/lib/igatesData";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import type { Role, Session, UserProfile } from "@/lib/types";
@@ -226,7 +228,11 @@ export default function DashboardShell({
       "Fund Manager": "/dashboard/manager/overview",
       "Family Office": "/dashboard/family-office",
     };
-    const expected = routeForRole[sessionRole];
+    if (!(sessionRole in routeForRole)) {
+      return;
+    }
+
+    const expected = routeForRole[sessionRole as Role];
 
     if (pathname?.startsWith("/dashboard")) {
       const isManagerRoute = pathname?.startsWith("/dashboard/manager");
@@ -256,10 +262,18 @@ export default function DashboardShell({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setIsMenuOpen(false);
     setSession(null);
-    router.push("/");
+    const auth = getFirebaseAuth();
+    if (auth) {
+      try {
+        await signOut(auth);
+      } catch (error) {
+        console.error("Failed to sign out of Firebase Auth.", error);
+      }
+    }
+    router.push("/auth");
   };
 
   return (
