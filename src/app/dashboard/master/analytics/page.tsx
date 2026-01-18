@@ -26,7 +26,7 @@ export default function MasterAnalyticsPage() {
   const analytics = useMemo(() => {
     const pendingFunds = fundApplications.filter((application) => application.status === "pending");
     const verifiedFromApplications = fundApplications.filter(
-      (application) => application.status === "verified"
+      (application) => application.status === "approved"
     );
     const verifiedCount = verifiedFromApplications.length;
 
