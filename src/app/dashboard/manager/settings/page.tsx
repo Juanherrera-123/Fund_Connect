@@ -1,6 +1,7 @@
 "use client";
 
 import StatusBadge from "@/components/dashboard/StatusBadge";
+import { isActiveStatus, normalizeRole } from "@/lib/auth/claims";
 import { STORAGE_KEYS } from "@/lib/igatesData";
 import { useFundsCollection } from "@/lib/funds";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
@@ -10,9 +11,11 @@ export default function FundManagerSettings() {
   const [session] = useFirebaseStorage<Session>(STORAGE_KEYS.session, null);
   const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
   const fundApplications = useFundsCollection();
+  const authRole = session?.authRole ?? normalizeRole(session?.role);
+  const isActive = isActiveStatus(session?.status);
 
   const profile =
-    session?.role === "Fund Manager"
+    authRole === "manager" && isActive
       ? profiles.find((item) => item.id === session.id) ?? null
       : null;
 

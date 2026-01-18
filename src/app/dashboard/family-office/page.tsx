@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import StatusBadge from "@/components/dashboard/StatusBadge";
 import { useLanguage } from "@/components/LanguageProvider";
+import { isActiveStatus, normalizeRole } from "@/lib/auth/claims";
 import { STORAGE_KEYS, apiBase } from "@/lib/igatesData";
 import { getFundFrameClass } from "@/lib/fundVisuals";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
@@ -29,11 +30,14 @@ export default function FamilyOfficeDashboard() {
   const [activeFund, setActiveFund] = useState<FundSummary | null>(null);
   const [requestNotes, setRequestNotes] = useState("");
   const [feedbackKey, setFeedbackKey] = useState<"" | "alreadyRequested" | "submitted">("");
+  const authRole = session?.authRole ?? normalizeRole(session?.role);
+  const isActive = isActiveStatus(session?.status);
 
   const profile = useMemo(() => {
-    if (!session || session.role !== "Family Office") return null;
+    if (!session || !isActive) return null;
+    if (authRole !== "unknown" || session.role !== "Family Office") return null;
     return profiles.find((item) => item.id === session.id) ?? null;
-  }, [profiles, session]);
+  }, [authRole, isActive, profiles, session]);
 
   const locale = options[language]?.locale ?? "en";
 

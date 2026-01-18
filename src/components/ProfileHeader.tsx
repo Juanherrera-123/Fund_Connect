@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 
+import { normalizeRole } from "@/lib/auth/claims";
 import { STORAGE_KEYS } from "@/lib/igatesData";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import type { Session, UserProfile } from "@/lib/types";
@@ -9,11 +10,12 @@ import type { Session, UserProfile } from "@/lib/types";
 export function ProfileHeader() {
   const [session] = useFirebaseStorage<Session>(STORAGE_KEYS.session, null);
   const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
+  const authRole = session?.authRole ?? normalizeRole(session?.role);
 
   const profile = useMemo(() => {
-    if (!session || session.role === "MasterUser") return null;
+    if (!session || authRole === "master") return null;
     return profiles.find((item) => item.id === session.id) ?? null;
-  }, [profiles, session]);
+  }, [authRole, profiles, session]);
 
   return (
     <>
