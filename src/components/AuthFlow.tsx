@@ -445,7 +445,7 @@ export function AuthFlow() {
         capitalStatus: surveyAnswers.capitalStatus as string,
         trackRecordLength: surveyAnswers.trackRecordLength as string,
         operatingStructure: surveyAnswers.operatingStructure as string,
-        strategyDescription: surveyAnswers.strategyDescription as string,
+        strategyDescription: fundDetails.description || "Pendiente de completar.",
         status: "pending-review" as const,
       };
       baseProfile.fundManagerProfile = managerProfile;
