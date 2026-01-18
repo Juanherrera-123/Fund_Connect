@@ -13,10 +13,11 @@ import {
   languageOptions,
   getStrategyLabel,
 } from "@/lib/igatesData";
-import { upsertFundApplication } from "@/lib/funds";
+import { uploadFundApplicationFile, upsertFundApplication } from "@/lib/funds";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import type {
   FundApplication,
+  FundApplicationFile,
   MasterNotification,
   MasterUserCredentials,
   Session,
@@ -83,14 +84,6 @@ const countryIsoAliases: Record<string, string> = {
   "bermuda": "BM",
 };
 
-const readFileAsDataUrl = (file: File) =>
-  new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result ?? ""));
-    reader.onerror = () => reject(new Error("No se pudo leer el archivo."));
-    reader.readAsDataURL(file);
-  });
-
 export function AuthFlow() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -123,10 +116,9 @@ export function AuthFlow() {
     reportsFrequency: "",
   });
   const [fundLinks, setFundLinks] = useState<string[]>(["", "", ""]);
-  const [presentationAsset, setPresentationAsset] = useState<
-    FundApplication["presentationAsset"]
-  >(null);
-  const [logoAsset, setLogoAsset] = useState<string | null>(null);
+  const [presentationFile, setPresentationFile] = useState<File | null>(null);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreviewUrl, setLogoPreviewUrl] = useState<string | null>(null);
 
   const [profiles, setProfiles] = useFirebaseStorage<UserProfile[]>(
     STORAGE_KEYS.profiles,
@@ -141,6 +133,16 @@ export function AuthFlow() {
     STORAGE_KEYS.notifications,
     []
   );
+
+  useEffect(() => {
+    if (!logoFile) {
+      setLogoPreviewUrl(null);
+      return;
+    }
+    const objectUrl = URL.createObjectURL(logoFile);
+    setLogoPreviewUrl(objectUrl);
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [logoFile]);
 
   const role = kycAnswers.role as keyof typeof SURVEY_DEFINITIONS | undefined;
   const roleLabels = useMemo(
@@ -380,7 +382,7 @@ export function AuthFlow() {
     if (currentStep.type === "survey") {
       if (!validateSurvey(currentStep.questions)) return;
       if (stepIndex === steps.length - 1) {
-        completeSignup();
+        void completeSignup();
         return;
       }
       setStepIndex((prev) => Math.min(prev + 1, steps.length - 1));
@@ -389,7 +391,7 @@ export function AuthFlow() {
 
     if (currentStep.type === "fund-details") {
       if (!validateFundDetails()) return;
-      completeSignup();
+      void completeSignup();
       return;
     }
   };
@@ -399,7 +401,7 @@ export function AuthFlow() {
     setStepIndex((prev) => Math.max(0, prev - 1));
   };
 
-  const completeSignup = () => {
+  const completeSignup = async () => {
     if (!role) return;
     const existing = profiles.find((profile) => profile.email.toLowerCase() === kycAnswers.email?.toLowerCase());
     if (existing) {
@@ -456,35 +458,72 @@ export function AuthFlow() {
         fundId,
       };
       baseProfile.fundId = fundId;
+      let logoMetadata: FundApplicationFile | null = null;
+      let presentationMetadata: FundApplicationFile | null = null;
+
+      try {
+        if (logoFile) {
+          logoMetadata = await uploadFundApplicationFile(fundId, logoFile, "logo");
+        }
+        if (presentationFile) {
+          presentationMetadata = await uploadFundApplicationFile(
+            fundId,
+            presentationFile,
+            "presentation"
+          );
+        }
+      } catch (error) {
+        console.error("Unable to upload fund application files", error);
+        setSignupStatus(strings.formStatusError);
+        return;
+      }
+
       const draftFundApplication: FundApplication = {
         id: fundId,
-        fundName: fundDetails.fundName,
-        country: fundDetails.country,
-        region: "Global",
-        aum: "Pendiente",
-        strategy: managerProfile.strategyType ?? "Multi-Strategy",
-        strategyLabel: managerProfile.strategyTypeLabel ?? "Multi-Strategy",
-        description: fundDetails.description || managerProfile.strategyDescription || "Pendiente de completar.",
+        user: {
+          id: baseProfile.id,
+          name: baseProfile.fullName,
+          email: baseProfile.email,
+          country: baseProfile.country,
+          role: baseProfile.role,
+        },
+        onboardingAnswers: baseProfile.onboarding ?? {},
+        fundData: {
+          fundName: fundDetails.fundName,
+          country: fundDetails.country,
+          region: "Global",
+          aum: "Pendiente",
+          strategy: managerProfile.strategyType ?? "Multi-Strategy",
+          strategyLabel: managerProfile.strategyTypeLabel ?? "Multi-Strategy",
+          description:
+            fundDetails.description ||
+            managerProfile.strategyDescription ||
+            "Pendiente de completar.",
+          monthlyProfit: parseNumericValue(fundDetails.monthlyProfit),
+          yearProfit: parseNumericValue(fundDetails.monthlyProfit),
+          winRate: parseNumericValue(fundDetails.winRate),
+          winRatio: fundDetails.winRatio || null,
+          drawdownTarget: parseNumericValue(fundDetails.drawdownTarget),
+          maxDrawdown: parseNumericValue(fundDetails.maxDrawdown),
+          tradesPerMonth: parseNumericValue(fundDetails.tradesPerMonth),
+          riskLevel: fundDetails.riskManagement || null,
+          riskManagement: fundDetails.riskManagement || null,
+          livePerformanceLinks: normalizedLinks,
+          minInvestment: fundDetails.minInvestment || undefined,
+          performanceFee: fundDetails.performanceFee || undefined,
+          subscriptionFee: fundDetails.subscriptionFee || undefined,
+          reportsFrequency: fundDetails.reportsFrequency || undefined,
+          operatingTime: fundDetails.operatingTime || undefined,
+          files: {
+            logo: logoMetadata,
+            presentation: presentationMetadata,
+            trackRecordStatements: [],
+          },
+        },
         status: "pending",
-        managerId: baseProfile.id,
-        submittedAt: new Date().toISOString(),
-        logoUrl: logoAsset ?? undefined,
-        monthlyProfit: parseNumericValue(fundDetails.monthlyProfit),
-        yearProfit: parseNumericValue(fundDetails.monthlyProfit),
-        winRate: parseNumericValue(fundDetails.winRate),
-        winRatio: fundDetails.winRatio || null,
-        drawdownTarget: parseNumericValue(fundDetails.drawdownTarget),
-        maxDrawdown: parseNumericValue(fundDetails.maxDrawdown),
-        tradesPerMonth: parseNumericValue(fundDetails.tradesPerMonth),
-        riskLevel: fundDetails.riskManagement || null,
-        riskManagement: fundDetails.riskManagement || null,
-        livePerformanceLinks: normalizedLinks,
-        presentationAsset,
-        minInvestment: fundDetails.minInvestment || undefined,
-        performanceFee: fundDetails.performanceFee || undefined,
-        subscriptionFee: fundDetails.subscriptionFee || undefined,
-        reportsFrequency: fundDetails.reportsFrequency || undefined,
-        operatingTime: fundDetails.operatingTime || undefined,
+        createdAt: new Date().toISOString(),
+        reviewedAt: null,
+        reviewedBy: null,
       };
       const nextNotification: MasterNotification = {
         id: `notif-${Date.now()}`,
@@ -883,8 +922,8 @@ export function AuthFlow() {
                   <p className="text-xs font-semibold text-slate-600">Logo del fondo</p>
                   <div className="flex flex-wrap items-center gap-4">
                     <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-slate-50 text-xs font-semibold text-slate-500">
-                      {logoAsset ? (
-                        <img src={logoAsset} alt="Logo del fondo" className="h-full w-full object-cover" />
+                      {logoPreviewUrl ? (
+                        <img src={logoPreviewUrl} alt="Logo del fondo" className="h-full w-full object-cover" />
                       ) : (
                         <span className="text-center">Sin logo</span>
                       )}
@@ -893,18 +932,17 @@ export function AuthFlow() {
                       <input
                         type="file"
                         accept="image/*"
-                        onChange={async (event) => {
+                        onChange={(event) => {
                           const file = event.target.files?.[0];
                           if (!file) return;
-                          const url = await readFileAsDataUrl(file);
-                          setLogoAsset(url);
+                          setLogoFile(file);
                         }}
                         className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
                       />
-                      {logoAsset && (
+                      {logoPreviewUrl && (
                         <button
                           type="button"
-                          onClick={() => setLogoAsset(null)}
+                          onClick={() => setLogoFile(null)}
                           className="text-left text-xs font-semibold text-rose-500"
                         >
                           Quitar logo
@@ -1071,20 +1109,19 @@ export function AuthFlow() {
                   <input
                     type="file"
                     accept="application/pdf"
-                    onChange={async (event) => {
+                    onChange={(event) => {
                       const file = event.target.files?.[0];
                       if (!file) return;
-                      const url = await readFileAsDataUrl(file);
-                      setPresentationAsset({ type: "pdf", name: file.name, url });
+                      setPresentationFile(file);
                     }}
                     className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
                   />
-                  {presentationAsset && (
+                  {presentationFile && (
                     <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
-                      <span>{presentationAsset.name}</span>
+                      <span>{presentationFile.name}</span>
                       <button
                         type="button"
-                        onClick={() => setPresentationAsset(null)}
+                        onClick={() => setPresentationFile(null)}
                         className="text-xs font-semibold text-rose-500"
                       >
                         Quitar

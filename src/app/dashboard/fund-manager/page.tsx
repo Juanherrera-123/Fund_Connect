@@ -18,7 +18,7 @@ export default function FundManagerDashboard() {
   const data = useMemo(() => {
     const pendingFunds = fundApplications.filter((application) => application.status === "pending");
     const verifiedFromApplications = fundApplications.filter(
-      (application) => application.status === "verified"
+      (application) => application.status === "approved"
     );
     const managerNameById = new Map(
       profiles.map((profile) => [profile.id, profile.fullName])
@@ -26,9 +26,9 @@ export default function FundManagerDashboard() {
 
     const verifiedFunds = verifiedFromApplications.map((application) => ({
       id: application.id,
-      name: application.fundName,
-      manager: managerNameById.get(application.managerId) ?? "Gestor registrado",
-      status: "Verificado",
+      name: application.fundData.fundName,
+      manager: managerNameById.get(application.user.id) ?? "Gestor registrado",
+      status: "Aprobado",
     }));
 
     return {
@@ -139,8 +139,8 @@ export default function FundManagerDashboard() {
             ]}
             rows={data.pendingFunds.map((application) => ({
               id: application.id,
-              fund: application.fundName,
-              owner: data.managerNameById.get(application.managerId) ?? "Gestor registrado",
+              fund: application.fundData.fundName,
+              owner: data.managerNameById.get(application.user.id) ?? "Gestor registrado",
               status: (
                 <StatusCell label="Pendiente" labelKey="dashboardStatusPending" tone="warning" />
               ),
@@ -162,7 +162,7 @@ export default function FundManagerDashboard() {
               fund: fund.name,
               owner: fund.manager,
               status: (
-                <StatusCell label={fund.status} labelKey="dashboardStatusVerified" tone="success" />
+                <StatusCell label={fund.status} labelKey="dashboardStatusApproved" tone="success" />
               ),
             }))}
           />

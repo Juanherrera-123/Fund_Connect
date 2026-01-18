@@ -14,7 +14,7 @@ import {
 import { useFundsCollection } from "@/lib/funds";
 import { getFundFrameClass } from "@/lib/fundVisuals";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
-import type { FundApplication, Session, UserProfile } from "@/lib/types";
+import type { FundApplication, FundApplicationFile, Session, UserProfile } from "@/lib/types";
 
 type VerifiedFund = {
   id: string;
@@ -36,8 +36,8 @@ type VerifiedFund = {
   tradesPerMonth: number | null;
   riskManagement: string | null;
   livePerformanceLinks: string[];
-  presentationAsset: FundApplication["presentationAsset"];
-  trackRecordStatements: FundApplication["trackRecordStatements"];
+  presentationAsset: FundApplicationFile | null;
+  trackRecordStatements: FundApplicationFile[];
   minInvestment: string | null;
   performanceFee: string | null;
   subscriptionFee: string | null;
@@ -117,49 +117,51 @@ export function VerifiedManagers() {
       (managerId ? managerById.get(managerId) : null) ?? managerByFundId.get(fundId) ?? null;
 
     const mapApplicationToFund = (application: FundApplication): VerifiedFund => {
-      const managerProfile = resolveManagerProfile(application.id, application.managerId);
+      const managerProfile = resolveManagerProfile(application.id, application.user.id);
       const profileDetails = managerProfile?.fundManagerProfile;
 
       return {
         id: application.id,
-        name: application.fundName,
-        country: application.country || "Global",
-        logoLabel: getFundLogoLabel(application.fundName),
-        logoUrl: application.logoUrl ?? null,
-        region: application.region || "Global",
+        name: application.fundData.fundName,
+        country: application.fundData.country || "Global",
+        logoLabel: getFundLogoLabel(application.fundData.fundName),
+        logoUrl: application.fundData.files?.logo?.url ?? null,
+        region: application.fundData.region || "Global",
         strategy:
           profileDetails?.strategyTypeLabel ||
           profileDetails?.strategyType ||
-          application.strategyLabel ||
-          application.strategy ||
+          application.fundData.strategyLabel ||
+          application.fundData.strategy ||
           "Multi-Strategy",
         riskLevel:
-          application.riskLevel || application.riskManagement || strings.verifiedManagersRiskPending,
-        yearProfit: application.yearProfit ?? application.monthlyProfit ?? null,
-        monthlyProfit: application.monthlyProfit ?? application.yearProfit ?? null,
-        drawdownTarget: application.drawdownTarget ?? null,
-        maxDrawdown: application.maxDrawdown ?? null,
-        winRate: application.winRate ?? null,
-        winRatio: application.winRatio ?? null,
-        volatility: application.volatility ?? null,
-        operatingTime: application.operatingTime ?? null,
-        tradesPerMonth: application.tradesPerMonth ?? null,
-        riskManagement: application.riskManagement ?? application.riskLevel ?? null,
-        livePerformanceLinks: application.livePerformanceLinks ?? [],
-        presentationAsset: application.presentationAsset ?? null,
-        trackRecordStatements: application.trackRecordStatements ?? [],
-        minInvestment: application.minInvestment ?? null,
-        performanceFee: application.performanceFee ?? null,
-        subscriptionFee: application.subscriptionFee ?? null,
-        reportsFrequency: application.reportsFrequency ?? null,
-        aum: application.aum || "N/A",
-        description: application.description || strings.verifiedManagersDescriptionFallback,
-        capital_allocated: application.capital_allocated ?? 0,
+          application.fundData.riskLevel ||
+          application.fundData.riskManagement ||
+          strings.verifiedManagersRiskPending,
+        yearProfit: application.fundData.yearProfit ?? application.fundData.monthlyProfit ?? null,
+        monthlyProfit: application.fundData.monthlyProfit ?? application.fundData.yearProfit ?? null,
+        drawdownTarget: application.fundData.drawdownTarget ?? null,
+        maxDrawdown: application.fundData.maxDrawdown ?? null,
+        winRate: application.fundData.winRate ?? null,
+        winRatio: application.fundData.winRatio ?? null,
+        volatility: application.fundData.volatility ?? null,
+        operatingTime: application.fundData.operatingTime ?? null,
+        tradesPerMonth: application.fundData.tradesPerMonth ?? null,
+        riskManagement: application.fundData.riskManagement ?? application.fundData.riskLevel ?? null,
+        livePerformanceLinks: application.fundData.livePerformanceLinks ?? [],
+        presentationAsset: application.fundData.files?.presentation ?? null,
+        trackRecordStatements: application.fundData.files?.trackRecordStatements ?? [],
+        minInvestment: application.fundData.minInvestment ?? null,
+        performanceFee: application.fundData.performanceFee ?? null,
+        subscriptionFee: application.fundData.subscriptionFee ?? null,
+        reportsFrequency: application.fundData.reportsFrequency ?? null,
+        aum: application.fundData.aum || "N/A",
+        description: application.fundData.description || strings.verifiedManagersDescriptionFallback,
+        capital_allocated: application.fundData.capital_allocated ?? 0,
       };
     };
 
     const verifiedApplications = fundApplications.filter(
-      (application) => application.status === "verified"
+      (application) => application.status === "approved"
     );
 
     return verifiedApplications.map((application) => mapApplicationToFund(application));
@@ -865,7 +867,8 @@ export function VerifiedManagers() {
                             >
                               {selectedFund.presentationAsset.name}
                             </a>
-                            {selectedFund.presentationAsset.type === "video" ? (
+                            {(selectedFund.presentationAsset.contentType?.startsWith("video/") ||
+                              selectedFund.presentationAsset.name.toLowerCase().endsWith(".mp4")) ? (
                               <video
                                 controls
                                 className="w-full rounded-xl border border-slate-200 bg-slate-100"

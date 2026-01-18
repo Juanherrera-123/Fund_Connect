@@ -27,7 +27,12 @@ export function PendingReviewView() {
     );
   }
 
-  const myApplications = fundApplications.filter((item) => item.managerId === profile.id);
+  const myApplications = fundApplications.filter((item) => item.user.id === profile.id);
+  const statusLabels: Record<string, string> = {
+    pending: "Pendiente",
+    approved: "Aprobado",
+    rejected: "Rechazado",
+  };
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
@@ -54,7 +59,9 @@ export function PendingReviewView() {
         <div className="mt-3 grid gap-1 text-sm text-slate-600">
           {myApplications.length ? (
             myApplications.map((item) => (
-              <span key={item.id}>• {item.fundName} ({item.status})</span>
+              <span key={item.id}>
+                • {item.fundData.fundName} ({statusLabels[item.status] ?? item.status})
+              </span>
             ))
           ) : (
             <span data-i18n="pendingReviewNoFunds">No hay fondos registrados.</span>
