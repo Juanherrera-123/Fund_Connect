@@ -32,17 +32,20 @@ export function ContactForm() {
       const phone = String(payload.phone ?? "").trim();
       const message = String(payload.message ?? "").trim();
       const receivedAt = new Date().toISOString();
-      setContactRequests((prev) => [
-        {
-          id: `contact-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
-          name,
-          email,
-          phone,
-          message,
-          receivedAt,
-        },
-        ...prev,
-      ]);
+      setContactRequests((prev) => {
+        const safePrev = Array.isArray(prev) ? prev : [];
+        return [
+          {
+            id: `contact-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
+            name,
+            email,
+            phone,
+            message,
+            receivedAt,
+          },
+          ...safePrev,
+        ];
+      });
       formRef.current?.reset();
     }
   };
