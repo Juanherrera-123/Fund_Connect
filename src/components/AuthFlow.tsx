@@ -3,7 +3,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FirebaseError } from "firebase/app";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 
 import { useLanguage } from "@/components/LanguageProvider";
 import { getAuthClaims, isActiveStatus, normalizeRole } from "@/lib/auth/claims";
@@ -17,6 +21,7 @@ import {
 } from "@/lib/igatesData";
 import { getFirebaseAuth } from "@/lib/firebase";
 import { uploadFundApplicationFile, upsertFundApplication } from "@/lib/funds";
+import { createManagerUserProfile, getUserProfile } from "@/lib/users";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import type {
   FundApplication,
@@ -153,15 +158,6 @@ export function AuthFlow() {
   }, [logoFile]);
 
   const role = kycAnswers.role as keyof typeof SURVEY_DEFINITIONS | undefined;
-  const roleLabels = useMemo(
-    () => ({
-      Investor: strings.authRoleInvestor,
-      "Fund Manager": strings.authRoleFundManager,
-      "Family Office": strings.authRoleFamilyOffice,
-    }),
-    [strings.authRoleFamilyOffice, strings.authRoleFundManager, strings.authRoleInvestor]
-  );
-
   const steps = useMemo<SignupStep[]>(() => {
     const surveyQuestions = role ? SURVEY_DEFINITIONS[role] : [];
     const groups: SurveyQuestion[][] = [];
@@ -272,13 +268,17 @@ export function AuthFlow() {
 
   useEffect(() => {
     const roleParam = searchParams.get("role");
-    if (roleParam && Object.prototype.hasOwnProperty.call(SURVEY_DEFINITIONS, roleParam)) {
+    if (roleParam === "Fund Manager") {
       setActiveTab("signup");
-      setKycAnswers((prev) =>
-        prev.role === roleParam ? prev : { ...prev, role: roleParam }
-      );
+      setKycAnswers((prev) => ({ ...prev, role: "Fund Manager" }));
     }
   }, [searchParams]);
+
+  useEffect(() => {
+    if (kycAnswers.role !== "Fund Manager") {
+      setKycAnswers((prev) => ({ ...prev, role: "Fund Manager" }));
+    }
+  }, [kycAnswers.role]);
 
   const updateKyc = useCallback((field: string, value: string) => {
     setKycAnswers((prev) => ({ ...prev, [field]: value }));
@@ -411,29 +411,60 @@ export function AuthFlow() {
 
   const completeSignup = async () => {
     if (!role) return;
-    const existing = profiles.find((profile) => profile.email.toLowerCase() === kycAnswers.email?.toLowerCase());
-    if (existing) {
-      setSignupStatus(strings.authStatusEmailExists);
+    const auth = getFirebaseAuth();
+    if (!auth) {
+      setSignupStatus("Firebase authentication is not configured.");
       return;
     }
 
-    const profileId = `profile-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
+    let credential;
+    try {
+      credential = await createUserWithEmailAndPassword(
+        auth,
+        kycAnswers.email,
+        kycAnswers.password
+      );
+    } catch (error) {
+      if (error instanceof FirebaseError && error.code === "auth/email-already-in-use") {
+        setSignupStatus(strings.authStatusEmailExists);
+        return;
+      }
+      setSignupStatus("Unable to create account. Please try again.");
+      return;
+    }
+
+    const user = credential.user;
+    await createManagerUserProfile({
+      uid: user.uid,
+      email: user.email,
+      fullName: kycAnswers.fullName,
+    });
+    try {
+      await sendEmailVerification(user);
+    } catch (error) {
+      console.error("Unable to send verification email", error);
+      setSignupStatus("Unable to send verification email. Please try again.");
+      return;
+    }
+
+    const profileId = user.uid;
+    const resolvedRole: Role = "Fund Manager";
     const baseProfile: UserProfile = {
       id: profileId,
       fullName: kycAnswers.fullName,
       email: kycAnswers.email,
       phone: kycAnswers.phone,
       country: kycAnswers.country,
-      role,
+      role: resolvedRole,
       password: kycAnswers.password,
       onboardingCompleted: true,
       onboarding: {
-        role,
+        role: resolvedRole,
         completedAt: new Date().toISOString(),
       },
     };
 
-    if (role === "Investor") {
+    if (resolvedRole === "Investor") {
       const preferences = {
         objective: surveyAnswers.objective as string,
         horizon: surveyAnswers.horizon as string,
@@ -446,7 +477,7 @@ export function AuthFlow() {
       baseProfile.waitlistFunds = [];
     }
 
-    if (role === "Fund Manager") {
+    if (resolvedRole === "Fund Manager") {
       const fundId = `fund-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
       const normalizedLinks = fundLinks.map((link) => link.trim()).filter(Boolean);
       const managerProfile = {
@@ -544,7 +575,7 @@ export function AuthFlow() {
       void upsertFundApplication(draftFundApplication);
     }
 
-    if (role === "Family Office") {
+    if (resolvedRole === "Family Office") {
       const familyPreferences = {
         managementRole: surveyAnswers.managementRole as string,
         diversificationLevel: surveyAnswers.diversificationLevel as string,
@@ -557,21 +588,17 @@ export function AuthFlow() {
     }
 
     setProfiles([...profiles, baseProfile]);
-    setSession({ id: profileId, role: baseProfile.role, authRole: normalizeRole(baseProfile.role) });
+    setSession({
+      id: profileId,
+      uid: profileId,
+      email: user.email ?? kycAnswers.email,
+      role: "Fund Manager",
+      authRole: "manager",
+      status: "pending",
+      emailVerified: user.emailVerified,
+    });
 
-    if (baseProfile.role === "Investor") {
-      router.push("/dashboard/investor");
-      return;
-    }
-
-    if (baseProfile.role === "Fund Manager") {
-      router.push("/pending-review");
-      return;
-    }
-
-    if (baseProfile.role === "Family Office") {
-      router.push("/dashboard/family-office");
-    }
+    router.push("/verify-email");
   };
 
   const resolveLoginErrorMessage = (error: unknown) => {
@@ -619,9 +646,34 @@ export function AuthFlow() {
 
     try {
       const credential = await signInWithEmailAndPassword(auth, identifier, password);
-      const claims = await getAuthClaims();
-      const normalizedRole = claims?.role ?? "unknown";
-      const status = claims?.status ?? null;
+      if (!credential.user.emailVerified) {
+        setSession({
+          id: credential.user.uid,
+          uid: credential.user.uid,
+          email: credential.user.email ?? identifier,
+          role: "Fund Manager",
+          authRole: "manager",
+          status: "pending",
+          emailVerified: credential.user.emailVerified,
+          authenticatedAt: new Date().toISOString(),
+        });
+        router.push("/verify-email");
+        return;
+      }
+
+      const userProfile = await getUserProfile(credential.user.uid);
+      let normalizedRole = userProfile ? normalizeRole(userProfile.role) : "unknown";
+      let status = userProfile?.status ?? null;
+      if (!userProfile) {
+        const claims = await getAuthClaims();
+        if (claims?.role === "master") {
+          normalizedRole = "master";
+          status = claims.status ?? null;
+        } else {
+          setLoginStatus("Unable to find your account profile. Contact support.");
+          return;
+        }
+      }
       const sessionRole: Role | "user" =
         normalizedRole === "master"
           ? "MasterUser"
@@ -632,22 +684,27 @@ export function AuthFlow() {
               : "user";
 
       setSession({
-        id: claims?.uid ?? credential.user.uid,
+        id: credential.user.uid,
         uid: credential.user.uid,
-        email: claims?.email ?? credential.user.email ?? identifier,
+        email: credential.user.email ?? identifier,
         role: sessionRole,
         authRole: normalizedRole,
         status: status ?? undefined,
+        emailVerified: credential.user.emailVerified,
         authenticatedAt: new Date().toISOString(),
       });
 
-      if (!isActiveStatus(status)) {
-        router.push("/profile");
+      if (normalizedRole === "manager") {
+        if (!isActiveStatus(status)) {
+          router.push("/pending-review");
+          return;
+        }
+        router.push("/dashboard/manager/overview");
         return;
       }
 
-      if (normalizedRole === "manager") {
-        router.push("/dashboard/manager/overview");
+      if (!isActiveStatus(status)) {
+        router.push("/profile");
         return;
       }
 
@@ -800,22 +857,13 @@ export function AuthFlow() {
                 </label>
                 <label className="grid gap-2 text-sm font-medium text-slate-600">
                   <span data-i18n="authRoleLabel">Tipo de perfil</span>
-                  <select
-                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
+                  <input
+                    className="w-full cursor-not-allowed rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-700"
                     name="role"
-                    required
-                    value={kycAnswers.role ?? ""}
-                    onChange={(event) => updateKyc("role", event.target.value)}
-                  >
-                    <option value="" data-i18n="authRolePlaceholder">
-                      Selecciona un perfil
-                    </option>
-                    {Object.keys(SURVEY_DEFINITIONS).map((roleOption) => (
-                      <option key={roleOption} value={roleOption}>
-                        {roleLabels[roleOption as keyof typeof roleLabels] ?? roleOption}
-                      </option>
-                    ))}
-                  </select>
+                    value={strings.authRoleFundManager}
+                    readOnly
+                    aria-readonly="true"
+                  />
                 </label>
                 <label className="grid gap-2 text-sm font-medium text-slate-600">
                   <span data-i18n="authPasswordLabel">Contraseña</span>

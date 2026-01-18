@@ -8,6 +8,7 @@ export type AuthClaims = {
   email: string | null;
   role: NormalizedRole;
   status: string | null;
+  emailVerified: boolean;
   rawClaims: Record<string, unknown>;
 };
 
@@ -36,12 +37,26 @@ export async function getAuthClaims(): Promise<AuthClaims | null> {
   const roleClaim = typeof tokenResult.claims.role === "string" ? tokenResult.claims.role : undefined;
   const statusClaim =
     typeof tokenResult.claims.status === "string" ? tokenResult.claims.status : undefined;
+  const isMaster = normalizeRole(roleClaim) === "master";
+  let resolvedRole: NormalizedRole = normalizeRole(roleClaim);
+  let resolvedStatus = statusClaim ? statusClaim.trim().toLowerCase() : null;
+
+  if (!isMaster) {
+    const { getUserProfile } = await import("@/lib/users");
+    const userProfile = await getUserProfile(user.uid);
+    if (userProfile) {
+      resolvedRole = normalizeRole(userProfile.role);
+      resolvedStatus =
+        typeof userProfile.status === "string" ? userProfile.status.trim().toLowerCase() : null;
+    }
+  }
 
   return {
     uid: user.uid,
     email: user.email,
-    role: normalizeRole(roleClaim),
-    status: statusClaim ? statusClaim.trim().toLowerCase() : null,
+    role: resolvedRole,
+    status: resolvedStatus,
+    emailVerified: user.emailVerified,
     rawClaims: tokenResult.claims,
   };
 }
