@@ -134,7 +134,12 @@ export default function MasterDashboard() {
       files?.logo ? { label: "Logo", file: files.logo } : null,
       files?.presentation ? { label: "Presentación", file: files.presentation } : null,
       ...trackRecords.map((file, index) => ({ label: `Track record ${index + 1}`, file })),
-    ].filter(Boolean) as Array<{ label: string; file: NonNullable<typeof files>["logo"] }>;
+    ].filter(
+      (
+        entry,
+      ): entry is { label: string; file: NonNullable<typeof files>["logo"] } =>
+        Boolean(entry?.file?.path && entry.file.url),
+    );
 
     if (!entries.length) {
       return <p className="text-sm text-slate-500">Sin archivos adjuntos.</p>;
