@@ -2,10 +2,11 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { FirebaseError } from "firebase/app";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 import { useLanguage } from "@/components/LanguageProvider";
 import {
-  MASTER_USER,
   STORAGE_KEYS,
   SURVEY_DEFINITIONS,
   countryCallingCodes,
@@ -13,13 +14,13 @@ import {
   languageOptions,
   getStrategyLabel,
 } from "@/lib/igatesData";
+import { getFirebaseAuth } from "@/lib/firebase";
 import { uploadFundApplicationFile, upsertFundApplication } from "@/lib/funds";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import type {
   FundApplication,
   FundApplicationFile,
   MasterNotification,
-  MasterUserCredentials,
   Session,
   SurveyAnswer,
   UserProfile,
@@ -132,10 +133,6 @@ export function AuthFlow() {
   const [profiles, setProfiles] = useFirebaseStorage<UserProfile[]>(
     STORAGE_KEYS.profiles,
     []
-  );
-  const [masterUser] = useFirebaseStorage<MasterUserCredentials>(
-    STORAGE_KEYS.masterUser,
-    MASTER_USER
   );
   const [, setSession] = useFirebaseStorage<Session>(STORAGE_KEYS.session, null);
   const [notifications, setNotifications] = useFirebaseStorage<MasterNotification[]>(
@@ -575,7 +572,30 @@ export function AuthFlow() {
     }
   };
 
-  const handleLogin = (event: React.FormEvent<HTMLFormElement>) => {
+  const resolveLoginErrorMessage = (error: unknown) => {
+    if (error instanceof FirebaseError) {
+      switch (error.code) {
+        case "auth/invalid-credential":
+        case "auth/user-not-found":
+        case "auth/wrong-password":
+          return strings.authStatusInvalidCredentials;
+        case "auth/user-disabled":
+          return "This account has been disabled. Contact support for access.";
+        case "auth/network-request-failed":
+          return "Network error. Check your connection and try again.";
+        default:
+          return "Unable to sign in. Please try again.";
+      }
+    }
+
+    if (error instanceof Error) {
+      return error.message;
+    }
+
+    return "Unable to sign in. Please try again.";
+  };
+
+  const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoginStatus("");
 
@@ -588,48 +608,54 @@ export function AuthFlow() {
       return;
     }
 
-    const activeMasterUser = masterUser?.username ? masterUser : MASTER_USER;
+    const auth = getFirebaseAuth();
 
-    if (
-      identifier.toLowerCase() === activeMasterUser.username.toLowerCase() &&
-      password === activeMasterUser.password
-    ) {
-      setSession({ role: "MasterUser", username: activeMasterUser.username });
-      router.push("/dashboard/master");
+    if (!auth) {
+      setLoginStatus("Firebase authentication is not configured.");
       return;
     }
 
-    const normalizedIdentifier = identifier.toLowerCase();
-    const match = profiles.find(
-      (profile) => profile.email.toLowerCase() === normalizedIdentifier && profile.password === password
-    );
+    try {
+      const credential = await signInWithEmailAndPassword(auth, identifier, password);
+      const tokenResult = await credential.user.getIdTokenResult(true);
+      const roleClaim = tokenResult.claims.role;
+      const statusClaim = tokenResult.claims.status;
+      const role = typeof roleClaim === "string" && roleClaim.length > 0 ? roleClaim : "user";
+      const status = typeof statusClaim === "string" && statusClaim.length > 0 ? statusClaim : "inactive";
 
-    if (!match) {
-      setLoginStatus(strings.authStatusInvalidCredentials);
-      return;
-    }
+      setSession({
+        id: credential.user.uid,
+        uid: credential.user.uid,
+        email: credential.user.email ?? identifier,
+        role,
+        status,
+        authenticatedAt: new Date().toISOString(),
+      });
 
-    setSession({ id: match.id, role: match.role });
-    if (match.role === "Fund Manager") {
-      if (match.fundManagerProfile?.status !== "verified") {
-        router.push("/pending-review");
+      if (role === "Fund Manager") {
+        router.push("/dashboard/manager/overview");
         return;
       }
-      router.push("/dashboard/manager/overview");
-      return;
-    }
 
-    if (match.role === "Investor") {
-      router.push("/dashboard/investor");
-      return;
-    }
+      if (role === "Investor") {
+        router.push("/dashboard/investor");
+        return;
+      }
 
-    if (match.role === "Family Office") {
-      router.push("/dashboard/family-office");
-      return;
-    }
+      if (role === "Family Office") {
+        router.push("/dashboard/family-office");
+        return;
+      }
 
-    router.push("/profile");
+      if (role === "MasterUser") {
+        router.push("/dashboard/master");
+        return;
+      }
+
+      router.push("/profile");
+    } catch (error) {
+      setLoginStatus(resolveLoginErrorMessage(error));
+    }
   };
 
   return (
