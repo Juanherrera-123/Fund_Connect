@@ -3895,7 +3895,11 @@ export const DEFAULT_FUND_MANAGER_PROFILES: UserProfile[] = baseVerifiedFunds.ma
   };
 });
 
-export const countryCallingCodes = [
+export const countryCallingCodes: Array<{
+  name: string;
+  dialCode: string;
+  displayDialCode?: string;
+}> = [
   { name: "Afganistán", dialCode: "+93" },
   { name: "Albania", dialCode: "+355" },
   { name: "Argelia", dialCode: "+213" },
