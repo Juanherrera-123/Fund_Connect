@@ -27,7 +27,16 @@ import type {
 
 const requiredKycFields = ["fullName", "email", "phone", "country", "role", "password"] as const;
 
-type SurveyQuestion = (typeof SURVEY_DEFINITIONS)[keyof typeof SURVEY_DEFINITIONS][number];
+type SurveyQuestion =
+  | ((typeof SURVEY_DEFINITIONS)[keyof typeof SURVEY_DEFINITIONS][number] & {
+      prompt?: string;
+    })
+  | {
+      id: string;
+      label: string;
+      type: "text";
+      prompt?: string;
+    };
 
 type SignupStep =
   | { type: "kyc" }
