@@ -153,9 +153,14 @@ export type ContactRequest = {
   id: string;
   name: string;
   email: string;
-  phone: string;
+  phone?: string;
+  country?: string;
   message: string;
-  receivedAt: string;
+  preferredLanguage?: string;
+  source?: string;
+  status?: string;
+  uid?: string | null;
+  createdAt?: unknown;
 };
 
 export type MasterNotification = {

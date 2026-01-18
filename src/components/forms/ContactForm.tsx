@@ -3,18 +3,13 @@
 import { useRef } from "react";
 
 import { useLanguage } from "@/components/LanguageProvider";
-import { STORAGE_KEYS } from "@/lib/igatesData";
+import { getFirebaseAuth, getFirestoreDb } from "@/lib/firebase";
 import { useApiForm } from "@/lib/useApiForm";
-import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
-import type { ContactRequest } from "@/lib/types";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 
 export function ContactForm() {
   const formRef = useRef<HTMLFormElement | null>(null);
-  const { strings } = useLanguage();
-  const [contactRequests, setContactRequests] = useFirebaseStorage<ContactRequest[]>(
-    STORAGE_KEYS.contactRequests,
-    []
-  );
+  const { language, strings } = useLanguage();
   const { state, submit } = useApiForm("/contact", {
     sending: strings.contactStatusSending,
     success: strings.contactStatusSuccess,
@@ -30,22 +25,30 @@ export function ContactForm() {
       const name = String(payload.name ?? "").trim();
       const email = String(payload.email ?? "").trim();
       const phone = String(payload.phone ?? "").trim();
+      const country = String(payload.country ?? "").trim();
       const message = String(payload.message ?? "").trim();
-      const receivedAt = new Date().toISOString();
-      setContactRequests((prev) => {
-        const safePrev = Array.isArray(prev) ? prev : [];
-        return [
-          {
-            id: `contact-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
+      const preferredLanguage = String(payload.preferredLanguage ?? language ?? "").trim();
+      const db = getFirestoreDb();
+      if (db) {
+        try {
+          await addDoc(collection(db, "contactRequests"), {
+            createdAt: serverTimestamp(),
             name,
             email,
             phone,
+            country,
             message,
-            receivedAt,
-          },
-          ...safePrev,
-        ];
-      });
+            preferredLanguage,
+            source: "contact_form",
+            status: "new",
+            uid: getFirebaseAuth()?.currentUser?.uid ?? null,
+          });
+        } catch (error) {
+          console.error("Unable to save contact request", error);
+        }
+      } else {
+        console.warn("Firestore not configured; skipping contactRequests write.");
+      }
       formRef.current?.reset();
     }
   };

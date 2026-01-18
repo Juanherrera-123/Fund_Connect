@@ -2,17 +2,61 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /funds/{fundId} {
-      allow read, write: if true;
+    function signedIn() {
+      return request.auth != null;
     }
 
-    match /waitlistRequests/{requestId} {
-      allow read, create, update: if true;
+    function hasRole(role) {
+      return signedIn() && request.auth.token.role == role;
+    }
+
+    function isActive() {
+      return signedIn() && request.auth.token.status in ["active", "approved"];
+    }
+
+    function isMaster() {
+      return hasRole("master") && isActive();
+    }
+
+    function isManager() {
+      return hasRole("manager") && isActive();
+    }
+
+    match /users/{uid} {
+      allow read: if isMaster() || (signedIn() && request.auth.uid == uid);
+      allow create: if signedIn() && request.auth.uid == uid;
+      allow update: if isMaster() || (signedIn() && request.auth.uid == uid);
+      allow delete: if isMaster();
+    }
+
+    match /fundApplications/{id} {
+      allow create: if signedIn() && request.resource.data.user.uid == request.auth.uid;
+      allow read: if isMaster() || (signedIn() && resource.data.user.uid == request.auth.uid);
+      allow update: if isMaster()
+        || (signedIn()
+          && resource.data.user.uid == request.auth.uid
+          && resource.data.status == "pending"
+          && request.resource.data.status == "pending");
       allow delete: if false;
     }
 
+    match /funds/{fundId} {
+      allow read: if true;
+      allow write: if isMaster();
+    }
+
+    match /waitlistRequests/{requestId} {
+      allow create: if true;
+      allow read, update, delete: if isMaster();
+    }
+
+    match /contactRequests/{requestId} {
+      allow create: if true;
+      allow read, update, delete: if isMaster();
+    }
+
     match /appStorage/{documentId} {
-      allow read, write: if true;
+      allow read, write: if isMaster();
     }
 
     match /{document=**} {
