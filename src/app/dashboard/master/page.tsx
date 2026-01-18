@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import DataTable, { StatusCell } from "@/components/dashboard/DataTable";
 import { STORAGE_KEYS } from "@/lib/igatesData";
 import { updateFundApplicationStatus, useFundsCollection } from "@/lib/funds";
+import { updateUserStatus } from "@/lib/users";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import type { FundApplication, FundApplicationFile, Session } from "@/lib/types";
 
@@ -118,6 +119,9 @@ export default function MasterDashboard() {
           ? { name: session.username, email: session.username }
           : { name: "Master" },
       });
+      if (status === "approved") {
+        await updateUserStatus({ uid: activeApplication.user.id, status: "active" });
+      }
       setActiveApplicationId(null);
     } catch (error) {
       console.error("Unable to update fund application status", error);
