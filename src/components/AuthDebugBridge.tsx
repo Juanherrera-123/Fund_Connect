@@ -10,7 +10,7 @@ declare global {
   }
 }
 
-export function AuthDebugBridge() {
+export default function AuthDebugBridge() {
   useEffect(() => {
     const enabled =
       process.env.NODE_ENV === "development" ||
