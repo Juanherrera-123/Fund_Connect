@@ -1,3 +1,5 @@
+import type { NormalizedRole } from "@/types/auth";
+
 export type Role = "Investor" | "Fund Manager" | "Family Office" | "MasterUser";
 
 export type MasterUserCredentials = {
@@ -12,6 +14,7 @@ export type Session = {
   email?: string | null;
   role: Role | "user";
   status?: string;
+  authRole?: NormalizedRole;
   authenticatedAt?: string;
   username?: string;
 } | null;

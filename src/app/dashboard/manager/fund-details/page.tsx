@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import { isActiveStatus, normalizeRole } from "@/lib/auth/claims";
 import { STORAGE_KEYS, countryFlags } from "@/lib/igatesData";
 import { uploadFundApplicationFile, upsertFundApplication, useFundsCollection } from "@/lib/funds";
 import { useLanguage } from "@/components/LanguageProvider";
@@ -46,11 +47,13 @@ export default function FundDetailsPage() {
   const [trackRecordFiles, setTrackRecordFiles] = useState<(File | null)[]>([null, null]);
   const [trackRecordRemoved, setTrackRecordRemoved] = useState<boolean[]>([false, false]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const authRole = session?.authRole ?? normalizeRole(session?.role);
+  const isActive = isActiveStatus(session?.status);
 
   const profile = useMemo(() => {
-    if (!session || session.role !== "Fund Manager") return null;
+    if (!session || authRole !== "manager" || !isActive) return null;
     return profiles.find((item) => item.id === session.id) ?? null;
-  }, [profiles, session]);
+  }, [authRole, isActive, profiles, session]);
 
   const existingApplication = useMemo(() => {
     if (!profile) return null;

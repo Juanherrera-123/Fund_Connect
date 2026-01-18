@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useLanguage } from "@/components/LanguageProvider";
+import { normalizeRole } from "@/lib/auth/claims";
 import { STORAGE_KEYS } from "@/lib/igatesData";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import type { Session } from "@/lib/types";
@@ -20,22 +21,27 @@ export function Navbar({ floating = false }: NavbarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuPanelRef = useRef<HTMLDivElement | null>(null);
   const menuButtonRef = useRef<HTMLButtonElement | null>(null);
+  const authRole = session?.authRole ?? normalizeRole(session?.role);
 
   const authLink = (() => {
     if (!session) {
       return { label: strings.navAuthSignup, href: "/auth", key: "navAuthSignup" };
     }
 
-    if (session.role === "MasterUser") {
+    if (authRole === "master") {
       return { label: strings.navAuthMaster, href: "/dashboard/master", key: "navAuthMaster" };
     }
 
-    if (session.role === "Fund Manager") {
+    if (authRole === "manager") {
       return {
         label: strings.navAuthManager,
         href: "/dashboard/manager/overview",
         key: "navAuthManager",
       };
+    }
+
+    if (authRole === "investor") {
+      return { label: strings.navAuthProfile, href: "/dashboard/investor", key: "navAuthProfile" };
     }
 
     return { label: strings.navAuthProfile, href: "/profile", key: "navAuthProfile" };

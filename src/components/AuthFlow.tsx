@@ -6,6 +6,7 @@ import { FirebaseError } from "firebase/app";
 import { signInWithEmailAndPassword } from "firebase/auth";
 
 import { useLanguage } from "@/components/LanguageProvider";
+import { getAuthClaims, isActiveStatus, normalizeRole } from "@/lib/auth/claims";
 import {
   STORAGE_KEYS,
   SURVEY_DEFINITIONS,
@@ -75,12 +76,6 @@ const normalizeCountryName = (value: string) =>
     .replace(/\p{Diacritic}/gu, "")
     .replace(/[^a-z0-9]+/g, " ")
     .trim();
-
-const isRole = (value: unknown): value is Role =>
-  value === "Investor" ||
-  value === "Fund Manager" ||
-  value === "Family Office" ||
-  value === "MasterUser";
 
 const countryIsoAliases: Record<string, string> = {
   "costa de marfil": "CI",
@@ -562,7 +557,7 @@ export function AuthFlow() {
     }
 
     setProfiles([...profiles, baseProfile]);
-    setSession({ id: profileId, role: baseProfile.role });
+    setSession({ id: profileId, role: baseProfile.role, authRole: normalizeRole(baseProfile.role) });
 
     if (baseProfile.role === "Investor") {
       router.push("/dashboard/investor");
@@ -624,37 +619,44 @@ export function AuthFlow() {
 
     try {
       const credential = await signInWithEmailAndPassword(auth, identifier, password);
-      const tokenResult = await credential.user.getIdTokenResult(true);
-      const roleClaim = tokenResult.claims.role;
-      const statusClaim = tokenResult.claims.status;
-      const role = isRole(roleClaim) ? roleClaim : "user";
-      const status = typeof statusClaim === "string" && statusClaim.length > 0 ? statusClaim : "inactive";
+      const claims = await getAuthClaims();
+      const normalizedRole = claims?.role ?? "unknown";
+      const status = claims?.status ?? null;
+      const sessionRole: Role | "user" =
+        normalizedRole === "master"
+          ? "MasterUser"
+          : normalizedRole === "manager"
+            ? "Fund Manager"
+            : normalizedRole === "investor"
+              ? "Investor"
+              : "user";
 
       setSession({
-        id: credential.user.uid,
+        id: claims?.uid ?? credential.user.uid,
         uid: credential.user.uid,
-        email: credential.user.email ?? identifier,
-        role,
-        status,
+        email: claims?.email ?? credential.user.email ?? identifier,
+        role: sessionRole,
+        authRole: normalizedRole,
+        status: status ?? undefined,
         authenticatedAt: new Date().toISOString(),
       });
 
-      if (role === "Fund Manager") {
+      if (!isActiveStatus(status)) {
+        router.push("/profile");
+        return;
+      }
+
+      if (normalizedRole === "manager") {
         router.push("/dashboard/manager/overview");
         return;
       }
 
-      if (role === "Investor") {
+      if (normalizedRole === "investor") {
         router.push("/dashboard/investor");
         return;
       }
 
-      if (role === "Family Office") {
-        router.push("/dashboard/family-office");
-        return;
-      }
-
-      if (role === "MasterUser") {
+      if (normalizedRole === "master") {
         router.push("/dashboard/master");
         return;
       }
