@@ -11,6 +11,7 @@ export type FirestoreUser = {
   role: string;
   status: string;
   createdAt?: unknown;
+  updatedAt?: unknown;
 };
 
 const getUserDocRef = (uid: string) => {
@@ -58,6 +59,30 @@ export async function createManagerUserProfile({
       role: "manager",
       status: "pending",
       createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    },
+    { merge: true }
+  );
+}
+
+export async function updateUserStatus({
+  uid,
+  status,
+}: {
+  uid: string;
+  status: string;
+}): Promise<void> {
+  const docRef = getUserDocRef(uid);
+  if (!docRef) {
+    console.warn("Skipping user status update (missing Firebase configuration).");
+    return;
+  }
+
+  await setDoc(
+    docRef,
+    {
+      status,
+      updatedAt: serverTimestamp(),
     },
     { merge: true }
   );
