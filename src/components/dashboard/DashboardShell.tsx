@@ -24,51 +24,9 @@ const masterNavItems = [
     ),
   },
   {
-    label: "Funds",
-    labelKey: "dashboardNavFunds",
-    href: "/dashboard/master/funds",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M4.5 7.5h15m-15 4.5h15m-15 4.5h9"
-        />
-      </svg>
-    ),
-  },
-  {
-    label: "Requests",
-    labelKey: "dashboardNavRequests",
-    href: "/dashboard/master/requests",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M8.25 9.75h7.5m-7.5 4.5h4.5M6 3.75h12A2.25 2.25 0 0 1 20.25 6v12A2.25 2.25 0 0 1 18 20.25H6A2.25 2.25 0 0 1 3.75 18V6A2.25 2.25 0 0 1 6 3.75Z"
-        />
-      </svg>
-    ),
-  },
-  {
-    label: "Analytics",
-    labelKey: "dashboardNavAnalytics",
-    href: "/dashboard/master/analytics",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M4.5 18.75V5.25m5.25 13.5V9m5.25 9.75v-6m5.25 6v-9"
-        />
-      </svg>
-    ),
-  },
-  {
     label: "Messages",
     labelKey: "dashboardNavMessages",
-    href: "/dashboard/messages",
+    href: "/dashboard/master/messages",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
         <path
@@ -80,15 +38,15 @@ const masterNavItems = [
     ),
   },
   {
-    label: "Settings",
-    labelKey: "dashboardNavSettings",
-    href: "/dashboard/settings",
+    label: "Logout",
+    labelKey: "dashboardLogout",
+    action: "logout",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
-          d="M12 9.75A2.25 2.25 0 1 0 12 14.25 2.25 2.25 0 0 0 12 9.75Zm7.5 2.25a7.49 7.49 0 0 0-.12-1.35l2.07-1.62-2.25-3.9-2.46.96a7.47 7.47 0 0 0-2.34-1.35l-.39-2.61h-4.5l-.39 2.61a7.47 7.47 0 0 0-2.34 1.35l-2.46-.96-2.25 3.9 2.07 1.62a7.49 7.49 0 0 0 0 2.7l-2.07 1.62 2.25 3.9 2.46-.96a7.47 7.47 0 0 0 2.34 1.35l.39 2.61h4.5l.39-2.61a7.47 7.47 0 0 0 2.34-1.35l2.46.96 2.25-3.9-2.07-1.62c.08-.44.12-.89.12-1.35Z"
+          d="M15.75 9V6.75A2.25 2.25 0 0 0 13.5 4.5h-6A2.25 2.25 0 0 0 5.25 6.75v10.5A2.25 2.25 0 0 0 7.5 19.5h6A2.25 2.25 0 0 0 15.75 17.25V15m3-3H9m9.75 0-2.25-2.25m2.25 2.25-2.25 2.25"
         />
       </svg>
     ),
@@ -224,8 +182,7 @@ const roleMap: Record<string, { label: string; labelKey: string }> = {
   "/dashboard/fund-manager": { label: "MasterUser", labelKey: "dashboardRoleMaster" },
   "/dashboard/investor": { label: "Investor", labelKey: "dashboardRoleUser" },
   "/dashboard/family-office": { label: "Family Office", labelKey: "dashboardRoleUser" },
-  "/dashboard/messages": { label: "MasterUser", labelKey: "dashboardRoleMaster" },
-  "/dashboard/settings": { label: "MasterUser", labelKey: "dashboardRoleMaster" },
+  "/dashboard/master/messages": { label: "MasterUser", labelKey: "dashboardRoleMaster" },
   "/dashboard/manager": { label: "Fund Manager", labelKey: "dashboardRoleManager" },
 };
 
@@ -273,10 +230,7 @@ export default function DashboardShell({
 
     if (pathname?.startsWith("/dashboard")) {
       const isManagerRoute = pathname?.startsWith("/dashboard/manager");
-      const isMasterRoute =
-        pathname?.startsWith("/dashboard/master") ||
-        pathname?.startsWith("/dashboard/messages") ||
-        pathname?.startsWith("/dashboard/settings");
+      const isMasterRoute = pathname?.startsWith("/dashboard/master");
       const isInvestorRoute = pathname?.startsWith("/dashboard/investor");
       const isFamilyOfficeRoute = pathname?.startsWith("/dashboard/family-office");
 
@@ -320,18 +274,14 @@ export default function DashboardShell({
         </div>
         <nav className="mt-4 flex flex-1 flex-col gap-1 text-xs font-medium">
           {navItems.map((item) => {
-            const isActive = pathname === item.href;
-
-            return (
-              <Link
-                key={`${item.label}-${item.href}`}
-                href={item.href}
-                className={`relative flex items-center gap-3 rounded-md px-3 py-2 transition ${
-                  isActive
-                    ? "bg-slate-100 text-slate-900"
-                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                }`}
-              >
+            const isActive = item.href ? pathname === item.href : false;
+            const itemClasses = `relative flex items-center gap-3 rounded-md px-3 py-2 transition ${
+              isActive
+                ? "bg-slate-100 text-slate-900"
+                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+            }`;
+            const itemContent = (
+              <>
                 <span
                   className={`absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full ${
                     isActive ? "bg-slate-900" : "bg-transparent"
@@ -341,7 +291,26 @@ export default function DashboardShell({
                   {item.icon}
                 </span>
                 <span data-i18n={item.labelKey}>{item.label}</span>
-              </Link>
+              </>
+            );
+
+            if (item.href) {
+              return (
+                <Link key={`${item.label}-${item.href}`} href={item.href} className={itemClasses}>
+                  {itemContent}
+                </Link>
+              );
+            }
+
+            return (
+              <button
+                key={`${item.label}-${item.labelKey}`}
+                type="button"
+                className={itemClasses}
+                onClick={handleLogout}
+              >
+                {itemContent}
+              </button>
             );
           })}
         </nav>
