@@ -15,6 +15,7 @@ export type Session = {
   role: Role | "user";
   status?: string;
   authRole?: NormalizedRole;
+  emailVerified?: boolean;
   authenticatedAt?: string;
   username?: string;
 } | null;

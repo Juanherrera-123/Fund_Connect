@@ -255,7 +255,8 @@ export default function DashboardShell({
           session.status !== status ||
           session.uid !== claims.uid ||
           session.email !== claims.email ||
-          session.role !== mappedRole;
+          session.role !== mappedRole ||
+          session.emailVerified !== claims.emailVerified;
         if (needsUpdate) {
           setSession({
             ...session,
@@ -264,6 +265,7 @@ export default function DashboardShell({
             authRole: normalizedRole,
             status: status ?? undefined,
             role: mappedRole,
+            emailVerified: claims.emailVerified,
           });
         }
       } else {
@@ -274,14 +276,27 @@ export default function DashboardShell({
           role: mappedRole,
           authRole: normalizedRole,
           status: status ?? undefined,
+          emailVerified: claims.emailVerified,
           authenticatedAt: new Date().toISOString(),
         });
+      }
+
+      if (!claims.emailVerified) {
+        logRedirect("email-unverified", normalizedRole, status, pathname);
+        router.push("/verify-email");
+        return;
       }
 
       const profile = profiles.find((item) => item.id === session?.id);
       if (normalizedRole !== "master" && profile?.onboardingCompleted === false) {
         logRedirect("onboarding-incomplete", normalizedRole, status, pathname);
         router.push("/auth");
+        return;
+      }
+
+      if (normalizedRole === "manager" && !active) {
+        logRedirect("pending", normalizedRole, status, pathname);
+        router.push("/pending-review");
         return;
       }
 
