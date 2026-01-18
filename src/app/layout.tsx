@@ -2,7 +2,7 @@ import "@/styles/globals.css";
 
 import type { Metadata } from "next";
 
-import { AuthDebugClaims } from "@/components/AuthDebugClaims";
+import { AuthDebugBridge } from "@/components/AuthDebugBridge";
 import { LanguageProvider } from "@/components/LanguageProvider";
 
 export const metadata: Metadata = {
@@ -30,7 +30,7 @@ export default function RootLayout({
         <link rel="icon" href="/IGATESLOGO.png" sizes="any" />
       </head>
       <body className="overflow-x-hidden">
-        <AuthDebugClaims />
+        <AuthDebugBridge />
         <LanguageProvider>{children}</LanguageProvider>
       </body>
     </html>
