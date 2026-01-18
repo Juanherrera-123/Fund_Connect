@@ -15,7 +15,7 @@ export default function FundManagerSettings() {
   const isActive = isActiveStatus(session?.status);
 
   const profile =
-    authRole === "manager" && isActive
+    authRole === "manager" && isActive && session?.id
       ? profiles.find((item) => item.id === session.id) ?? null
       : null;
 
