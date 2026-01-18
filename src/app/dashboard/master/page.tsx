@@ -6,7 +6,7 @@ import DataTable, { StatusCell } from "@/components/dashboard/DataTable";
 import { STORAGE_KEYS } from "@/lib/igatesData";
 import { updateFundApplicationStatus, useFundsCollection } from "@/lib/funds";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
-import type { FundApplication, Session } from "@/lib/types";
+import type { FundApplication, FundApplicationFile, Session } from "@/lib/types";
 
 type ModalSection = {
   title: string;
@@ -135,9 +135,7 @@ export default function MasterDashboard() {
       files?.presentation ? { label: "Presentación", file: files.presentation } : null,
       ...trackRecords.map((file, index) => ({ label: `Track record ${index + 1}`, file })),
     ].filter(
-      (
-        entry,
-      ): entry is { label: string; file: NonNullable<typeof files>["logo"] } =>
+      (entry): entry is { label: string; file: FundApplicationFile } =>
         Boolean(entry?.file?.path && entry.file.url),
     );
 
