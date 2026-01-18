@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 
+import { normalizeRole } from "@/lib/auth/claims";
 import { STORAGE_KEYS, formatStrategyList } from "@/lib/igatesData";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import { useWaitlistCollection } from "@/lib/waitlist";
@@ -14,10 +15,11 @@ export function ProfileView() {
   const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
   const waitlistRequests = useWaitlistCollection();
   const [session, setSession] = useFirebaseStorage<Session>(STORAGE_KEYS.session, null);
+  const authRole = session?.authRole ?? normalizeRole(session?.role);
   const profile = useMemo(() => {
-    if (!session || session.role === "MasterUser") return null;
+    if (!session || authRole === "master") return null;
     return profiles.find((item) => item.id === session.id) ?? null;
-  }, [profiles, session]);
+  }, [authRole, profiles, session]);
 
   const handleLogout = () => {
     setSession(null);

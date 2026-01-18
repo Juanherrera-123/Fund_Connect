@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo } from "react";
 
 import KpiCard from "@/components/dashboard/KpiCard";
+import { isActiveStatus, normalizeRole } from "@/lib/auth/claims";
 import { STORAGE_KEYS } from "@/lib/igatesData";
 import { useFundsCollection } from "@/lib/funds";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
@@ -15,11 +16,13 @@ export default function FundManagerOverview() {
   const [session] = useFirebaseStorage<Session>(STORAGE_KEYS.session, null);
   const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
   const fundApplications = useFundsCollection();
+  const authRole = session?.authRole ?? normalizeRole(session?.role);
+  const isActive = isActiveStatus(session?.status);
 
   const profile = useMemo(() => {
-    if (!session || session.role !== "Fund Manager") return null;
+    if (!session || authRole !== "manager" || !isActive) return null;
     return profiles.find((item) => item.id === session.id) ?? null;
-  }, [profiles, session]);
+  }, [authRole, isActive, profiles, session]);
 
   const fundSnapshot = useMemo(() => {
     if (!profile) return null;

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { useLanguage } from "@/components/LanguageProvider";
+import { isActiveStatus, normalizeRole } from "@/lib/auth/claims";
 import { apiBase, STORAGE_KEYS } from "@/lib/igatesData";
 import { getFundFrameClass } from "@/lib/fundVisuals";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
@@ -21,11 +22,13 @@ export function FundsExploreGrid() {
   );
   const [funds, setFunds] = useState<FundSummary[]>([]);
   const [status, setStatus] = useState<string>(strings.fundsExploreLoading);
+  const authRole = session?.authRole ?? normalizeRole(session?.role);
+  const isActive = isActiveStatus(session?.status);
 
   const profile = useMemo(() => {
-    if (!session || session.role !== "Investor") return null;
+    if (!session || authRole !== "investor" || !isActive) return null;
     return profiles.find((item) => item.id === session.id) ?? null;
-  }, [profiles, session]);
+  }, [authRole, isActive, profiles, session]);
 
   useEffect(() => {
     if (!profile) return;

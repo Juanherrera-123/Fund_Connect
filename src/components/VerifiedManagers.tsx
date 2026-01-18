@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } fro
 import { AnimatePresence, MotionConfig, motion } from "framer-motion";
 
 import { useLanguage } from "@/components/LanguageProvider";
+import { normalizeRole } from "@/lib/auth/claims";
 import {
   STORAGE_KEYS,
   countryFlags,
@@ -206,10 +207,11 @@ export function VerifiedManagers() {
   }, [filteredFunds, selectedFundId]);
 
   const selectedFund = filteredFunds.find((fund) => fund.id === selectedFundId) ?? null;
+  const authRole = session?.authRole ?? normalizeRole(session?.role);
   const currentProfile = useMemo(() => {
-    if (!session?.id || session.role === "MasterUser") return null;
+    if (!session?.id || authRole === "master") return null;
     return profiles.find((profile) => profile.id === session.id) ?? null;
-  }, [profiles, session]);
+  }, [authRole, profiles, session]);
 
   const handleApplyFilters = () => {
     setFilters(appliedFilters);
@@ -304,7 +306,7 @@ export function VerifiedManagers() {
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
     };
-    if (session?.id && session?.role && session.role !== "MasterUser") {
+    if (session?.id && session?.role && authRole !== "master") {
       headers["x-user-id"] = session.id;
       headers["x-user-role"] = session.role;
     }

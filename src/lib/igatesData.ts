@@ -568,7 +568,7 @@ export const translations = {
     dashboardNavMessages: "Messages",
     dashboardNavSettings: "Settings",
     dashboardNavFundDetails: "Fund details",
-    dashboardRoleMaster: "MasterUser",
+    dashboardRoleMaster: "Master",
     dashboardRoleManager: "Fund Manager",
     dashboardRoleUser: "Dashboard User",
     dashboardSearchPlaceholder: "Search funds, users, requests…",
@@ -1302,7 +1302,7 @@ export const translations = {
     dashboardNavMessages: "Mensajes",
     dashboardNavSettings: "Configuración",
     dashboardNavFundDetails: "Detalles del fondo",
-    dashboardRoleMaster: "MasterUser",
+    dashboardRoleMaster: "Master",
     dashboardRoleManager: "Gestor de fondos",
     dashboardRoleUser: "Usuario de dashboard",
     dashboardSearchPlaceholder: "Buscar fondos, usuarios, solicitudes…",
@@ -2036,7 +2036,7 @@ export const translations = {
     dashboardNavMessages: "Mensagens",
     dashboardNavSettings: "Configurações",
     dashboardNavFundDetails: "Detalhes do fundo",
-    dashboardRoleMaster: "MasterUser",
+    dashboardRoleMaster: "Master",
     dashboardRoleManager: "Gestor de fundos",
     dashboardRoleUser: "Usuário do dashboard",
     dashboardSearchPlaceholder: "Buscar fundos, usuários, solicitações…",
@@ -2770,7 +2770,7 @@ export const translations = {
     dashboardNavMessages: "Messaggi",
     dashboardNavSettings: "Impostazioni",
     dashboardNavFundDetails: "Dettagli del fondo",
-    dashboardRoleMaster: "MasterUser",
+    dashboardRoleMaster: "Master",
     dashboardRoleManager: "Gestore di fondi",
     dashboardRoleUser: "Utente dashboard",
     dashboardSearchPlaceholder: "Cerca fondi, utenti, richieste…",
@@ -3483,7 +3483,7 @@ export const translations = {
     dashboardNavMessages: "消息",
     dashboardNavSettings: "设置",
     dashboardNavFundDetails: "基金详情",
-    dashboardRoleMaster: "MasterUser",
+    dashboardRoleMaster: "Master",
     dashboardRoleManager: "基金管理人",
     dashboardRoleUser: "仪表盘用户",
     dashboardSearchPlaceholder: "搜索基金、用户、请求…",
@@ -3662,7 +3662,7 @@ export type LanguageKey = keyof typeof languageOptions;
 export const MASTER_USER = {
   username: "Sebastian_ACY",
   password: "dB9(NP1O",
-  role: "MasterUser",
+  role: "Master",
 } as const;
 
 export const STRATEGY_OPTIONS = [

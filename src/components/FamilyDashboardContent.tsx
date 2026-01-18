@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo } from "react";
 
+import { isActiveStatus, normalizeRole } from "@/lib/auth/claims";
 import { STORAGE_KEYS, formatStrategyList } from "@/lib/igatesData";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import type { Session, UserProfile } from "@/lib/types";
@@ -10,11 +11,14 @@ import type { Session, UserProfile } from "@/lib/types";
 export function FamilyDashboardContent() {
   const [session] = useFirebaseStorage<Session>(STORAGE_KEYS.session, null);
   const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
+  const authRole = session?.authRole ?? normalizeRole(session?.role);
+  const isActive = isActiveStatus(session?.status);
 
   const profile = useMemo(() => {
-    if (!session || session.role !== "Family Office") return null;
+    if (!session || !isActive) return null;
+    if (authRole !== "unknown" || session.role !== "Family Office") return null;
     return profiles.find((item) => item.id === session.id) ?? null;
-  }, [profiles, session]);
+  }, [authRole, isActive, profiles, session]);
 
   if (!profile) {
     return (

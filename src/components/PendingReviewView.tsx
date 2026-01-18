@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 
+import { normalizeRole } from "@/lib/auth/claims";
 import { STORAGE_KEYS } from "@/lib/igatesData";
 import { useFundsCollection } from "@/lib/funds";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
@@ -11,11 +12,12 @@ export function PendingReviewView() {
   const [session] = useFirebaseStorage<Session>(STORAGE_KEYS.session, null);
   const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
   const fundApplications = useFundsCollection();
+  const authRole = session?.authRole ?? normalizeRole(session?.role);
 
   const profile = useMemo(() => {
-    if (!session || session.role !== "Fund Manager") return null;
+    if (!session || authRole !== "manager") return null;
     return profiles.find((item) => item.id === session.id) ?? null;
-  }, [profiles, session]);
+  }, [authRole, profiles, session]);
 
   if (!profile) {
     return (

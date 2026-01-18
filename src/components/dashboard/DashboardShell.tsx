@@ -5,10 +5,11 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
+import { getAuthClaims, isActiveStatus, normalizeRole } from "@/lib/auth/claims";
 import { getFirebaseAuth } from "@/lib/firebase";
 import { STORAGE_KEYS } from "@/lib/igatesData";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
-import type { Role, Session, UserProfile } from "@/lib/types";
+import type { Session, UserProfile } from "@/lib/types";
 
 const masterNavItems = [
   {
@@ -180,11 +181,11 @@ const actionIconClass =
   "flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-600 transition hover:border-slate-300 hover:text-slate-900";
 
 const roleMap: Record<string, { label: string; labelKey: string }> = {
-  "/dashboard/master": { label: "MasterUser", labelKey: "dashboardRoleMaster" },
-  "/dashboard/fund-manager": { label: "MasterUser", labelKey: "dashboardRoleMaster" },
+  "/dashboard/master": { label: "Master", labelKey: "dashboardRoleMaster" },
+  "/dashboard/fund-manager": { label: "Master", labelKey: "dashboardRoleMaster" },
   "/dashboard/investor": { label: "Investor", labelKey: "dashboardRoleUser" },
   "/dashboard/family-office": { label: "Family Office", labelKey: "dashboardRoleUser" },
-  "/dashboard/master/messages": { label: "MasterUser", labelKey: "dashboardRoleMaster" },
+  "/dashboard/master/messages": { label: "Master", labelKey: "dashboardRoleMaster" },
   "/dashboard/manager": { label: "Fund Manager", labelKey: "dashboardRoleManager" },
 };
 
@@ -197,13 +198,13 @@ export default function DashboardShell({
   const router = useRouter();
   const [session, setSession] = useFirebaseStorage<Session>(STORAGE_KEYS.session, null);
   const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
-  const sessionRole = session?.role;
+  const authRole = session?.authRole ?? normalizeRole(session?.role);
   const navItems =
-    sessionRole === "Fund Manager"
+    authRole === "manager"
       ? fundManagerNavItems
-      : sessionRole === "Investor"
+      : authRole === "investor"
         ? investorNavItems
-        : sessionRole === "Family Office"
+        : session?.role === "Family Office"
           ? familyOfficeNavItems
           : masterNavItems;
   const role =
@@ -215,41 +216,115 @@ export default function DashboardShell({
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!sessionRole) return;
-    const profile = profiles.find((item) => item.id === session?.id);
-    if (sessionRole !== "MasterUser" && profile?.onboardingCompleted === false) {
-      router.push("/auth");
-      return;
-    }
+    if (!pathname?.startsWith("/dashboard")) return;
+    let isMounted = true;
 
-    const routeForRole: Record<Role, string> = {
-      MasterUser: "/dashboard/master",
-      Investor: "/dashboard/investor",
-      "Fund Manager": "/dashboard/manager/overview",
-      "Family Office": "/dashboard/family-office",
+    const logRedirect = (reason: string, role: string, status: string | null, path: string) => {
+      if (process.env.NODE_ENV !== "development") return;
+      console.info(
+        `[AuthGuard] redirect reason=${reason} role=${role} status=${status ?? "unknown"} path=${path}`
+      );
     };
-    if (!(sessionRole in routeForRole)) {
-      return;
-    }
 
-    const expected = routeForRole[sessionRole as Role];
+    const guard = async () => {
+      const claims = await getAuthClaims();
+      if (!isMounted) return;
 
-    if (pathname?.startsWith("/dashboard")) {
+      if (!claims) {
+        logRedirect("unauthenticated", authRole, session?.status ?? null, pathname);
+        router.push("/auth");
+        return;
+      }
+
+      const normalizedRole = claims.role;
+      const status = claims.status;
+      const active = isActiveStatus(status);
+
+      const mappedRole =
+        normalizedRole === "master"
+          ? "MasterUser"
+          : normalizedRole === "manager"
+            ? "Fund Manager"
+            : normalizedRole === "investor"
+              ? "Investor"
+              : "user";
+
+      if (session) {
+        const needsUpdate =
+          session.authRole !== normalizedRole ||
+          session.status !== status ||
+          session.uid !== claims.uid ||
+          session.email !== claims.email ||
+          session.role !== mappedRole;
+        if (needsUpdate) {
+          setSession({
+            ...session,
+            uid: claims.uid,
+            email: claims.email,
+            authRole: normalizedRole,
+            status: status ?? undefined,
+            role: mappedRole,
+          });
+        }
+      } else {
+        setSession({
+          id: claims.uid,
+          uid: claims.uid,
+          email: claims.email,
+          role: mappedRole,
+          authRole: normalizedRole,
+          status: status ?? undefined,
+          authenticatedAt: new Date().toISOString(),
+        });
+      }
+
+      const profile = profiles.find((item) => item.id === session?.id);
+      if (normalizedRole !== "master" && profile?.onboardingCompleted === false) {
+        logRedirect("onboarding-incomplete", normalizedRole, status, pathname);
+        router.push("/auth");
+        return;
+      }
+
+      if (!active) {
+        logRedirect("inactive", normalizedRole, status, pathname);
+        router.push("/profile");
+        return;
+      }
+
       const isManagerRoute = pathname?.startsWith("/dashboard/manager");
       const isMasterRoute = pathname?.startsWith("/dashboard/master");
       const isInvestorRoute = pathname?.startsWith("/dashboard/investor");
-      const isFamilyOfficeRoute = pathname?.startsWith("/dashboard/family-office");
 
-      if (
-        (sessionRole === "Fund Manager" && !isManagerRoute) ||
-        (sessionRole === "MasterUser" && !isMasterRoute) ||
-        (sessionRole === "Investor" && !isInvestorRoute) ||
-        (sessionRole === "Family Office" && !isFamilyOfficeRoute)
-      ) {
-        router.push(expected);
+      if (normalizedRole === "master" && !isMasterRoute) {
+        logRedirect("role-mismatch", normalizedRole, status, pathname);
+        router.push("/dashboard/master");
+        return;
       }
-    }
-  }, [pathname, profiles, router, session, sessionRole]);
+
+      if (normalizedRole === "manager" && !isManagerRoute) {
+        logRedirect("role-mismatch", normalizedRole, status, pathname);
+        router.push("/dashboard/manager/overview");
+        return;
+      }
+
+      if (normalizedRole === "investor" && !isInvestorRoute) {
+        logRedirect("role-mismatch", normalizedRole, status, pathname);
+        router.push("/dashboard/investor");
+        return;
+      }
+
+      if (normalizedRole === "unknown") {
+        logRedirect("unknown-role", normalizedRole, status, pathname);
+        router.push("/profile");
+      }
+    };
+
+    void guard();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [authRole, pathname, profiles, router, session, setSession]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

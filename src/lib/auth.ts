@@ -1,11 +1,12 @@
 import { onAuthStateChanged, type User } from "firebase/auth";
 
+import { normalizeRole } from "@/lib/auth/claims";
 import { getFirebaseAuth } from "@/lib/firebase";
-import type { Role } from "@/types/roles";
+import type { NormalizedRole } from "@/types/auth";
 
 export type SessionUser = {
   user: User;
-  role: Role | null;
+  role: NormalizedRole;
 };
 
 const auth = getFirebaseAuth();
@@ -24,7 +25,8 @@ export function subscribeToAuth(callback: (session: SessionUser | null) => void)
     }
 
     const token = await user.getIdTokenResult();
-    const role = (token.claims.role as Role | undefined) ?? null;
+    const roleClaim = typeof token.claims.role === "string" ? token.claims.role : undefined;
+    const role = normalizeRole(roleClaim);
 
     callback({ user, role });
   });
