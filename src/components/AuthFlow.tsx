@@ -8,6 +8,7 @@ import {
   MASTER_USER,
   STORAGE_KEYS,
   SURVEY_DEFINITIONS,
+  countryCallingCodes,
   countryFlags,
   languageOptions,
   getStrategyLabel,
@@ -54,6 +55,33 @@ const getFlagEmoji = (code: string) =>
   code
     .toUpperCase()
     .replace(/./g, (char) => String.fromCodePoint(127397 + char.charCodeAt(0)));
+
+const normalizeCountryName = (value: string) =>
+  value
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+
+const countryIsoAliases: Record<string, string> = {
+  "costa de marfil": "CI",
+  "congo r dem": "CD",
+  "congo r dem.": "CD",
+  "congo r. dem": "CD",
+  "congo r. dem.": "CD",
+  "republica dominicana": "DO",
+  "republica centroafricana": "CF",
+  "republica checa": "CZ",
+  "hong kong": "HK",
+  "macao": "MO",
+  "brunei": "BN",
+  "myanmar": "MM",
+  "arabia saudita": "SA",
+  "san vicente y granadinas": "VC",
+  "anguilla": "AI",
+  "bermuda": "BM",
+};
 
 const readFileAsDataUrl = (file: File) =>
   new Promise<string>((resolve, reject) => {
@@ -143,12 +171,66 @@ export function AuthFlow() {
   const totalSteps = role ? steps.length : 4;
   const currentStep = steps[stepIndex] ?? steps[0];
 
+  const countryNameToIso = useMemo(() => {
+    if (
+      typeof Intl === "undefined" ||
+      typeof Intl.supportedValuesOf !== "function" ||
+      typeof Intl.DisplayNames !== "function"
+    ) {
+      return new Map<string, string>();
+    }
+    try {
+      const displayNames = new Intl.DisplayNames(["es"], { type: "region" });
+      const supportedRegions = (
+        Intl as typeof Intl & { supportedValuesOf: (key: "region") => string[] }
+      ).supportedValuesOf("region");
+      const lookup = new Map<string, string>();
+      supportedRegions.forEach((code) => {
+        const name = displayNames.of(code);
+        if (name) {
+          lookup.set(normalizeCountryName(name), code);
+        }
+      });
+      return lookup;
+    } catch (error) {
+      return new Map<string, string>();
+    }
+  }, []);
+
+  const resolveCountryIso = useCallback(
+    (name: string) => {
+      const normalized = normalizeCountryName(name);
+      return countryIsoAliases[normalized] ?? countryNameToIso.get(normalized) ?? "";
+    },
+    [countryNameToIso]
+  );
+
+  const phoneCountryOptions = useMemo(
+    () =>
+      countryCallingCodes.map((entry) => {
+        const code = resolveCountryIso(entry.name);
+        const flag = code ? getFlagEmoji(code) : countryFlags[entry.name] || "🌍";
+        return {
+          code: code || entry.name,
+          name: entry.name,
+          dialCode: entry.dialCode,
+          displayDialCode: entry.displayDialCode ?? entry.dialCode,
+          flag,
+        };
+      }),
+    [resolveCountryIso]
+  );
+
   const countryOptions = useMemo(() => {
-    const fallback = Object.entries(countryFlags).map(([country, flag]) => ({
-      code: country.slice(0, 2).toUpperCase(),
-      name: country,
-      flag,
-    }));
+    const fallback = countryCallingCodes.map((entry) => {
+      const code = resolveCountryIso(entry.name);
+      const flag = code ? getFlagEmoji(code) : countryFlags[entry.name] || "🌍";
+      return {
+        code: code || entry.name,
+        name: entry.name,
+        flag,
+      };
+    });
     if (
       typeof Intl === "undefined" ||
       typeof Intl.supportedValuesOf !== "function" ||
@@ -172,7 +254,7 @@ export function AuthFlow() {
     } catch (error) {
       return fallback;
     }
-  }, [language]);
+  }, [language, resolveCountryIso]);
 
   useEffect(() => {
     setStepIndex(0);
@@ -196,17 +278,23 @@ export function AuthFlow() {
     setSurveyAnswers((prev) => ({ ...prev, [id]: value }));
   };
 
+  const selectedPhoneOption = useMemo(
+    () => phoneCountryOptions.find((option) => option.code === phoneCountryCode),
+    [phoneCountryOptions, phoneCountryCode]
+  );
+
   useEffect(() => {
-    if (!phoneCountryCode && countryOptions.length) {
-      setPhoneCountryCode(countryOptions[0].code);
+    if (!phoneCountryCode && phoneCountryOptions.length) {
+      setPhoneCountryCode(phoneCountryOptions[0].code);
     }
-  }, [countryOptions, phoneCountryCode]);
+  }, [phoneCountryOptions, phoneCountryCode]);
 
   useEffect(() => {
     if (!phoneCountryCode && !phoneNumber) return;
-    const fullPhone = [phoneCountryCode, phoneNumber].filter(Boolean).join(" ").trim();
+    const dialCode = selectedPhoneOption?.dialCode ?? "";
+    const fullPhone = [dialCode, phoneNumber].filter(Boolean).join(" ").trim();
     updateKyc("phone", fullPhone);
-  }, [phoneCountryCode, phoneNumber, updateKyc]);
+  }, [phoneCountryCode, phoneNumber, selectedPhoneOption, updateKyc]);
 
   const validateKyc = () => {
     const missing: string[] = requiredKycFields.filter((field) => !kycAnswers[field]);
@@ -574,19 +662,29 @@ export function AuthFlow() {
                 <label className="grid gap-2 text-sm font-medium text-slate-600">
                   <span data-i18n="authPhoneLabel">Teléfono</span>
                   <div className="flex gap-2">
-                    <select
-                      className="min-w-[120px] rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
-                      aria-label={strings.authPhoneCountryCodeLabel}
-                      value={phoneCountryCode}
-                      onChange={(event) => setPhoneCountryCode(event.target.value)}
-                      required
-                    >
-                      {countryOptions.map((option) => (
-                        <option key={option.code} value={option.code}>
-                          {option.flag} {option.code} · {option.name}
-                        </option>
-                      ))}
-                    </select>
+                    <div className="relative min-w-[120px]">
+                      <select
+                        className="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0 focus:outline-none"
+                        aria-label={strings.authPhoneCountryCodeLabel}
+                        value={phoneCountryCode}
+                        onChange={(event) => setPhoneCountryCode(event.target.value)}
+                        required
+                      >
+                        {phoneCountryOptions.map((option) => (
+                          <option key={`${option.code}-${option.dialCode}`} value={option.code}>
+                            {option.flag} {option.displayDialCode} · {option.name}
+                          </option>
+                        ))}
+                      </select>
+                      <div className="pointer-events-none flex items-center justify-between gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-900">
+                        <span>
+                          {(selectedPhoneOption?.flag ?? "🌍") +
+                            " " +
+                            (selectedPhoneOption?.displayDialCode ?? "")}
+                        </span>
+                        <span aria-hidden="true">▾</span>
+                      </div>
+                    </div>
                     <input
                       className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
                       type="tel"
