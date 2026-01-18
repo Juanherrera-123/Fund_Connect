@@ -21,6 +21,7 @@ import type {
   FundApplication,
   FundApplicationFile,
   MasterNotification,
+  Role,
   Session,
   SurveyAnswer,
   UserProfile,
@@ -74,6 +75,12 @@ const normalizeCountryName = (value: string) =>
     .replace(/\p{Diacritic}/gu, "")
     .replace(/[^a-z0-9]+/g, " ")
     .trim();
+
+const isRole = (value: unknown): value is Role =>
+  value === "Investor" ||
+  value === "Fund Manager" ||
+  value === "Family Office" ||
+  value === "MasterUser";
 
 const countryIsoAliases: Record<string, string> = {
   "costa de marfil": "CI",
@@ -620,7 +627,7 @@ export function AuthFlow() {
       const tokenResult = await credential.user.getIdTokenResult(true);
       const roleClaim = tokenResult.claims.role;
       const statusClaim = tokenResult.claims.status;
-      const role = typeof roleClaim === "string" && roleClaim.length > 0 ? roleClaim : "user";
+      const role = isRole(roleClaim) ? roleClaim : "user";
       const status = typeof statusClaim === "string" && statusClaim.length > 0 ? statusClaim : "inactive";
 
       setSession({
