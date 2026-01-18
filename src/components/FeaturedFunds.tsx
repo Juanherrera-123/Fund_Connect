@@ -22,27 +22,29 @@ export function FeaturedFunds() {
 
   const funds = useMemo<FundSummary[]>(() => {
     const verifiedApplications = fundApplications.filter(
-      (application) => application.status === "verified"
+      (application) => application.status === "approved"
     );
     const overridesById = new Map(
       verifiedApplications.map((application) => [
         application.id,
         {
           id: application.id,
-          name: application.fundName,
+          name: application.fundData.fundName,
           strategy:
-            application.strategyLabel ||
-            application.strategy ||
+            application.fundData.strategyLabel ||
+            application.fundData.strategy ||
             strings.fundsLabelStrategyFallback,
-          domicile: application.country || strings.fundsLabelDomicileFallback,
+          domicile: application.fundData.country || strings.fundsLabelDomicileFallback,
           status: strings.fundsStatusVerified,
-          aum: application.aum || "N/A",
-          performance: formatPercent(application.yearProfit ?? application.monthlyProfit ?? null),
-          risk: application.riskLevel || application.riskManagement || "—",
-          summary: application.description || strings.fundsSummaryDefault,
+          aum: application.fundData.aum || "N/A",
+          performance: formatPercent(
+            application.fundData.yearProfit ?? application.fundData.monthlyProfit ?? null
+          ),
+          risk: application.fundData.riskLevel || application.fundData.riskManagement || "—",
+          summary: application.fundData.description || strings.fundsSummaryDefault,
           highlights: defaultHighlights,
           capital_allocated:
-            capitalAllocations[application.id] ?? application.capital_allocated ?? 0,
+            capitalAllocations[application.id] ?? application.fundData.capital_allocated ?? 0,
         },
       ])
     );
@@ -68,20 +70,22 @@ export function FeaturedFunds() {
         .filter((application) => !baseIds.has(application.id))
         .map((application) => ({
           id: application.id,
-          name: application.fundName,
+          name: application.fundData.fundName,
           strategy:
-            application.strategyLabel ||
-            application.strategy ||
+            application.fundData.strategyLabel ||
+            application.fundData.strategy ||
             strings.fundsLabelStrategyFallback,
-          domicile: application.country || strings.fundsLabelDomicileFallback,
+          domicile: application.fundData.country || strings.fundsLabelDomicileFallback,
           status: strings.fundsStatusVerified,
-          aum: application.aum || "N/A",
-          performance: formatPercent(application.yearProfit ?? application.monthlyProfit ?? null),
-          risk: application.riskLevel || application.riskManagement || "—",
-          summary: application.description || strings.fundsSummaryDefault,
+          aum: application.fundData.aum || "N/A",
+          performance: formatPercent(
+            application.fundData.yearProfit ?? application.fundData.monthlyProfit ?? null
+          ),
+          risk: application.fundData.riskLevel || application.fundData.riskManagement || "—",
+          summary: application.fundData.description || strings.fundsSummaryDefault,
           highlights: defaultHighlights,
           capital_allocated:
-            capitalAllocations[application.id] ?? application.capital_allocated ?? 0,
+            capitalAllocations[application.id] ?? application.fundData.capital_allocated ?? 0,
         })),
     ];
   }, [

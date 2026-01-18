@@ -26,13 +26,13 @@ export default function FundManagerOverview() {
     const applicationById = profile.fundId
       ? fundApplications.find((application) => application.id === profile.fundId)
       : null;
-    const applicationByManager = fundApplications.find((application) => application.managerId === profile.id);
+    const applicationByManager = fundApplications.find((application) => application.user.id === profile.id);
     const application = applicationById ?? applicationByManager ?? null;
 
     return {
-      name: application?.fundName ?? "Tu fondo",
-      monthlyProfit: application?.monthlyProfit ?? application?.yearProfit ?? null,
-      maxDrawdown: application?.maxDrawdown ?? null,
+      name: application?.fundData.fundName ?? "Tu fondo",
+      monthlyProfit: application?.fundData.monthlyProfit ?? application?.fundData.yearProfit ?? null,
+      maxDrawdown: application?.fundData.maxDrawdown ?? null,
       status: application?.status ?? "pending",
     };
   }, [fundApplications, profile]);
@@ -109,12 +109,18 @@ export default function FundManagerOverview() {
               <span data-i18n="dashboardCurrentStatusLabel">Estado actual:</span>{" "}
               <span
                 data-i18n={
-                  fundSnapshot?.status === "verified"
-                    ? "dashboardStatusVerified"
-                    : "dashboardStatusInReview"
+                  fundSnapshot?.status === "approved"
+                    ? "dashboardStatusApproved"
+                    : fundSnapshot?.status === "rejected"
+                      ? "dashboardStatusRejected"
+                      : "dashboardStatusInReview"
                 }
               >
-                {fundSnapshot?.status === "verified" ? "Verificado" : "En revisión"}
+                {fundSnapshot?.status === "approved"
+                  ? "Aprobado"
+                  : fundSnapshot?.status === "rejected"
+                    ? "Rechazado"
+                    : "En revisión"}
               </span>
             </p>
           </div>

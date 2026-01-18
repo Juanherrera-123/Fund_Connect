@@ -2,14 +2,11 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import {
-  STORAGE_KEYS,
-  countryFlags,
-} from "@/lib/igatesData";
-import { upsertFundApplication, useFundsCollection } from "@/lib/funds";
+import { STORAGE_KEYS, countryFlags } from "@/lib/igatesData";
+import { uploadFundApplicationFile, upsertFundApplication, useFundsCollection } from "@/lib/funds";
 import { useLanguage } from "@/components/LanguageProvider";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
-import type { FundApplication, Session, UserProfile } from "@/lib/types";
+import type { FundApplication, FundApplicationFile, Session, UserProfile } from "@/lib/types";
 
 const riskOptions = [
   { label: "Controlado", labelKey: "dashboardRiskControlled" },
@@ -30,13 +27,6 @@ const parseNumericValue = (value: FormDataEntryValue | null) => {
   return Number.isNaN(parsed) ? null : parsed;
 };
 
-const readFileAsDataUrl = (file: File) =>
-  new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result ?? ""));
-    reader.onerror = () => reject(new Error("No se pudo leer el archivo."));
-    reader.readAsDataURL(file);
-  });
 
 export default function FundDetailsPage() {
   const { strings } = useLanguage();
@@ -48,11 +38,14 @@ export default function FundDetailsPage() {
   const fundApplications = useFundsCollection();
   const [statusMessage, setStatusMessage] = useState("");
   const [linkFields, setLinkFields] = useState<string[]>(["", "", ""]);
-  const [presentationAsset, setPresentationAsset] = useState<FundApplication["presentationAsset"]>(null);
-  const [logoAsset, setLogoAsset] = useState<string | null>(null);
-  const [trackRecordStatements, setTrackRecordStatements] = useState<
-    FundApplication["trackRecordStatements"]
-  >([]);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreviewUrl, setLogoPreviewUrl] = useState<string | null>(null);
+  const [logoRemoved, setLogoRemoved] = useState(false);
+  const [presentationFile, setPresentationFile] = useState<File | null>(null);
+  const [presentationRemoved, setPresentationRemoved] = useState(false);
+  const [trackRecordFiles, setTrackRecordFiles] = useState<(File | null)[]>([null, null]);
+  const [trackRecordRemoved, setTrackRecordRemoved] = useState<boolean[]>([false, false]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const profile = useMemo(() => {
     if (!session || session.role !== "Fund Manager") return null;
@@ -65,27 +58,41 @@ export default function FundDetailsPage() {
       const byId = fundApplications.find((application) => application.id === profile.fundId);
       if (byId) return byId;
     }
-    return fundApplications.find((application) => application.managerId === profile.id) ?? null;
+    return fundApplications.find((application) => application.user.id === profile.id) ?? null;
   }, [fundApplications, profile]);
 
   useEffect(() => {
-    if (!existingApplication?.livePerformanceLinks?.length) {
+    const existingLinks = existingApplication?.fundData?.livePerformanceLinks ?? [];
+    if (!existingLinks.length) {
       setLinkFields(["", "", ""]);
       return;
     }
     const nextLinks = [
-      existingApplication.livePerformanceLinks[0] ?? "",
-      existingApplication.livePerformanceLinks[1] ?? "",
-      existingApplication.livePerformanceLinks[2] ?? "",
+      existingLinks[0] ?? "",
+      existingLinks[1] ?? "",
+      existingLinks[2] ?? "",
     ];
     setLinkFields(nextLinks);
   }, [existingApplication]);
 
   useEffect(() => {
-    setPresentationAsset(existingApplication?.presentationAsset ?? null);
-    setLogoAsset(existingApplication?.logoUrl ?? null);
-    setTrackRecordStatements(existingApplication?.trackRecordStatements ?? []);
+    setLogoFile(null);
+    setPresentationFile(null);
+    setTrackRecordFiles([null, null]);
+    setLogoRemoved(false);
+    setPresentationRemoved(false);
+    setTrackRecordRemoved([false, false]);
   }, [existingApplication]);
+
+  useEffect(() => {
+    if (!logoFile) {
+      setLogoPreviewUrl(null);
+      return;
+    }
+    const objectUrl = URL.createObjectURL(logoFile);
+    setLogoPreviewUrl(objectUrl);
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [logoFile]);
 
   if (!profile) {
     return (
@@ -97,9 +104,15 @@ export default function FundDetailsPage() {
     );
   }
 
+  const existingFundData = existingApplication?.fundData;
+  const existingFiles = existingFundData?.files;
+  const logoUrl = logoPreviewUrl ?? (logoRemoved ? null : existingFiles?.logo?.url ?? null);
+  const presentationName = presentationFile?.name ?? existingFiles?.presentation?.name ?? "";
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setStatusMessage("");
+    setIsSubmitting(true);
     const formData = new FormData(event.currentTarget);
     const fundName = String(formData.get("fundName") || "").trim();
     const description = String(formData.get("description") || "").trim();
@@ -115,55 +128,110 @@ export default function FundDetailsPage() {
 
     if (!fundName || !description || !operatingTime || !country || !riskManagement || !reportsFrequency) {
       setStatusMessage(strings.dashboardFundDetailsRequiredFields);
+      setIsSubmitting(false);
       return;
     }
 
     if (!normalizedLinks.length) {
       setStatusMessage(strings.dashboardFundDetailsAddLink);
+      setIsSubmitting(false);
       return;
     }
 
     const fundId = profile.fundId ?? existingApplication?.id ?? `fund-${Date.now()}`;
-    const status = existingApplication?.status === "verified" ? "verified" : "pending";
+    const status = existingApplication?.status ?? "pending";
     const strategyLabel = profile.fundManagerProfile?.strategyTypeLabel ?? profile.fundManagerProfile?.strategyType;
 
-    const payload: FundApplication = {
-      id: fundId,
-      fundName,
-      country,
-      region: existingApplication?.region ?? "Global",
-      aum: existingApplication?.aum ?? "N/A",
-      strategy: existingApplication?.strategy ?? profile.fundManagerProfile?.strategyType ?? "Multi-Strategy",
-      strategyLabel: existingApplication?.strategyLabel ?? strategyLabel ?? "Multi-Strategy",
-      description,
-      status,
-      managerId: profile.id,
-      submittedAt: existingApplication?.submittedAt ?? new Date().toISOString(),
-      yearProfit: parseNumericValue(formData.get("monthlyProfit")),
-      monthlyProfit: parseNumericValue(formData.get("monthlyProfit")),
-      drawdownTarget: parseNumericValue(formData.get("drawdownTarget")),
-      maxDrawdown: parseNumericValue(formData.get("maxDrawdown")),
-      tradesPerMonth: parseNumericValue(formData.get("tradesPerMonth")),
-      winRate: parseNumericValue(formData.get("winRate")),
-      winRatio: winRatio || null,
-      riskLevel: riskManagement,
-      riskManagement,
-      logoUrl: logoAsset ?? undefined,
-      livePerformanceLinks: normalizedLinks,
-      presentationAsset,
-      trackRecordStatements,
-      minInvestment,
-      performanceFee,
-      subscriptionFee,
-      reportsFrequency,
-      operatingTime,
-    };
-
     try {
+      const existingFiles = existingApplication?.fundData?.files;
+      const logoFileData =
+        logoRemoved || !existingFiles?.logo
+          ? null
+          : existingFiles.logo;
+      const presentationFileData =
+        presentationRemoved || !existingFiles?.presentation
+          ? null
+          : existingFiles.presentation;
+      const existingTrackRecords = existingFiles?.trackRecordStatements ?? [];
+      const nextTrackRecords = [...existingTrackRecords] as (FundApplicationFile | null)[];
+
+      let finalLogo = logoFileData;
+      if (logoFile) {
+        finalLogo = await uploadFundApplicationFile(fundId, logoFile, "logo");
+      }
+
+      let finalPresentation = presentationFileData;
+      if (presentationFile) {
+        finalPresentation = await uploadFundApplicationFile(fundId, presentationFile, "presentation");
+      }
+
+      for (const [index, file] of trackRecordFiles.entries()) {
+        if (!file) {
+          if (trackRecordRemoved[index]) {
+            nextTrackRecords[index] = null;
+          }
+          continue;
+        }
+        const uploaded = await uploadFundApplicationFile(fundId, file, `track-record-${index + 1}`);
+        nextTrackRecords[index] = uploaded;
+      }
+
+      const filteredTrackRecords = nextTrackRecords.filter(Boolean) as FundApplicationFile[];
+
+      const payload: FundApplication = {
+        id: fundId,
+        user: {
+          id: profile.id,
+          name: profile.fullName,
+          email: profile.email,
+          country: profile.country,
+          role: profile.role,
+        },
+        onboardingAnswers: profile.onboarding ?? {},
+        fundData: {
+          fundName,
+          country,
+          region: existingApplication?.fundData?.region ?? "Global",
+          aum: existingApplication?.fundData?.aum ?? "N/A",
+          strategy:
+            existingApplication?.fundData?.strategy ??
+            profile.fundManagerProfile?.strategyType ??
+            "Multi-Strategy",
+          strategyLabel:
+            existingApplication?.fundData?.strategyLabel ?? strategyLabel ?? "Multi-Strategy",
+          description,
+          yearProfit: parseNumericValue(formData.get("monthlyProfit")),
+          monthlyProfit: parseNumericValue(formData.get("monthlyProfit")),
+          drawdownTarget: parseNumericValue(formData.get("drawdownTarget")),
+          maxDrawdown: parseNumericValue(formData.get("maxDrawdown")),
+          tradesPerMonth: parseNumericValue(formData.get("tradesPerMonth")),
+          winRate: parseNumericValue(formData.get("winRate")),
+          winRatio: winRatio || null,
+          riskLevel: riskManagement,
+          riskManagement,
+          livePerformanceLinks: normalizedLinks,
+          minInvestment,
+          performanceFee,
+          subscriptionFee,
+          reportsFrequency,
+          operatingTime,
+          files: {
+            logo: logoRemoved ? null : finalLogo,
+            presentation: presentationRemoved ? null : finalPresentation,
+            trackRecordStatements: filteredTrackRecords,
+          },
+        },
+        status,
+        createdAt: existingApplication?.createdAt ?? null,
+        reviewedAt: existingApplication?.reviewedAt ?? null,
+        reviewedBy: existingApplication?.reviewedBy ?? null,
+      };
+
       await upsertFundApplication(payload);
     } catch (error) {
       console.error("Unable to save fund application", error);
       setStatusMessage(strings.formStatusError);
+      setIsSubmitting(false);
       return;
     }
 
@@ -182,10 +250,9 @@ export default function FundDetailsPage() {
     }
 
     setStatusMessage(
-      status === "verified"
-        ? strings.dashboardFundDetailsUpdated
-        : strings.dashboardFundDetailsSubmitted
+      status === "approved" ? strings.dashboardFundDetailsUpdated : strings.dashboardFundDetailsSubmitted
     );
+    setIsSubmitting(false);
   };
 
   return (
@@ -210,7 +277,7 @@ export default function FundDetailsPage() {
             </span>
             <input
               name="fundName"
-              defaultValue={existingApplication?.fundName ?? ""}
+              defaultValue={existingFundData?.fundName ?? ""}
               required
               className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
             />
@@ -222,7 +289,7 @@ export default function FundDetailsPage() {
             </span>
             <select
               name="country"
-              defaultValue={existingApplication?.country ?? ""}
+              defaultValue={existingFundData?.country ?? ""}
               required
               className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
             >
@@ -244,7 +311,7 @@ export default function FundDetailsPage() {
             <textarea
               name="description"
               rows={3}
-              defaultValue={existingApplication?.description ?? ""}
+              defaultValue={existingFundData?.description ?? ""}
               required
               className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
             />
@@ -254,8 +321,8 @@ export default function FundDetailsPage() {
             <p className="text-xs font-semibold text-slate-600">Logo del fondo</p>
             <div className="flex flex-wrap items-center gap-4">
               <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-white text-xs font-semibold text-slate-600">
-                {logoAsset ? (
-                  <img src={logoAsset} alt="Logo del fondo" className="h-full w-full object-cover" />
+                {logoUrl ? (
+                  <img src={logoUrl} alt="Logo del fondo" className="h-full w-full object-cover" />
                 ) : (
                   <span className="text-center">Sin logo</span>
                 )}
@@ -268,18 +335,21 @@ export default function FundDetailsPage() {
                     const file = event.target.files?.[0];
                     if (!file) return;
                     try {
-                      const url = await readFileAsDataUrl(file);
-                      setLogoAsset(url);
+                      setLogoFile(file);
+                      setLogoRemoved(false);
                     } catch (error) {
                       console.error(error);
                     }
                   }}
                   className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
                 />
-                {logoAsset && (
+                {(logoUrl || logoFile) && (
                   <button
                     type="button"
-                    onClick={() => setLogoAsset(null)}
+                    onClick={() => {
+                      setLogoFile(null);
+                      setLogoRemoved(true);
+                    }}
                     className="text-left text-xs font-semibold text-rose-500"
                   >
                     Quitar logo
@@ -297,7 +367,7 @@ export default function FundDetailsPage() {
               <input
                 type="number"
                 name="operatingTime"
-                defaultValue={existingApplication?.operatingTime ?? ""}
+                defaultValue={existingFundData?.operatingTime ?? ""}
                 required
                 placeholder="Ej: 3"
                 data-i18n-placeholder="dashboardExampleYears"
@@ -318,7 +388,7 @@ export default function FundDetailsPage() {
                 type="number"
                 step="0.01"
                 name="monthlyProfit"
-                defaultValue={existingApplication?.monthlyProfit ?? existingApplication?.yearProfit ?? ""}
+                defaultValue={existingFundData?.monthlyProfit ?? existingFundData?.yearProfit ?? ""}
                 placeholder="Ej: 2.4"
                 data-i18n-placeholder="dashboardExamplePercent"
                 className="w-full bg-transparent text-sm outline-none"
@@ -334,7 +404,7 @@ export default function FundDetailsPage() {
                 type="number"
                 step="0.01"
                 name="winRate"
-                defaultValue={existingApplication?.winRate ?? ""}
+                defaultValue={existingFundData?.winRate ?? ""}
                 placeholder="Ej: 60"
                 className="w-full bg-transparent text-sm outline-none"
               />
@@ -347,7 +417,7 @@ export default function FundDetailsPage() {
             <input
               type="text"
               name="winRatio"
-              defaultValue={existingApplication?.winRatio ?? ""}
+              defaultValue={existingFundData?.winRatio ?? ""}
               placeholder="Ej: 1.8:1"
               className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
             />
@@ -362,7 +432,7 @@ export default function FundDetailsPage() {
                 type="number"
                 step="0.01"
                 name="drawdownTarget"
-                defaultValue={existingApplication?.drawdownTarget ?? ""}
+                defaultValue={existingFundData?.drawdownTarget ?? ""}
                 placeholder="Ej: 5"
                 data-i18n-placeholder="dashboardExamplePercent"
                 className="w-full bg-transparent text-sm outline-none"
@@ -380,7 +450,7 @@ export default function FundDetailsPage() {
                 type="number"
                 step="0.01"
                 name="maxDrawdown"
-                defaultValue={existingApplication?.maxDrawdown ?? ""}
+                defaultValue={existingFundData?.maxDrawdown ?? ""}
                 placeholder="Ej: 8"
                 data-i18n-placeholder="dashboardExamplePercent"
                 className="w-full bg-transparent text-sm outline-none"
@@ -398,7 +468,7 @@ export default function FundDetailsPage() {
                 type="number"
                 step="0.01"
                 name="tradesPerMonth"
-                defaultValue={existingApplication?.tradesPerMonth ?? ""}
+                defaultValue={existingFundData?.tradesPerMonth ?? ""}
                 placeholder="Ej: 60"
                 data-i18n-placeholder="dashboardExampleTrades"
                 className="w-full bg-transparent text-sm outline-none"
@@ -412,7 +482,7 @@ export default function FundDetailsPage() {
             </span>
             <select
               name="riskManagement"
-              defaultValue={existingApplication?.riskManagement ?? existingApplication?.riskLevel ?? ""}
+              defaultValue={existingFundData?.riskManagement ?? existingFundData?.riskLevel ?? ""}
               required
               className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
             >
@@ -456,25 +526,23 @@ export default function FundDetailsPage() {
                 const file = event.target.files?.[0];
                 if (!file) return;
                 try {
-                  const url = await readFileAsDataUrl(file);
-                  const nextAsset = {
-                    type: file.type === "video/mp4" ? "video" : "pdf",
-                    name: file.name,
-                    url,
-                  } as const;
-                  setPresentationAsset(nextAsset);
+                  setPresentationFile(file);
+                  setPresentationRemoved(false);
                 } catch (error) {
                   console.error(error);
                 }
               }}
               className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
             />
-            {presentationAsset && (
+            {presentationName && !presentationRemoved && (
               <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-600">
-                <span>{presentationAsset.name}</span>
+                <span>{presentationName}</span>
                 <button
                   type="button"
-                  onClick={() => setPresentationAsset(null)}
+                  onClick={() => {
+                    setPresentationFile(null);
+                    setPresentationRemoved(true);
+                  }}
                   className="text-xs font-semibold text-rose-500"
                 >
                   Quitar
@@ -491,31 +559,38 @@ export default function FundDetailsPage() {
                   type="file"
                   accept="application/pdf"
                   onChange={async (event) => {
-                    const file = event.target.files?.[0];
-                    if (!file) return;
-                    try {
-                      const url = await readFileAsDataUrl(file);
-                      setTrackRecordStatements((prev) => {
-                        const next = [...(prev ?? [])];
-                        next[index] = { name: file.name, url };
-                        return next.filter(Boolean);
-                      });
-                    } catch (error) {
-                      console.error(error);
-                    }
-                  }}
-                  className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
-                />
-                {trackRecordStatements?.[index] && (
+                const file = event.target.files?.[0];
+                if (!file) return;
+                try {
+                  setTrackRecordFiles((prev) =>
+                    prev.map((item, position) => (position === index ? file : item))
+                  );
+                  setTrackRecordRemoved((prev) =>
+                    prev.map((item, position) => (position === index ? false : item))
+                  );
+                } catch (error) {
+                  console.error(error);
+                }
+              }}
+              className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm"
+            />
+                {!trackRecordRemoved[index] &&
+                  (trackRecordFiles[index] || existingFiles?.trackRecordStatements?.[index]) && (
                   <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-600">
-                    <span>{trackRecordStatements[index]?.name}</span>
+                    <span>
+                      {trackRecordFiles[index]?.name ??
+                        existingFiles?.trackRecordStatements?.[index]?.name}
+                    </span>
                     <button
                       type="button"
-                      onClick={() =>
-                        setTrackRecordStatements((prev) =>
-                          (prev ?? []).filter((_, position) => position !== index)
-                        )
-                      }
+                      onClick={() => {
+                        setTrackRecordFiles((prev) =>
+                          prev.map((item, position) => (position === index ? null : item))
+                        );
+                        setTrackRecordRemoved((prev) =>
+                          prev.map((item, position) => (position === index ? true : item))
+                        );
+                      }}
                       className="text-xs font-semibold text-rose-500"
                     >
                       Quitar
@@ -534,7 +609,7 @@ export default function FundDetailsPage() {
               <input
                 type="number"
                 name="minInvestment"
-                defaultValue={existingApplication?.minInvestment ?? ""}
+                defaultValue={existingFundData?.minInvestment ?? ""}
                 placeholder="Ej: 50000"
                 data-i18n-placeholder="dashboardExampleAmount"
                 className="w-full bg-transparent text-sm outline-none"
@@ -551,7 +626,7 @@ export default function FundDetailsPage() {
               <input
                 type="number"
                 name="performanceFee"
-                defaultValue={existingApplication?.performanceFee ?? ""}
+                defaultValue={existingFundData?.performanceFee ?? ""}
                 placeholder="Ej: 20"
                 data-i18n-placeholder="dashboardExamplePercent"
                 className="w-full bg-transparent text-sm outline-none"
@@ -568,7 +643,7 @@ export default function FundDetailsPage() {
               <input
                 type="number"
                 name="subscriptionFee"
-                defaultValue={existingApplication?.subscriptionFee ?? ""}
+                defaultValue={existingFundData?.subscriptionFee ?? ""}
                 placeholder="Ej: 1"
                 data-i18n-placeholder="dashboardExamplePercent"
                 className="w-full bg-transparent text-sm outline-none"
@@ -583,7 +658,7 @@ export default function FundDetailsPage() {
             </span>
             <select
               name="reportsFrequency"
-              defaultValue={existingApplication?.reportsFrequency ?? ""}
+              defaultValue={existingFundData?.reportsFrequency ?? ""}
               required
               className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
             >
@@ -601,7 +676,8 @@ export default function FundDetailsPage() {
           <div className="md:col-span-2 flex flex-wrap items-center gap-3">
             <button
               type="submit"
-              className="rounded-lg bg-slate-900 px-4 py-2 text-xs font-semibold text-white"
+              disabled={isSubmitting}
+              className="rounded-lg bg-slate-900 px-4 py-2 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-70"
               data-i18n="dashboardSaveDetails"
             >
               Guardar detalles

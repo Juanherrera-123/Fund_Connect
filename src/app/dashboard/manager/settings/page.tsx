@@ -26,8 +26,8 @@ export default function FundManagerSettings() {
     );
   }
 
-  const application = fundApplications.find((item) => item.managerId === profile.id);
-  const fundName = application?.fundName ?? "—";
+  const application = fundApplications.find((item) => item.user.id === profile.id);
+  const fundName = application?.fundData.fundName ?? "—";
   const fundStatus = application?.status ?? "pending";
 
   return (
@@ -101,14 +101,18 @@ export default function FundManagerSettings() {
             <p className="mt-2 text-sm text-slate-600">
               <span
                 data-i18n={
-                  fundStatus === "verified"
+                  fundStatus === "approved"
                     ? "dashboardManagerFundVerified"
-                    : "dashboardManagerFundPending"
+                    : fundStatus === "rejected"
+                      ? "dashboardStatusRejected"
+                      : "dashboardManagerFundPending"
                 }
               >
-                {fundStatus === "verified"
+                {fundStatus === "approved"
                   ? "Tu fondo ya aparece en gestores verificados."
-                  : "Tu fondo está pendiente de aprobación."}
+                  : fundStatus === "rejected"
+                    ? "Tu fondo fue rechazado por el usuario maestro."
+                    : "Tu fondo está pendiente de aprobación."}
               </span>
             </p>
           </div>

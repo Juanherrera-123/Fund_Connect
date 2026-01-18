@@ -11,14 +11,17 @@ export default function SettingsDashboard() {
 
   const verifiedFunds = useMemo(() => {
     const verifiedFromApplications = fundApplications
-      .filter((application) => application.status === "verified")
+      .filter((application) => application.status === "approved")
       .map((application) => ({
         id: application.id,
-        name: application.fundName,
-        country: application.country || "Global",
-        aum: application.aum || "N/A",
-        strategy: application.strategyLabel || application.strategy || "Multi-Strategy",
-        logoLabel: getFundLogoLabel(application.fundName),
+        name: application.fundData.fundName,
+        country: application.fundData.country || "Global",
+        aum: application.fundData.aum || "N/A",
+        strategy:
+          application.fundData.strategyLabel ||
+          application.fundData.strategy ||
+          "Multi-Strategy",
+        logoLabel: getFundLogoLabel(application.fundData.fundName),
       }));
     return verifiedFromApplications;
   }, [fundApplications]);

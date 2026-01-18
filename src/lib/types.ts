@@ -83,18 +83,42 @@ export type WaitlistRequest = {
 
 export type FundApplication = {
   id: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    country: string;
+    role: Role;
+  };
+  onboardingAnswers: Record<string, unknown>;
+  fundData: FundApplicationFundData;
+  status: "pending" | "approved" | "rejected";
+  createdAt: string | null;
+  reviewedAt?: string | null;
+  reviewedBy?: {
+    id?: string;
+    name?: string;
+    email?: string;
+  } | null;
+};
+
+export type FundApplicationFile = {
+  name: string;
+  url: string;
+  path: string;
+  size?: number;
+  contentType?: string;
+};
+
+export type FundApplicationFundData = {
   fundName: string;
   country: string;
   region?: string;
   aum?: string;
   capital_allocated?: number;
-  logoUrl?: string;
   strategy?: string;
   strategyLabel?: string;
   description: string;
-  status: "pending" | "verified";
-  managerId: string;
-  submittedAt: string;
   yearProfit?: number | null;
   monthlyProfit?: number | null;
   maxDrawdown?: number | null;
@@ -107,16 +131,15 @@ export type FundApplication = {
   tradesPerMonth?: number | null;
   riskManagement?: string | null;
   livePerformanceLinks?: string[];
-  presentationAsset?: {
-    type: "pdf" | "video";
-    name: string;
-    url: string;
-  } | null;
-  trackRecordStatements?: { name: string; url: string }[];
   minInvestment?: string;
   performanceFee?: string;
   subscriptionFee?: string;
   reportsFrequency?: string;
+  files?: {
+    logo?: FundApplicationFile | null;
+    presentation?: FundApplicationFile | null;
+    trackRecordStatements?: FundApplicationFile[];
+  };
 };
 
 export type ContactRequest = {

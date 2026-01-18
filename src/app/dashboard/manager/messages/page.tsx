@@ -19,14 +19,15 @@ export default function FundManagerMessages() {
 
   const fundInfo = useMemo(() => {
     if (!profile) return null;
-    const application = fundApplications.find((item) => item.managerId === profile.id);
+    const application = fundApplications.find((item) => item.user.id === profile.id);
     if (!application) {
       return null;
     }
     return {
       id: application.id,
-      title: application.fundName,
-      subtitle: application.strategyLabel ?? application.strategy ?? "Multi-Strategy",
+      title: application.fundData.fundName,
+      subtitle:
+        application.fundData.strategyLabel ?? application.fundData.strategy ?? "Multi-Strategy",
     };
   }, [fundApplications, profile]);
 
