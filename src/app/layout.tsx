@@ -2,7 +2,7 @@ import "@/styles/globals.css";
 
 import type { Metadata } from "next";
 
-import { AuthDebugBridge } from "@/components/AuthDebugBridge";
+import AuthDebugBridge from "@/components/AuthDebugBridge";
 import { LanguageProvider } from "@/components/LanguageProvider";
 
 export const metadata: Metadata = {
