@@ -48,6 +48,7 @@ type SurveyQuestion =
 
 type SignupStep =
   | { type: "kyc" }
+  | { type: "verify-email" }
   | { type: "survey"; questions: SurveyQuestion[] }
   | { type: "fund-details" };
 
@@ -109,6 +110,8 @@ export function AuthFlow() {
   const [stepIndex, setStepIndex] = useState(0);
   const [signupStatus, setSignupStatus] = useState("");
   const [loginStatus, setLoginStatus] = useState("");
+  const [verificationStatus, setVerificationStatus] = useState("");
+  const [isSendingVerification, setIsSendingVerification] = useState(false);
   const [isLoginPasswordVisible, setIsLoginPasswordVisible] = useState(false);
   const [isSignupPasswordVisible, setIsSignupPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
@@ -171,12 +174,12 @@ export function AuthFlow() {
       questions: group,
     }));
     if (role === "Fund Manager") {
-      return [{ type: "kyc" }, ...surveySteps, { type: "fund-details" }];
+      return [{ type: "kyc" }, { type: "verify-email" }, ...surveySteps, { type: "fund-details" }];
     }
-    return [{ type: "kyc" }, ...surveySteps];
+    return [{ type: "kyc" }, { type: "verify-email" }, ...surveySteps];
   }, [role]);
 
-  const totalSteps = role ? steps.length : 4;
+  const totalSteps = role ? steps.length : 5;
   const currentStep = steps[stepIndex] ?? steps[0];
 
   const countryNameToIso = useMemo(() => {
@@ -377,11 +380,115 @@ export function AuthFlow() {
     return true;
   };
 
-  const handleNext = () => {
+  const sendVerificationEmail = async () => {
+    const auth = getFirebaseAuth();
+    const user = auth?.currentUser;
+    if (!user) {
+      setSignupStatus("Unable to find your account. Please sign up again.");
+      return false;
+    }
+
+    setIsSendingVerification(true);
+    setVerificationStatus("");
+    try {
+      await sendEmailVerification(user);
+      setVerificationStatus("Email de verificación enviado. Revisa tu bandeja de entrada.");
+      return true;
+    } catch (error) {
+      console.error("Unable to send verification email", error);
+      setSignupStatus("Unable to send verification email. Please try again.");
+      return false;
+    } finally {
+      setIsSendingVerification(false);
+    }
+  };
+
+  const verifyEmailAndContinue = async () => {
+    const auth = getFirebaseAuth();
+    const user = auth?.currentUser;
+    if (!user) {
+      setSignupStatus("Unable to find your account. Please sign up again.");
+      return false;
+    }
+    await user.reload();
+    if (!user.emailVerified) {
+      setSignupStatus("Primero verifica tu correo para continuar.");
+      return false;
+    }
+    setSignupStatus("");
+    return true;
+  };
+
+  const createAccountAndVerifyStep = async () => {
+    if (!role) return false;
+    const auth = getFirebaseAuth();
+    if (!auth) {
+      setSignupStatus("Firebase authentication is not configured.");
+      return false;
+    }
+
+    let user = auth.currentUser;
+    if (!user || user.email !== kycAnswers.email) {
+      try {
+        const credential = await createUserWithEmailAndPassword(
+          auth,
+          kycAnswers.email,
+          kycAnswers.password
+        );
+        user = credential.user;
+      } catch (error) {
+        if (error instanceof FirebaseError && error.code === "auth/email-already-in-use") {
+          setSignupStatus(strings.authStatusEmailExists);
+          return false;
+        }
+        setSignupStatus("Unable to create account. Please try again.");
+        return false;
+      }
+    }
+
+    if (!user) {
+      setSignupStatus("Unable to create account. Please try again.");
+      return false;
+    }
+
+    if (role === "Fund Manager") {
+      await createManagerUserProfile({
+        uid: user.uid,
+        email: user.email,
+        fullName: kycAnswers.fullName,
+      });
+      try {
+        await setManagerPendingClaims(user.uid);
+        await user.getIdToken(true);
+        await new Promise((resolve) => {
+          setTimeout(resolve, 750);
+        });
+        await user.getIdToken(true);
+      } catch (error) {
+        console.error("Unable to assign manager claims", error);
+        setSignupStatus("Unable to initialize manager access. Please try again.");
+        return false;
+      }
+    }
+
+    const sent = await sendVerificationEmail();
+    return sent;
+  };
+
+  const handleNext = async () => {
     setSignupStatus("");
     if (currentStep.type === "kyc") {
       if (!validateKyc()) return;
       if (!role) return;
+      const created = await createAccountAndVerifyStep();
+      if (!created) return;
+      setStepIndex((prev) => Math.min(prev + 1, steps.length - 1));
+      return;
+    }
+
+    if (currentStep.type === "verify-email") {
+      const verified = await verifyEmailAndContinue();
+      if (!verified) return;
       setStepIndex((prev) => Math.min(prev + 1, steps.length - 1));
       return;
     }
@@ -416,47 +523,14 @@ export function AuthFlow() {
       return;
     }
 
-    let credential;
-    try {
-      credential = await createUserWithEmailAndPassword(
-        auth,
-        kycAnswers.email,
-        kycAnswers.password
-      );
-    } catch (error) {
-      if (error instanceof FirebaseError && error.code === "auth/email-already-in-use") {
-        setSignupStatus(strings.authStatusEmailExists);
-        return;
-      }
-      setSignupStatus("Unable to create account. Please try again.");
+    const user = auth.currentUser;
+    if (!user) {
+      setSignupStatus("Unable to find your account. Please sign up again.");
       return;
     }
-
-    const user = credential.user;
-    await createManagerUserProfile({
-      uid: user.uid,
-      email: user.email,
-      fullName: kycAnswers.fullName,
-    });
-    if (role === "Fund Manager") {
-      try {
-        await setManagerPendingClaims(user.uid);
-        await user.getIdToken(true);
-        await new Promise((resolve) => {
-          setTimeout(resolve, 750);
-        });
-        await user.getIdToken(true);
-      } catch (error) {
-        console.error("Unable to assign manager claims", error);
-        setSignupStatus("Unable to initialize manager access. Please try again.");
-        return;
-      }
-    }
-    try {
-      await sendEmailVerification(user);
-    } catch (error) {
-      console.error("Unable to send verification email", error);
-      setSignupStatus("Unable to send verification email. Please try again.");
+    await user.reload();
+    if (!user.emailVerified) {
+      setSignupStatus("Primero verifica tu correo para continuar.");
       return;
     }
 
@@ -533,6 +607,7 @@ export function AuthFlow() {
         id: fundId,
         user: {
           id: baseProfile.id,
+          uid: baseProfile.id,
           name: baseProfile.fullName,
           email: baseProfile.email,
           country: baseProfile.country,
@@ -604,17 +679,26 @@ export function AuthFlow() {
     }
 
     setProfiles([...profiles, baseProfile]);
+    const normalizedAuthRole = normalizeRole(resolvedRole);
     setSession({
       id: profileId,
       uid: profileId,
       email: user.email ?? kycAnswers.email,
-      role: "Fund Manager",
-      authRole: "manager",
+      role: resolvedRole,
+      authRole: normalizedAuthRole,
       status: "pending",
       emailVerified: user.emailVerified,
     });
 
-    router.push("/verify-email");
+    if (resolvedRole === "Fund Manager") {
+      router.push("/pending-review");
+      return;
+    }
+    if (resolvedRole === "Investor") {
+      router.push("/dashboard/investor");
+      return;
+    }
+    router.push("/profile");
   };
 
   const resolveLoginErrorMessage = (error: unknown) => {
@@ -740,6 +824,20 @@ export function AuthFlow() {
       setLoginStatus(resolveLoginErrorMessage(error));
     }
   };
+
+  const isLastStep = stepIndex === steps.length - 1;
+  const nextLabel =
+    currentStep.type === "verify-email"
+      ? "Ya verifiqué mi correo"
+      : isLastStep
+        ? strings.authCompleteOnboarding
+        : strings.authNext;
+  const nextLabelKey =
+    currentStep.type === "verify-email"
+      ? undefined
+      : isLastStep
+        ? "authCompleteOnboarding"
+        : "authNext";
 
   return (
     <div className="mx-auto max-w-4xl rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -1085,6 +1183,35 @@ export function AuthFlow() {
                   )}
                 </div>
               ))}
+            {currentStep.type === "verify-email" && (
+              <div className="md:col-span-2 grid gap-4 rounded-xl border border-slate-200 bg-white p-4">
+                <div className="grid gap-2">
+                  <span className="text-sm font-semibold text-slate-700">
+                    Verifica tu correo para continuar
+                  </span>
+                  <p className="text-xs text-slate-500">
+                    Enviamos un link de verificación a{" "}
+                    <span className="font-semibold text-slate-700">
+                      {kycAnswers.email || "tu correo"}
+                    </span>
+                    . Abre el enlace y vuelve aquí para continuar con el onboarding.
+                  </p>
+                  {verificationStatus ? (
+                    <p className="text-xs text-slate-500">{verificationStatus}</p>
+                  ) : null}
+                </div>
+                <div>
+                  <button
+                    type="button"
+                    className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                    onClick={() => void sendVerificationEmail()}
+                    disabled={isSendingVerification}
+                  >
+                    {isSendingVerification ? "Enviando..." : "Reenviar verificación"}
+                  </button>
+                </div>
+              </div>
+            )}
             {currentStep.type === "fund-details" && (
               <>
                 <div className="md:col-span-2 grid gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
@@ -1429,10 +1556,10 @@ export function AuthFlow() {
             <button
               className="inline-flex items-center justify-center rounded-full bg-igates-500 px-6 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-white shadow-lg shadow-igates-500/30 transition hover:bg-igates-400"
               type="button"
-              onClick={handleNext}
-              data-i18n={stepIndex === steps.length - 1 ? "authCompleteOnboarding" : "authNext"}
+              onClick={() => void handleNext()}
+              data-i18n={nextLabelKey}
             >
-              {stepIndex === steps.length - 1 ? strings.authCompleteOnboarding : strings.authNext}
+              {nextLabel}
             </button>
           </div>
           <p className="mt-3 min-h-[22px] text-xs text-slate-500" aria-live="polite">
