@@ -160,12 +160,17 @@ export default function FundDetailsPage() {
 
       let finalLogo = logoFileData;
       if (logoFile) {
-        finalLogo = await uploadFundApplicationFile(fundId, logoFile, "logo");
+        finalLogo = await uploadFundApplicationFile(profile.id, fundId, logoFile, "logo");
       }
 
       let finalPresentation = presentationFileData;
       if (presentationFile) {
-        finalPresentation = await uploadFundApplicationFile(fundId, presentationFile, "presentation");
+        finalPresentation = await uploadFundApplicationFile(
+          profile.id,
+          fundId,
+          presentationFile,
+          "presentation"
+        );
       }
 
       for (const [index, file] of trackRecordFiles.entries()) {
@@ -175,7 +180,12 @@ export default function FundDetailsPage() {
           }
           continue;
         }
-        const uploaded = await uploadFundApplicationFile(fundId, file, `track-record-${index + 1}`);
+        const uploaded = await uploadFundApplicationFile(
+          profile.id,
+          fundId,
+          file,
+          `track-record-${index + 1}`
+        );
         nextTrackRecords[index] = uploaded;
       }
 

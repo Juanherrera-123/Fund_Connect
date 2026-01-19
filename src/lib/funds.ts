@@ -47,6 +47,7 @@ export function useFundsCollection() {
 }
 
 export async function uploadFundApplicationFile(
+  uid: string,
   applicationId: string,
   file: File,
   label: string
@@ -56,7 +57,7 @@ export async function uploadFundApplicationFile(
     throw new Error("Missing Firebase Storage configuration.");
   }
   const safeName = file.name.replace(/\s+/g, "-");
-  const path = `fundApplications/${applicationId}/${label}-${Date.now()}-${safeName}`;
+  const path = `private/fundApplications/${uid}/${applicationId}/${label}-${Date.now()}-${safeName}`;
   const storageRef = ref(storage, path);
   const snapshot = await uploadBytes(storageRef, file);
   const url = await getDownloadURL(storageRef);

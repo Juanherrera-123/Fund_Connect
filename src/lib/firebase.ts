@@ -1,5 +1,6 @@
 import { getApp, getApps, initializeApp, type FirebaseApp } from "firebase/app";
 import { getAuth, type Auth } from "firebase/auth";
+import { getFunctions, type Functions } from "firebase/functions";
 import { getStorage, type FirebaseStorage } from "firebase/storage";
 import {
   getFirestore,
@@ -80,6 +81,12 @@ export const getFirebaseStorage = (): FirebaseStorage | null => {
   const app = getFirebaseApp();
   if (!app) return null;
   return getStorage(app);
+};
+
+export const getFirebaseFunctions = (): Functions | null => {
+  const app = getFirebaseApp();
+  if (!app) return null;
+  return getFunctions(app);
 };
 
 export const requireFirestoreDb = (): Firestore => {

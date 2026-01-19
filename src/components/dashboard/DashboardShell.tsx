@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-import { getAuthClaims, isActiveStatus, normalizeRole } from "@/lib/auth/claims";
+import { isActiveStatus, normalizeRole, refreshClaims } from "@/lib/auth/claims";
 import { getFirebaseAuth } from "@/lib/firebase";
 import { STORAGE_KEYS } from "@/lib/igatesData";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
@@ -227,7 +227,7 @@ export default function DashboardShell({
     };
 
     const guard = async () => {
-      const claims = await getAuthClaims();
+      const claims = await refreshClaims();
       if (!isMounted) return;
 
       if (!claims) {

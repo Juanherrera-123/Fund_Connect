@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 
 import DataTable, { StatusCell } from "@/components/dashboard/DataTable";
+import { setManagerActiveClaims } from "@/lib/auth/claims";
 import { STORAGE_KEYS } from "@/lib/igatesData";
 import { updateFundApplicationStatus, useFundsCollection } from "@/lib/funds";
 import { updateUserStatus } from "@/lib/users";
@@ -121,6 +122,7 @@ export default function MasterDashboard() {
       });
       if (status === "approved") {
         await updateUserStatus({ uid: activeApplication.user.id, status: "active" });
+        await setManagerActiveClaims(activeApplication.user.id);
       }
       setActiveApplicationId(null);
     } catch (error) {
