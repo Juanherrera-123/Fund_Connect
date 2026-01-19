@@ -13,7 +13,7 @@ const DEFAULT_HIGHLIGHT_KEYS = ["fundsHighlight1", "fundsHighlight2", "fundsHigh
 
 export function FeaturedFunds() {
   const { strings } = useLanguage();
-  const fundApplications = useFundsCollection();
+  const fundApplications = useFundsCollection({ status: "approved" });
   const [capitalAllocations] = useFirebaseStorage<Record<string, number>>(
     STORAGE_KEYS.capitalAllocations,
     {}

@@ -76,7 +76,7 @@ const resolveMinimumInvestment = (minInvestment?: string | null, fallback = 1000
 export function VerifiedManagers() {
   const { strings } = useLanguage();
   const whatsappNumber = "573181252627";
-  const fundApplications = useFundsCollection();
+  const fundApplications = useFundsCollection({ status: "approved" });
   const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
   const [session] = useFirebaseStorage<Session>(STORAGE_KEYS.session, null);
   const [filters, setFilters] = useState<FilterState>(initialFilters);
