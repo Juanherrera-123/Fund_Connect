@@ -87,3 +87,36 @@ export async function updateUserStatus({
     { merge: true }
   );
 }
+
+export async function upsertUserOnboardingDraft({
+  uid,
+  profile,
+  onboardingDraft,
+}: {
+  uid: string;
+  profile: {
+    email: string | null;
+    fullName?: string | null;
+    role: string;
+  };
+  onboardingDraft: Record<string, unknown>;
+}): Promise<void> {
+  const docRef = getUserDocRef(uid);
+  if (!docRef) {
+    console.warn("Skipping onboarding draft update (missing Firebase configuration).");
+    return;
+  }
+
+  await setDoc(
+    docRef,
+    {
+      uid,
+      email: profile.email,
+      fullName: profile.fullName ?? null,
+      role: profile.role,
+      onboardingDraft,
+      updatedAt: serverTimestamp(),
+    },
+    { merge: true }
+  );
+}
