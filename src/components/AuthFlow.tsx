@@ -380,35 +380,6 @@ export function AuthFlow() {
     return true;
   };
 
-  const persistOnboardingDraft = async (uid: string) => {
-    if (!role) return;
-    try {
-      await upsertUserOnboardingDraft({
-        uid,
-        profile: {
-          email: kycAnswers.email ?? null,
-          fullName: kycAnswers.fullName ?? null,
-          role,
-        },
-        onboardingDraft: {
-          stepIndex,
-          kycAnswers: {
-            fullName: kycAnswers.fullName,
-            email: kycAnswers.email,
-            phone: kycAnswers.phone,
-            country: kycAnswers.country,
-            role: kycAnswers.role,
-          },
-          surveyAnswers,
-          fundDetails,
-          fundLinks,
-        },
-      });
-    } catch (error) {
-      console.error("Unable to persist onboarding draft", error);
-    }
-  };
-
   const sendVerificationEmail = async () => {
     const auth = getFirebaseAuth();
     const user = auth?.currentUser;
@@ -500,7 +471,6 @@ export function AuthFlow() {
       }
     }
 
-    await persistOnboardingDraft(user.uid);
     const sent = await sendVerificationEmail();
     return sent;
   };
