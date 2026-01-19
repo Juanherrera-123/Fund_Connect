@@ -1,6 +1,7 @@
 import { getIdTokenResult } from "firebase/auth";
+import { httpsCallable } from "firebase/functions";
 
-import { getFirebaseAuth } from "@/lib/firebase";
+import { getFirebaseAuth, getFirebaseFunctions } from "@/lib/firebase";
 import type { NormalizedRole } from "@/types/auth";
 
 export type AuthClaims = {
@@ -28,35 +29,73 @@ export const normalizeRole = (role?: string): NormalizedRole => {
 export const isActiveStatus = (status?: string | null): boolean =>
   typeof status === "string" && status.trim().toLowerCase() === "active";
 
+const buildAuthClaims = (tokenResult: Awaited<ReturnType<typeof getIdTokenResult>>) => {
+  const roleClaim = typeof tokenResult.claims.role === "string" ? tokenResult.claims.role : undefined;
+  const statusClaim =
+    typeof tokenResult.claims.status === "string" ? tokenResult.claims.status : undefined;
+  const resolvedRole = normalizeRole(roleClaim);
+  const resolvedStatus = statusClaim ? statusClaim.trim().toLowerCase() : null;
+
+  return {
+    role: resolvedRole,
+    status: resolvedStatus,
+    rawClaims: tokenResult.claims,
+  };
+};
+
 export async function getAuthClaims(): Promise<AuthClaims | null> {
   const auth = getFirebaseAuth();
   if (!auth || !auth.currentUser) return null;
 
   const user = auth.currentUser;
-  const tokenResult = await getIdTokenResult(user, true);
-  const roleClaim = typeof tokenResult.claims.role === "string" ? tokenResult.claims.role : undefined;
-  const statusClaim =
-    typeof tokenResult.claims.status === "string" ? tokenResult.claims.status : undefined;
-  const isMaster = normalizeRole(roleClaim) === "master";
-  let resolvedRole: NormalizedRole = normalizeRole(roleClaim);
-  let resolvedStatus = statusClaim ? statusClaim.trim().toLowerCase() : null;
-
-  if (!isMaster) {
-    const { getUserProfile } = await import("@/lib/users");
-    const userProfile = await getUserProfile(user.uid);
-    if (userProfile) {
-      resolvedRole = normalizeRole(userProfile.role);
-      resolvedStatus =
-        typeof userProfile.status === "string" ? userProfile.status.trim().toLowerCase() : null;
-    }
-  }
+  const tokenResult = await getIdTokenResult(user);
+  const { role, status, rawClaims } = buildAuthClaims(tokenResult);
 
   return {
     uid: user.uid,
     email: user.email,
-    role: resolvedRole,
-    status: resolvedStatus,
+    role,
+    status,
     emailVerified: user.emailVerified,
-    rawClaims: tokenResult.claims,
+    rawClaims,
   };
+}
+
+export async function refreshClaims(): Promise<AuthClaims | null> {
+  const auth = getFirebaseAuth();
+  if (!auth || !auth.currentUser) return null;
+
+  const user = auth.currentUser;
+  await user.getIdToken(true);
+  const tokenResult = await getIdTokenResult(user);
+  const { role, status, rawClaims } = buildAuthClaims(tokenResult);
+
+  return {
+    uid: user.uid,
+    email: user.email,
+    role,
+    status,
+    emailVerified: user.emailVerified,
+    rawClaims,
+  };
+}
+
+export async function setManagerPendingClaims(uid: string): Promise<void> {
+  const functions = getFirebaseFunctions();
+  if (!functions) {
+    console.warn("Skipping pending claims assignment (missing Firebase configuration).");
+    return;
+  }
+  const callable = httpsCallable(functions, "setManagerPendingClaims");
+  await callable({ uid });
+}
+
+export async function setManagerActiveClaims(uid: string): Promise<void> {
+  const functions = getFirebaseFunctions();
+  if (!functions) {
+    console.warn("Skipping active claims assignment (missing Firebase configuration).");
+    return;
+  }
+  const callable = httpsCallable(functions, "setManagerActiveClaims");
+  await callable({ uid });
 }

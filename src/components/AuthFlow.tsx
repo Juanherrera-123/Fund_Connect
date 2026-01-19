@@ -10,7 +10,7 @@ import {
 } from "firebase/auth";
 
 import { useLanguage } from "@/components/LanguageProvider";
-import { getAuthClaims, isActiveStatus, normalizeRole } from "@/lib/auth/claims";
+import { isActiveStatus, normalizeRole, refreshClaims, setManagerPendingClaims } from "@/lib/auth/claims";
 import {
   STORAGE_KEYS,
   SURVEY_DEFINITIONS,
@@ -439,6 +439,15 @@ export function AuthFlow() {
       email: user.email,
       fullName: kycAnswers.fullName,
     });
+    if (role === "Fund Manager") {
+      try {
+        await setManagerPendingClaims(user.uid);
+      } catch (error) {
+        console.error("Unable to assign manager claims", error);
+        setSignupStatus("Unable to initialize manager access. Please try again.");
+        return;
+      }
+    }
     try {
       await sendEmailVerification(user);
     } catch (error) {
@@ -502,10 +511,11 @@ export function AuthFlow() {
 
       try {
         if (logoFile) {
-          logoMetadata = await uploadFundApplicationFile(fundId, logoFile, "logo");
+          logoMetadata = await uploadFundApplicationFile(user.uid, fundId, logoFile, "logo");
         }
         if (presentationFile) {
           presentationMetadata = await uploadFundApplicationFile(
+            user.uid,
             fundId,
             presentationFile,
             "presentation"
@@ -661,17 +671,18 @@ export function AuthFlow() {
         return;
       }
 
-      const userProfile = await getUserProfile(credential.user.uid);
-      let normalizedRole = userProfile ? normalizeRole(userProfile.role) : "unknown";
-      let status = userProfile?.status ?? null;
-      if (!userProfile) {
-        const claims = await getAuthClaims();
-        if (claims?.role === "master") {
-          normalizedRole = "master";
-          status = claims.status ?? null;
-        } else {
-          setLoginStatus("Unable to find your account profile. Contact support.");
-          return;
+      const claims = await refreshClaims();
+      if (!claims) {
+        setLoginStatus("Unable to validate your session. Please try again.");
+        return;
+      }
+      let normalizedRole = claims.role;
+      let status = claims.status ?? null;
+      if (normalizedRole === "unknown") {
+        const userProfile = await getUserProfile(credential.user.uid);
+        if (userProfile) {
+          normalizedRole = normalizeRole(userProfile.role);
+          status = userProfile.status ?? null;
         }
       }
       const sessionRole: Role | "user" =

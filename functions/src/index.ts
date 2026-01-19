@@ -8,6 +8,8 @@
  */
 
 import {setGlobalOptions} from "firebase-functions";
+import {onCall, HttpsError} from "firebase-functions/v2/https";
+import * as admin from "firebase-admin";
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
@@ -23,6 +25,57 @@ import {setGlobalOptions} from "firebase-functions";
 // In the v1 API, each function can only serve one request per container, so
 // this will be the maximum concurrent request count.
 setGlobalOptions({maxInstances: 10});
+
+admin.initializeApp();
+
+export const setManagerPendingClaims = onCall(async (request) => {
+  if (!request.auth) {
+    throw new HttpsError("unauthenticated", "Authentication required.");
+  }
+
+  const uid = typeof request.data?.uid === "string" ? request.data.uid : "";
+  if (!uid) {
+    throw new HttpsError("invalid-argument", "A valid uid is required.");
+  }
+
+  if (request.auth.uid !== uid) {
+    throw new HttpsError("permission-denied", "Users can only set their own claims.");
+  }
+
+  await admin.auth().setCustomUserClaims(uid, {
+    role: "manager",
+    status: "pending",
+  });
+
+  return {ok: true};
+});
+
+export const setManagerActiveClaims = onCall(async (request) => {
+  if (!request.auth) {
+    throw new HttpsError("unauthenticated", "Authentication required.");
+  }
+
+  const role = typeof request.auth.token?.role === "string" ? request.auth.token.role : "";
+  const status =
+    typeof request.auth.token?.status === "string" ? request.auth.token.status.toLowerCase() : "";
+  const hasAccess = role === "master" && (status === "active" || status === "approved");
+
+  if (!hasAccess) {
+    throw new HttpsError("permission-denied", "Only active masters can approve managers.");
+  }
+
+  const uid = typeof request.data?.uid === "string" ? request.data.uid : "";
+  if (!uid) {
+    throw new HttpsError("invalid-argument", "A valid uid is required.");
+  }
+
+  await admin.auth().setCustomUserClaims(uid, {
+    role: "manager",
+    status: "active",
+  });
+
+  return {ok: true};
+});
 
 // export const helloWorld = onRequest((request, response) => {
 //   logger.info("Hello logs!", {structuredData: true});

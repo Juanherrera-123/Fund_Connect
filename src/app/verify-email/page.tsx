@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
-import { getAuthClaims, isActiveStatus, normalizeRole } from "@/lib/auth/claims";
+import { isActiveStatus, normalizeRole, refreshClaims } from "@/lib/auth/claims";
 import { getFirebaseAuth } from "@/lib/firebase";
 import { STORAGE_KEYS } from "@/lib/igatesData";
 import { getUserProfile } from "@/lib/users";
@@ -63,15 +63,18 @@ export default function VerifyEmailPage() {
       return;
     }
 
-    const userProfile = await getUserProfile(user.uid);
-    let normalizedRole = userProfile ? normalizeRole(userProfile.role) : "unknown";
-    let accountStatus = userProfile?.status ?? null;
-
-    if (!userProfile) {
-      const claims = await getAuthClaims();
-      if (claims?.role === "master") {
-        normalizedRole = "master";
-        accountStatus = claims.status ?? null;
+    const claims = await refreshClaims();
+    if (!claims) {
+      setStatus("Unable to validate your session. Please try again.");
+      return;
+    }
+    let normalizedRole = claims.role;
+    let accountStatus = claims.status ?? null;
+    if (normalizedRole === "unknown") {
+      const userProfile = await getUserProfile(user.uid);
+      if (userProfile) {
+        normalizedRole = normalizeRole(userProfile.role);
+        accountStatus = userProfile.status ?? null;
       } else {
         setStatus("Unable to find your account profile. Contact support.");
         return;

@@ -5,6 +5,28 @@ rules_version = '2';
 //    /databases/(default)/documents/users/$(request.auth.uid)).data.isAdmin;
 service firebase.storage {
   match /b/{bucket}/o {
+    function isMasterActive() {
+      return request.auth != null
+        && request.auth.token.role == "master"
+        && (request.auth.token.status == "active" || request.auth.token.status == "approved");
+    }
+
+    function isManager() {
+      return request.auth != null && request.auth.token.role == "manager";
+    }
+
+    match /public/funds/{allPaths=**} {
+      allow read: if true;
+      allow write: if isMasterActive();
+    }
+
+    match /private/fundApplications/{uid}/{applicationId}/{allPaths=**} {
+      allow read, write: if isMasterActive()
+        || (isManager()
+          && request.auth.uid == uid
+          && (request.auth.token.status == "pending" || request.auth.token.status == "active"));
+    }
+
     match /{allPaths=**} {
       allow read, write: if false;
     }
