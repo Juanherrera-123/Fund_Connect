@@ -21,6 +21,12 @@ const getFundsCollection = () => {
   return collection(db, "fundApplications");
 };
 
+const getApprovedFundsCollection = () => {
+  const db = getFirestoreDb();
+  if (!db) return null;
+  return collection(db, "funds");
+};
+
 type FundsCollectionOptions = {
   status?: FundApplication["status"];
   userUid?: string;
