@@ -93,6 +93,7 @@ export type FundApplication = {
   id: string;
   user: {
     id: string;
+    uid: string;
     name: string;
     email: string;
     country: string;

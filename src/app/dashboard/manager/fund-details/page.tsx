@@ -195,6 +195,7 @@ export default function FundDetailsPage() {
         id: fundId,
         user: {
           id: profile.id,
+          uid: profile.id,
           name: profile.fullName,
           email: profile.email,
           country: profile.country,
