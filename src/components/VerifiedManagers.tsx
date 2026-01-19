@@ -12,10 +12,11 @@ import {
   formatNumber,
   getFundLogoLabel,
 } from "@/lib/igatesData";
-import { useFundsCollection } from "@/lib/funds";
+import { useApprovedFundsCollection } from "@/lib/funds";
 import { getFundFrameClass } from "@/lib/fundVisuals";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
-import type { FundApplication, FundApplicationFile, Session, UserProfile } from "@/lib/types";
+import { useLocalStorage } from "@/lib/useLocalStorage";
+import type { FundApplicationFile, PublishedFund, Session, UserProfile } from "@/lib/types";
 
 type VerifiedFund = {
   id: string;
@@ -76,9 +77,9 @@ const resolveMinimumInvestment = (minInvestment?: string | null, fallback = 1000
 export function VerifiedManagers() {
   const { strings } = useLanguage();
   const whatsappNumber = "573181252627";
-  const fundApplications = useFundsCollection({ status: "approved" });
+  const approvedFunds = useApprovedFundsCollection();
   const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
-  const [session] = useFirebaseStorage<Session>(STORAGE_KEYS.session, null);
+  const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const [filters, setFilters] = useState<FilterState>(initialFilters);
   const [appliedFilters, setAppliedFilters] = useState<FilterState>(initialFilters);
   const [selectedFundId, setSelectedFundId] = useState<string | null>(null);
@@ -117,8 +118,8 @@ export function VerifiedManagers() {
     const resolveManagerProfile = (fundId: string, managerId?: string) =>
       (managerId ? managerById.get(managerId) : null) ?? managerByFundId.get(fundId) ?? null;
 
-    const mapApplicationToFund = (application: FundApplication): VerifiedFund => {
-      const managerProfile = resolveManagerProfile(application.id, application.user.id);
+    const mapApplicationToFund = (application: PublishedFund): VerifiedFund => {
+      const managerProfile = resolveManagerProfile(application.id, application.managerId ?? null);
       const profileDetails = managerProfile?.fundManagerProfile;
 
       return {
@@ -161,13 +162,9 @@ export function VerifiedManagers() {
       };
     };
 
-    const verifiedApplications = fundApplications.filter(
-      (application) => application.status === "approved"
-    );
-
-    return verifiedApplications.map((application) => mapApplicationToFund(application));
+    return approvedFunds.map((application) => mapApplicationToFund(application));
   }, [
-    fundApplications,
+    approvedFunds,
     profiles,
     strings.verifiedManagersDescriptionFallback,
     strings.verifiedManagersRiskPending,

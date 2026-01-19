@@ -23,6 +23,7 @@ import { getFirebaseAuth } from "@/lib/firebase";
 import { uploadFundApplicationFile, upsertFundApplication } from "@/lib/funds";
 import { createManagerUserProfile, getUserProfile, upsertUserOnboardingDraft } from "@/lib/users";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
+import { useLocalStorage } from "@/lib/useLocalStorage";
 import type {
   FundApplication,
   FundApplicationFile,
@@ -146,7 +147,7 @@ export function AuthFlow() {
     STORAGE_KEYS.profiles,
     []
   );
-  const [, setSession] = useFirebaseStorage<Session>(STORAGE_KEYS.session, null);
+  const [, setSession] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const [notifications, setNotifications] = useFirebaseStorage<MasterNotification[]>(
     STORAGE_KEYS.notifications,
     []

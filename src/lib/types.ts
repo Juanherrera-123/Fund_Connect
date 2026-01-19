@@ -111,6 +111,16 @@ export type FundApplication = {
   } | null;
 };
 
+export type PublishedFund = {
+  id: string;
+  fundData: FundApplicationFundData;
+  status: "approved";
+  managerId?: string | null;
+  createdAt?: string | null;
+  publishedAt?: unknown;
+  updatedAt?: unknown;
+};
+
 export type FundApplicationFile = {
   name: string;
   url: string;

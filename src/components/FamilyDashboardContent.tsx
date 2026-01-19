@@ -6,10 +6,11 @@ import { useMemo } from "react";
 import { isActiveStatus, normalizeRole } from "@/lib/auth/claims";
 import { STORAGE_KEYS, formatStrategyList } from "@/lib/igatesData";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
+import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { Session, UserProfile } from "@/lib/types";
 
 export function FamilyDashboardContent() {
-  const [session] = useFirebaseStorage<Session>(STORAGE_KEYS.session, null);
+  const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
   const authRole = session?.authRole ?? normalizeRole(session?.role);
   const isActive = isActiveStatus(session?.status);

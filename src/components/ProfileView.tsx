@@ -7,6 +7,7 @@ import { useMemo } from "react";
 import { normalizeRole } from "@/lib/auth/claims";
 import { STORAGE_KEYS, formatStrategyList } from "@/lib/igatesData";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
+import { useLocalStorage } from "@/lib/useLocalStorage";
 import { useWaitlistCollection } from "@/lib/waitlist";
 import type { Session, UserProfile } from "@/lib/types";
 
@@ -14,7 +15,7 @@ export function ProfileView() {
   const router = useRouter();
   const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
   const waitlistRequests = useWaitlistCollection();
-  const [session, setSession] = useFirebaseStorage<Session>(STORAGE_KEYS.session, null);
+  const [session, setSession] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const authRole = session?.authRole ?? normalizeRole(session?.role);
   const profile = useMemo(() => {
     if (!session || authRole === "master") return null;

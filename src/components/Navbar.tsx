@@ -7,7 +7,7 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useLanguage } from "@/components/LanguageProvider";
 import { normalizeRole } from "@/lib/auth/claims";
 import { STORAGE_KEYS } from "@/lib/igatesData";
-import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
+import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { Session } from "@/lib/types";
 
 type NavbarProps = {
@@ -15,7 +15,7 @@ type NavbarProps = {
 };
 
 export function Navbar({ floating = false }: NavbarProps) {
-  const [session] = useFirebaseStorage<Session>(STORAGE_KEYS.session, null);
+  const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const { strings } = useLanguage();
   const positionClassName = floating ? "fixed top-4" : "sticky top-0";
   const [isMenuOpen, setIsMenuOpen] = useState(false);

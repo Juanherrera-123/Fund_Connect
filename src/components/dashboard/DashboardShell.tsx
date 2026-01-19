@@ -9,6 +9,7 @@ import { isActiveStatus, normalizeRole, refreshClaims } from "@/lib/auth/claims"
 import { getFirebaseAuth } from "@/lib/firebase";
 import { STORAGE_KEYS } from "@/lib/igatesData";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
+import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { Session, UserProfile } from "@/lib/types";
 
 const masterNavItems = [
@@ -196,7 +197,7 @@ export default function DashboardShell({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [session, setSession] = useFirebaseStorage<Session>(STORAGE_KEYS.session, null);
+  const [session, setSession] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
   const authRole = session?.authRole ?? normalizeRole(session?.role);
   const navItems =
