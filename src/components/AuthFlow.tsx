@@ -448,7 +448,7 @@ export function AuthFlow() {
     }
 
     const profileId = user.uid;
-    const resolvedRole: Role = "Fund Manager";
+    const resolvedRole = role as Exclude<Role, "MasterUser">;
     const baseProfile: UserProfile = {
       id: profileId,
       fullName: kycAnswers.fullName,
