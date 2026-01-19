@@ -36,7 +36,7 @@ export default function FundDetailsPage() {
     STORAGE_KEYS.profiles,
     []
   );
-  const fundApplications = useFundsCollection();
+  const fundApplications = useFundsCollection({ userUid: session?.id ?? session?.uid });
   const [statusMessage, setStatusMessage] = useState("");
   const [linkFields, setLinkFields] = useState<string[]>(["", "", ""]);
   const [logoFile, setLogoFile] = useState<File | null>(null);
