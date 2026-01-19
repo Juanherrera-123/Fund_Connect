@@ -59,13 +59,13 @@ export const setManagerActiveClaims = onCall(async (request) => {
   }
 
   const role =
-    typeof request.auth.token?.role === "string"
-      ? request.auth.token.role
-      : "";
+    typeof request.auth.token?.role === "string" ?
+      request.auth.token.role :
+      "";
   const status =
-    typeof request.auth.token?.status === "string"
-      ? request.auth.token.status.toLowerCase()
-      : "";
+    typeof request.auth.token?.status === "string" ?
+      request.auth.token.status.toLowerCase() :
+      "";
   const hasAccess =
     role === "master" && (status === "active" || status === "approved");
 
