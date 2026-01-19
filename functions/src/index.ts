@@ -39,7 +39,10 @@ export const setManagerPendingClaims = onCall(async (request) => {
   }
 
   if (request.auth.uid !== uid) {
-    throw new HttpsError("permission-denied", "Users can only set their own claims.");
+    throw new HttpsError(
+      "permission-denied",
+      "Users can only set their own claims.",
+    );
   }
 
   await admin.auth().setCustomUserClaims(uid, {
@@ -55,13 +58,22 @@ export const setManagerActiveClaims = onCall(async (request) => {
     throw new HttpsError("unauthenticated", "Authentication required.");
   }
 
-  const role = typeof request.auth.token?.role === "string" ? request.auth.token.role : "";
+  const role =
+    typeof request.auth.token?.role === "string"
+      ? request.auth.token.role
+      : "";
   const status =
-    typeof request.auth.token?.status === "string" ? request.auth.token.status.toLowerCase() : "";
-  const hasAccess = role === "master" && (status === "active" || status === "approved");
+    typeof request.auth.token?.status === "string"
+      ? request.auth.token.status.toLowerCase()
+      : "";
+  const hasAccess =
+    role === "master" && (status === "active" || status === "approved");
 
   if (!hasAccess) {
-    throw new HttpsError("permission-denied", "Only active masters can approve managers.");
+    throw new HttpsError(
+      "permission-denied",
+      "Only active masters can approve managers.",
+    );
   }
 
   const uid = typeof request.data?.uid === "string" ? request.data.uid : "";
