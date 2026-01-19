@@ -12,11 +12,11 @@ import {
   formatNumber,
   getFundLogoLabel,
 } from "@/lib/igatesData";
-import { useApprovedFundsCollection } from "@/lib/funds";
+import { useFundsCollection } from "@/lib/funds";
 import { getFundFrameClass } from "@/lib/fundVisuals";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import { useLocalStorage } from "@/lib/useLocalStorage";
-import type { FundApplicationFile, PublishedFund, Session, UserProfile } from "@/lib/types";
+import type { FundApplication, FundApplicationFile, Session, UserProfile } from "@/lib/types";
 
 type VerifiedFund = {
   id: string;
@@ -77,7 +77,7 @@ const resolveMinimumInvestment = (minInvestment?: string | null, fallback = 1000
 export function VerifiedManagers() {
   const { strings } = useLanguage();
   const whatsappNumber = "573181252627";
-  const approvedFunds = useApprovedFundsCollection();
+  const approvedFunds = useFundsCollection({ status: "approved" });
   const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const [filters, setFilters] = useState<FilterState>(initialFilters);
@@ -118,8 +118,8 @@ export function VerifiedManagers() {
     const resolveManagerProfile = (fundId: string, managerId?: string | null) =>
       (managerId ? managerById.get(managerId) : null) ?? managerByFundId.get(fundId) ?? null;
 
-    const mapApplicationToFund = (application: PublishedFund): VerifiedFund => {
-      const managerProfile = resolveManagerProfile(application.id, application.managerId ?? null);
+    const mapApplicationToFund = (application: FundApplication): VerifiedFund => {
+      const managerProfile = resolveManagerProfile(application.id, application.user?.id ?? null);
       const profileDetails = managerProfile?.fundManagerProfile;
 
       return {
