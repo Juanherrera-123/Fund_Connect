@@ -8,7 +8,7 @@
  */
 
 import {setGlobalOptions} from "firebase-functions";
-import {onCall, HttpsError} from "firebase-functions/v2/https";
+import {CallableContext, HttpsError, onCall} from "firebase-functions/v1/https";
 import * as admin from "firebase-admin";
 
 // Start writing functions
@@ -28,66 +28,70 @@ setGlobalOptions({maxInstances: 10});
 
 admin.initializeApp();
 
-export const setManagerPendingClaims = onCall(async (request) => {
-  if (!request.auth) {
-    throw new HttpsError("unauthenticated", "Authentication required.");
-  }
+export const setManagerPendingClaims = onCall(
+  async (data: {uid?: unknown}, context: CallableContext) => {
+    if (!context.auth) {
+      throw new HttpsError("unauthenticated", "Authentication required.");
+    }
 
-  const uid = typeof request.data?.uid === "string" ? request.data.uid : "";
-  if (!uid) {
-    throw new HttpsError("invalid-argument", "A valid uid is required.");
-  }
+    const uid = typeof data?.uid === "string" ? data.uid : "";
+    if (!uid) {
+      throw new HttpsError("invalid-argument", "A valid uid is required.");
+    }
 
-  if (request.auth.uid !== uid) {
-    throw new HttpsError(
-      "permission-denied",
-      "Users can only set their own claims.",
-    );
-  }
+    if (context.auth.uid !== uid) {
+      throw new HttpsError(
+        "permission-denied",
+        "Users can only set their own claims.",
+      );
+    }
 
-  await admin.auth().setCustomUserClaims(uid, {
-    role: "manager",
-    status: "pending",
-  });
+    await admin.auth().setCustomUserClaims(uid, {
+      role: "manager",
+      status: "pending",
+    });
 
-  return {ok: true};
-});
+    return {ok: true};
+  },
+);
 
-export const setManagerActiveClaims = onCall(async (request) => {
-  if (!request.auth) {
-    throw new HttpsError("unauthenticated", "Authentication required.");
-  }
+export const setManagerActiveClaims = onCall(
+  async (data: {uid?: unknown}, context: CallableContext) => {
+    if (!context.auth) {
+      throw new HttpsError("unauthenticated", "Authentication required.");
+    }
 
-  const role =
-    typeof request.auth.token?.role === "string" ?
-      request.auth.token.role :
-      "";
-  const status =
-    typeof request.auth.token?.status === "string" ?
-      request.auth.token.status.toLowerCase() :
-      "";
-  const hasAccess =
-    role === "master" && (status === "active" || status === "approved");
+    const role =
+      typeof context.auth.token?.role === "string" ?
+        context.auth.token.role :
+        "";
+    const status =
+      typeof context.auth.token?.status === "string" ?
+        context.auth.token.status.toLowerCase() :
+        "";
+    const hasAccess =
+      role === "master" && (status === "active" || status === "approved");
 
-  if (!hasAccess) {
-    throw new HttpsError(
-      "permission-denied",
-      "Only active masters can approve managers.",
-    );
-  }
+    if (!hasAccess) {
+      throw new HttpsError(
+        "permission-denied",
+        "Only active masters can approve managers.",
+      );
+    }
 
-  const uid = typeof request.data?.uid === "string" ? request.data.uid : "";
-  if (!uid) {
-    throw new HttpsError("invalid-argument", "A valid uid is required.");
-  }
+    const uid = typeof data?.uid === "string" ? data.uid : "";
+    if (!uid) {
+      throw new HttpsError("invalid-argument", "A valid uid is required.");
+    }
 
-  await admin.auth().setCustomUserClaims(uid, {
-    role: "manager",
-    status: "active",
-  });
+    await admin.auth().setCustomUserClaims(uid, {
+      role: "manager",
+      status: "active",
+    });
 
-  return {ok: true};
-});
+    return {ok: true};
+  },
+);
 
 // export const helloWorld = onRequest((request, response) => {
 //   logger.info("Hello logs!", {structuredData: true});
