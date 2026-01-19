@@ -21,7 +21,7 @@ import {
 } from "@/lib/igatesData";
 import { getFirebaseAuth } from "@/lib/firebase";
 import { uploadFundApplicationFile, upsertFundApplication } from "@/lib/funds";
-import { createManagerUserProfile, getUserProfile } from "@/lib/users";
+import { createManagerUserProfile, getUserProfile, upsertUserOnboardingDraft } from "@/lib/users";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import type {
   FundApplication,
@@ -495,6 +495,11 @@ export function AuthFlow() {
 
     if (currentStep.type === "survey") {
       if (!validateSurvey(currentStep.questions)) return;
+      const auth = getFirebaseAuth();
+      const user = auth?.currentUser;
+      if (user) {
+        await persistOnboardingDraft(user.uid);
+      }
       if (stepIndex === steps.length - 1) {
         void completeSignup();
         return;
@@ -505,6 +510,11 @@ export function AuthFlow() {
 
     if (currentStep.type === "fund-details") {
       if (!validateFundDetails()) return;
+      const auth = getFirebaseAuth();
+      const user = auth?.currentUser;
+      if (user) {
+        await persistOnboardingDraft(user.uid);
+      }
       void completeSignup();
       return;
     }
