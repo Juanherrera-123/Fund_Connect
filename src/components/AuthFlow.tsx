@@ -442,6 +442,11 @@ export function AuthFlow() {
     if (role === "Fund Manager") {
       try {
         await setManagerPendingClaims(user.uid);
+        await user.getIdToken(true);
+        await new Promise((resolve) => {
+          setTimeout(resolve, 750);
+        });
+        await user.getIdToken(true);
       } catch (error) {
         console.error("Unable to assign manager claims", error);
         setSignupStatus("Unable to initialize manager access. Please try again.");
@@ -523,8 +528,6 @@ export function AuthFlow() {
         }
       } catch (error) {
         console.error("Unable to upload fund application files", error);
-        setSignupStatus(strings.formStatusError);
-        return;
       }
 
       const draftFundApplication: FundApplication = {
@@ -582,7 +585,11 @@ export function AuthFlow() {
         createdAt: new Date().toISOString(),
       };
       setNotifications([nextNotification, ...notifications]);
-      void upsertFundApplication(draftFundApplication);
+      try {
+        await upsertFundApplication(draftFundApplication);
+      } catch (error) {
+        console.error("Unable to save fund application", error);
+      }
     }
 
     if (resolvedRole === "Family Office") {

@@ -15,6 +15,14 @@ service firebase.storage {
       return request.auth != null && request.auth.token.role == "manager";
     }
 
+    function isManagerProfile(uid) {
+      return request.auth != null
+        && request.auth.uid == uid
+        && firestore.get(/databases/(default)/documents/users/$(uid)).data.role == "manager"
+        && (firestore.get(/databases/(default)/documents/users/$(uid)).data.status == "pending"
+          || firestore.get(/databases/(default)/documents/users/$(uid)).data.status == "active");
+    }
+
     match /public/funds/{allPaths=**} {
       allow read: if true;
       allow write: if isMasterActive();
@@ -24,7 +32,8 @@ service firebase.storage {
       allow read, write: if isMasterActive()
         || (isManager()
           && request.auth.uid == uid
-          && (request.auth.token.status == "pending" || request.auth.token.status == "active"));
+          && (request.auth.token.status == "pending" || request.auth.token.status == "active"))
+        || isManagerProfile(uid);
     }
 
     match /{allPaths=**} {
