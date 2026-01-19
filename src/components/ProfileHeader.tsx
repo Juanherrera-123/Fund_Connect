@@ -5,10 +5,11 @@ import { useMemo } from "react";
 import { normalizeRole } from "@/lib/auth/claims";
 import { STORAGE_KEYS } from "@/lib/igatesData";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
+import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { Session, UserProfile } from "@/lib/types";
 
 export function ProfileHeader() {
-  const [session] = useFirebaseStorage<Session>(STORAGE_KEYS.session, null);
+  const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
   const authRole = session?.authRole ?? normalizeRole(session?.role);
 

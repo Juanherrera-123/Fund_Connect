@@ -10,7 +10,7 @@ import { isActiveStatus, normalizeRole, refreshClaims } from "@/lib/auth/claims"
 import { getFirebaseAuth } from "@/lib/firebase";
 import { STORAGE_KEYS } from "@/lib/igatesData";
 import { getUserProfile } from "@/lib/users";
-import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
+import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { Role, Session } from "@/lib/types";
 
 const resolveSessionRole = (normalizedRole: string): Role | "user" => {
@@ -22,7 +22,7 @@ const resolveSessionRole = (normalizedRole: string): Role | "user" => {
 
 export default function VerifyEmailPage() {
   const router = useRouter();
-  const [session, setSession] = useFirebaseStorage<Session>(STORAGE_KEYS.session, null);
+  const [session, setSession] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const [status, setStatus] = useState("");
   const [isSending, setIsSending] = useState(false);
 

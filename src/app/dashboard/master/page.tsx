@@ -5,9 +5,9 @@ import { useMemo, useState } from "react";
 import DataTable, { StatusCell } from "@/components/dashboard/DataTable";
 import { setManagerActiveClaims } from "@/lib/auth/claims";
 import { STORAGE_KEYS } from "@/lib/igatesData";
-import { updateFundApplicationStatus, useFundsCollection } from "@/lib/funds";
+import { publishApprovedFund, updateFundApplicationStatus, useFundsCollection } from "@/lib/funds";
 import { updateUserStatus } from "@/lib/users";
-import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
+import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { FundApplication, FundApplicationFile, Session } from "@/lib/types";
 
 type ModalSection = {
@@ -49,7 +49,7 @@ const statusConfig: Record<
 
 export default function MasterDashboard() {
   const fundApplications = useFundsCollection();
-  const [session] = useFirebaseStorage<Session>(STORAGE_KEYS.session, null);
+  const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const [activeApplicationId, setActiveApplicationId] = useState<string | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -121,6 +121,7 @@ export default function MasterDashboard() {
           : { name: "Master" },
       });
       if (status === "approved") {
+        await publishApprovedFund(activeApplication);
         await updateUserStatus({ uid: activeApplication.user.id, status: "active" });
         await setManagerActiveClaims(activeApplication.user.id);
       }

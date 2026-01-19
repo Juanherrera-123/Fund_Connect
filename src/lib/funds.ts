@@ -1,16 +1,22 @@
 "use client";
 
-import { collection, doc, onSnapshot, query, serverTimestamp, setDoc } from "firebase/firestore";
+import { collection, doc, onSnapshot, query, serverTimestamp, setDoc, where } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useEffect, useState } from "react";
 
 import { getFirebaseStorage, getFirestoreDb } from "@/lib/firebase";
-import type { FundApplication, FundApplicationFile } from "@/lib/types";
+import type { FundApplication, FundApplicationFile, PublishedFund } from "@/lib/types";
 
 const getFundsCollection = () => {
   const db = getFirestoreDb();
   if (!db) return null;
   return collection(db, "fundApplications");
+};
+
+const getApprovedFundsCollection = () => {
+  const db = getFirestoreDb();
+  if (!db) return null;
+  return collection(db, "funds");
 };
 
 export function useFundsCollection() {
@@ -37,6 +43,39 @@ export function useFundsCollection() {
       },
       (error) => {
         console.error("Unable to subscribe to funds collection", error);
+      }
+    );
+
+    return () => unsubscribe();
+  }, []);
+
+  return funds;
+}
+
+export function useApprovedFundsCollection() {
+  const [funds, setFunds] = useState<PublishedFund[]>([]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const collectionRef = getApprovedFundsCollection();
+    if (!collectionRef) {
+      console.warn("Skipping approved funds subscription (missing Firebase configuration).");
+      return;
+    }
+
+    const fundQuery = query(collectionRef, where("status", "==", "approved"));
+    const unsubscribe = onSnapshot(
+      fundQuery,
+      (snapshot) => {
+        const nextFunds = snapshot.docs.map((docItem) => ({
+          id: docItem.id,
+          ...(docItem.data() as Omit<PublishedFund, "id">),
+        }));
+        setFunds(nextFunds);
+      },
+      (error) => {
+        console.error("Unable to subscribe to approved funds collection", error);
       }
     );
 
@@ -85,6 +124,28 @@ export async function upsertFundApplication(payload: FundApplication) {
       createdAt: payload.createdAt ?? serverTimestamp(),
       updatedAt: serverTimestamp(),
     },
+    { merge: true }
+  );
+}
+
+export async function publishApprovedFund(application: FundApplication) {
+  const db = getFirestoreDb();
+  if (!db) {
+    console.warn("Skipping approved fund publish (missing Firebase configuration).");
+    return;
+  }
+
+  const docRef = doc(db, "funds", application.id);
+  await setDoc(
+    docRef,
+    {
+      fundData: application.fundData,
+      managerId: application.user.id,
+      status: "approved",
+      createdAt: application.createdAt ?? null,
+      publishedAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    } satisfies Omit<PublishedFund, "id">,
     { merge: true }
   );
 }

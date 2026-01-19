@@ -11,13 +11,13 @@ import { useLanguage } from "@/components/LanguageProvider";
 import { isActiveStatus, normalizeRole } from "@/lib/auth/claims";
 import { getFirebaseAuth } from "@/lib/firebase";
 import { STORAGE_KEYS } from "@/lib/igatesData";
-import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
+import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { Session } from "@/lib/types";
 
 export default function ProfilePage() {
   const router = useRouter();
   const { strings } = useLanguage();
-  const [session, setSession] = useFirebaseStorage<Session>(STORAGE_KEYS.session, null);
+  const [session, setSession] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const authRole = session?.authRole ?? normalizeRole(session?.role);
 
   useEffect(() => {
