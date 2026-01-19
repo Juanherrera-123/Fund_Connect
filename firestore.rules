@@ -34,7 +34,9 @@ service cloud.firestore {
 
     match /fundApplications/{id} {
       allow create: if signedIn() && request.resource.data.user.uid == request.auth.uid;
-      allow read: if isMaster() || (signedIn() && resource.data.user.uid == request.auth.uid);
+      allow read: if isMaster()
+        || (signedIn() && resource.data.user.uid == request.auth.uid)
+        || resource.data.status == "approved";
       allow update: if isMaster()
         || (signedIn()
           && resource.data.user.uid == request.auth.uid
