@@ -115,7 +115,7 @@ export function VerifiedManagers() {
         .filter((profile) => profile.fundId)
         .map((profile) => [profile.fundId as string, profile])
     );
-    const resolveManagerProfile = (fundId: string, managerId?: string) =>
+    const resolveManagerProfile = (fundId: string, managerId?: string | null) =>
       (managerId ? managerById.get(managerId) : null) ?? managerByFundId.get(fundId) ?? null;
 
     const mapApplicationToFund = (application: PublishedFund): VerifiedFund => {
