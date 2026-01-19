@@ -16,7 +16,7 @@ const iconClass = "h-4 w-4";
 export default function FundManagerOverview() {
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
-  const fundApplications = useFundsCollection();
+  const fundApplications = useFundsCollection({ userUid: session?.id ?? session?.uid });
   const authRole = session?.authRole ?? normalizeRole(session?.role);
   const isActive = isActiveStatus(session?.status);
 

@@ -13,6 +13,29 @@ type StoredPayload<T> = {
   updatedAt?: unknown;
 };
 
+const localOnlyKeys = new Set(["igatesCurrentSession", "preferredLanguage"]);
+
+const readLocalStorage = <T,>(key: string): T | undefined => {
+  if (typeof window === "undefined") return undefined;
+  try {
+    const raw = window.localStorage.getItem(key);
+    if (!raw) return undefined;
+    return JSON.parse(raw) as T;
+  } catch (error) {
+    console.warn(`Unable to read ${key} from localStorage`, error);
+    return undefined;
+  }
+};
+
+const writeLocalStorage = <T,>(key: string, value: T) => {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(key, JSON.stringify(value));
+  } catch (error) {
+    console.warn(`Unable to write ${key} to localStorage`, error);
+  }
+};
+
 const getStorageDoc = (key: string) => {
   const db = getFirestoreDb();
   if (!db) return null;
@@ -26,6 +49,14 @@ export function useFirebaseStorage<T>(key: string, initialValue: T): [T, SetValu
     if (typeof window === "undefined") return;
 
     let unsubscribe = () => {};
+    const localValue = readLocalStorage<T>(key);
+    if (localValue !== undefined) {
+      setStoredValue(localValue);
+    }
+
+    if (localOnlyKeys.has(key)) {
+      return () => unsubscribe();
+    }
 
     try {
       const docRef = getStorageDoc(key);
@@ -69,6 +100,10 @@ export function useFirebaseStorage<T>(key: string, initialValue: T): [T, SetValu
     (value) => {
       setStoredValue((prevValue) => {
         const nextValue = value instanceof Function ? value(prevValue) : value;
+        writeLocalStorage(key, nextValue);
+        if (localOnlyKeys.has(key)) {
+          return nextValue;
+        }
         if (typeof window !== "undefined") {
           try {
             const docRef = getStorageDoc(key);

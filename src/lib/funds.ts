@@ -1,6 +1,14 @@
 "use client";
 
-import { collection, doc, onSnapshot, query, serverTimestamp, setDoc, where } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  onSnapshot,
+  query,
+  serverTimestamp,
+  setDoc,
+  where,
+} from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useEffect, useState } from "react";
 
@@ -13,13 +21,12 @@ const getFundsCollection = () => {
   return collection(db, "fundApplications");
 };
 
-const getApprovedFundsCollection = () => {
-  const db = getFirestoreDb();
-  if (!db) return null;
-  return collection(db, "funds");
+type FundsCollectionOptions = {
+  status?: FundApplication["status"];
+  userUid?: string;
 };
 
-export function useFundsCollection() {
+export function useFundsCollection(options: FundsCollectionOptions = {}) {
   const [funds, setFunds] = useState<FundApplication[]>([]);
 
   useEffect(() => {
@@ -31,7 +38,18 @@ export function useFundsCollection() {
       return;
     }
 
-    const fundQuery = query(collectionRef);
+    const hasUserFilter = Object.prototype.hasOwnProperty.call(options, "userUid");
+    if (hasUserFilter && !options.userUid) {
+      setFunds([]);
+      return;
+    }
+
+    let fundQuery = query(collectionRef);
+    if (options.userUid) {
+      fundQuery = query(collectionRef, where("user.uid", "==", options.userUid));
+    } else if (options.status) {
+      fundQuery = query(collectionRef, where("status", "==", options.status));
+    }
     const unsubscribe = onSnapshot(
       fundQuery,
       (snapshot) => {
@@ -47,7 +65,7 @@ export function useFundsCollection() {
     );
 
     return () => unsubscribe();
-  }, []);
+  }, [options.status, options.userUid]);
 
   return funds;
 }
