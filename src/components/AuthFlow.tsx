@@ -163,6 +163,37 @@ export function AuthFlow() {
   }, [logoFile]);
 
   const role = kycAnswers.role as keyof typeof SURVEY_DEFINITIONS | undefined;
+
+  const persistOnboardingDraft = useCallback(
+    async (uid: string) => {
+      if (!role) return;
+      const draft: Record<string, unknown> = {
+        role,
+        kycAnswers,
+        surveyAnswers,
+      };
+
+      if (role === "Fund Manager") {
+        draft.fundDetails = fundDetails;
+        draft.fundLinks = fundLinks;
+      }
+
+      try {
+        await upsertUserOnboardingDraft({
+          uid,
+          profile: {
+            email: kycAnswers.email ?? null,
+            fullName: kycAnswers.fullName,
+            role,
+          },
+          onboardingDraft: draft,
+        });
+      } catch (error) {
+        console.error("Unable to save onboarding draft", error);
+      }
+    },
+    [fundDetails, fundLinks, kycAnswers, role, surveyAnswers]
+  );
   const steps = useMemo<SignupStep[]>(() => {
     const surveyQuestions = role ? SURVEY_DEFINITIONS[role] : [];
     const groups: SurveyQuestion[][] = [];
