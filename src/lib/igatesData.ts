@@ -881,8 +881,9 @@ export const translations = {
     contactRoleOps: "Operaciones / Compliance",
     contactNotesLabel: "Notas",
     contactNotesPlaceholder: "Mandato, estrategia, horizonte, restricciones de riesgo",
-    contactSubmit: "Solicitar acceso",
-    contactSubmitNote: "Recibimos tu solicitud. Un miembro del equipo confirmará el siguiente paso.",
+    contactSubmit: "Solicitar asesoria",
+    contactSubmitNote:
+      "Recibimos tu solicitud. Un miembro del equipo se pondra en contacto",
     contactStatusSending: "Enviando...",
     contactStatusSuccess: "Recibimos tu solicitud. Nuestro equipo responderá pronto.",
     contactStatusError: "No se pudo enviar. Confirma que el backend esté activo.",
