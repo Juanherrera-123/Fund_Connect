@@ -110,6 +110,8 @@ export function AuthFlow() {
   const [signupStatus, setSignupStatus] = useState("");
   const [loginStatus, setLoginStatus] = useState("");
   const [isLoginPasswordVisible, setIsLoginPasswordVisible] = useState(false);
+  const [isSignupPasswordVisible, setIsSignupPasswordVisible] = useState(false);
+  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
   const [kycAnswers, setKycAnswers] = useState<Record<string, string>>({});
   const [confirmPassword, setConfirmPassword] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -268,17 +270,11 @@ export function AuthFlow() {
 
   useEffect(() => {
     const roleParam = searchParams.get("role");
-    if (roleParam === "Fund Manager") {
+    if (roleParam && Object.prototype.hasOwnProperty.call(SURVEY_DEFINITIONS, roleParam)) {
       setActiveTab("signup");
-      setKycAnswers((prev) => ({ ...prev, role: "Fund Manager" }));
+      setKycAnswers((prev) => ({ ...prev, role: roleParam }));
     }
   }, [searchParams]);
-
-  useEffect(() => {
-    if (kycAnswers.role !== "Fund Manager") {
-      setKycAnswers((prev) => ({ ...prev, role: "Fund Manager" }));
-    }
-  }, [kycAnswers.role]);
 
   const updateKyc = useCallback((field: string, value: string) => {
     setKycAnswers((prev) => ({ ...prev, [field]: value }));
@@ -340,6 +336,9 @@ export function AuthFlow() {
     }
     return true;
   };
+
+  const passwordMismatch =
+    Boolean(kycAnswers.password && confirmPassword) && kycAnswers.password !== confirmPassword;
 
   const validateSurvey = (questions: SurveyQuestion[]) => {
     const isValid = questions.every((question) => {
@@ -868,39 +867,146 @@ export function AuthFlow() {
                 </label>
                 <label className="grid gap-2 text-sm font-medium text-slate-600">
                   <span data-i18n="authRoleLabel">Tipo de perfil</span>
-                  <input
-                    className="w-full cursor-not-allowed rounded-lg border border-slate-200 bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-700"
+                  <select
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
                     name="role"
-                    value={strings.authRoleFundManager}
-                    readOnly
-                    aria-readonly="true"
-                  />
+                    value={kycAnswers.role ?? ""}
+                    onChange={(event) => updateKyc("role", event.target.value)}
+                    required
+                  >
+                    <option value="" data-i18n="authRolePlaceholder">
+                      {strings.authRolePlaceholder}
+                    </option>
+                    <option value="Investor" data-i18n="authRoleInvestor">
+                      {strings.authRoleInvestor}
+                    </option>
+                    <option value="Fund Manager" data-i18n="authRoleFundManager">
+                      {strings.authRoleFundManager}
+                    </option>
+                    <option value="Family Office" data-i18n="authRoleFamilyOffice">
+                      {strings.authRoleFamilyOffice}
+                    </option>
+                  </select>
                 </label>
                 <label className="grid gap-2 text-sm font-medium text-slate-600">
                   <span data-i18n="authPasswordLabel">Contraseña</span>
-                  <input
-                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
-                    type="password"
-                    name="password"
-                    placeholder="Crea una contraseña"
-                    data-i18n-placeholder="authPasswordPlaceholder"
-                    value={kycAnswers.password ?? ""}
-                    onChange={(event) => updateKyc("password", event.target.value)}
-                    required
-                  />
+                  <div className="relative flex items-center">
+                    <input
+                      className={`w-full rounded-lg border bg-white px-3 py-2 pr-10 text-sm text-slate-900 focus:outline-none focus:ring-2 ${
+                        passwordMismatch
+                          ? "border-rose-400 focus:ring-rose-500/30"
+                          : "border-slate-200 focus:ring-igates-500/30"
+                      }`}
+                      type={isSignupPasswordVisible ? "text" : "password"}
+                      name="password"
+                      placeholder="Crea una contraseña"
+                      data-i18n-placeholder="authPasswordPlaceholder"
+                      value={kycAnswers.password ?? ""}
+                      onChange={(event) => updateKyc("password", event.target.value)}
+                      required
+                    />
+                    <button
+                      className="absolute right-2 inline-flex h-8 w-8 items-center justify-center rounded-full text-slate-500 transition hover:text-slate-700"
+                      type="button"
+                      onClick={() => setIsSignupPasswordVisible((prev) => !prev)}
+                      aria-pressed={isSignupPasswordVisible}
+                      aria-label={
+                        isSignupPasswordVisible ? strings.authHidePassword : strings.authShowPassword
+                      }
+                    >
+                      {isSignupPasswordVisible ? (
+                        <svg
+                          aria-hidden="true"
+                          className="h-5 w-5"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" />
+                          <circle cx="12" cy="12" r="3" />
+                        </svg>
+                      ) : (
+                        <svg
+                          aria-hidden="true"
+                          className="h-5 w-5"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M2 12s3.5-7 10-7c2.3 0 4.2.7 5.7 1.7" />
+                          <path d="M22 12s-3.5 7-10 7c-2.3 0-4.2-.7-5.7-1.7" />
+                          <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+                          <path d="M3 3l18 18" />
+                        </svg>
+                      )}
+                    </button>
+                  </div>
                 </label>
                 <label className="grid gap-2 text-sm font-medium text-slate-600">
                   <span data-i18n="authConfirmPasswordLabel">Confirmar contraseña</span>
-                  <input
-                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
-                    type="password"
-                    name="confirmPassword"
-                    placeholder="Repite tu contraseña"
-                    data-i18n-placeholder="authConfirmPasswordPlaceholder"
-                    value={confirmPassword}
-                    onChange={(event) => setConfirmPassword(event.target.value)}
-                    required
-                  />
+                  <div className="relative flex items-center">
+                    <input
+                      className={`w-full rounded-lg border bg-white px-3 py-2 pr-10 text-sm text-slate-900 focus:outline-none focus:ring-2 ${
+                        passwordMismatch
+                          ? "border-rose-400 focus:ring-rose-500/30"
+                          : "border-slate-200 focus:ring-igates-500/30"
+                      }`}
+                      type={isConfirmPasswordVisible ? "text" : "password"}
+                      name="confirmPassword"
+                      placeholder="Repite tu contraseña"
+                      data-i18n-placeholder="authConfirmPasswordPlaceholder"
+                      value={confirmPassword}
+                      onChange={(event) => setConfirmPassword(event.target.value)}
+                      required
+                    />
+                    <button
+                      className="absolute right-2 inline-flex h-8 w-8 items-center justify-center rounded-full text-slate-500 transition hover:text-slate-700"
+                      type="button"
+                      onClick={() => setIsConfirmPasswordVisible((prev) => !prev)}
+                      aria-pressed={isConfirmPasswordVisible}
+                      aria-label={
+                        isConfirmPasswordVisible ? strings.authHidePassword : strings.authShowPassword
+                      }
+                    >
+                      {isConfirmPasswordVisible ? (
+                        <svg
+                          aria-hidden="true"
+                          className="h-5 w-5"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" />
+                          <circle cx="12" cy="12" r="3" />
+                        </svg>
+                      ) : (
+                        <svg
+                          aria-hidden="true"
+                          className="h-5 w-5"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M2 12s3.5-7 10-7c2.3 0 4.2.7 5.7 1.7" />
+                          <path d="M22 12s-3.5 7-10 7c-2.3 0-4.2-.7-5.7-1.7" />
+                          <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+                          <path d="M3 3l18 18" />
+                        </svg>
+                      )}
+                    </button>
+                  </div>
                 </label>
               </>
             )}
@@ -1002,9 +1108,9 @@ export function AuthFlow() {
                     <option value="" data-i18n="dashboardSelectPlaceholder">
                       Selecciona
                     </option>
-                    {Object.entries(countryFlags).map(([country, flag]) => (
-                      <option key={country} value={country}>
-                        {flag} {country}
+                    {countryOptions.map((option) => (
+                      <option key={option.code} value={option.name}>
+                        {option.flag} {option.name}
                       </option>
                     ))}
                   </select>
