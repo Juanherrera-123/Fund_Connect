@@ -15,6 +15,26 @@ import { useEffect, useState } from "react";
 import { getFirebaseStorage, getFirestoreDb } from "@/lib/firebase";
 import type { FundApplication, FundApplicationFile, PublishedFund } from "@/lib/types";
 
+const stripUndefined = <T,>(value: T): T => {
+  if (Array.isArray(value)) {
+    return value.map((entry) => stripUndefined(entry)).filter((entry) => entry !== undefined) as T;
+  }
+  if (value && typeof value === "object") {
+    return Object.entries(value as Record<string, unknown>).reduce((acc, [key, entry]) => {
+      if (entry === undefined) {
+        return acc;
+      }
+      const cleaned = stripUndefined(entry);
+      if (cleaned === undefined) {
+        return acc;
+      }
+      acc[key] = cleaned;
+      return acc;
+    }, {} as Record<string, unknown>) as T;
+  }
+  return value;
+};
+
 const getFundsCollection = () => {
   const db = getFirestoreDb();
   if (!db) return null;
@@ -144,7 +164,7 @@ export async function upsertFundApplication(payload: FundApplication) {
   await setDoc(
     docRef,
     {
-      ...payload,
+      ...stripUndefined(payload),
       createdAt: payload.createdAt ?? serverTimestamp(),
       updatedAt: serverTimestamp(),
     },
@@ -163,7 +183,7 @@ export async function publishApprovedFund(application: FundApplication) {
   await setDoc(
     docRef,
     {
-      fundData: application.fundData,
+      fundData: stripUndefined(application.fundData),
       managerId: application.user.id,
       status: "approved",
       createdAt: application.createdAt ?? null,
