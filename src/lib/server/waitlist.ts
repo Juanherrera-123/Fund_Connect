@@ -23,11 +23,11 @@ const getWaitlistCollection = () => collection(requireFirestoreDb(), "waitlistRe
 // Firestore composite indexes expected:
 // - status + createdAt
 // - fundId + status
-// - requesterId + createdAt
+// - email + createdAt
 
 type CreateWaitlistRequestInput = Omit<
   WaitlistRequest,
-  "id" | "createdAt" | "status" | "approvedAt" | "approvedBy" | "decisionNote"
+  "id" | "createdAt" | "status" | "decidedAt" | "decidedBy"
 > & {
   createdAt?: string;
   note?: string | null;
@@ -37,8 +37,7 @@ type CreateWaitlistRequestInput = Omit<
 type UpdateWaitlistStatusInput = {
   id: string;
   status: WaitlistStatus;
-  approvedBy?: string | null;
-  decisionNote?: string | null;
+  decidedBy?: string | null;
 };
 
 const normalizeTimestamp = (value?: unknown): string | null => {
@@ -51,34 +50,18 @@ const normalizeTimestamp = (value?: unknown): string | null => {
   return null;
 };
 
-const normalizeAmount = (value?: unknown, fallback?: string | null): number | null => {
-  if (typeof value === "number" && Number.isFinite(value)) return value;
-  if (typeof value === "string") {
-    const parsed = Number.parseFloat(value.replace(/[^0-9.,]/g, "").replace(/,/g, ""));
-    return Number.isFinite(parsed) ? parsed : null;
-  }
-  if (fallback) {
-    const parsed = Number.parseFloat(fallback.replace(/[^0-9.,]/g, "").replace(/,/g, ""));
-    return Number.isFinite(parsed) ? parsed : null;
-  }
-  return null;
-};
-
 const mapWaitlistDoc = (docSnap: QueryDocumentSnapshot) => {
   const data = docSnap.data() as Omit<WaitlistRequest, "id"> & {
     createdAt?: unknown;
-    approvedAt?: unknown;
-    amount?: unknown;
+    decidedAt?: unknown;
   };
   const createdAt = normalizeTimestamp(data.createdAt) ?? new Date().toISOString();
-  const approvedAt = normalizeTimestamp(data.approvedAt);
-  const amount = normalizeAmount(data.amount, data.intendedInvestmentAmount ?? null);
+  const decidedAt = normalizeTimestamp(data.decidedAt);
   return {
     id: docSnap.id,
     ...data,
     createdAt,
-    approvedAt,
-    amount,
+    decidedAt,
   };
 };
 
@@ -89,8 +72,8 @@ export async function createWaitlistRequest(
   const existingQuery = query(
     waitlistCollection,
     where("fundId", "==", input.fundId),
-    where("requesterId", "==", input.requesterId),
-    where("status", "==", "PENDING"),
+    where("email", "==", input.email),
+    where("status", "==", "pending"),
     orderBy("createdAt", "desc"),
     limit(1)
   );
@@ -100,25 +83,19 @@ export async function createWaitlistRequest(
   }
 
   const createdAt = input.createdAt ?? new Date().toISOString();
-  const amount = normalizeAmount(input.amount, input.intendedInvestmentAmount ?? null);
   const payload: Omit<WaitlistRequest, "id"> = {
     fundId: input.fundId,
     fundName: input.fundName,
-    requesterId: input.requesterId,
-    requesterRole: input.requesterRole,
-    requesterName: input.requesterName ?? null,
-    requesterEmail: input.requesterEmail,
-    requesterPhone: input.requesterPhone ?? null,
-    intendedInvestmentAmount: input.intendedInvestmentAmount ?? null,
-    amount: amount ?? null,
-    requesterCountry: input.requesterCountry,
-    requesterOrg: input.requesterOrg ?? null,
+    fullName: input.fullName,
+    email: input.email,
+    phone: input.phone,
+    amount: input.amount,
     note: input.note ?? null,
-    status: input.status ?? "PENDING",
+    status: input.status ?? "pending",
     createdAt: createdAt,
-    approvedAt: null,
-    approvedBy: null,
-    decisionNote: null,
+    requesterUid: input.requesterUid ?? null,
+    decidedAt: null,
+    decidedBy: null,
   };
   const firestorePayload = {
     ...payload,
@@ -154,11 +131,9 @@ export async function getWaitlistRequestById(id: string): Promise<WaitlistReques
 
 export async function updateWaitlistStatus(input: UpdateWaitlistStatusInput): Promise<void> {
   const waitlistCollection = getWaitlistCollection();
-  const approvedAt = input.status === "PENDING" ? null : new Date().toISOString();
   await updateDoc(doc(waitlistCollection, input.id), {
     status: input.status,
-    approvedAt,
-    approvedBy: input.status === "PENDING" ? null : input.approvedBy ?? null,
-    decisionNote: input.decisionNote ?? null,
+    decidedAt: input.status === "pending" ? null : serverTimestamp(),
+    decidedBy: input.status === "pending" ? null : input.decidedBy ?? null,
   });
 }

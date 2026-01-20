@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { getAuthContext, getNormalizedRequesterRole, isRequesterRole } from "@/lib/server/guards";
+import { getAuthContext } from "@/lib/server/guards";
 import { createWaitlistRequest } from "@/lib/server/waitlist";
 
 type WaitlistRequestPayload = {
@@ -10,12 +10,10 @@ type WaitlistRequestPayload = {
   note?: string | null;
   fundMinimum?: string | null;
   user?: {
-    name?: string;
+    fullName?: string;
     email?: string;
     phone?: string;
-    investmentAmount?: string;
-    country?: string;
-    org?: string | null;
+    amount?: string;
   };
 };
 
@@ -33,9 +31,9 @@ export async function POST(request: Request) {
 
   const { fundId, fundName, qualified, note, user, fundMinimum } = payload;
   const requesterEmail = user?.email?.trim();
-  const requesterName = user?.name?.trim();
+  const requesterName = user?.fullName?.trim();
   const requesterPhone = user?.phone?.trim();
-  const intendedInvestmentAmount = user?.investmentAmount?.trim();
+  const intendedInvestmentAmount = user?.amount?.trim();
 
   if (!fundId || !fundName) {
     return NextResponse.json({ error: "fundId and fundName are required." }, { status: 400 });
@@ -66,15 +64,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Investment amount is required." }, { status: 400 });
   }
 
-  const requesterRole =
-    auth && isRequesterRole(auth.role)
-      ? getNormalizedRequesterRole(auth.role) ?? "PUBLIC"
-      : "PUBLIC";
-  const requesterId =
-    requesterRole === "PUBLIC"
-      ? `public:${requesterEmail.toLowerCase()}`
-      : auth?.id ?? `public:${requesterEmail.toLowerCase()}`;
-
   const numericAmount = Number.parseFloat(
     intendedInvestmentAmount.replace(/[^0-9.,]/g, "").replace(/,/g, "")
   );
@@ -95,17 +84,13 @@ export async function POST(request: Request) {
     const waitlistRequest = await createWaitlistRequest({
       fundId,
       fundName,
-      requesterId,
-      requesterRole,
-      requesterName,
-      requesterEmail,
-      requesterPhone,
-      intendedInvestmentAmount,
-      amount: numericAmount,
-      requesterCountry: user?.country ?? "",
-      requesterOrg: user?.org ?? null,
+      fullName: requesterName,
+      email: requesterEmail,
+      phone: requesterPhone,
+      amount: Number.isFinite(numericAmount) ? numericAmount : intendedInvestmentAmount,
       note: note ?? null,
-      status: "PENDING",
+      status: "pending",
+      requesterUid: auth?.id ?? auth?.uid ?? null,
     });
 
     return NextResponse.json({ data: waitlistRequest }, { status: 201 });

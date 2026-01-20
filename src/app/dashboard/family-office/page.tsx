@@ -50,9 +50,9 @@ export default function FamilyOfficeDashboard() {
     Record<WaitlistStatus, { label: string; tone: "neutral" | "success" | "danger" }>
   >(
     () => ({
-      PENDING: { label: strings.dashboardStatusPending, tone: "neutral" },
-      APPROVED: { label: strings.dashboardStatusApproved, tone: "success" },
-      REJECTED: { label: strings.dashboardStatusRejected, tone: "danger" },
+      pending: { label: strings.dashboardStatusPending, tone: "neutral" },
+      approved: { label: strings.dashboardStatusApproved, tone: "success" },
+      rejected: { label: strings.dashboardStatusRejected, tone: "danger" },
     }),
     [strings.dashboardStatusApproved, strings.dashboardStatusPending, strings.dashboardStatusRejected]
   );
@@ -86,7 +86,7 @@ export default function FamilyOfficeDashboard() {
 
   const myRequests = useMemo(() => {
     if (!profile) return [];
-    return waitlistRequests.filter((request) => request.requesterId === profile.id);
+    return waitlistRequests.filter((request) => request.requesterUid === profile.id);
   }, [profile, waitlistRequests]);
 
   const requestByFundId = useMemo(() => {
@@ -109,15 +109,12 @@ export default function FamilyOfficeDashboard() {
       await createWaitlistRequest({
         fundId: activeFund.id,
         fundName: activeFund.name,
-        requesterId: profile.id,
-        requesterRole: "FAMILY_OFFICE",
-        requesterName: profile.fullName,
-        requesterEmail: profile.email,
-        requesterPhone: profile.phone ?? null,
-        intendedInvestmentAmount: null,
-        requesterCountry: profile.country,
-        requesterOrg: profile.org ?? null,
+        fullName: profile.fullName,
+        email: profile.email,
+        phone: profile.phone ?? "",
+        amount: "",
         note: requestNotes.trim() ? requestNotes.trim() : null,
+        requesterUid: profile.id,
       });
       setFeedbackKey("submitted");
     } catch (error) {

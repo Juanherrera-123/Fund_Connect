@@ -29,7 +29,7 @@ export function ProfileView() {
 
   const waitlistItems = useMemo(() => {
     if (!profile) return [];
-    return waitlistRequests.filter((request) => request.requesterId === profile.id);
+    return waitlistRequests.filter((request) => request.requesterUid === profile.id);
   }, [profile, waitlistRequests]);
 
 

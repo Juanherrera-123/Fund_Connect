@@ -49,9 +49,9 @@ export default function InvestorDashboard() {
     Record<WaitlistStatus, { label: string; tone: "neutral" | "success" | "danger" }>
   >(
     () => ({
-      PENDING: { label: strings.dashboardStatusPending, tone: "neutral" },
-      APPROVED: { label: strings.dashboardStatusApproved, tone: "success" },
-      REJECTED: { label: strings.dashboardStatusRejected, tone: "danger" },
+      pending: { label: strings.dashboardStatusPending, tone: "neutral" },
+      approved: { label: strings.dashboardStatusApproved, tone: "success" },
+      rejected: { label: strings.dashboardStatusRejected, tone: "danger" },
     }),
     [strings.dashboardStatusApproved, strings.dashboardStatusPending, strings.dashboardStatusRejected]
   );
@@ -85,7 +85,7 @@ export default function InvestorDashboard() {
 
   const myRequests = useMemo(() => {
     if (!profile) return [];
-    return waitlistRequests.filter((request) => request.requesterId === profile.id);
+    return waitlistRequests.filter((request) => request.requesterUid === profile.id);
   }, [profile, waitlistRequests]);
 
   const requestByFundId = useMemo(() => {
@@ -108,15 +108,12 @@ export default function InvestorDashboard() {
       await createWaitlistRequest({
         fundId: activeFund.id,
         fundName: activeFund.name,
-        requesterId: profile.id,
-        requesterRole: "INVESTOR",
-        requesterName: profile.fullName,
-        requesterEmail: profile.email,
-        requesterPhone: profile.phone ?? null,
-        intendedInvestmentAmount: null,
-        requesterCountry: profile.country,
-        requesterOrg: profile.org ?? null,
+        fullName: profile.fullName,
+        email: profile.email,
+        phone: profile.phone ?? "",
+        amount: "",
         note: requestNotes.trim() ? requestNotes.trim() : null,
+        requesterUid: profile.id,
       });
       setFeedbackKey("submitted");
     } catch (error) {
@@ -195,13 +192,13 @@ export default function InvestorDashboard() {
             <div className="flex items-center justify-between">
               <span>{strings.dashboardWaitlistPendingLabel}</span>
               <span className="font-semibold text-slate-900">
-                {myRequests.filter((request) => request.status === "PENDING").length}
+                {myRequests.filter((request) => request.status === "pending").length}
               </span>
             </div>
             <div className="flex items-center justify-between">
               <span>{strings.dashboardWaitlistApprovedLabel}</span>
               <span className="font-semibold text-slate-900">
-                {myRequests.filter((request) => request.status === "APPROVED").length}
+                {myRequests.filter((request) => request.status === "approved").length}
               </span>
             </div>
           </div>
