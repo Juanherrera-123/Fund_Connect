@@ -314,12 +314,10 @@ export function VerifiedManagers() {
       note: note.trim() || null,
       fundMinimum: selectedFund.minInvestment ?? null,
       user: {
-        name: contactName.trim(),
+        fullName: contactName.trim(),
         email: contactEmail.trim(),
         phone: fullPhone,
-        investmentAmount: investmentAmount.trim(),
-        country: currentProfile?.country ?? "",
-        org: currentProfile?.org ?? null,
+        amount: investmentAmount.trim(),
       },
     };
 
@@ -335,7 +333,7 @@ export function VerifiedManagers() {
       setIsWaitlistModalOpen(false);
       setToastMessage({
         message:
-          "Solicitud enviada con éxito. Estaremos en contacto en un plazo máximo de 24 horas.",
+          "La solicitud fue enviada con éxito, estaremos en contacto en un plazo máximo de 24 horas.",
         tone: "success",
       });
     } catch (error) {

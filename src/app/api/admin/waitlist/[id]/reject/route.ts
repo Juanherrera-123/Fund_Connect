@@ -4,20 +4,7 @@ import { sendWaitlistStatusEmail } from "@/lib/email";
 import { getAuthContext, isAdminRole } from "@/lib/server/guards";
 import { getWaitlistRequestById, updateWaitlistStatus } from "@/lib/server/waitlist";
 
-type DecisionPayload = {
-  decisionNote?: string | null;
-};
-
 export async function POST(request: Request, context: { params: { id: string } }) {
-  let payload: DecisionPayload = {};
-
-  try {
-    payload = (await request.json()) as DecisionPayload;
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Invalid JSON payload." }, { status: 400 });
-  }
-
   const auth = getAuthContext(request);
   if (!auth || !isAdminRole(auth.role)) {
     return NextResponse.json({ error: "Forbidden." }, { status: 403 });
@@ -36,13 +23,12 @@ export async function POST(request: Request, context: { params: { id: string } }
   try {
     await updateWaitlistStatus({
       id: requestId,
-      status: "REJECTED",
-      approvedBy: auth.id,
-      decisionNote: payload.decisionNote ?? null,
+      status: "rejected",
+      decidedBy: auth.id,
     });
 
     await sendWaitlistStatusEmail({
-      to: waitlistRequest.requesterEmail,
+      to: waitlistRequest.email,
       fundName: waitlistRequest.fundName,
       status: "rejected",
     });
