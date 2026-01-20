@@ -24,6 +24,7 @@ import { uploadFundApplicationFile, upsertFundApplication } from "@/lib/funds";
 import { createManagerUserProfile, getUserProfile, upsertUserOnboardingDraft } from "@/lib/users";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import { useLocalStorage } from "@/lib/useLocalStorage";
+import { useUserProfiles } from "@/lib/useUserProfiles";
 import type {
   FundApplication,
   FundApplicationFile,
@@ -143,10 +144,7 @@ export function AuthFlow() {
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreviewUrl, setLogoPreviewUrl] = useState<string | null>(null);
 
-  const [profiles, setProfiles] = useFirebaseStorage<UserProfile[]>(
-    STORAGE_KEYS.profiles,
-    []
-  );
+  const [profiles, setProfiles] = useUserProfiles();
   const [, setSession] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const [notifications, setNotifications] = useFirebaseStorage<MasterNotification[]>(
     STORAGE_KEYS.notifications,
@@ -720,7 +718,7 @@ export function AuthFlow() {
       baseProfile.onboarding = { ...baseProfile.onboarding, familyOfficePreferences: familyPreferences };
     }
 
-    setProfiles([...profiles, baseProfile]);
+    setProfiles([baseProfile]);
     const normalizedAuthRole = normalizeRole(resolvedRole);
     setSession({
       id: profileId,

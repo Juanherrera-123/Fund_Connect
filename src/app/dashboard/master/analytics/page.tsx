@@ -3,10 +3,8 @@
 import { useMemo } from "react";
 
 import ChartCard from "@/components/dashboard/ChartCard";
-import { STORAGE_KEYS } from "@/lib/igatesData";
 import { useFundsCollection } from "@/lib/funds";
-import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
-import type { UserProfile } from "@/lib/types";
+import { useUserProfiles } from "@/lib/useUserProfiles";
 
 const lineLegend = [
   { label: "Active funds", labelKey: "dashboardLegendActiveFunds", color: "bg-emerald-500" },
@@ -21,7 +19,7 @@ const donutLegend = [
 
 export default function MasterAnalyticsPage() {
   const fundApplications = useFundsCollection();
-  const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
+  const [profiles] = useUserProfiles({ isMaster: true });
 
   const analytics = useMemo(() => {
     const pendingFunds = fundApplications.filter((application) => application.status === "pending");
