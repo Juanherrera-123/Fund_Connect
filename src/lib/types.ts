@@ -66,7 +66,7 @@ export type UserProfile = {
   waitlistFunds?: string[];
 };
 
-export type WaitlistStatus = "pending" | "approved" | "rejected";
+export type WaitlistStatus = "PENDING" | "APPROVED" | "REJECTED";
 
 export type WaitlistRequest = {
   id: string;
@@ -75,13 +75,14 @@ export type WaitlistRequest = {
   fullName: string;
   email: string;
   phone: string;
-  amount: string | number;
+  intendedInvestmentAmount: string | number;
   note?: string | null;
   status: WaitlistStatus;
   createdAt: string;
   requesterUid?: string | null;
-  decidedAt?: string | null;
-  decidedBy?: string | null;
+  approvedAt?: string | null;
+  approvedBy?: string | null;
+  decisionNote?: string | null;
 };
 
 export type FundApplication = {

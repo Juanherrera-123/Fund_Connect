@@ -21,6 +21,16 @@ export async function POST(request: Request, context: { params: { id: string } }
   }
 
   try {
+    let decisionNote: string | null = null;
+    try {
+      const body = (await request.json()) as { decisionNote?: string | null };
+      decisionNote = body?.decisionNote?.trim() || null;
+    } catch (error) {
+      if (error instanceof SyntaxError) {
+        return NextResponse.json({ error: "Invalid JSON payload." }, { status: 400 });
+      }
+    }
+
     const origin = request.headers.get("origin");
     const forwardedHost = request.headers.get("x-forwarded-host");
     const host = forwardedHost ?? request.headers.get("host");
@@ -32,15 +42,17 @@ export async function POST(request: Request, context: { params: { id: string } }
 
     await updateWaitlistStatus({
       id: requestId,
-      status: "approved",
-      decidedBy: auth.id,
+      status: "APPROVED",
+      approvedBy: auth.id,
+      decisionNote,
     });
 
     await sendWaitlistStatusEmail({
       to: waitlistRequest.email,
       fundName: waitlistRequest.fundName,
-      status: "approved",
+      status: "APPROVED",
       fundUrl,
+      requesterName: waitlistRequest.fullName,
     });
   } catch (error) {
     console.error(error);

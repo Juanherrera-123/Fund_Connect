@@ -49,9 +49,9 @@ export default function InvestorDashboard() {
     Record<WaitlistStatus, { label: string; tone: "neutral" | "success" | "danger" }>
   >(
     () => ({
-      pending: { label: strings.dashboardStatusPending, tone: "neutral" },
-      approved: { label: strings.dashboardStatusApproved, tone: "success" },
-      rejected: { label: strings.dashboardStatusRejected, tone: "danger" },
+      PENDING: { label: strings.dashboardStatusPending, tone: "neutral" },
+      APPROVED: { label: strings.dashboardStatusApproved, tone: "success" },
+      REJECTED: { label: strings.dashboardStatusRejected, tone: "danger" },
     }),
     [strings.dashboardStatusApproved, strings.dashboardStatusPending, strings.dashboardStatusRejected]
   );
@@ -111,7 +111,7 @@ export default function InvestorDashboard() {
         fullName: profile.fullName,
         email: profile.email,
         phone: profile.phone ?? "",
-        amount: "",
+        intendedInvestmentAmount: "",
         note: requestNotes.trim() ? requestNotes.trim() : null,
         requesterUid: profile.id,
       });
@@ -192,13 +192,13 @@ export default function InvestorDashboard() {
             <div className="flex items-center justify-between">
               <span>{strings.dashboardWaitlistPendingLabel}</span>
               <span className="font-semibold text-slate-900">
-                {myRequests.filter((request) => request.status === "pending").length}
+                {myRequests.filter((request) => request.status === "PENDING").length}
               </span>
             </div>
             <div className="flex items-center justify-between">
               <span>{strings.dashboardWaitlistApprovedLabel}</span>
               <span className="font-semibold text-slate-900">
-                {myRequests.filter((request) => request.status === "approved").length}
+                {myRequests.filter((request) => request.status === "APPROVED").length}
               </span>
             </div>
           </div>

@@ -308,11 +308,11 @@ export function VerifiedManagers() {
       qualified,
       note: note.trim() || null,
       fundMinimum: selectedFund.minInvestment ?? null,
+      intendedInvestmentAmount: investmentAmount.trim(),
       user: {
         fullName: contactName.trim(),
         email: contactEmail.trim(),
         phone: fullPhone,
-        amount: investmentAmount.trim(),
       },
     };
 
@@ -326,6 +326,14 @@ export function VerifiedManagers() {
         throw new Error("Failed to send waitlist request.");
       }
       setIsWaitlistModalOpen(false);
+      setQualified(false);
+      setNote("");
+      setContactName("");
+      setContactEmail("");
+      setContactPhoneCountry("+57");
+      setContactPhoneNumber("");
+      setInvestmentAmount("");
+      setWaitlistError(null);
       setToastMessage({
         message:
           "La solicitud fue enviada con éxito, estaremos en contacto en un plazo máximo de 24 horas.",

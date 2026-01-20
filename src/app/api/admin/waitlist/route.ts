@@ -4,7 +4,7 @@ import { getAuthContext, isAdminRole } from "@/lib/server/guards";
 import { listWaitlistRequestsByStatus } from "@/lib/server/waitlist";
 import type { WaitlistStatus } from "@/lib/types";
 
-const allowedStatuses = new Set<WaitlistStatus>(["pending", "approved", "rejected"]);
+const allowedStatuses = new Set<WaitlistStatus>(["PENDING", "APPROVED", "REJECTED"]);
 
 export async function GET(request: Request) {
   const auth = getAuthContext(request);
@@ -13,7 +13,7 @@ export async function GET(request: Request) {
   }
 
   const { searchParams } = new URL(request.url);
-  const statusParam = (searchParams.get("status") ?? "pending").toLowerCase() as WaitlistStatus;
+  const statusParam = (searchParams.get("status") ?? "PENDING").toUpperCase() as WaitlistStatus;
 
   if (!allowedStatuses.has(statusParam)) {
     return NextResponse.json({ error: "Invalid status filter." }, { status: 400 });

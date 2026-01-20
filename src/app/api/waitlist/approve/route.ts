@@ -44,7 +44,7 @@ export async function POST(request: Request) {
     await sendWaitlistStatusEmail({
       to: requesterEmail,
       fundName,
-      status: "approved",
+      status: "APPROVED",
       requesterName: trimmedRequesterName || null,
       fundUrl,
     });

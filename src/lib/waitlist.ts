@@ -1,13 +1,14 @@
 "use client";
 
 import {
-  addDoc,
   collection,
   doc,
+  getDoc,
   onSnapshot,
   orderBy,
   query,
   serverTimestamp,
+  setDoc,
   updateDoc,
   where,
   type Timestamp,
@@ -33,26 +34,48 @@ const normalizeTimestamp = (value?: unknown): string | null => {
   return null;
 };
 
+const normalizeStatus = (status?: string | null): WaitlistStatus => {
+  if (!status) return "PENDING";
+  const normalized = status.toUpperCase();
+  if (normalized === "APPROVED" || normalized === "REJECTED") return normalized;
+  return "PENDING";
+};
+
 const mapWaitlistDoc = (
   id: string,
   data: Omit<WaitlistRequest, "id"> & {
     createdAt?: unknown;
+    approvedAt?: unknown;
     decidedAt?: unknown;
+    approvedBy?: string | null;
+    decidedBy?: string | null;
+    intendedInvestmentAmount?: unknown;
     amount?: unknown;
+    status?: string;
   }
 ): WaitlistRequest => {
   const createdAt = normalizeTimestamp(data.createdAt) ?? new Date().toISOString();
-  const decidedAt = normalizeTimestamp(data.decidedAt);
-  const amount =
-    typeof data.amount === "number" || typeof data.amount === "string" ? data.amount : "";
+  const approvedAt = normalizeTimestamp(data.approvedAt ?? data.decidedAt);
+  const intendedInvestmentAmount =
+    typeof data.intendedInvestmentAmount === "number" || typeof data.intendedInvestmentAmount === "string"
+      ? data.intendedInvestmentAmount
+      : typeof data.amount === "number" || typeof data.amount === "string"
+        ? data.amount
+        : "";
   return {
     id,
     ...data,
     createdAt,
-    decidedAt,
-    amount,
+    approvedAt,
+    approvedBy: data.approvedBy ?? data.decidedBy ?? null,
+    decisionNote: data.decisionNote ?? null,
+    intendedInvestmentAmount,
+    status: normalizeStatus(data.status),
   };
 };
+
+const normalizeEmailForId = (email: string) =>
+  email.trim().toLowerCase().replace(/[^a-z0-9]/g, "_");
 
 export function useWaitlistCollection(status?: WaitlistStatus) {
   const [waitlist, setWaitlist] = useState<WaitlistRequest[]>([]);
@@ -95,7 +118,7 @@ export function useWaitlistCollection(status?: WaitlistStatus) {
 
 type CreateWaitlistRequestInput = Omit<
   WaitlistRequest,
-  "id" | "createdAt" | "status" | "decidedAt" | "decidedBy"
+  "id" | "createdAt" | "status" | "approvedAt" | "approvedBy" | "decisionNote"
 > & {
   createdAt?: string;
   status?: WaitlistStatus;
@@ -115,23 +138,35 @@ export async function createWaitlistRequest(input: CreateWaitlistRequestInput) {
     fullName: input.fullName,
     email: input.email,
     phone: input.phone,
-    amount: input.amount,
+    intendedInvestmentAmount: input.intendedInvestmentAmount,
     note: input.note ?? null,
-    status: input.status ?? "pending",
+    status: input.status ?? "PENDING",
     createdAt,
     requesterUid: input.requesterUid ?? null,
-    decidedAt: null,
-    decidedBy: null,
+    approvedAt: null,
+    approvedBy: null,
+    decisionNote: null,
   };
 
-  const docRef = await addDoc(collectionRef, { ...payload, createdAt: serverTimestamp() });
+  const docId = `${input.fundId}__${normalizeEmailForId(input.email)}`;
+  const docRef = doc(collectionRef, docId);
+  const existingSnapshot = await getDoc(docRef);
+  if (existingSnapshot.exists()) {
+    const existing = mapWaitlistDoc(existingSnapshot.id, existingSnapshot.data());
+    if (existing.status === "PENDING") {
+      return existing;
+    }
+  }
+
+  await setDoc(docRef, { ...payload, createdAt: serverTimestamp() });
   return { id: docRef.id, ...payload };
 }
 
 type UpdateWaitlistStatusInput = {
   id: string;
   status: WaitlistStatus;
-  decidedBy?: string | null;
+  approvedBy?: string | null;
+  decisionNote?: string | null;
 };
 
 export async function updateWaitlistStatus(input: UpdateWaitlistStatusInput) {
@@ -143,7 +178,8 @@ export async function updateWaitlistStatus(input: UpdateWaitlistStatusInput) {
 
   await updateDoc(doc(collectionRef, input.id), {
     status: input.status,
-    decidedAt: serverTimestamp(),
-    decidedBy: input.decidedBy ?? null,
+    approvedAt: input.status === "PENDING" ? null : serverTimestamp(),
+    approvedBy: input.status === "PENDING" ? null : input.approvedBy ?? null,
+    decisionNote: input.status === "PENDING" ? null : input.decisionNote ?? null,
   });
 }

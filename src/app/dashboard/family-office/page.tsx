@@ -50,9 +50,9 @@ export default function FamilyOfficeDashboard() {
     Record<WaitlistStatus, { label: string; tone: "neutral" | "success" | "danger" }>
   >(
     () => ({
-      pending: { label: strings.dashboardStatusPending, tone: "neutral" },
-      approved: { label: strings.dashboardStatusApproved, tone: "success" },
-      rejected: { label: strings.dashboardStatusRejected, tone: "danger" },
+      PENDING: { label: strings.dashboardStatusPending, tone: "neutral" },
+      APPROVED: { label: strings.dashboardStatusApproved, tone: "success" },
+      REJECTED: { label: strings.dashboardStatusRejected, tone: "danger" },
     }),
     [strings.dashboardStatusApproved, strings.dashboardStatusPending, strings.dashboardStatusRejected]
   );
@@ -112,7 +112,7 @@ export default function FamilyOfficeDashboard() {
         fullName: profile.fullName,
         email: profile.email,
         phone: profile.phone ?? "",
-        amount: "",
+        intendedInvestmentAmount: "",
         note: requestNotes.trim() ? requestNotes.trim() : null,
         requesterUid: profile.id,
       });
