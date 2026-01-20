@@ -99,7 +99,19 @@ export async function POST(request: Request) {
       { status: statusCode }
     );
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Unable to create waitlist request." }, { status: 500 });
+    const err = error as { message?: string; code?: string; stack?: string };
+    console.error("[waitlist/request] createWaitlistRequest failed", {
+      message: err?.message ?? String(error),
+      code: err?.code,
+      stack: err?.stack,
+    });
+    return NextResponse.json(
+      {
+        error: "Unable to create waitlist request.",
+        details:
+          process.env.NODE_ENV === "development" ? String(err?.message ?? error) : undefined,
+      },
+      { status: 500 }
+    );
   }
 }
