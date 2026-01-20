@@ -11,7 +11,6 @@ import {
   setDoc,
   updateDoc,
   where,
-  type Timestamp,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 
@@ -41,19 +40,18 @@ const normalizeStatus = (status?: string | null): WaitlistStatus => {
   return "PENDING";
 };
 
-const mapWaitlistDoc = (
-  id: string,
-  data: Omit<WaitlistRequest, "id"> & {
-    createdAt?: unknown;
-    approvedAt?: unknown;
-    decidedAt?: unknown;
-    approvedBy?: string | null;
-    decidedBy?: string | null;
-    intendedInvestmentAmount?: unknown;
-    amount?: unknown;
-    status?: string;
-  }
-): WaitlistRequest => {
+type WaitlistDocData = Omit<WaitlistRequest, "id"> & {
+  createdAt?: unknown;
+  approvedAt?: unknown;
+  decidedAt?: unknown;
+  approvedBy?: string | null;
+  decidedBy?: string | null;
+  intendedInvestmentAmount?: unknown;
+  amount?: unknown;
+  status?: string | null;
+};
+
+const mapWaitlistDoc = (id: string, data: WaitlistDocData): WaitlistRequest => {
   const createdAt = normalizeTimestamp(data.createdAt) ?? new Date().toISOString();
   const approvedAt = normalizeTimestamp(data.approvedAt ?? data.decidedAt);
   const intendedInvestmentAmount =
@@ -96,11 +94,7 @@ export function useWaitlistCollection(status?: WaitlistStatus) {
       waitlistQuery,
       (snapshot) => {
         const nextWaitlist = snapshot.docs.map((docItem) => {
-          const data = docItem.data() as Omit<WaitlistRequest, "id"> & {
-            createdAt?: Timestamp | string | null;
-            decidedAt?: Timestamp | string | null;
-            amount?: unknown;
-          };
+          const data = docItem.data() as WaitlistDocData;
           return mapWaitlistDoc(docItem.id, data);
         });
         setWaitlist(nextWaitlist);
@@ -152,7 +146,7 @@ export async function createWaitlistRequest(input: CreateWaitlistRequestInput) {
   const docRef = doc(collectionRef, docId);
   const existingSnapshot = await getDoc(docRef);
   if (existingSnapshot.exists()) {
-    const existing = mapWaitlistDoc(existingSnapshot.id, existingSnapshot.data());
+    const existing = mapWaitlistDoc(existingSnapshot.id, existingSnapshot.data() as WaitlistDocData);
     if (existing.status === "PENDING") {
       return existing;
     }
