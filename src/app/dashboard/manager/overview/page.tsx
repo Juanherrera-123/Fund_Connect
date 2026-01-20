@@ -7,15 +7,15 @@ import KpiCard from "@/components/dashboard/KpiCard";
 import { isActiveStatus, normalizeRole } from "@/lib/auth/claims";
 import { STORAGE_KEYS } from "@/lib/igatesData";
 import { useFundsCollection } from "@/lib/funds";
-import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import { useLocalStorage } from "@/lib/useLocalStorage";
-import type { Session, UserProfile } from "@/lib/types";
+import { useUserProfiles } from "@/lib/useUserProfiles";
+import type { Session } from "@/lib/types";
 
 const iconClass = "h-4 w-4";
 
 export default function FundManagerOverview() {
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
-  const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
+  const [profiles] = useUserProfiles({ uid: session?.id ?? session?.uid });
   const fundApplications = useFundsCollection({ userUid: session?.id ?? session?.uid });
   const authRole = session?.authRole ?? normalizeRole(session?.role);
   const isActive = isActiveStatus(session?.status);

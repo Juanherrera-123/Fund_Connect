@@ -9,18 +9,16 @@ import { STORAGE_KEYS, apiBase } from "@/lib/igatesData";
 import { getFundFrameClass } from "@/lib/fundVisuals";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import { useLocalStorage } from "@/lib/useLocalStorage";
+import { useUserProfiles } from "@/lib/useUserProfiles";
 import { createWaitlistRequest, useWaitlistCollection } from "@/lib/waitlist";
-import type { FundSummary, Session, UserProfile, WaitlistRequest, WaitlistStatus } from "@/lib/types";
+import type { FundSummary, Session, WaitlistRequest, WaitlistStatus } from "@/lib/types";
 
 const cardClass = "rounded-2xl border border-slate-200 bg-white p-5 shadow-sm";
 
 export default function FamilyOfficeDashboard() {
   const { language, options, strings } = useLanguage();
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
-  const [profiles, setProfiles] = useFirebaseStorage<UserProfile[]>(
-    STORAGE_KEYS.profiles,
-    []
-  );
+  const [profiles, setProfiles] = useUserProfiles({ uid: session?.id ?? session?.uid });
   const waitlistRequests = useWaitlistCollection();
   const [capitalAllocations] = useFirebaseStorage<Record<string, number>>(
     STORAGE_KEYS.capitalAllocations,

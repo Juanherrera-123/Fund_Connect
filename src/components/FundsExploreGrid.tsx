@@ -8,15 +8,13 @@ import { apiBase, STORAGE_KEYS } from "@/lib/igatesData";
 import { getFundFrameClass } from "@/lib/fundVisuals";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import { useLocalStorage } from "@/lib/useLocalStorage";
-import type { FundSummary, Session, UserProfile } from "@/lib/types";
+import { useUserProfiles } from "@/lib/useUserProfiles";
+import type { FundSummary, Session } from "@/lib/types";
 
 export function FundsExploreGrid() {
   const { strings } = useLanguage();
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
-  const [profiles, setProfiles] = useFirebaseStorage<UserProfile[]>(
-    STORAGE_KEYS.profiles,
-    []
-  );
+  const [profiles, setProfiles] = useUserProfiles({ uid: session?.id ?? session?.uid });
   const [capitalAllocations] = useFirebaseStorage<Record<string, number>>(
     STORAGE_KEYS.capitalAllocations,
     {}

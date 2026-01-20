@@ -14,9 +14,9 @@ import {
 } from "@/lib/igatesData";
 import { useFundsCollection } from "@/lib/funds";
 import { getFundFrameClass } from "@/lib/fundVisuals";
-import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import { useLocalStorage } from "@/lib/useLocalStorage";
-import type { FundApplication, FundApplicationFile, Session, UserProfile } from "@/lib/types";
+import { useUserProfiles } from "@/lib/useUserProfiles";
+import type { FundApplication, FundApplicationFile, Session } from "@/lib/types";
 
 type VerifiedFund = {
   id: string;
@@ -78,8 +78,8 @@ export function VerifiedManagers() {
   const { strings } = useLanguage();
   const whatsappNumber = "573181252627";
   const approvedFunds = useFundsCollection({ status: "approved" });
-  const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
+  const [profiles] = useUserProfiles({ uid: session?.id ?? session?.uid });
   const [filters, setFilters] = useState<FilterState>(initialFilters);
   const [appliedFilters, setAppliedFilters] = useState<FilterState>(initialFilters);
   const [selectedFundId, setSelectedFundId] = useState<string | null>(null);
