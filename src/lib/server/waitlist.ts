@@ -113,7 +113,7 @@ export async function createWaitlistRequest(
 
   await docRef.set(firestorePayload, { merge: false });
 
-  return { waitlistRequest: { id: docRef.id, ...payload }, wasExisting: false };
+  return { waitlistRequest: { id: docId, ...payload }, wasExisting: false };
 }
 
 export async function listWaitlistRequestsByStatus(
