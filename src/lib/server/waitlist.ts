@@ -1,8 +1,5 @@
 "use server";
 
-import { Timestamp } from "firebase-admin/firestore";
-import type { FirebaseFirestore } from "firebase-admin/firestore";
-
 import { getAdminDb, serverTimestamp } from "@/lib/server/firebaseAdmin";
 import type { WaitlistRequest, WaitlistStatus } from "@/lib/types";
 
@@ -29,7 +26,6 @@ type UpdateWaitlistStatusInput = {
 const normalizeTimestamp = (value?: unknown): string | null => {
   if (!value) return null;
   if (typeof value === "string") return value;
-  if (value instanceof Timestamp) return value.toDate().toISOString();
   if (typeof value === "object" && "toDate" in (value as { toDate?: () => Date })) {
     return (value as { toDate: () => Date }).toDate().toISOString();
   }
@@ -43,9 +39,12 @@ const normalizeStatus = (status?: string | null): WaitlistStatus => {
   return "PENDING";
 };
 
-const mapWaitlistSnapshot = (
-  docSnap: FirebaseFirestore.QueryDocumentSnapshot | FirebaseFirestore.DocumentSnapshot
-) => {
+type FirestoreDocumentSnapshot = {
+  id: string;
+  data: () => Record<string, unknown> | undefined;
+};
+
+const mapWaitlistSnapshot = (docSnap: FirestoreDocumentSnapshot) => {
   const data = (docSnap.data() ?? {}) as Omit<WaitlistRequest, "id"> & {
     createdAt?: unknown;
     approvedAt?: unknown;
