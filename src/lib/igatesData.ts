@@ -3823,7 +3823,6 @@ export const SURVEY_DEFINITIONS = {
 } as const;
 
 export const STORAGE_KEYS = {
-  profiles: "igatesUserProfiles",
   session: "igatesCurrentSession",
   notifications: "igatesMasterNotifications",
   masterUser: "igatesMasterUser",

@@ -6,9 +6,9 @@ import { isActiveStatus, normalizeRole } from "@/lib/auth/claims";
 import { STORAGE_KEYS, countryFlags } from "@/lib/igatesData";
 import { uploadFundApplicationFile, upsertFundApplication, useFundsCollection } from "@/lib/funds";
 import { useLanguage } from "@/components/LanguageProvider";
-import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import { useLocalStorage } from "@/lib/useLocalStorage";
-import type { FundApplication, FundApplicationFile, Session, UserProfile } from "@/lib/types";
+import { useUserProfiles } from "@/lib/useUserProfiles";
+import type { FundApplication, FundApplicationFile, Session } from "@/lib/types";
 
 const riskOptions = [
   { label: "Controlado", labelKey: "dashboardRiskControlled" },
@@ -29,14 +29,10 @@ const parseNumericValue = (value: FormDataEntryValue | null) => {
   return Number.isNaN(parsed) ? null : parsed;
 };
 
-
 export default function FundDetailsPage() {
   const { strings } = useLanguage();
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
-  const [profiles, setProfiles] = useFirebaseStorage<UserProfile[]>(
-    STORAGE_KEYS.profiles,
-    []
-  );
+  const [profiles, setProfiles] = useUserProfiles({ uid: session?.id ?? session?.uid });
   const fundApplications = useFundsCollection({ userUid: session?.id ?? session?.uid });
   const [statusMessage, setStatusMessage] = useState("");
   const [linkFields, setLinkFields] = useState<string[]>(["", "", ""]);

@@ -4,16 +4,14 @@ import { useMemo } from "react";
 
 import DataTable, { StatusCell } from "@/components/dashboard/DataTable";
 import KpiCard from "@/components/dashboard/KpiCard";
-import { STORAGE_KEYS } from "@/lib/igatesData";
 import { useFundsCollection } from "@/lib/funds";
-import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
-import type { UserProfile } from "@/lib/types";
+import { useUserProfiles } from "@/lib/useUserProfiles";
 
 const iconClass = "h-4 w-4";
 
 export default function FundManagerDashboard() {
   const fundApplications = useFundsCollection();
-  const [profiles] = useFirebaseStorage<UserProfile[]>(STORAGE_KEYS.profiles, []);
+  const [profiles] = useUserProfiles({ isMaster: true });
 
   const data = useMemo(() => {
     const pendingFunds = fundApplications.filter((application) => application.status === "pending");
