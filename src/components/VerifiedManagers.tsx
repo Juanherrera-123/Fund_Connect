@@ -68,11 +68,7 @@ const transition = {
   ease: [0.22, 1, 0.36, 1],
 };
 
-const resolveMinimumInvestment = (minInvestment?: string | null, fallback = 1000) => {
-  if (!minInvestment) return fallback;
-  const parsed = Number.parseFloat(minInvestment.replace(/[^0-9.,]/g, "").replace(/,/g, ""));
-  return Number.isFinite(parsed) ? parsed : fallback;
-};
+const WAITLIST_MINIMUM_INVESTMENT = 2000;
 
 export function VerifiedManagers() {
   const { strings } = useLanguage();
@@ -290,8 +286,7 @@ export function VerifiedManagers() {
 
     const fullPhone = [contactPhoneCountry.trim(), contactPhoneNumber.trim()].filter(Boolean).join(" ");
     const investmentValue = Number(investmentAmount);
-    const minimumInvestmentValue = resolveMinimumInvestment(selectedFund.minInvestment);
-    if (!Number.isFinite(investmentValue) || investmentValue < minimumInvestmentValue) {
+    if (!Number.isFinite(investmentValue) || investmentValue < WAITLIST_MINIMUM_INVESTMENT) {
       setWaitlistError("No se pudo enviar la solicitud. Intenta nuevamente.");
       setToastMessage({
         message: "No se pudo enviar la solicitud. Intenta nuevamente.",
@@ -400,10 +395,9 @@ export function VerifiedManagers() {
     ? Array.from({ length: 3 }, (_, index) => selectedFund.livePerformanceLinks[index] ?? "")
     : [];
   const investmentValue = Number(investmentAmount);
-  const resolvedMinimum = resolveMinimumInvestment(selectedFund?.minInvestment);
   const isInvestmentInvalid =
     investmentAmount.trim().length > 0 &&
-    (!Number.isFinite(investmentValue) || investmentValue < resolvedMinimum);
+    (!Number.isFinite(investmentValue) || investmentValue < WAITLIST_MINIMUM_INVESTMENT);
   const whatsappMessage = selectedFund
     ? strings.verifiedManagersWhatsappMessage.replace("{fundName}", selectedFund.name)
     : "";
@@ -779,7 +773,7 @@ export function VerifiedManagers() {
                           className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-600 transition hover:border-slate-300 hover:bg-slate-50"
                           data-i18n="verifiedManagersBackToAll"
                         >
-                          Back to all funds
+                          {strings.verifiedManagersBackToAll}
                         </button>
                       </div>
 
@@ -916,7 +910,7 @@ export function VerifiedManagers() {
                             className="inline-flex w-full items-center justify-center rounded-full bg-gradient-to-r from-igates-500 to-igates-400 px-6 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-white shadow-lg shadow-igates-500/30 transition hover:from-igates-400 hover:to-igates-500 sm:w-auto"
                             data-i18n="verifiedManagersJoinWaitlist"
                           >
-                            Join the waitlist
+                            {strings.verifiedManagersJoinWaitlist}
                           </button>
                           <a
                             className="inline-flex w-full items-center justify-center rounded-full border border-white/60 bg-white/70 px-6 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-700 shadow-sm backdrop-blur transition hover:border-slate-200 hover:bg-white sm:w-auto"
@@ -925,7 +919,7 @@ export function VerifiedManagers() {
                             rel="noreferrer"
                             data-i18n="verifiedManagersRequestInfo"
                           >
-                            Request more information
+                            {strings.verifiedManagersRequestInfo}
                           </a>
                         </div>
                       </div>
@@ -1041,7 +1035,7 @@ export function VerifiedManagers() {
                   <input
                     id="waitlist-investment"
                     type="number"
-                    min={1000}
+                    min={WAITLIST_MINIMUM_INVESTMENT}
                     step={100}
                     inputMode="numeric"
                     required
