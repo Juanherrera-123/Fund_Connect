@@ -90,7 +90,7 @@ export async function POST(request: Request) {
       amount: Number.isFinite(numericAmount) ? numericAmount : intendedInvestmentAmount,
       note: note ?? null,
       status: "pending",
-      requesterUid: auth?.id ?? auth?.uid ?? null,
+      requesterUid: auth?.id ?? null,
     });
 
     return NextResponse.json({ data: waitlistRequest }, { status: 201 });
