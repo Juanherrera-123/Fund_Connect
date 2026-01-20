@@ -41,11 +41,15 @@ const normalizeStatus = (status?: string | null): WaitlistStatus => {
 
 type FirestoreDocumentSnapshot = {
   id: string;
-  data: () => Record<string, unknown> | undefined;
+  data: () => unknown;
 };
 
 const mapWaitlistSnapshot = (docSnap: FirestoreDocumentSnapshot) => {
-  const data = (docSnap.data() ?? {}) as Omit<WaitlistRequest, "id"> & {
+  const rawData = docSnap.data();
+  const data = (rawData && typeof rawData === "object" ? rawData : {}) as Omit<
+    WaitlistRequest,
+    "id"
+  > & {
     createdAt?: unknown;
     approvedAt?: unknown;
     decidedAt?: unknown;
