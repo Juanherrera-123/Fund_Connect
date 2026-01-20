@@ -33,7 +33,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    await sendWaitlistStatusEmail({ to: requesterEmail, fundName, status: "rejected" });
+    await sendWaitlistStatusEmail({ to: requesterEmail, fundName, status: "REJECTED" });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: "Failed to send email." }, { status: 500 });

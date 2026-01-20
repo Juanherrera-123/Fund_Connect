@@ -5,22 +5,22 @@ import { useMemo, useState } from "react";
 import DataTable, { StatusCell } from "@/components/dashboard/DataTable";
 import { STORAGE_KEYS } from "@/lib/igatesData";
 import { useLocalStorage } from "@/lib/useLocalStorage";
-import { updateWaitlistStatus, useWaitlistCollection } from "@/lib/waitlist";
+import { useWaitlistCollection } from "@/lib/waitlist";
 import type { Session, WaitlistStatus } from "@/lib/types";
 
 type ModalField = { label: string; value: string };
 
 const statusConfig: Record<WaitlistStatus, { label: string; tone: "warning" | "success" | "danger" }> =
   {
-    pending: { label: "Pendiente", tone: "warning" },
-    approved: { label: "Aprobada", tone: "success" },
-    rejected: { label: "Rechazada", tone: "danger" },
+    PENDING: { label: "Pendiente", tone: "warning" },
+    APPROVED: { label: "Aprobada", tone: "success" },
+    REJECTED: { label: "Rechazada", tone: "danger" },
   };
 
 const statusTabs: Array<{ key: WaitlistStatus; label: string }> = [
-  { key: "pending", label: "Pendientes" },
-  { key: "approved", label: "Aprobadas" },
-  { key: "rejected", label: "Rechazadas" },
+  { key: "PENDING", label: "Pendientes" },
+  { key: "APPROVED", label: "Aprobadas" },
+  { key: "REJECTED", label: "Rechazadas" },
 ];
 
 const resolveDateLabel = (value?: string | null) => {
@@ -36,10 +36,11 @@ const formatFieldValue = (value?: string | number | null) => {
 
 export default function MasterRequestsPage() {
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
-  const [activeStatus, setActiveStatus] = useState<WaitlistStatus>("pending");
+  const [activeStatus, setActiveStatus] = useState<WaitlistStatus>("PENDING");
   const waitlistRequests = useWaitlistCollection(activeStatus);
   const [activeRequestId, setActiveRequestId] = useState<string | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [decisionNote, setDecisionNote] = useState("");
 
   const activeRequest = useMemo(
     () => waitlistRequests.find((request) => request.id === activeRequestId) ?? null,
@@ -69,11 +70,17 @@ export default function MasterRequestsPage() {
       { label: "Phone", value: formatFieldValue(activeRequest.phone) },
       { label: "Fund name", value: formatFieldValue(activeRequest.fundName) },
       { label: "Fund ID", value: formatFieldValue(activeRequest.fundId) },
-      { label: "Amount", value: formatFieldValue(activeRequest.amount) },
+      {
+        label: "Intended investment amount",
+        value: formatFieldValue(activeRequest.intendedInvestmentAmount),
+      },
       { label: "Note", value: formatFieldValue(activeRequest.note) },
       { label: "Created at", value: resolveDateLabel(activeRequest.createdAt) },
       { label: "Status", value: statusConfig[activeRequest.status].label },
       { label: "Requester UID", value: formatFieldValue(activeRequest.requesterUid ?? null) },
+      { label: "Approved by", value: formatFieldValue(activeRequest.approvedBy ?? null) },
+      { label: "Approved at", value: resolveDateLabel(activeRequest.approvedAt) },
+      { label: "Decision note", value: formatFieldValue(activeRequest.decisionNote ?? null) },
     ];
   }, [activeRequest]);
 
@@ -81,12 +88,23 @@ export default function MasterRequestsPage() {
     if (!activeRequest) return;
     setIsUpdating(true);
     try {
-      await updateWaitlistStatus({
-        id: activeRequest.id,
-        status,
-        decidedBy: session?.uid ?? session?.id ?? null,
+      const endpoint =
+        status === "APPROVED"
+          ? `/api/admin/waitlist/${activeRequest.id}/approve`
+          : `/api/admin/waitlist/${activeRequest.id}/reject`;
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          decisionNote: decisionNote.trim() || null,
+          decidedBy: session?.uid ?? session?.id ?? null,
+        }),
       });
+      if (!response.ok) {
+        throw new Error("Request failed");
+      }
       setActiveRequestId(null);
+      setDecisionNote("");
     } catch (error) {
       console.error("Unable to update waitlist request.", error);
     } finally {
@@ -155,7 +173,10 @@ export default function MasterRequestsPage() {
               <button
                 type="button"
                 className="rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600 hover:border-slate-300"
-                onClick={() => setActiveRequestId(null)}
+                onClick={() => {
+                  setActiveRequestId(null);
+                  setDecisionNote("");
+                }}
               >
                 Cerrar
               </button>
@@ -172,30 +193,45 @@ export default function MasterRequestsPage() {
                   </div>
                 ))}
               </dl>
+              {activeRequest.status === "PENDING" ? (
+                <div className="mt-4">
+                  <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    Decision note
+                  </label>
+                  <textarea
+                    className="mt-2 min-h-[100px] w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700"
+                    value={decisionNote}
+                    onChange={(event) => setDecisionNote(event.target.value)}
+                    placeholder="Añade una nota opcional."
+                  />
+                </div>
+              ) : null}
             </div>
 
             <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 px-6 py-4">
               <div className="text-xs text-slate-500">
                 Estado actual: {statusConfig[activeRequest.status].label}
               </div>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  className="rounded-lg border border-rose-200 px-4 py-2 text-xs font-semibold text-rose-600 hover:border-rose-300 disabled:opacity-70"
-                  onClick={() => handleDecision("rejected")}
-                  disabled={isUpdating}
-                >
-                  Rechazar
-                </button>
-                <button
-                  type="button"
-                  className="rounded-lg bg-emerald-600 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-500 disabled:opacity-70"
-                  onClick={() => handleDecision("approved")}
-                  disabled={isUpdating}
-                >
-                  Aprobar
-                </button>
-              </div>
+              {activeRequest.status === "PENDING" ? (
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    className="rounded-lg border border-rose-200 px-4 py-2 text-xs font-semibold text-rose-600 hover:border-rose-300 disabled:opacity-70"
+                    onClick={() => handleDecision("REJECTED")}
+                    disabled={isUpdating}
+                  >
+                    Rechazar
+                  </button>
+                  <button
+                    type="button"
+                    className="rounded-lg bg-emerald-600 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-500 disabled:opacity-70"
+                    onClick={() => handleDecision("APPROVED")}
+                    disabled={isUpdating}
+                  >
+                    Aprobar
+                  </button>
+                </div>
+              ) : null}
             </div>
           </div>
         </div>

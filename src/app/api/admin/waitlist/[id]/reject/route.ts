@@ -21,16 +21,28 @@ export async function POST(request: Request, context: { params: { id: string } }
   }
 
   try {
+    let decisionNote: string | null = null;
+    try {
+      const body = (await request.json()) as { decisionNote?: string | null };
+      decisionNote = body?.decisionNote?.trim() || null;
+    } catch (error) {
+      if (error instanceof SyntaxError) {
+        return NextResponse.json({ error: "Invalid JSON payload." }, { status: 400 });
+      }
+    }
+
     await updateWaitlistStatus({
       id: requestId,
-      status: "rejected",
-      decidedBy: auth.id,
+      status: "REJECTED",
+      approvedBy: auth.id,
+      decisionNote,
     });
 
     await sendWaitlistStatusEmail({
       to: waitlistRequest.email,
       fundName: waitlistRequest.fundName,
-      status: "rejected",
+      status: "REJECTED",
+      requesterName: waitlistRequest.fullName,
     });
   } catch (error) {
     console.error(error);

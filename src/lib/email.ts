@@ -1,7 +1,7 @@
 type WaitlistEmailParams = {
   to: string;
   fundName: string;
-  status: "approved" | "rejected";
+  status: "APPROVED" | "REJECTED";
   requesterName?: string | null;
   fundUrl?: string | null;
 };
@@ -24,12 +24,13 @@ export async function sendWaitlistStatusEmail({
   const callToAction = fundUrl
     ? `View the fund page: ${fundUrl}`
     : "View the fund page on IGATES.";
+  const normalizedStatus = status === "APPROVED" ? "approved" : "rejected";
   const subject =
-    status === "approved"
+    normalizedStatus === "approved"
       ? `IGATES — You're approved for ${fundName}`
       : `IGATES — Waitlist update for ${fundName}`;
   const body =
-    status === "approved"
+    normalizedStatus === "approved"
       ? `${greeting}\n\nGreat news — your waitlist request for ${fundName} has been approved.\n\n${callToAction}\n\nOur team will follow up with onboarding and allocation details.\n\nIGATES Team`
       : `${greeting}\n\nYour waitlist request for ${fundName} was not approved at this time. We will follow up if availability changes.\n\nIGATES Team`;
 

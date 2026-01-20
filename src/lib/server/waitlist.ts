@@ -1,18 +1,18 @@
 "use server";
 
 import {
-  addDoc,
   collection,
   doc,
   getDoc,
   getDocs,
-  limit,
   orderBy,
   query,
   serverTimestamp,
+  setDoc,
   Timestamp,
   updateDoc,
   where,
+  type DocumentSnapshot,
   type QueryDocumentSnapshot,
 } from "firebase/firestore";
 
@@ -20,14 +20,12 @@ import { requireFirestoreDb } from "@/lib/firebase";
 import type { WaitlistRequest, WaitlistStatus } from "@/lib/types";
 
 const getWaitlistCollection = () => collection(requireFirestoreDb(), "waitlistRequests");
-// Firestore composite indexes expected:
+// Firestore composite index expected:
 // - status + createdAt
-// - fundId + status
-// - email + createdAt
 
 type CreateWaitlistRequestInput = Omit<
   WaitlistRequest,
-  "id" | "createdAt" | "status" | "decidedAt" | "decidedBy"
+  "id" | "createdAt" | "status" | "approvedAt" | "approvedBy" | "decisionNote"
 > & {
   createdAt?: string;
   note?: string | null;
@@ -37,7 +35,8 @@ type CreateWaitlistRequestInput = Omit<
 type UpdateWaitlistStatusInput = {
   id: string;
   status: WaitlistStatus;
-  decidedBy?: string | null;
+  approvedBy?: string | null;
+  decisionNote?: string | null;
 };
 
 const normalizeTimestamp = (value?: unknown): string | null => {
@@ -50,36 +49,53 @@ const normalizeTimestamp = (value?: unknown): string | null => {
   return null;
 };
 
-const mapWaitlistDoc = (docSnap: QueryDocumentSnapshot) => {
+const normalizeStatus = (status?: string | null): WaitlistStatus => {
+  if (!status) return "PENDING";
+  const normalized = status.toUpperCase();
+  if (normalized === "APPROVED" || normalized === "REJECTED") return normalized;
+  return "PENDING";
+};
+
+const mapWaitlistSnapshot = (docSnap: QueryDocumentSnapshot | DocumentSnapshot) => {
   const data = docSnap.data() as Omit<WaitlistRequest, "id"> & {
     createdAt?: unknown;
+    approvedAt?: unknown;
     decidedAt?: unknown;
+    approvedBy?: string | null;
+    decidedBy?: string | null;
+    intendedInvestmentAmount?: string | number;
+    amount?: string | number;
+    status?: string;
   };
   const createdAt = normalizeTimestamp(data.createdAt) ?? new Date().toISOString();
-  const decidedAt = normalizeTimestamp(data.decidedAt);
+  const approvedAt = normalizeTimestamp(data.approvedAt ?? data.decidedAt);
   return {
     id: docSnap.id,
     ...data,
     createdAt,
-    decidedAt,
+    approvedAt,
+    approvedBy: data.approvedBy ?? data.decidedBy ?? null,
+    decisionNote: data.decisionNote ?? null,
+    intendedInvestmentAmount: data.intendedInvestmentAmount ?? data.amount ?? "",
+    status: normalizeStatus(data.status),
   };
 };
 
+const normalizeEmailForId = (email: string) =>
+  email.trim().toLowerCase().replace(/[^a-z0-9]/g, "_");
+
 export async function createWaitlistRequest(
   input: CreateWaitlistRequestInput
-): Promise<WaitlistRequest> {
+): Promise<{ waitlistRequest: WaitlistRequest; wasExisting: boolean }> {
   const waitlistCollection = getWaitlistCollection();
-  const existingQuery = query(
-    waitlistCollection,
-    where("fundId", "==", input.fundId),
-    where("email", "==", input.email),
-    where("status", "==", "pending"),
-    orderBy("createdAt", "desc"),
-    limit(1)
-  );
-  const existingSnapshot = await getDocs(existingQuery);
-  if (!existingSnapshot.empty) {
-    return mapWaitlistDoc(existingSnapshot.docs[0]) as WaitlistRequest;
+  const docId = `${input.fundId}__${normalizeEmailForId(input.email)}`;
+  const docRef = doc(waitlistCollection, docId);
+  const existingSnapshot = await getDoc(docRef);
+  if (existingSnapshot.exists()) {
+    const existing = mapWaitlistSnapshot(existingSnapshot) as WaitlistRequest;
+    if (existing.status === "PENDING") {
+      return { waitlistRequest: existing, wasExisting: true };
+    }
   }
 
   const createdAt = input.createdAt ?? new Date().toISOString();
@@ -89,22 +105,23 @@ export async function createWaitlistRequest(
     fullName: input.fullName,
     email: input.email,
     phone: input.phone,
-    amount: input.amount,
+    intendedInvestmentAmount: input.intendedInvestmentAmount,
     note: input.note ?? null,
-    status: input.status ?? "pending",
+    status: input.status ?? "PENDING",
     createdAt: createdAt,
     requesterUid: input.requesterUid ?? null,
-    decidedAt: null,
-    decidedBy: null,
+    approvedAt: null,
+    approvedBy: null,
+    decisionNote: null,
   };
   const firestorePayload = {
     ...payload,
     createdAt: serverTimestamp(),
   };
 
-  const docRef = await addDoc(waitlistCollection, firestorePayload);
+  await setDoc(docRef, firestorePayload);
 
-  return { id: docRef.id, ...payload };
+  return { waitlistRequest: { id: docRef.id, ...payload }, wasExisting: false };
 }
 
 export async function listWaitlistRequestsByStatus(
@@ -117,7 +134,7 @@ export async function listWaitlistRequestsByStatus(
     orderBy("createdAt", "desc")
   );
   const snapshot = await getDocs(statusQuery);
-  return snapshot.docs.map((docSnap) => mapWaitlistDoc(docSnap) as WaitlistRequest);
+  return snapshot.docs.map((docSnap) => mapWaitlistSnapshot(docSnap) as WaitlistRequest);
 }
 
 export async function getWaitlistRequestById(id: string): Promise<WaitlistRequest | null> {
@@ -126,14 +143,15 @@ export async function getWaitlistRequestById(id: string): Promise<WaitlistReques
   if (!snapshot.exists()) {
     return null;
   }
-  return mapWaitlistDoc(snapshot) as WaitlistRequest;
+  return mapWaitlistSnapshot(snapshot) as WaitlistRequest;
 }
 
 export async function updateWaitlistStatus(input: UpdateWaitlistStatusInput): Promise<void> {
   const waitlistCollection = getWaitlistCollection();
   await updateDoc(doc(waitlistCollection, input.id), {
     status: input.status,
-    decidedAt: input.status === "pending" ? null : serverTimestamp(),
-    decidedBy: input.status === "pending" ? null : input.decidedBy ?? null,
+    approvedAt: input.status === "PENDING" ? null : serverTimestamp(),
+    approvedBy: input.status === "PENDING" ? null : input.approvedBy ?? null,
+    decisionNote: input.status === "PENDING" ? null : input.decisionNote ?? null,
   });
 }
