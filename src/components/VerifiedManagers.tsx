@@ -270,6 +270,15 @@ export function VerifiedManagers() {
   }, [closeWaitlistModal, isWaitlistModalOpen]);
 
   useEffect(() => {
+    if (!isWaitlistModalOpen) return undefined;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isWaitlistModalOpen]);
+
+  useEffect(() => {
     if (!toastMessage) return undefined;
     const timeout = window.setTimeout(() => {
       setToastMessage(null);
@@ -952,144 +961,140 @@ export function VerifiedManagers() {
         </div>
       </section>
 
-      <AnimatePresence>
-        {isWaitlistModalOpen && selectedFund && (
+      {isWaitlistModalOpen && selectedFund ? (
+        <motion.div
+          className="fixed inset-0 z-50 flex items-center justify-center px-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          <div
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+            role="presentation"
+            onClick={closeWaitlistModal}
+          />
           <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center px-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            ref={waitlistModalRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="waitlist-modal-title"
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="relative z-10 w-full max-w-lg rounded-3xl border border-slate-200 bg-white p-6 shadow-xl"
           >
-            <div
-              className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
-              role="presentation"
-              onClick={closeWaitlistModal}
-            />
-            <motion.div
-              ref={waitlistModalRef}
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="waitlist-modal-title"
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="relative z-10 w-full max-w-lg rounded-3xl border border-slate-200 bg-white p-6 shadow-xl"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p
-                    className="text-xs font-semibold uppercase tracking-[0.2em] text-igates-500"
-                  >
-                    {strings.verifiedManagersWaitlistEyebrow}
-                  </p>
-                  <h3 className="mt-2 text-xl font-semibold text-slate-900" id="waitlist-modal-title">
-                    {strings.verifiedManagersWaitlistTitle.replace("{fundName}", selectedFund.name)}
-                  </h3>
-                  <p className="mt-2 text-sm text-slate-600">
-                    {strings.verifiedManagersWaitlistLead}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={closeWaitlistModal}
-                  className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-slate-600 transition hover:border-slate-300 hover:bg-slate-50"
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p
+                  className="text-xs font-semibold uppercase tracking-[0.2em] text-igates-500"
                 >
-                  {strings.verifiedManagersWaitlistClose}
-                </button>
+                  {strings.verifiedManagersWaitlistEyebrow}
+                </p>
+                <h3 className="mt-2 text-xl font-semibold text-slate-900" id="waitlist-modal-title">
+                  {strings.verifiedManagersWaitlistTitle.replace("{fundName}", selectedFund.name)}
+                </h3>
+                <p className="mt-2 text-sm text-slate-600">
+                  {strings.verifiedManagersWaitlistLead}
+                </p>
               </div>
+              <button
+                type="button"
+                onClick={closeWaitlistModal}
+                className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-slate-600 transition hover:border-slate-300 hover:bg-slate-50"
+              >
+                {strings.verifiedManagersWaitlistClose}
+              </button>
+            </div>
 
-              <form className="mt-6 grid gap-4" onSubmit={handleWaitlistSubmit}>
-                <div className="grid gap-2 text-sm font-medium text-slate-600">
-                  <label htmlFor="waitlist-name">{strings.verifiedManagersWaitlistNameLabel}</label>
+            <form className="mt-6 grid gap-4" onSubmit={handleWaitlistSubmit}>
+              <div className="grid gap-2 text-sm font-medium text-slate-600">
+                <label htmlFor="waitlist-name">{strings.verifiedManagersWaitlistNameLabel}</label>
+                <input
+                  id="waitlist-name"
+                  type="text"
+                  required
+                  className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
+                  value={contactName}
+                  onChange={(event) => setContactName(event.target.value)}
+                  placeholder={strings.verifiedManagersWaitlistNamePlaceholder}
+                />
+              </div>
+              <div className="grid gap-2 text-sm font-medium text-slate-600">
+                <label htmlFor="waitlist-email">{strings.verifiedManagersWaitlistEmailLabel}</label>
+                <input
+                  id="waitlist-email"
+                  type="email"
+                  required
+                  className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
+                  value={contactEmail}
+                  onChange={(event) => setContactEmail(event.target.value)}
+                  placeholder="you@example.com"
+                />
+              </div>
+              <div className="grid gap-2 text-sm font-medium text-slate-600">
+                <label htmlFor="waitlist-phone">{strings.verifiedManagersWaitlistPhoneLabel}</label>
+                <div className="grid gap-3 sm:grid-cols-[140px_1fr]">
+                  <select
+                    id="waitlist-phone-country"
+                    required
+                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
+                    value={contactPhoneCountry}
+                    onChange={(event) => setContactPhoneCountry(event.target.value)}
+                  >
+                    {phoneCountryCodes.map((option) => (
+                      <option key={option.code} value={option.code}>
+                        {option.flag} {option.code}
+                      </option>
+                    ))}
+                  </select>
                   <input
-                    id="waitlist-name"
-                    type="text"
+                    id="waitlist-phone"
+                    type="tel"
                     required
                     className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
-                    value={contactName}
-                    onChange={(event) => setContactName(event.target.value)}
-                    placeholder={strings.verifiedManagersWaitlistNamePlaceholder}
+                    value={contactPhoneNumber}
+                    onChange={(event) => setContactPhoneNumber(event.target.value)}
+                    placeholder="300 000 0000"
                   />
                 </div>
-                <div className="grid gap-2 text-sm font-medium text-slate-600">
-                  <label htmlFor="waitlist-email">{strings.verifiedManagersWaitlistEmailLabel}</label>
-                  <input
-                    id="waitlist-email"
-                    type="email"
-                    required
-                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
-                    value={contactEmail}
-                    onChange={(event) => setContactEmail(event.target.value)}
-                    placeholder="you@example.com"
-                  />
+              </div>
+              <label className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+                <input
+                  type="checkbox"
+                  required
+                  className="mt-1 h-4 w-4 rounded border-slate-300 text-igates-500 focus:ring-igates-500/30"
+                  checked={qualified}
+                  onChange={(event) => setQualified(event.target.checked)}
+                />
+                <span>
+                  {strings.verifiedManagersWaitlistQualifiedLabel}
+                </span>
+              </label>
+              <div className="grid gap-2 text-sm font-medium text-slate-600">
+                <label htmlFor="waitlist-note">{strings.verifiedManagersWaitlistNoteLabel}</label>
+                <textarea
+                  id="waitlist-note"
+                  rows={3}
+                  className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
+                  placeholder={strings.verifiedManagersWaitlistNotePlaceholder}
+                  value={note}
+                  onChange={(event) => setNote(event.target.value)}
+                />
+              </div>
+              {waitlistError ? (
+                <div className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-600">
+                  {waitlistError}
                 </div>
-                <div className="grid gap-2 text-sm font-medium text-slate-600">
-                  <label htmlFor="waitlist-phone">{strings.verifiedManagersWaitlistPhoneLabel}</label>
-                  <div className="grid gap-3 sm:grid-cols-[140px_1fr]">
-                    <select
-                      id="waitlist-phone-country"
-                      required
-                      className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
-                      value={contactPhoneCountry}
-                      onChange={(event) => setContactPhoneCountry(event.target.value)}
-                    >
-                      {phoneCountryCodes.map((option) => (
-                        <option key={option.code} value={option.code}>
-                          {option.flag} {option.code}
-                        </option>
-                      ))}
-                    </select>
-                    <input
-                      id="waitlist-phone"
-                      type="tel"
-                      required
-                      className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
-                      value={contactPhoneNumber}
-                      onChange={(event) => setContactPhoneNumber(event.target.value)}
-                      placeholder="300 000 0000"
-                    />
-                  </div>
-                </div>
-                <label className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
-                  <input
-                    type="checkbox"
-                    required
-                    className="mt-1 h-4 w-4 rounded border-slate-300 text-igates-500 focus:ring-igates-500/30"
-                    checked={qualified}
-                    onChange={(event) => setQualified(event.target.checked)}
-                  />
-                  <span>
-                    {strings.verifiedManagersWaitlistQualifiedLabel}
-                  </span>
-                </label>
-                <div className="grid gap-2 text-sm font-medium text-slate-600">
-                  <label htmlFor="waitlist-note">{strings.verifiedManagersWaitlistNoteLabel}</label>
-                  <textarea
-                    id="waitlist-note"
-                    rows={3}
-                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
-                    placeholder={strings.verifiedManagersWaitlistNotePlaceholder}
-                    value={note}
-                    onChange={(event) => setNote(event.target.value)}
-                  />
-                </div>
-                {waitlistError ? (
-                  <div className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-600">
-                    {waitlistError}
-                  </div>
-                ) : null}
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="inline-flex w-full items-center justify-center rounded-full bg-igates-500 px-5 py-3 text-xs font-semibold uppercase tracking-[0.12em] text-white shadow-lg shadow-igates-500/30 transition hover:bg-igates-400 disabled:cursor-not-allowed disabled:bg-igates-500/70"
-                >
-                  {isSubmitting ? strings.verifiedManagersWaitlistSubmitting : strings.verifiedManagersWaitlistSubmit}
-                </button>
-              </form>
-            </motion.div>
+              ) : null}
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="inline-flex w-full items-center justify-center rounded-full bg-igates-500 px-5 py-3 text-xs font-semibold uppercase tracking-[0.12em] text-white shadow-lg shadow-igates-500/30 transition hover:bg-igates-400 disabled:cursor-not-allowed disabled:bg-igates-500/70"
+              >
+                {isSubmitting ? strings.verifiedManagersWaitlistSubmitting : strings.verifiedManagersWaitlistSubmit}
+              </button>
+            </form>
           </motion.div>
-        )}
-      </AnimatePresence>
+        </motion.div>
+      ) : null}
     </>
   );
 }
