@@ -9,19 +9,12 @@ const lineLegend = [
 ];
 
 const donutLegend = [
-  { label: "Investors", labelKey: "dashboardLegendInvestors", color: "bg-emerald-500" },
   { label: "Managers", labelKey: "dashboardLegendManagers", color: "bg-amber-400" },
-  { label: "Family Office", labelKey: "dashboardLegendFamilyOffice", color: "bg-slate-400" },
 ];
 
-const visibilityByRole: Record<
-  Role,
-  { kpis: boolean; charts: boolean; tables: boolean }
-> = {
+const visibilityByRole: Record<Role, { kpis: boolean; charts: boolean; tables: boolean }> = {
   MasterUser: { kpis: true, charts: true, tables: true },
-  Investor: { kpis: true, charts: true, tables: false },
   "Fund Manager": { kpis: true, charts: false, tables: true },
-  "Family Office": { kpis: false, charts: true, tables: true },
 };
 
 type TableRow = {
@@ -42,7 +35,7 @@ export default function DashboardOverview({
   actionRows = [],
   activeFundsCount = 0,
   pendingFundsCount = 0,
-  roleCounts = { investors: 0, managers: 0, familyOffices: 0 },
+  roleCounts = { managers: 0 },
   onPendingFundAction,
 }: {
   title: string;
@@ -54,7 +47,7 @@ export default function DashboardOverview({
   actionRows?: TableRow[];
   activeFundsCount?: number;
   pendingFundsCount?: number;
-  roleCounts?: { investors: number; managers: number; familyOffices: number };
+  roleCounts?: { managers: number };
   onPendingFundAction?: (row: TableRow) => void;
 }) {
   const visibility = visibilityByRole[role];
@@ -64,11 +57,8 @@ export default function DashboardOverview({
   const pendingLineY = lineY(pendingFundsCount);
   const activePoints = `10,${activeLineY} 60,${activeLineY} 110,${activeLineY} 160,${activeLineY} 210,${activeLineY} 250,${activeLineY}`;
   const pendingPoints = `10,${pendingLineY} 60,${pendingLineY} 110,${pendingLineY} 160,${pendingLineY} 210,${pendingLineY} 250,${pendingLineY}`;
-  const totalRoles =
-    roleCounts.investors + roleCounts.managers + roleCounts.familyOffices || 1;
-  const investorArc = Math.round((roleCounts.investors / totalRoles) * 250);
+  const totalRoles = roleCounts.managers || 1;
   const managerArc = Math.round((roleCounts.managers / totalRoles) * 250);
-  const familyArc = Math.round((roleCounts.familyOffices / totalRoles) * 250);
 
   return (
     <>
@@ -125,18 +115,6 @@ export default function DashboardOverview({
             <ChartCard title="Users per role" titleKey="dashboardUsersPerRole" legend={donutLegend}>
               <svg viewBox="0 0 120 120" className="h-32 w-32">
                 <g>
-                  <title>{`Investors: ${roleCounts.investors}`}</title>
-                  <circle
-                    cx="60"
-                    cy="60"
-                    r="40"
-                    stroke="#10b981"
-                    strokeWidth="12"
-                    fill="none"
-                    strokeDasharray={`${investorArc} 250`}
-                  />
-                </g>
-                <g>
                   <title>{`Managers: ${roleCounts.managers}`}</title>
                   <circle
                     cx="60"
@@ -146,20 +124,6 @@ export default function DashboardOverview({
                     strokeWidth="12"
                     fill="none"
                     strokeDasharray={`${managerArc} 250`}
-                    strokeDashoffset={`-${investorArc}`}
-                  />
-                </g>
-                <g>
-                  <title>{`Family Office: ${roleCounts.familyOffices}`}</title>
-                  <circle
-                    cx="60"
-                    cy="60"
-                    r="40"
-                    stroke="#94a3b8"
-                    strokeWidth="12"
-                    fill="none"
-                    strokeDasharray={`${familyArc} 250`}
-                    strokeDashoffset={`-${investorArc + managerArc}`}
                   />
                 </g>
               </svg>
@@ -206,7 +170,7 @@ export default function DashboardOverview({
               actionLabelKey="dashboardReviewAction"
               columns={[
                 { key: "fund", label: "Fund", labelKey: "dashboardColumnFund" },
-                { key: "investor", label: "Investor", labelKey: "dashboardColumnInvestor" },
+                { key: "requester", label: "Requester", labelKey: "dashboardColumnName" },
                 { key: "country", label: "Country", labelKey: "dashboardColumnCountry" },
                 { key: "status", label: "Status", labelKey: "dashboardColumnStatus" },
               ]}

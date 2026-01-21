@@ -12,9 +12,7 @@ const lineLegend = [
 ];
 
 const donutLegend = [
-  { label: "Investors", labelKey: "dashboardLegendInvestors", color: "bg-emerald-500" },
   { label: "Managers", labelKey: "dashboardLegendManagers", color: "bg-amber-400" },
-  { label: "Family Office", labelKey: "dashboardLegendFamilyOffice", color: "bg-slate-400" },
 ];
 
 export default function MasterAnalyticsPage() {
@@ -32,9 +30,7 @@ export default function MasterAnalyticsPage() {
       activeFundsCount: verifiedCount,
       pendingFundsCount: pendingFunds.length,
       roleCounts: {
-        investors: profiles.filter((profile) => profile.role === "Investor").length,
         managers: profiles.filter((profile) => profile.role === "Fund Manager").length,
-        familyOffices: profiles.filter((profile) => profile.role === "Family Office").length,
       },
     };
   }, [fundApplications, profiles]);
@@ -46,14 +42,8 @@ export default function MasterAnalyticsPage() {
   const activePoints = `10,${activeLineY} 60,${activeLineY} 110,${activeLineY} 160,${activeLineY} 210,${activeLineY} 250,${activeLineY}`;
   const pendingPoints = `10,${pendingLineY} 60,${pendingLineY} 110,${pendingLineY} 160,${pendingLineY} 210,${pendingLineY} 250,${pendingLineY}`;
 
-  const totalRoles =
-    analytics.roleCounts.investors +
-      analytics.roleCounts.managers +
-      analytics.roleCounts.familyOffices ||
-    1;
-  const investorArc = Math.round((analytics.roleCounts.investors / totalRoles) * 250);
+  const totalRoles = analytics.roleCounts.managers || 1;
   const managerArc = Math.round((analytics.roleCounts.managers / totalRoles) * 250);
-  const familyArc = Math.round((analytics.roleCounts.familyOffices / totalRoles) * 250);
 
   return (
     <>
@@ -95,18 +85,6 @@ export default function MasterAnalyticsPage() {
         <ChartCard title="Users per role" titleKey="dashboardUsersPerRole" legend={donutLegend}>
           <svg viewBox="0 0 120 120" className="h-32 w-32">
             <g>
-              <title>{`Investors: ${analytics.roleCounts.investors}`}</title>
-              <circle
-                cx="60"
-                cy="60"
-                r="40"
-                stroke="#10b981"
-                strokeWidth="12"
-                fill="none"
-                strokeDasharray={`${investorArc} 250`}
-              />
-            </g>
-            <g>
               <title>{`Managers: ${analytics.roleCounts.managers}`}</title>
               <circle
                 cx="60"
@@ -116,20 +94,6 @@ export default function MasterAnalyticsPage() {
                 strokeWidth="12"
                 fill="none"
                 strokeDasharray={`${managerArc} 250`}
-                strokeDashoffset={`-${investorArc}`}
-              />
-            </g>
-            <g>
-              <title>{`Family Office: ${analytics.roleCounts.familyOffices}`}</title>
-              <circle
-                cx="60"
-                cy="60"
-                r="40"
-                stroke="#94a3b8"
-                strokeWidth="12"
-                fill="none"
-                strokeDasharray={`${familyArc} 250`}
-                strokeDashoffset={`-${investorArc + managerArc}`}
               />
             </g>
           </svg>

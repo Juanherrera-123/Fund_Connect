@@ -1,6 +1,6 @@
 import type { NormalizedRole } from "@/types/auth";
 
-export type Role = "Investor" | "Fund Manager" | "Family Office" | "MasterUser";
+export type Role = "Fund Manager" | "MasterUser";
 
 export type MasterUserCredentials = {
   username: string;
@@ -22,14 +22,6 @@ export type Session = {
 
 export type SurveyAnswer = string | string[];
 
-export type InvestorPreferences = {
-  objective?: string;
-  horizon?: string;
-  riskLevel?: string;
-  strategyPreferences?: string[];
-  reportingFrequency?: string;
-};
-
 export type FundManagerProfile = {
   strategyType?: string;
   strategyTypeLabel?: string;
@@ -38,14 +30,6 @@ export type FundManagerProfile = {
   operatingStructure?: string;
   strategyDescription?: string;
   status?: "pending-review" | "verified";
-};
-
-export type FamilyOfficePreferences = {
-  managementRole?: string;
-  diversificationLevel?: string;
-  strategyPreferences?: string[];
-  interactionLevel?: string;
-  reportingCustomization?: string;
 };
 
 export type UserProfile = {
@@ -60,9 +44,7 @@ export type UserProfile = {
   onboardingCompleted: boolean;
   onboarding: Record<string, unknown>;
   fundId?: string;
-  investorPreferences?: InvestorPreferences;
   fundManagerProfile?: FundManagerProfile;
-  familyOfficePreferences?: FamilyOfficePreferences;
 };
 
 export type WaitlistStatus = "PENDING" | "APPROVED" | "REJECTED";

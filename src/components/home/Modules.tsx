@@ -7,13 +7,6 @@ const modules = [
       "Vista consolidada de portafolios, métricas clave y alertas de compliance.",
   },
   {
-    titleKey: "modulesInvestorHubTitle",
-    title: "Investor Hub",
-    descriptionKey: "modulesInvestorHubBody",
-    description:
-      "Portales privados con reporting, capital calls y actualización documental.",
-  },
-  {
     titleKey: "modulesFundOpsTitle",
     title: "Fund Ops",
     descriptionKey: "modulesFundOpsBody",

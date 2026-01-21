@@ -8,8 +8,7 @@ import { STORAGE_KEYS } from "@/lib/igatesData";
 import { publishApprovedFund, updateFundApplicationStatus, useFundsCollection } from "@/lib/funds";
 import { updateUserStatus } from "@/lib/users";
 import { useLocalStorage } from "@/lib/useLocalStorage";
-import { useWaitlistCollection } from "@/lib/waitlist";
-import type { FundApplication, FundApplicationFile, Session, WaitlistRequest, WaitlistStatus } from "@/lib/types";
+import type { FundApplication, FundApplicationFile, Session } from "@/lib/types";
 
 type ModalSection = {
   title: string;
@@ -48,31 +47,11 @@ const statusConfig: Record<
   rejected: { label: "Rechazado", tone: "danger" },
 };
 
-const waitlistStatusConfig: Record<
-  WaitlistStatus,
-  { label: string; tone: "warning" | "success" | "danger" }
-> = {
-  PENDING: { label: "Pendiente", tone: "warning" },
-  APPROVED: { label: "Aprobada", tone: "success" },
-  REJECTED: { label: "Rechazada", tone: "danger" },
-};
-
-const waitlistTabs: Array<{ key: WaitlistStatus; label: string }> = [
-  { key: "PENDING", label: "Pendientes" },
-  { key: "APPROVED", label: "Aprobadas" },
-  { key: "REJECTED", label: "Rechazadas" },
-];
-
 export default function MasterDashboard() {
   const fundApplications = useFundsCollection();
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const [activeApplicationId, setActiveApplicationId] = useState<string | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
-  const [activeWaitlistStatus, setActiveWaitlistStatus] = useState<WaitlistStatus>("PENDING");
-  const waitlistRequests = useWaitlistCollection(activeWaitlistStatus);
-  const [activeWaitlistId, setActiveWaitlistId] = useState<string | null>(null);
-  const [isWaitlistUpdating, setIsWaitlistUpdating] = useState(false);
-  const [decisionNote, setDecisionNote] = useState("");
 
   const activeApplication = useMemo(
     () => fundApplications.find((application) => application.id === activeApplicationId) ?? null,
@@ -130,26 +109,6 @@ export default function MasterDashboard() {
     ];
   }, [activeApplication]);
 
-  const activeWaitlistRequest = useMemo<WaitlistRequest | null>(
-    () => waitlistRequests.find((request) => request.id === activeWaitlistId) ?? null,
-    [activeWaitlistId, waitlistRequests]
-  );
-
-  const waitlistRows = useMemo(() => {
-    return waitlistRequests.map((request) => {
-      const status = waitlistStatusConfig[request.status];
-      return {
-        id: request.id,
-        createdAt: resolveDate(request.createdAt)?.toLocaleString() ?? "—",
-        investor: request.fullName,
-        email: request.email,
-        phone: request.phone,
-        fund: request.fundName,
-        status: <StatusCell label={status.label} tone={status.tone} />,
-      };
-    });
-  }, [waitlistRequests]);
-
   const handleDecision = async (status: FundApplication["status"]) => {
     if (!activeApplication) return;
     setIsUpdating(true);
@@ -171,31 +130,6 @@ export default function MasterDashboard() {
       console.error("Unable to update fund application status", error);
     } finally {
       setIsUpdating(false);
-    }
-  };
-
-  const handleWaitlistDecision = async (status: WaitlistStatus) => {
-    if (!activeWaitlistRequest) return;
-    setIsWaitlistUpdating(true);
-    try {
-      const endpoint =
-        status === "APPROVED"
-          ? `/api/admin/waitlist/${activeWaitlistRequest.id}/approve`
-          : `/api/admin/waitlist/${activeWaitlistRequest.id}/reject`;
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ decisionNote: decisionNote.trim() || null }),
-      });
-      if (!response.ok) {
-        throw new Error("Request failed");
-      }
-      setActiveWaitlistId(null);
-      setDecisionNote("");
-    } catch (error) {
-      console.error("Unable to update waitlist request", error);
-    } finally {
-      setIsWaitlistUpdating(false);
     }
   };
 
@@ -264,43 +198,6 @@ export default function MasterDashboard() {
         rows={rows}
         onAction={(row) => setActiveApplicationId(row.id)}
       />
-
-      <section className="flex flex-col gap-4">
-        <div className="flex flex-col gap-1">
-          <h2 className="text-lg font-semibold text-slate-900">Waitlist Requests</h2>
-          <p className="text-sm text-slate-600">Pending approvals and historical decisions.</p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {waitlistTabs.map((tab) => (
-            <button
-              key={tab.key}
-              type="button"
-              onClick={() => setActiveWaitlistStatus(tab.key)}
-              className={`rounded-full border px-4 py-1 text-xs font-semibold ${
-                activeWaitlistStatus === tab.key
-                  ? "border-igates-500 bg-igates-500/10 text-igates-700"
-                  : "border-slate-200 text-slate-600 hover:border-slate-300"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-        <DataTable
-          title="Waitlist requests"
-          actionLabel="Ver más"
-          columns={[
-            { key: "createdAt", label: "Date" },
-            { key: "investor", label: "Investor" },
-            { key: "email", label: "Email" },
-            { key: "phone", label: "Phone" },
-            { key: "fund", label: "Fund" },
-            { key: "status", label: "Status" },
-          ]}
-          rows={waitlistRows}
-          onAction={(row) => setActiveWaitlistId(row.id)}
-        />
-      </section>
 
       {activeApplication && (
         <div className="fixed inset-0 z-40 flex items-start justify-center bg-slate-900/60 px-4 py-10">
@@ -371,97 +268,6 @@ export default function MasterDashboard() {
         </div>
       )}
 
-      {activeWaitlistRequest && (
-        <div className="fixed inset-0 z-40 flex items-start justify-center bg-slate-900/60 px-4 py-10">
-          <div className="w-full max-w-3xl rounded-2xl bg-white shadow-xl">
-            <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
-              <div>
-                <h2 className="text-lg font-semibold text-slate-900">{activeWaitlistRequest.fundName}</h2>
-                <p className="text-xs text-slate-500">Solicitud #{activeWaitlistRequest.id}</p>
-              </div>
-              <button
-                type="button"
-                className="rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600 hover:border-slate-300"
-                onClick={() => {
-                  setActiveWaitlistId(null);
-                  setDecisionNote("");
-                }}
-              >
-                Cerrar
-              </button>
-            </div>
-
-            <div className="max-h-[70vh] overflow-y-auto px-6 py-4">
-              <dl className="grid gap-4 md:grid-cols-2">
-                {[
-                  { label: "Full name", value: activeWaitlistRequest.fullName },
-                  { label: "Email", value: activeWaitlistRequest.email },
-                  { label: "Phone", value: activeWaitlistRequest.phone },
-                  { label: "Fund name", value: activeWaitlistRequest.fundName },
-                  { label: "Fund ID", value: activeWaitlistRequest.fundId },
-                  {
-                    label: "Intended investment amount",
-                    value: activeWaitlistRequest.intendedInvestmentAmount,
-                  },
-                  { label: "Note", value: activeWaitlistRequest.note ?? "—" },
-                  { label: "Created at", value: resolveDate(activeWaitlistRequest.createdAt)?.toLocaleString() ?? "—" },
-                  { label: "Status", value: waitlistStatusConfig[activeWaitlistRequest.status].label },
-                  { label: "Approved by", value: activeWaitlistRequest.approvedBy ?? "—" },
-                  { label: "Approved at", value: resolveDate(activeWaitlistRequest.approvedAt)?.toLocaleString() ?? "—" },
-                  { label: "Decision note", value: activeWaitlistRequest.decisionNote ?? "—" },
-                ].map((field) => (
-                  <div key={field.label} className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                    <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                      {field.label}
-                    </dt>
-                    <dd className="mt-2 text-sm text-slate-800">{formatValue(field.value)}</dd>
-                  </div>
-                ))}
-              </dl>
-
-              {activeWaitlistRequest.status === "PENDING" ? (
-                <div className="mt-4">
-                  <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                    Decision note
-                  </label>
-                  <textarea
-                    className="mt-2 min-h-[100px] w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700"
-                    value={decisionNote}
-                    onChange={(event) => setDecisionNote(event.target.value)}
-                    placeholder="Añade una nota opcional."
-                  />
-                </div>
-              ) : null}
-            </div>
-
-            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 px-6 py-4">
-              <div className="text-xs text-slate-500">
-                Estado actual: {waitlistStatusConfig[activeWaitlistRequest.status].label}
-              </div>
-              {activeWaitlistRequest.status === "PENDING" ? (
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    className="rounded-lg border border-rose-200 px-4 py-2 text-xs font-semibold text-rose-600 hover:border-rose-300 disabled:opacity-70"
-                    onClick={() => handleWaitlistDecision("REJECTED")}
-                    disabled={isWaitlistUpdating}
-                  >
-                    Rechazar
-                  </button>
-                  <button
-                    type="button"
-                    className="rounded-lg bg-emerald-600 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-500 disabled:opacity-70"
-                    onClick={() => handleWaitlistDecision("APPROVED")}
-                    disabled={isWaitlistUpdating}
-                  >
-                    Aprobar
-                  </button>
-                </div>
-              ) : null}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
