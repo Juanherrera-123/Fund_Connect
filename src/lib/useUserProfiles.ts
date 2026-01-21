@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
+import { onAuthStateChanged } from "firebase/auth";
 import { collection, doc, onSnapshot, serverTimestamp, setDoc } from "firebase/firestore";
 
 import { getFirebaseAuth, getFirestoreDb } from "@/lib/firebase";
@@ -13,11 +14,6 @@ type UserProfilesOptions = {
   uid?: string | null;
   isMaster?: boolean;
   initialValue?: UserProfile[];
-};
-
-const resolveUid = (uid?: string | null) => {
-  if (uid) return uid;
-  return getFirebaseAuth()?.currentUser?.uid ?? null;
 };
 
 const hydrateProfile = (data: Partial<UserProfile> | undefined, id: string): UserProfile | null => {
@@ -34,6 +30,19 @@ export function useUserProfiles({
   initialValue = [],
 }: UserProfilesOptions = {}): [UserProfile[], SetValue<UserProfile[]>] {
   const [profiles, setProfilesState] = useState<UserProfile[]>(initialValue);
+  const [authUid, setAuthUid] = useState<string | null>(null);
+
+  useEffect(() => {
+    const auth = getFirebaseAuth();
+    if (!auth) {
+      setAuthUid(null);
+      return;
+    }
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setAuthUid(user?.uid ?? null);
+    });
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -47,6 +56,10 @@ export function useUserProfiles({
     let unsubscribe = () => {};
 
     if (isMaster) {
+      if (!authUid) {
+        setProfilesState(initialValue);
+        return () => unsubscribe();
+      }
       const collectionRef = collection(db, "users");
       unsubscribe = onSnapshot(
         collectionRef,
@@ -61,8 +74,8 @@ export function useUserProfiles({
         }
       );
     } else {
-      const resolvedUid = resolveUid(uid);
-      if (!resolvedUid) {
+      const resolvedUid = uid ?? authUid;
+      if (!resolvedUid || !authUid || authUid !== resolvedUid) {
         setProfilesState(initialValue);
         return () => unsubscribe();
       }
@@ -84,14 +97,14 @@ export function useUserProfiles({
     }
 
     return () => unsubscribe();
-  }, [initialValue, isMaster, uid]);
+  }, [authUid, initialValue, isMaster, uid]);
 
   const setProfiles: SetValue<UserProfile[]> = useCallback(
     (value) => {
       setProfilesState((prevProfiles) => {
         const nextProfiles = value instanceof Function ? value(prevProfiles) : value;
-        const resolvedUid = resolveUid(uid);
-        if (!resolvedUid) {
+        const resolvedUid = uid ?? authUid;
+        if (!resolvedUid || !authUid || authUid !== resolvedUid) {
           return nextProfiles;
         }
         const profileToPersist = nextProfiles.find((profile) => profile.id === resolvedUid);
@@ -123,7 +136,7 @@ export function useUserProfiles({
         return nextProfiles;
       });
     },
-    [uid]
+    [authUid, uid]
   );
 
   return [profiles, setProfiles];
