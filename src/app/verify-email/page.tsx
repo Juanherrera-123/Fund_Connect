@@ -16,7 +16,6 @@ import type { Role, Session } from "@/lib/types";
 const resolveSessionRole = (normalizedRole: string): Role | "user" => {
   if (normalizedRole === "master") return "MasterUser";
   if (normalizedRole === "manager") return "Fund Manager";
-  if (normalizedRole === "investor") return "Investor";
   return "user";
 };
 
@@ -33,11 +32,6 @@ export default function VerifyEmailPage() {
         return;
       }
       router.replace("/dashboard/manager/overview");
-      return;
-    }
-
-    if (normalizedRole === "investor") {
-      router.replace("/dashboard/investor");
       return;
     }
 

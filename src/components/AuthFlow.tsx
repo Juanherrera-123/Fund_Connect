@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { FirebaseError } from "firebase/app";
 import {
   createUserWithEmailAndPassword,
@@ -35,7 +35,7 @@ import type {
   UserProfile,
 } from "@/lib/types";
 
-const requiredKycFields = ["fullName", "email", "phone", "country", "role", "password"] as const;
+const requiredKycFields = ["fullName", "email", "phone", "country", "password"] as const;
 
 type SurveyQuestion =
   | ((typeof SURVEY_DEFINITIONS)[keyof typeof SURVEY_DEFINITIONS][number] & {
@@ -106,7 +106,6 @@ const countryIsoAliases: Record<string, string> = {
 
 export function AuthFlow() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { strings, language } = useLanguage();
   const [activeTab, setActiveTab] = useState<"signup" | "login">("signup");
   const [stepIndex, setStepIndex] = useState(0);
@@ -117,7 +116,9 @@ export function AuthFlow() {
   const [isLoginPasswordVisible, setIsLoginPasswordVisible] = useState(false);
   const [isSignupPasswordVisible, setIsSignupPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
-  const [kycAnswers, setKycAnswers] = useState<Record<string, string>>({});
+  const [kycAnswers, setKycAnswers] = useState<Record<string, string>>({
+    role: "Fund Manager",
+  });
   const [confirmPassword, setConfirmPassword] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [phoneCountryCode, setPhoneCountryCode] = useState("");
@@ -206,7 +207,7 @@ export function AuthFlow() {
     [fundDetails, fundLinks, kycAnswers, role, surveyAnswers]
   );
   const steps = useMemo<SignupStep[]>(() => {
-    const surveyQuestions = role ? SURVEY_DEFINITIONS[role] : [];
+    const surveyQuestions = SURVEY_DEFINITIONS[role];
     const groups: SurveyQuestion[][] = [];
     for (let index = 0; index < surveyQuestions.length; index += 2) {
       groups.push(surveyQuestions.slice(index, index + 2));
@@ -215,13 +216,10 @@ export function AuthFlow() {
       type: "survey",
       questions: group,
     }));
-    if (role === "Fund Manager") {
-      return [{ type: "kyc" }, { type: "verify-email" }, ...surveySteps, { type: "fund-details" }];
-    }
-    return [{ type: "kyc" }, { type: "verify-email" }, ...surveySteps];
+    return [{ type: "kyc" }, { type: "verify-email" }, ...surveySteps, { type: "fund-details" }];
   }, [role]);
 
-  const totalSteps = role ? steps.length : 5;
+  const totalSteps = steps.length;
   const currentStep = steps[stepIndex] ?? steps[0];
 
   const countryNameToIso = useMemo(() => {
@@ -312,14 +310,6 @@ export function AuthFlow() {
   useEffect(() => {
     setStepIndex(0);
   }, [role]);
-
-  useEffect(() => {
-    const roleParam = searchParams.get("role");
-    if (roleParam && Object.prototype.hasOwnProperty.call(SURVEY_DEFINITIONS, roleParam)) {
-      setActiveTab("signup");
-      setKycAnswers((prev) => ({ ...prev, role: roleParam }));
-    }
-  }, [searchParams]);
 
   const updateKyc = useCallback((field: string, value: string) => {
     setKycAnswers((prev) => ({ ...prev, [field]: value }));
@@ -462,7 +452,6 @@ export function AuthFlow() {
   };
 
   const createAccountAndVerifyStep = async () => {
-    if (!role) return false;
     const auth = getFirebaseAuth();
     if (!auth) {
       setSignupStatus("Firebase authentication is not configured.");
@@ -493,24 +482,22 @@ export function AuthFlow() {
       return false;
     }
 
-    if (role === "Fund Manager") {
-      await createManagerUserProfile({
-        uid: user.uid,
-        email: user.email,
-        fullName: kycAnswers.fullName,
+    await createManagerUserProfile({
+      uid: user.uid,
+      email: user.email,
+      fullName: kycAnswers.fullName,
+    });
+    try {
+      await setManagerPendingClaims(user.uid);
+      await user.getIdToken(true);
+      await new Promise((resolve) => {
+        setTimeout(resolve, 750);
       });
-      try {
-        await setManagerPendingClaims(user.uid);
-        await user.getIdToken(true);
-        await new Promise((resolve) => {
-          setTimeout(resolve, 750);
-        });
-        await user.getIdToken(true);
-      } catch (error) {
-        console.error("Unable to assign manager claims", error);
-        setSignupStatus("Unable to initialize manager access. Please try again.");
-        return false;
-      }
+      await user.getIdToken(true);
+    } catch (error) {
+      console.error("Unable to assign manager claims", error);
+      setSignupStatus("Unable to initialize manager access. Please try again.");
+      return false;
     }
 
     const sent = await sendVerificationEmail();
@@ -521,7 +508,6 @@ export function AuthFlow() {
     setSignupStatus("");
     if (currentStep.type === "kyc") {
       if (!validateKyc()) return;
-      if (!role) return;
       const created = await createAccountAndVerifyStep();
       if (!created) return;
       setStepIndex((prev) => Math.min(prev + 1, steps.length - 1));
@@ -568,7 +554,6 @@ export function AuthFlow() {
   };
 
   const completeSignup = async () => {
-    if (!role) return;
     const auth = getFirebaseAuth();
     if (!auth) {
       setSignupStatus("Firebase authentication is not configured.");
@@ -602,18 +587,6 @@ export function AuthFlow() {
         completedAt: new Date().toISOString(),
       },
     };
-
-    if (resolvedRole === "Investor") {
-      const preferences = {
-        objective: surveyAnswers.objective as string,
-        horizon: surveyAnswers.horizon as string,
-        riskLevel: surveyAnswers.riskLevel as string,
-        strategyPreferences: surveyAnswers.strategyPreferences as string[],
-        reportingFrequency: surveyAnswers.reportingFrequency as string,
-      };
-      baseProfile.investorPreferences = preferences;
-      baseProfile.onboarding = { ...baseProfile.onboarding, investorPreferences: preferences };
-    }
 
     if (resolvedRole === "Fund Manager") {
       const fundId = `fund-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
@@ -717,18 +690,6 @@ export function AuthFlow() {
       }
     }
 
-    if (resolvedRole === "Family Office") {
-      const familyPreferences = {
-        managementRole: surveyAnswers.managementRole as string,
-        diversificationLevel: surveyAnswers.diversificationLevel as string,
-        strategyPreferences: surveyAnswers.strategyPreferences as string[],
-        interactionLevel: surveyAnswers.interactionLevel as string,
-        reportingCustomization: surveyAnswers.reportingCustomization as string,
-      };
-      baseProfile.familyOfficePreferences = familyPreferences;
-      baseProfile.onboarding = { ...baseProfile.onboarding, familyOfficePreferences: familyPreferences };
-    }
-
     setProfiles([baseProfile]);
     const normalizedAuthRole = normalizeRole(resolvedRole);
     setSession({
@@ -743,10 +704,6 @@ export function AuthFlow() {
 
     if (resolvedRole === "Fund Manager") {
       router.push("/pending-review");
-      return;
-    }
-    if (resolvedRole === "Investor") {
-      router.push("/dashboard/investor");
       return;
     }
     router.push("/profile");
@@ -831,9 +788,7 @@ export function AuthFlow() {
           ? "MasterUser"
           : normalizedRole === "manager"
             ? "Fund Manager"
-            : normalizedRole === "investor"
-              ? "Investor"
-              : "user";
+            : "user";
 
       setSession({
         id: credential.user.uid,
@@ -857,11 +812,6 @@ export function AuthFlow() {
 
       if (!isActiveStatus(status)) {
         router.push("/profile");
-        return;
-      }
-
-      if (normalizedRole === "investor") {
-        router.push("/dashboard/investor");
         return;
       }
 
@@ -1019,29 +969,6 @@ export function AuthFlow() {
                         {option.flag} {option.name}
                       </option>
                     ))}
-                  </select>
-                </label>
-                <label className="grid gap-2 text-sm font-medium text-slate-600">
-                  <span data-i18n="authRoleLabel">Tipo de perfil</span>
-                  <select
-                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
-                    name="role"
-                    value={kycAnswers.role ?? ""}
-                    onChange={(event) => updateKyc("role", event.target.value)}
-                    required
-                  >
-                    <option value="" data-i18n="authRolePlaceholder">
-                      {strings.authRolePlaceholder}
-                    </option>
-                    <option value="Investor" data-i18n="authRoleInvestor">
-                      {strings.authRoleInvestor}
-                    </option>
-                    <option value="Fund Manager" data-i18n="authRoleFundManager">
-                      {strings.authRoleFundManager}
-                    </option>
-                    <option value="Family Office" data-i18n="authRoleFamilyOffice">
-                      {strings.authRoleFamilyOffice}
-                    </option>
                   </select>
                 </label>
                 <label className="grid gap-2 text-sm font-medium text-slate-600">

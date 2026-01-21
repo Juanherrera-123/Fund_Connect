@@ -21,7 +21,6 @@ export const normalizeRole = (role?: string): NormalizedRole => {
 
   if (normalized === "master" || normalized === "masteruser") return "master";
   if (normalized === "manager" || normalized === "fundmanager") return "manager";
-  if (normalized === "investor") return "investor";
 
   return "unknown";
 };
