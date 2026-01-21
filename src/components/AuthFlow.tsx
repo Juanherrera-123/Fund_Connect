@@ -601,7 +601,6 @@ export function AuthFlow() {
       };
       baseProfile.investorPreferences = preferences;
       baseProfile.onboarding = { ...baseProfile.onboarding, investorPreferences: preferences };
-      baseProfile.waitlistFunds = [];
     }
 
     if (resolvedRole === "Fund Manager") {
