@@ -148,6 +148,9 @@ export function Navbar({ floating = false }: NavbarProps) {
             <Link href="/gestores-verificados" data-i18n="navVerifiedManagers">
               Gestores Verificados
             </Link>
+            <Link href="/family-offices" data-i18n="navFamily">
+              Family Offices
+            </Link>
             <Link href={toHash("#contact")} data-i18n="navContact">
               Contact
             </Link>
@@ -208,6 +211,13 @@ export function Navbar({ floating = false }: NavbarProps) {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Gestores Verificados
+              </Link>
+              <Link
+                href="/family-offices"
+                data-i18n="navFamily"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Family Offices
               </Link>
               <Link
                 href={toHash("#contact")}
