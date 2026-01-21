@@ -88,7 +88,6 @@ export function VerifiedManagers() {
   const [contactEmail, setContactEmail] = useState("");
   const [contactPhoneCountry, setContactPhoneCountry] = useState("+57");
   const [contactPhoneNumber, setContactPhoneNumber] = useState("");
-  const [investmentAmount, setInvestmentAmount] = useState("");
   const [waitlistError, setWaitlistError] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<{ message: string; tone: "success" | "error" } | null>(null);
   const waitlistButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -235,7 +234,6 @@ export function VerifiedManagers() {
     const phoneMatch = rawPhone.match(/^(\+\d{1,4})\s*(.*)$/);
     setContactPhoneCountry(phoneMatch?.[1] ?? "+57");
     setContactPhoneNumber(phoneMatch?.[2] ?? rawPhone);
-    setInvestmentAmount("");
   }, [currentProfile?.email, currentProfile?.fullName, currentProfile?.phone, isWaitlistModalOpen, session?.username]);
 
   useEffect(() => {
@@ -294,7 +292,6 @@ export function VerifiedManagers() {
     }
 
     const fullPhone = [contactPhoneCountry.trim(), contactPhoneNumber.trim()].filter(Boolean).join(" ");
-    const investmentValue = investmentAmount.trim();
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
     };
@@ -307,7 +304,6 @@ export function VerifiedManagers() {
       fundName: selectedFund.name,
       qualified,
       note: note.trim() || null,
-      intendedInvestmentAmount: investmentValue || null,
       user: {
         fullName: contactName.trim(),
         email: contactEmail.trim(),
@@ -349,7 +345,6 @@ export function VerifiedManagers() {
       setContactEmail("");
       setContactPhoneCountry("+57");
       setContactPhoneNumber("");
-      setInvestmentAmount("");
       setWaitlistError(null);
       setToastMessage({
         message:
@@ -1054,18 +1049,6 @@ export function VerifiedManagers() {
                       placeholder="300 000 0000"
                     />
                   </div>
-                </div>
-                <div className="grid gap-2 text-sm font-medium text-slate-600">
-                  <label htmlFor="waitlist-investment">{strings.verifiedManagersWaitlistInvestmentLabel}</label>
-                  <input
-                    id="waitlist-investment"
-                    type="text"
-                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
-                    value={investmentAmount}
-                    onChange={(event) => setInvestmentAmount(event.target.value)}
-                    placeholder={strings.verifiedManagersWaitlistInvestmentPlaceholder}
-                  />
-                  <p className="text-xs text-slate-500">{strings.verifiedManagersWaitlistInvestmentNote}</p>
                 </div>
                 <label className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
                   <input
