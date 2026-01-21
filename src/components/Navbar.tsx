@@ -102,7 +102,7 @@ export function Navbar({ floating = false }: NavbarProps) {
   }, []);
 
   return (
-    <header className={`${positionClassName} left-0 right-0 z-50 isolate`}>
+    <header className={`${positionClassName} left-0 right-0 z-50 isolate pointer-events-auto`}>
       <div className="mx-auto w-full max-w-7xl px-4">
         <div className="relative flex h-16 flex-nowrap items-center justify-between gap-6 rounded-2xl border border-white/30 bg-white/55 px-4 shadow-sm backdrop-blur-md sm:px-6">
           <Link
