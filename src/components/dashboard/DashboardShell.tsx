@@ -152,6 +152,11 @@ export default function DashboardShell({
 
   useEffect(() => {
     if (!pathname?.startsWith("/dashboard")) return;
+    const guardEnabled = false;
+    // Temporarily disable dashboard auth redirects to prevent navigation loops.
+    if (!guardEnabled) {
+      return;
+    }
     if (!authReady) return;
     let isMounted = true;
 
