@@ -5,7 +5,10 @@ import { usePathname } from "next/navigation";
 
 export function Footer() {
   const pathname = usePathname();
-  const toHash = (hash: string) => (pathname === "/" ? hash : `/${hash}`);
+  const toHash = (hash: string) => {
+    if (pathname === "/auth") return "/";
+    return pathname === "/" ? hash : `/${hash}`;
+  };
 
   return (
     <footer className="border-t border-slate-200 bg-white">

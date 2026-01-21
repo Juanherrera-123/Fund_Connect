@@ -19,7 +19,10 @@ export function Navbar({ floating = false }: NavbarProps) {
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const { strings } = useLanguage();
   const pathname = usePathname();
-  const toHash = (hash: string) => (pathname === "/" ? hash : `/${hash}`);
+  const toHash = (hash: string) => {
+    if (pathname === "/auth") return "/";
+    return pathname === "/" ? hash : `/${hash}`;
+  };
   const positionClassName = floating ? "fixed top-4" : "sticky top-0";
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuPanelRef = useRef<HTMLDivElement | null>(null);
