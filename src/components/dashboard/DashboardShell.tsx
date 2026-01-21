@@ -1,6 +1,6 @@
 "use client";
 
-import { signOut } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -143,11 +143,28 @@ export default function DashboardShell({
       label: "Dashboard User",
       labelKey: "dashboardRoleUser",
     };
+  const [authReady, setAuthReady] = useState(false);
+  const [authUid, setAuthUid] = useState<string | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const auth = getFirebaseAuth();
+    if (!auth) {
+      setAuthUid(null);
+      setAuthReady(true);
+      return;
+    }
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setAuthUid(user?.uid ?? null);
+      setAuthReady(true);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
     if (!pathname?.startsWith("/dashboard")) return;
+    if (!authReady) return;
     let isMounted = true;
 
     const logRedirect = (reason: string, role: string, status: string | null, path: string) => {
@@ -158,6 +175,11 @@ export default function DashboardShell({
     };
 
     const guard = async () => {
+      if (!authUid) {
+        logRedirect("unauthenticated", authRole, session?.status ?? null, pathname);
+        router.push("/auth");
+        return;
+      }
       const claims = await refreshClaims();
       if (!isMounted) return;
 
@@ -261,7 +283,7 @@ export default function DashboardShell({
     return () => {
       isMounted = false;
     };
-  }, [authRole, pathname, profiles, router, session, setSession]);
+  }, [authReady, authRole, authUid, pathname, profiles, router, session, setSession]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
