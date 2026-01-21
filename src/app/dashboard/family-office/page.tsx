@@ -10,7 +10,7 @@ import { getFundFrameClass } from "@/lib/fundVisuals";
 import { useFirebaseStorage } from "@/lib/useFirebaseStorage";
 import { useLocalStorage } from "@/lib/useLocalStorage";
 import { useUserProfiles } from "@/lib/useUserProfiles";
-import { createWaitlistRequest, useWaitlistCollection } from "@/lib/waitlist";
+import { useWaitlistCollection } from "@/lib/waitlist";
 import type { FundSummary, Session, WaitlistRequest, WaitlistStatus } from "@/lib/types";
 
 const cardClass = "rounded-2xl border border-slate-200 bg-white p-5 shadow-sm";
@@ -106,17 +106,34 @@ export default function FamilyOfficeDashboard() {
     }
 
     try {
-      await createWaitlistRequest({
-        fundId: activeFund.id,
-        fundName: activeFund.name,
-        fullName: profile.fullName,
-        email: profile.email,
-        phone: profile.phone ?? "",
-        intendedInvestmentAmount: "",
-        note: requestNotes.trim() ? requestNotes.trim() : null,
-        requesterUid: profile.id,
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+      if (session?.id && session?.role) {
+        headers["x-user-id"] = session.id;
+        headers["x-user-role"] = session.role;
+      }
+
+      const response = await fetch("/api/waitlist/request", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          fundId: activeFund.id,
+          fundName: activeFund.name,
+          qualified: true,
+          note: requestNotes.trim() ? requestNotes.trim() : null,
+          intendedInvestmentAmount: "",
+          user: {
+            fullName: profile.fullName,
+            email: profile.email,
+            phone: profile.phone ?? "",
+          },
+        }),
       });
-      setFeedbackKey("submitted");
+      if (!response.ok) {
+        throw new Error("Request failed");
+      }
+      setFeedbackKey(response.status === 200 ? "alreadyRequested" : "submitted");
     } catch (error) {
       console.error("Unable to create waitlist request.", error);
       return;
