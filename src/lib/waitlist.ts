@@ -2,14 +2,9 @@
 
 import {
   collection,
-  doc,
-  getDoc,
   onSnapshot,
   orderBy,
   query,
-  serverTimestamp,
-  setDoc,
-  updateDoc,
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -72,9 +67,6 @@ const mapWaitlistDoc = (id: string, data: WaitlistDocData): WaitlistRequest => {
   };
 };
 
-const normalizeEmailForId = (email: string) =>
-  email.trim().toLowerCase().replace(/[^a-z0-9]/g, "_");
-
 export function useWaitlistCollection(status?: WaitlistStatus) {
   const [waitlist, setWaitlist] = useState<WaitlistRequest[]>([]);
 
@@ -108,72 +100,4 @@ export function useWaitlistCollection(status?: WaitlistStatus) {
   }, [status]);
 
   return waitlist;
-}
-
-type CreateWaitlistRequestInput = Omit<
-  WaitlistRequest,
-  "id" | "createdAt" | "status" | "approvedAt" | "approvedBy" | "decisionNote"
-> & {
-  createdAt?: string;
-  status?: WaitlistStatus;
-};
-
-export async function createWaitlistRequest(input: CreateWaitlistRequestInput) {
-  const collectionRef = getWaitlistCollection();
-  if (!collectionRef) {
-    console.warn("Skipping waitlist request creation (missing Firebase configuration).");
-    return null;
-  }
-
-  const createdAt = input.createdAt ?? new Date().toISOString();
-  const payload: Omit<WaitlistRequest, "id"> = {
-    fundId: input.fundId,
-    fundName: input.fundName,
-    fullName: input.fullName,
-    email: input.email,
-    phone: input.phone,
-    intendedInvestmentAmount: input.intendedInvestmentAmount,
-    note: input.note ?? null,
-    status: input.status ?? "PENDING",
-    createdAt,
-    requesterUid: input.requesterUid ?? null,
-    approvedAt: null,
-    approvedBy: null,
-    decisionNote: null,
-  };
-
-  const docId = `${input.fundId}__${normalizeEmailForId(input.email)}`;
-  const docRef = doc(collectionRef, docId);
-  const existingSnapshot = await getDoc(docRef);
-  if (existingSnapshot.exists()) {
-    const existing = mapWaitlistDoc(existingSnapshot.id, existingSnapshot.data() as WaitlistDocData);
-    if (existing.status === "PENDING") {
-      return existing;
-    }
-  }
-
-  await setDoc(docRef, { ...payload, createdAt: serverTimestamp() });
-  return { id: docRef.id, ...payload };
-}
-
-type UpdateWaitlistStatusInput = {
-  id: string;
-  status: WaitlistStatus;
-  approvedBy?: string | null;
-  decisionNote?: string | null;
-};
-
-export async function updateWaitlistStatus(input: UpdateWaitlistStatusInput) {
-  const collectionRef = getWaitlistCollection();
-  if (!collectionRef) {
-    console.warn("Skipping waitlist status update (missing Firebase configuration).");
-    return;
-  }
-
-  await updateDoc(doc(collectionRef, input.id), {
-    status: input.status,
-    approvedAt: input.status === "PENDING" ? null : serverTimestamp(),
-    approvedBy: input.status === "PENDING" ? null : input.approvedBy ?? null,
-    decisionNote: input.status === "PENDING" ? null : input.decisionNote ?? null,
-  });
 }
