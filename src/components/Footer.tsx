@@ -2,13 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { toHomeHash } from "@/lib/navigation";
 
 export function Footer() {
   const pathname = usePathname();
-  const toHash = (hash: string) => {
-    if (pathname === "/auth") return "/";
-    return pathname === "/" ? hash : `/${hash}`;
-  };
+  const toHash = (hash: string) => toHomeHash(pathname, hash);
 
   return (
     <footer className="border-t border-slate-200 bg-white">
