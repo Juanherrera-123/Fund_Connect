@@ -2,11 +2,12 @@
 
 import { sendEmailVerification } from "firebase/auth";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
 import { isActiveStatus, normalizeRole, refreshClaims } from "@/lib/auth/claims";
+import { isProtectedPath } from "@/lib/auth/protectedPaths";
 import { getFirebaseAuth } from "@/lib/firebase";
 import { STORAGE_KEYS } from "@/lib/igatesData";
 import { getUserProfile } from "@/lib/users";
@@ -21,6 +22,7 @@ const resolveSessionRole = (normalizedRole: string): Role | "user" => {
 
 export default function VerifyEmailPage() {
   const router = useRouter();
+  const pathname = usePathname();
   const [session, setSession] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const [status, setStatus] = useState("");
   const [isSending, setIsSending] = useState(false);
@@ -47,7 +49,9 @@ export default function VerifyEmailPage() {
     const auth = getFirebaseAuth();
     const user = auth?.currentUser;
     if (!user) {
-      router.replace("/auth");
+      if (isProtectedPath(pathname)) {
+        router.replace("/auth");
+      }
       return;
     }
 
@@ -93,7 +97,9 @@ export default function VerifyEmailPage() {
     const auth = getFirebaseAuth();
     const user = auth?.currentUser;
     if (!user) {
-      router.replace("/auth");
+      if (isProtectedPath(pathname)) {
+        router.replace("/auth");
+      }
       return;
     }
     if (user.emailVerified) {
@@ -107,7 +113,9 @@ export default function VerifyEmailPage() {
     const auth = getFirebaseAuth();
     const user = auth?.currentUser;
     if (!user) {
-      router.replace("/auth");
+      if (isProtectedPath(pathname)) {
+        router.replace("/auth");
+      }
       return;
     }
 
