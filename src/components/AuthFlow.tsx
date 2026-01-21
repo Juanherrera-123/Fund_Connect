@@ -37,10 +37,15 @@ import type {
 
 const requiredKycFields = ["fullName", "email", "phone", "country", "password"] as const;
 
+type SurveyDefinitionQuestion =
+  (typeof SURVEY_DEFINITIONS)[keyof typeof SURVEY_DEFINITIONS][number];
+
+type SurveyChoiceQuestion =
+  | (SurveyDefinitionQuestion & { prompt?: string })
+  | (Omit<SurveyDefinitionQuestion, "type"> & { type: "multi"; prompt?: string });
+
 type SurveyQuestion =
-  | ((typeof SURVEY_DEFINITIONS)[keyof typeof SURVEY_DEFINITIONS][number] & {
-      prompt?: string;
-    })
+  | SurveyChoiceQuestion
   | {
       id: string;
       label: string;
