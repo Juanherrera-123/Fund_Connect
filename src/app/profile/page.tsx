@@ -38,9 +38,7 @@ export default function ProfilePage() {
         console.error("Failed to sign out of Firebase Auth.", error);
       }
     }
-    if (isProtectedPath(pathname)) {
-      router.push("/auth");
-    }
+    router.push("/");
   };
 
   return (
