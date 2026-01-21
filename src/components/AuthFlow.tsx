@@ -169,12 +169,9 @@ export function AuthFlow() {
 
   useEffect(() => {
     if (typeof document === "undefined") return;
-    const previousPointerEvents = document.body.style.pointerEvents;
     const previousOverflow = document.body.style.overflow;
-    document.body.style.pointerEvents = "auto";
     document.body.style.overflow = "";
     return () => {
-      document.body.style.pointerEvents = previousPointerEvents;
       document.body.style.overflow = previousOverflow;
     };
   }, []);
@@ -925,7 +922,7 @@ export function AuthFlow() {
                   <div className="flex gap-2">
                     <div className="relative min-w-[120px]">
                       <select
-                        className="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0 focus:outline-none"
+                        className="w-full appearance-none rounded-lg border border-slate-200 bg-white px-3 py-2 pr-8 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
                         aria-label={strings.authPhoneCountryCodeLabel}
                         value={phoneCountryCode}
                         onChange={(event) => setPhoneCountryCode(event.target.value)}
@@ -937,14 +934,12 @@ export function AuthFlow() {
                           </option>
                         ))}
                       </select>
-                      <div className="pointer-events-none flex items-center justify-between gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-900">
-                        <span>
-                          {(selectedPhoneOption?.flag ?? "🌍") +
-                            " " +
-                            (selectedPhoneOption?.displayDialCode ?? "")}
-                        </span>
-                        <span aria-hidden="true">▾</span>
-                      </div>
+                      <span
+                        className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-slate-600"
+                        aria-hidden="true"
+                      >
+                        ▾
+                      </span>
                     </div>
                     <input
                       className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
