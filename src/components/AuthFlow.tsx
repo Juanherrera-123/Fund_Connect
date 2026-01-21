@@ -162,7 +162,19 @@ export function AuthFlow() {
     return () => URL.revokeObjectURL(objectUrl);
   }, [logoFile]);
 
-  const role = "Fund Manager";
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const previousPointerEvents = document.body.style.pointerEvents;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.pointerEvents = "auto";
+    document.body.style.overflow = "";
+    return () => {
+      document.body.style.pointerEvents = previousPointerEvents;
+      document.body.style.overflow = previousOverflow;
+    };
+  }, []);
+
+  const role = kycAnswers.role as keyof typeof SURVEY_DEFINITIONS | undefined;
 
   const persistOnboardingDraft = useCallback(
     async (uid: string) => {
