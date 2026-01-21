@@ -1,11 +1,12 @@
 "use client";
 
-import { signOut } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import { isActiveStatus, normalizeRole, refreshClaims } from "@/lib/auth/claims";
+import { isProtectedPath } from "@/lib/auth/protectedPaths";
 import { getFirebaseAuth } from "@/lib/firebase";
 import { STORAGE_KEYS } from "@/lib/igatesData";
 import { useLocalStorage } from "@/lib/useLocalStorage";
@@ -37,20 +38,6 @@ const masterNavItems = [
           strokeLinecap="round"
           strokeLinejoin="round"
           d="M21 11.25a8.25 8.25 0 1 1-4.08-7.08L21 5.25l-1.08 4.08A8.2 8.2 0 0 1 21 11.25Z"
-        />
-      </svg>
-    ),
-  },
-  {
-    label: "Logout",
-    labelKey: "dashboardLogout",
-    action: "logout",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M15.75 9V6.75A2.25 2.25 0 0 0 13.5 4.5h-6A2.25 2.25 0 0 0 5.25 6.75v10.5A2.25 2.25 0 0 0 7.5 19.5h6A2.25 2.25 0 0 0 15.75 17.25V15m3-3H9m9.75 0-2.25-2.25m2.25 2.25-2.25 2.25"
         />
       </svg>
     ),
@@ -143,11 +130,29 @@ export default function DashboardShell({
       label: "Dashboard User",
       labelKey: "dashboardRoleUser",
     };
+  const [authReady, setAuthReady] = useState(false);
+  const [authUid, setAuthUid] = useState<string | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const isLoggingOutRef = useRef(false);
+
+  useEffect(() => {
+    const auth = getFirebaseAuth();
+    if (!auth) {
+      setAuthUid(null);
+      setAuthReady(true);
+      return;
+    }
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setAuthUid(user?.uid ?? null);
+      setAuthReady(true);
+    });
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     if (!pathname?.startsWith("/dashboard")) return;
+    if (!authReady) return;
     let isMounted = true;
 
     const logRedirect = (reason: string, role: string, status: string | null, path: string) => {
@@ -158,12 +163,27 @@ export default function DashboardShell({
     };
 
     const guard = async () => {
+      if (!authUid) {
+        if (isLoggingOutRef.current) {
+          return;
+        }
+        logRedirect("unauthenticated", authRole, session?.status ?? null, pathname);
+        if (isProtectedPath(pathname)) {
+          router.push("/auth");
+        }
+        return;
+      }
       const claims = await refreshClaims();
       if (!isMounted) return;
 
       if (!claims) {
+        if (isLoggingOutRef.current) {
+          return;
+        }
         logRedirect("unauthenticated", authRole, session?.status ?? null, pathname);
-        router.push("/auth");
+        if (isProtectedPath(pathname)) {
+          router.push("/auth");
+        }
         return;
       }
 
@@ -219,7 +239,9 @@ export default function DashboardShell({
       const profile = profiles.find((item) => item.id === session?.id);
       if (normalizedRole !== "master" && profile?.onboardingCompleted === false) {
         logRedirect("onboarding-incomplete", normalizedRole, status, pathname);
-        router.push("/auth");
+        if (isProtectedPath(pathname)) {
+          router.push("/auth");
+        }
         return;
       }
 
@@ -261,7 +283,7 @@ export default function DashboardShell({
     return () => {
       isMounted = false;
     };
-  }, [authRole, pathname, profiles, router, session, setSession]);
+  }, [authReady, authRole, authUid, pathname, profiles, router, session, setSession]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -276,6 +298,7 @@ export default function DashboardShell({
 
   const handleLogout = async () => {
     setIsMenuOpen(false);
+    isLoggingOutRef.current = true;
     setSession(null);
     const auth = getFirebaseAuth();
     if (auth) {
@@ -285,7 +308,7 @@ export default function DashboardShell({
         console.error("Failed to sign out of Firebase Auth.", error);
       }
     }
-    router.push("/auth");
+    router.push("/");
   };
 
   return (
@@ -320,23 +343,14 @@ export default function DashboardShell({
               </>
             );
 
-            if (item.href) {
-              return (
-                <Link key={`${item.label}-${item.href}`} href={item.href} className={itemClasses}>
-                  {itemContent}
-                </Link>
-              );
+            if (!item.href) {
+              return null;
             }
 
             return (
-              <button
-                key={`${item.label}-${item.labelKey}`}
-                type="button"
-                className={itemClasses}
-                onClick={handleLogout}
-              >
+              <Link key={`${item.label}-${item.href}`} href={item.href} className={itemClasses}>
                 {itemContent}
-              </button>
+              </Link>
             );
           })}
         </nav>

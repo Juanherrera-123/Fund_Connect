@@ -1,6 +1,15 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export function Footer() {
+  const pathname = usePathname();
+  const toHash = (hash: string) => {
+    if (pathname === "/auth") return "/";
+    return pathname === "/" ? hash : `/${hash}`;
+  };
+
   return (
     <footer className="border-t border-slate-200 bg-white">
       <div className="mx-auto grid w-full max-w-6xl gap-8 px-6 py-12 sm:grid-cols-2 md:grid-cols-5">
@@ -26,13 +35,17 @@ export function Footer() {
           <h5 className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-900" data-i18n="footerPlatform">
             Platform
           </h5>
-          <Link className="hover:text-slate-900" href="/#hero" data-i18n="footerOverview">
+          <Link className="hover:text-slate-900" href={toHash("#hero")} data-i18n="footerOverview">
             Overview
           </Link>
-          <Link className="hover:text-slate-900" href="/#funds" data-i18n="footerFeaturedFunds">
+          <Link className="hover:text-slate-900" href={toHash("#funds")} data-i18n="footerFeaturedFunds">
             Featured Funds
           </Link>
-          <Link className="hover:text-slate-900" href="/#intelligence" data-i18n="footerIntelligence">
+          <Link
+            className="hover:text-slate-900"
+            href={toHash("#intelligence")}
+            data-i18n="footerIntelligence"
+          >
             Intelligence
           </Link>
         </div>
@@ -40,13 +53,17 @@ export function Footer() {
           <h5 className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-900" data-i18n="footerCompany">
             Company
           </h5>
-          <Link className="hover:text-slate-900" href="/#why" data-i18n="footerAbout">
+          <Link className="hover:text-slate-900" href={toHash("#why")} data-i18n="footerAbout">
             About
           </Link>
-          <Link className="hover:text-slate-900" href="/#compliance" data-i18n="footerCompliance">
+          <Link
+            className="hover:text-slate-900"
+            href={toHash("#compliance")}
+            data-i18n="footerCompliance"
+          >
             Compliance
           </Link>
-          <Link className="hover:text-slate-900" href="/#contact" data-i18n="footerCareers">
+          <Link className="hover:text-slate-900" href={toHash("#contact")} data-i18n="footerCareers">
             Careers
           </Link>
         </div>
@@ -57,10 +74,18 @@ export function Footer() {
           <a className="hover:text-slate-900" href="mailto:connect@igates.com">
             connect@igates.com
           </a>
-          <Link className="hover:text-slate-900" href="/#contact" data-i18n="footerRequestCall">
+          <Link
+            className="hover:text-slate-900"
+            href={toHash("#contact")}
+            data-i18n="footerRequestCall"
+          >
             Request a Call
           </Link>
-          <Link className="hover:text-slate-900" href="/#contact" data-i18n="footerInvestorRelations">
+          <Link
+            className="hover:text-slate-900"
+            href={toHash("#contact")}
+            data-i18n="footerInvestorRelations"
+          >
             Investor Relations
           </Link>
         </div>

@@ -3,10 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { onAuthStateChanged } from "firebase/auth";
 
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useLanguage } from "@/components/LanguageProvider";
 import { normalizeRole } from "@/lib/auth/claims";
+import { getFirebaseAuth } from "@/lib/firebase";
 import { STORAGE_KEYS } from "@/lib/igatesData";
 import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { Session } from "@/lib/types";
@@ -16,17 +18,42 @@ type NavbarProps = {
 };
 
 export function Navbar({ floating = false }: NavbarProps) {
-  const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
+  const [session, setSession] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const { strings } = useLanguage();
   const pathname = usePathname();
+  const toHash = (hash: string) => {
+    if (pathname === "/auth") return "/";
+    return pathname === "/" ? hash : `/${hash}`;
+  };
   const positionClassName = floating ? "fixed top-4" : "sticky top-0";
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuPanelRef = useRef<HTMLDivElement | null>(null);
   const menuButtonRef = useRef<HTMLButtonElement | null>(null);
   const authRole = session?.authRole ?? normalizeRole(session?.role);
+  const [authReady, setAuthReady] = useState(false);
+  const [authUid, setAuthUid] = useState<string | null>(null);
+
+  useEffect(() => {
+    const auth = getFirebaseAuth();
+    if (!auth) {
+      setAuthUid(null);
+      setAuthReady(true);
+      return;
+    }
+
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        setSession(null);
+      }
+      setAuthUid(user?.uid ?? null);
+      setAuthReady(true);
+    });
+
+    return () => unsubscribe();
+  }, [setSession]);
 
   const authLink = (() => {
-    if (!session) {
+    if (!authReady || !authUid) {
       return { label: strings.navAuthSignup, href: "/auth", key: "navAuthSignup" };
     }
 
@@ -124,7 +151,7 @@ export function Navbar({ floating = false }: NavbarProps) {
             <Link href="/family-offices" data-i18n="navFamily">
               Family Offices
             </Link>
-            <Link href="/#contact" data-i18n="navContact">
+            <Link href={toHash("#contact")} data-i18n="navContact">
               Contact
             </Link>
           </nav>
@@ -185,10 +212,18 @@ export function Navbar({ floating = false }: NavbarProps) {
               >
                 Gestores Verificados
               </Link>
-              <Link href="/family-offices" data-i18n="navFamily" onClick={() => setIsMenuOpen(false)}>
+              <Link
+                href="/family-offices"
+                data-i18n="navFamily"
+                onClick={() => setIsMenuOpen(false)}
+              >
                 Family Offices
               </Link>
-              <Link href="/#contact" data-i18n="navContact" onClick={() => setIsMenuOpen(false)}>
+              <Link
+                href={toHash("#contact")}
+                data-i18n="navContact"
+                onClick={() => setIsMenuOpen(false)}
+              >
                 Contact
               </Link>
             </nav>

@@ -37,10 +37,15 @@ import type {
 
 const requiredKycFields = ["fullName", "email", "phone", "country", "password"] as const;
 
+type SurveyDefinitionQuestion =
+  (typeof SURVEY_DEFINITIONS)[keyof typeof SURVEY_DEFINITIONS][number];
+
+type SurveyChoiceQuestion =
+  | (SurveyDefinitionQuestion & { prompt?: string })
+  | (Omit<SurveyDefinitionQuestion, "type"> & { type: "multi"; prompt?: string });
+
 type SurveyQuestion =
-  | ((typeof SURVEY_DEFINITIONS)[keyof typeof SURVEY_DEFINITIONS][number] & {
-      prompt?: string;
-    })
+  | SurveyChoiceQuestion
   | {
       id: string;
       label: string;
@@ -162,7 +167,16 @@ export function AuthFlow() {
     return () => URL.revokeObjectURL(objectUrl);
   }, [logoFile]);
 
-  const role = "Fund Manager";
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, []);
+
+  const role = kycAnswers.role as keyof typeof SURVEY_DEFINITIONS | undefined;
 
   const persistOnboardingDraft = useCallback(
     async (uid: string) => {
@@ -366,8 +380,8 @@ export function AuthFlow() {
   const validateSurvey = (questions: SurveyQuestion[]) => {
     const isValid = questions.every((question) => {
       const answer = surveyAnswers[question.id];
-      if (question.type === "multi") {
-        return Array.isArray(answer) && answer.length > 0;
+      if (Array.isArray(answer)) {
+        return answer.length > 0;
       }
       return typeof answer === "string" && answer.trim().length > 0;
     });
@@ -908,7 +922,7 @@ export function AuthFlow() {
                   <div className="flex gap-2">
                     <div className="relative min-w-[120px]">
                       <select
-                        className="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0 focus:outline-none"
+                        className="w-full appearance-none rounded-lg border border-slate-200 bg-white px-3 py-2 pr-8 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
                         aria-label={strings.authPhoneCountryCodeLabel}
                         value={phoneCountryCode}
                         onChange={(event) => setPhoneCountryCode(event.target.value)}
@@ -920,14 +934,12 @@ export function AuthFlow() {
                           </option>
                         ))}
                       </select>
-                      <div className="pointer-events-none flex items-center justify-between gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-900">
-                        <span>
-                          {(selectedPhoneOption?.flag ?? "🌍") +
-                            " " +
-                            (selectedPhoneOption?.displayDialCode ?? "")}
-                        </span>
-                        <span aria-hidden="true">▾</span>
-                      </div>
+                      <span
+                        className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-slate-600"
+                        aria-hidden="true"
+                      >
+                        ▾
+                      </span>
                     </div>
                     <input
                       className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"

@@ -22,7 +22,12 @@ export function ProfileView() {
 
   const handleLogout = () => {
     setSession(null);
-    router.push("/auth");
+    if (typeof window !== "undefined") {
+      const pathname = window.location.pathname;
+      if (isProtectedPath(pathname)) {
+        router.push("/auth");
+      }
+    }
   };
 
   if (!profile) {
