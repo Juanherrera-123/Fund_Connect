@@ -2,13 +2,14 @@
 
 import { useEffect } from "react";
 import { signOut } from "firebase/auth";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 import { Footer } from "@/components/Footer";
 import { ProfileHeader } from "@/components/ProfileHeader";
 import { ProfileView } from "@/components/ProfileView";
 import { useLanguage } from "@/components/LanguageProvider";
 import { isActiveStatus, normalizeRole } from "@/lib/auth/claims";
+import { isProtectedPath } from "@/lib/auth/protectedPaths";
 import { getFirebaseAuth } from "@/lib/firebase";
 import { STORAGE_KEYS } from "@/lib/igatesData";
 import { useLocalStorage } from "@/lib/useLocalStorage";
@@ -16,6 +17,7 @@ import type { Session } from "@/lib/types";
 
 export default function ProfilePage() {
   const router = useRouter();
+  const pathname = usePathname();
   const { strings } = useLanguage();
   const [session, setSession] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const authRole = session?.authRole ?? normalizeRole(session?.role);
@@ -36,7 +38,9 @@ export default function ProfilePage() {
         console.error("Failed to sign out of Firebase Auth.", error);
       }
     }
-    router.push("/auth");
+    if (isProtectedPath(pathname)) {
+      router.push("/auth");
+    }
   };
 
   return (

@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import { isActiveStatus, normalizeRole, refreshClaims } from "@/lib/auth/claims";
+import { isProtectedPath } from "@/lib/auth/protectedPaths";
 import { getFirebaseAuth } from "@/lib/firebase";
 import { STORAGE_KEYS } from "@/lib/igatesData";
 import { useLocalStorage } from "@/lib/useLocalStorage";
@@ -177,7 +178,9 @@ export default function DashboardShell({
     const guard = async () => {
       if (!authUid) {
         logRedirect("unauthenticated", authRole, session?.status ?? null, pathname);
-        router.push("/auth");
+        if (isProtectedPath(pathname)) {
+          router.push("/auth");
+        }
         return;
       }
       const claims = await refreshClaims();
@@ -185,7 +188,9 @@ export default function DashboardShell({
 
       if (!claims) {
         logRedirect("unauthenticated", authRole, session?.status ?? null, pathname);
-        router.push("/auth");
+        if (isProtectedPath(pathname)) {
+          router.push("/auth");
+        }
         return;
       }
 
@@ -241,7 +246,9 @@ export default function DashboardShell({
       const profile = profiles.find((item) => item.id === session?.id);
       if (normalizedRole !== "master" && profile?.onboardingCompleted === false) {
         logRedirect("onboarding-incomplete", normalizedRole, status, pathname);
-        router.push("/auth");
+        if (isProtectedPath(pathname)) {
+          router.push("/auth");
+        }
         return;
       }
 
@@ -307,7 +314,9 @@ export default function DashboardShell({
         console.error("Failed to sign out of Firebase Auth.", error);
       }
     }
-    router.push("/auth");
+    if (isProtectedPath(pathname)) {
+      router.push("/auth");
+    }
   };
 
   return (
