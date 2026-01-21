@@ -24,8 +24,12 @@ export default function HashScrollHandler() {
     if (!targetId) return;
 
     const target = document.getElementById(targetId);
-    if (!target) return;
+    if (!target) {
+      console.log("[HashScrollHandler] Target not found for hash:", targetId);
+      return;
+    }
 
+    console.log("[HashScrollHandler] Scrolling to hash:", targetId);
     target.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
 
