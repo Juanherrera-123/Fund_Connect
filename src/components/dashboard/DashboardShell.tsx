@@ -335,23 +335,14 @@ export default function DashboardShell({
               </>
             );
 
-            if (item.href) {
-              return (
-                <Link key={`${item.label}-${item.href}`} href={item.href} className={itemClasses}>
-                  {itemContent}
-                </Link>
-              );
+            if (!item.href) {
+              return null;
             }
 
             return (
-              <button
-                key={`${item.label}-${item.labelKey}`}
-                type="button"
-                className={itemClasses}
-                onClick={handleLogout}
-              >
+              <Link key={`${item.label}-${item.href}`} href={item.href} className={itemClasses}>
                 {itemContent}
-              </button>
+              </Link>
             );
           })}
         </nav>
