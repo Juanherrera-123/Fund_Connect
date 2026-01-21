@@ -13,6 +13,10 @@ body {
   min-height: 100vh;
 }
 
+header[data-app-header] {
+  z-index: 1000;
+}
+
 a {
   color: inherit;
   text-decoration: none;
