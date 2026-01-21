@@ -52,7 +52,9 @@ service cloud.firestore {
 
     match /waitlistRequests/{requestId} {
       allow create: if true;
-      allow read, update, delete: if isMaster();
+      allow read: if isMaster()
+        || (signedIn() && resource.data.requesterUid == request.auth.uid);
+      allow update, delete: if isMaster();
     }
 
     match /contactRequests/{requestId} {

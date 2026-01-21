@@ -68,7 +68,8 @@ const transition = {
   ease: [0.22, 1, 0.36, 1],
 };
 
-const WAITLIST_MINIMUM_INVESTMENT = 2000;
+const waitlistNetworkErrorMessage =
+  "No pudimos conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.";
 
 export function VerifiedManagers() {
   const { strings } = useLanguage();
@@ -284,17 +285,16 @@ export function VerifiedManagers() {
     setIsSubmitting(true);
     setWaitlistError(null);
 
-    const fullPhone = [contactPhoneCountry.trim(), contactPhoneNumber.trim()].filter(Boolean).join(" ");
-    const investmentValue = Number(investmentAmount);
-    if (!Number.isFinite(investmentValue) || investmentValue < WAITLIST_MINIMUM_INVESTMENT) {
-      setWaitlistError("No se pudo enviar la solicitud. Intenta nuevamente.");
-      setToastMessage({
-        message: "No se pudo enviar la solicitud. Intenta nuevamente.",
-        tone: "error",
-      });
+    if (!selectedFund.id || !selectedFund.name) {
+      const errorMessage = "No pudimos identificar el fondo seleccionado. Intenta nuevamente.";
+      setWaitlistError(errorMessage);
+      setToastMessage({ message: errorMessage, tone: "error" });
       setIsSubmitting(false);
       return;
     }
+
+    const fullPhone = [contactPhoneCountry.trim(), contactPhoneNumber.trim()].filter(Boolean).join(" ");
+    const investmentValue = investmentAmount.trim();
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
     };
@@ -307,8 +307,7 @@ export function VerifiedManagers() {
       fundName: selectedFund.name,
       qualified,
       note: note.trim() || null,
-      fundMinimum: selectedFund.minInvestment ?? null,
-      intendedInvestmentAmount: investmentAmount.trim(),
+      intendedInvestmentAmount: investmentValue || null,
       user: {
         fullName: contactName.trim(),
         email: contactEmail.trim(),
@@ -316,14 +315,32 @@ export function VerifiedManagers() {
       },
     };
 
+    const sendWaitlistRequest = async (attempt = 0): Promise<Response> => {
+      try {
+        return await fetch("/api/waitlist/request", {
+          method: "POST",
+          headers,
+          body: JSON.stringify(payload),
+        });
+      } catch (error) {
+        if (attempt < 1) {
+          await new Promise((resolve) => setTimeout(resolve, 500));
+          return sendWaitlistRequest(attempt + 1);
+        }
+        throw error;
+      }
+    };
+
     try {
-      const response = await fetch("/api/waitlist/request", {
-        method: "POST",
-        headers,
-        body: JSON.stringify(payload),
-      });
+      const response = await sendWaitlistRequest();
       if (!response.ok) {
-        throw new Error("Failed to send waitlist request.");
+        const data = (await response.json()) as { error?: string; details?: string } | null;
+        const message =
+          data?.error ||
+          (response.status >= 500
+            ? "Ocurrió un error interno. Intenta nuevamente en unos minutos."
+            : "Revisa los datos e intenta nuevamente.");
+        throw new Error(message);
       }
       setIsWaitlistModalOpen(false);
       setQualified(false);
@@ -341,9 +358,15 @@ export function VerifiedManagers() {
       });
     } catch (error) {
       console.error(error);
-      setWaitlistError("No se pudo enviar la solicitud. Intenta nuevamente.");
+      const message =
+        error instanceof TypeError
+          ? waitlistNetworkErrorMessage
+          : error instanceof Error
+            ? error.message
+            : "No se pudo enviar la solicitud. Intenta nuevamente.";
+      setWaitlistError(message);
       setToastMessage({
-        message: "No se pudo enviar la solicitud. Intenta nuevamente.",
+        message,
         tone: "error",
       });
     } finally {
@@ -400,10 +423,6 @@ export function VerifiedManagers() {
   const performanceLinks = selectedFund
     ? Array.from({ length: 3 }, (_, index) => selectedFund.livePerformanceLinks[index] ?? "")
     : [];
-  const investmentValue = Number(investmentAmount);
-  const isInvestmentInvalid =
-    investmentAmount.trim().length > 0 &&
-    (!Number.isFinite(investmentValue) || investmentValue < WAITLIST_MINIMUM_INVESTMENT);
   const whatsappMessage = selectedFund
     ? strings.verifiedManagersWhatsappMessage.replace("{fundName}", selectedFund.name)
     : "";
@@ -1040,17 +1059,8 @@ export function VerifiedManagers() {
                   <label htmlFor="waitlist-investment">{strings.verifiedManagersWaitlistInvestmentLabel}</label>
                   <input
                     id="waitlist-investment"
-                    type="number"
-                    min={WAITLIST_MINIMUM_INVESTMENT}
-                    step={100}
-                    inputMode="numeric"
-                    required
-                    aria-invalid={isInvestmentInvalid}
-                    className={`w-full rounded-lg border px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 ${
-                      isInvestmentInvalid
-                        ? "border-rose-400 bg-rose-50 focus:ring-rose-200"
-                        : "border-slate-200 bg-slate-50 focus:ring-igates-500/30"
-                    }`}
+                    type="text"
+                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
                     value={investmentAmount}
                     onChange={(event) => setInvestmentAmount(event.target.value)}
                     placeholder={strings.verifiedManagersWaitlistInvestmentPlaceholder}
@@ -1087,7 +1097,7 @@ export function VerifiedManagers() {
                 ) : null}
                 <button
                   type="submit"
-                  disabled={isSubmitting || isInvestmentInvalid}
+                  disabled={isSubmitting}
                   className="inline-flex w-full items-center justify-center rounded-full bg-igates-500 px-5 py-3 text-xs font-semibold uppercase tracking-[0.12em] text-white shadow-lg shadow-igates-500/30 transition hover:bg-igates-400 disabled:cursor-not-allowed disabled:bg-igates-500/70"
                 >
                   {isSubmitting ? strings.verifiedManagersWaitlistSubmitting : strings.verifiedManagersWaitlistSubmit}

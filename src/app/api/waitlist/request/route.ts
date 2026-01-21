@@ -8,7 +8,6 @@ type WaitlistRequestPayload = {
   fundName?: string;
   qualified?: boolean;
   note?: string | null;
-  fundMinimum?: string | null;
   intendedInvestmentAmount?: string;
   user?: {
     fullName?: string;
@@ -29,7 +28,7 @@ export async function POST(request: Request) {
 
   const auth = getAuthContext(request);
 
-  const { fundId, fundName, qualified, note, user, fundMinimum, intendedInvestmentAmount } = payload;
+  const { fundId, fundName, qualified, note, user, intendedInvestmentAmount } = payload;
   const requesterEmail = user?.email?.trim();
   const requesterName = user?.fullName?.trim();
   const requesterPhone = user?.phone?.trim();
@@ -60,25 +59,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Phone is required." }, { status: 400 });
   }
 
-  if (!investmentAmount) {
-    return NextResponse.json({ error: "Investment amount is required." }, { status: 400 });
-  }
-
-  const numericAmount = Number.parseFloat(
-    investmentAmount.replace(/[^0-9.,]/g, "").replace(/,/g, "")
-  );
-  if (!Number.isFinite(numericAmount) || numericAmount < 1000) {
-    return NextResponse.json({ error: "Investment amount must be at least 1000 USD." }, { status: 400 });
-  }
-  if (fundMinimum) {
-    const minimumValue = Number.parseFloat(fundMinimum.replace(/[^0-9.,]/g, "").replace(/,/g, ""));
-    if (Number.isFinite(minimumValue) && numericAmount < minimumValue) {
-      return NextResponse.json(
-        { error: "Investment amount must meet the fund minimum." },
-        { status: 400 }
-      );
-    }
-  }
+  const normalizedInvestmentAmount = investmentAmount?.trim() || null;
 
   try {
     const { waitlistRequest, wasExisting } = await createWaitlistRequest({
@@ -87,7 +68,7 @@ export async function POST(request: Request) {
       fullName: requesterName,
       email: requesterEmail,
       phone: requesterPhone,
-      intendedInvestmentAmount: Number.isFinite(numericAmount) ? numericAmount : investmentAmount,
+      intendedInvestmentAmount: normalizedInvestmentAmount ?? "",
       note: note ?? null,
       status: "PENDING",
       requesterUid: auth?.id ?? null,

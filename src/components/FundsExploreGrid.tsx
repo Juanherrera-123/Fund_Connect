@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 import { useLanguage } from "@/components/LanguageProvider";
@@ -14,7 +15,7 @@ import type { FundSummary, Session } from "@/lib/types";
 export function FundsExploreGrid() {
   const { strings } = useLanguage();
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
-  const [profiles, setProfiles] = useUserProfiles({ uid: session?.id ?? session?.uid });
+  const [profiles] = useUserProfiles({ uid: session?.id ?? session?.uid });
   const [capitalAllocations] = useFirebaseStorage<Record<string, number>>(
     STORAGE_KEYS.capitalAllocations,
     {}
@@ -57,17 +58,7 @@ export function FundsExploreGrid() {
     };
   }, [profile]);
 
-  const toggleWaitlist = (fundName: string) => {
-    if (!profile) return;
-    const waitlist = new Set(profile.waitlistFunds || []);
-    if (waitlist.has(fundName)) {
-      waitlist.delete(fundName);
-    } else {
-      waitlist.add(fundName);
-    }
-    const updatedProfile = { ...profile, waitlistFunds: Array.from(waitlist) };
-    setProfiles((prev) => prev.map((item) => (item.id === updatedProfile.id ? updatedProfile : item)));
-  };
+  const waitlistPath = authRole === "investor" ? "/dashboard/investor" : "/dashboard";
 
   if (!profile) {
     return (
@@ -90,7 +81,6 @@ export function FundsExploreGrid() {
   return (
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {funds.map((fund) => {
-        const isWaitlisted = profile.waitlistFunds?.includes(fund.name);
         const capitalAllocated = capitalAllocations[fund.id] ?? fund.capital_allocated ?? 0;
         return (
           <div
@@ -124,13 +114,12 @@ export function FundsExploreGrid() {
                 </span>
               </div>
               <div className="mt-2 flex flex-wrap gap-3">
-                <button
+                <Link
                   className="inline-flex w-full items-center justify-center rounded-full bg-igates-500 px-5 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-white shadow-lg shadow-igates-500/30 transition hover:bg-igates-400 sm:w-auto"
-                  type="button"
-                  onClick={() => toggleWaitlist(fund.name)}
+                  href={waitlistPath}
                 >
-                  {isWaitlisted ? strings.fundsExploreWaitlisted : strings.fundsExploreJoinWaitlist}
-                </button>
+                  {strings.fundsExploreJoinWaitlist}
+                </Link>
               </div>
             </div>
           </div>
