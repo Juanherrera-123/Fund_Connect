@@ -102,7 +102,10 @@ export function Navbar({ floating = false }: NavbarProps) {
   }, []);
 
   return (
-    <header className={`${positionClassName} left-0 right-0 z-50 isolate pointer-events-auto`}>
+    <header
+      data-app-header
+      className={`${positionClassName} left-0 right-0 z-[1000] isolate pointer-events-auto`}
+    >
       <div className="mx-auto w-full max-w-7xl px-4">
         <div className="relative flex h-16 flex-nowrap items-center justify-between gap-6 rounded-2xl border border-white/30 bg-white/55 px-4 shadow-sm backdrop-blur-md sm:px-6">
           <Link
@@ -173,7 +176,7 @@ export function Navbar({ floating = false }: NavbarProps) {
           <div
             id="mobile-menu"
             ref={menuPanelRef}
-            className={`absolute left-4 right-4 top-[calc(100%+8px)] z-40 rounded-2xl border border-white/40 bg-white/70 p-4 shadow-xl backdrop-blur-xl transition-all duration-200 lg:hidden ${
+            className={`absolute left-4 right-4 top-[calc(100%+8px)] z-[999] rounded-2xl border border-white/40 bg-white/70 p-4 shadow-xl backdrop-blur-xl transition-all duration-200 lg:pointer-events-none lg:opacity-0 lg:translate-y-0 lg:hidden ${
               isMenuOpen ? "translate-y-0 opacity-100" : "pointer-events-none -translate-y-2 opacity-0"
             }`}
             aria-hidden={!isMenuOpen}
