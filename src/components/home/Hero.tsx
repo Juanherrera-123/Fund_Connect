@@ -84,14 +84,7 @@ export function Hero() {
           <div className="flex flex-wrap gap-4">
             <Link
               className="btn-primary inline-flex w-full items-center justify-center rounded-full px-6 py-3 text-sm font-semibold shadow-lg shadow-igates-500/30 transition sm:w-auto"
-              href={{ pathname: "/auth", query: { role: "Family Office" } }}
-              data-i18n="heroCtaInvestor"
-            >
-              Solicitar acceso institucional
-            </Link>
-            <Link
-              className="inline-flex w-full items-center justify-center rounded-full border border-white/40 bg-white/55 px-6 py-3 text-sm font-semibold text-slate-700 shadow-sm backdrop-blur-md transition-all hover:border-white/60 hover:bg-white/70 hover:text-slate-900 hover:shadow-md sm:w-auto"
-              href={{ pathname: "/auth", query: { role: "Fund Manager" } }}
+              href="/auth"
               data-i18n="heroCtaManager"
             >
               Postularse como gestor

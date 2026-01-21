@@ -42,10 +42,6 @@ export function Navbar({ floating = false }: NavbarProps) {
       };
     }
 
-    if (authRole === "investor") {
-      return { label: strings.navAuthProfile, href: "/dashboard/investor", key: "navAuthProfile" };
-    }
-
     return { label: strings.navAuthProfile, href: "/profile", key: "navAuthProfile" };
   })();
 

@@ -116,76 +116,12 @@ const fundManagerNavItems = [
   },
 ];
 
-const investorNavItems = [
-  {
-    label: "Dashboard",
-    labelKey: "dashboardNavOverview",
-    href: "/dashboard/investor",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M4.5 10.5 12 4.5l7.5 6v8.25a.75.75 0 0 1-.75.75h-4.5a.75.75 0 0 1-.75-.75V13.5h-3v5.25a.75.75 0 0 1-.75.75H5.25a.75.75 0 0 1-.75-.75Z"
-        />
-      </svg>
-    ),
-  },
-  {
-    label: "Profile",
-    labelKey: "profileTitleFallback",
-    href: "/profile",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.5 20.25a7.5 7.5 0 0 1 15 0"
-        />
-      </svg>
-    ),
-  },
-];
-
-const familyOfficeNavItems = [
-  {
-    label: "Dashboard",
-    labelKey: "dashboardNavOverview",
-    href: "/dashboard/family-office",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M4.5 10.5 12 4.5l7.5 6v8.25a.75.75 0 0 1-.75.75h-4.5a.75.75 0 0 1-.75-.75V13.5h-3v5.25a.75.75 0 0 1-.75.75H5.25a.75.75 0 0 1-.75-.75Z"
-        />
-      </svg>
-    ),
-  },
-  {
-    label: "Profile",
-    labelKey: "profileTitleFallback",
-    href: "/profile",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.5 20.25a7.5 7.5 0 0 1 15 0"
-        />
-      </svg>
-    ),
-  },
-];
-
 const actionIconClass =
   "flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-600 transition hover:border-slate-300 hover:text-slate-900";
 
 const roleMap: Record<string, { label: string; labelKey: string }> = {
   "/dashboard/master": { label: "Master", labelKey: "dashboardRoleMaster" },
   "/dashboard/fund-manager": { label: "Master", labelKey: "dashboardRoleMaster" },
-  "/dashboard/investor": { label: "Investor", labelKey: "dashboardRoleUser" },
-  "/dashboard/family-office": { label: "Family Office", labelKey: "dashboardRoleUser" },
   "/dashboard/master/messages": { label: "Master", labelKey: "dashboardRoleMaster" },
   "/dashboard/manager": { label: "Fund Manager", labelKey: "dashboardRoleManager" },
 };
@@ -201,13 +137,7 @@ export default function DashboardShell({
   const [profiles] = useUserProfiles({ uid: session?.id ?? session?.uid });
   const authRole = session?.authRole ?? normalizeRole(session?.role);
   const navItems =
-    authRole === "manager"
-      ? fundManagerNavItems
-      : authRole === "investor"
-        ? investorNavItems
-        : session?.role === "Family Office"
-          ? familyOfficeNavItems
-          : masterNavItems;
+    authRole === "manager" ? fundManagerNavItems : masterNavItems;
   const role =
     Object.entries(roleMap).find(([href]) => pathname?.startsWith(href))?.[1] ?? {
       label: "Dashboard User",
@@ -246,9 +176,7 @@ export default function DashboardShell({
           ? "MasterUser"
           : normalizedRole === "manager"
             ? "Fund Manager"
-            : normalizedRole === "investor"
-              ? "Investor"
-              : "user";
+            : "user";
 
       if (session) {
         const needsUpdate =
@@ -309,7 +237,6 @@ export default function DashboardShell({
 
       const isManagerRoute = pathname?.startsWith("/dashboard/manager");
       const isMasterRoute = pathname?.startsWith("/dashboard/master");
-      const isInvestorRoute = pathname?.startsWith("/dashboard/investor");
 
       if (normalizedRole === "master" && !isMasterRoute) {
         logRedirect("role-mismatch", normalizedRole, status, pathname);
@@ -320,12 +247,6 @@ export default function DashboardShell({
       if (normalizedRole === "manager" && !isManagerRoute) {
         logRedirect("role-mismatch", normalizedRole, status, pathname);
         router.push("/dashboard/manager/overview");
-        return;
-      }
-
-      if (normalizedRole === "investor" && !isInvestorRoute) {
-        logRedirect("role-mismatch", normalizedRole, status, pathname);
-        router.push("/dashboard/investor");
         return;
       }
 
