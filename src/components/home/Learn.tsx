@@ -29,7 +29,7 @@ const accordionArrow = (
 export function Learn() {
   return (
     <section
-      id="learn"
+      id="intelligence"
       className="relative overflow-hidden bg-gradient-to-br from-[#050f24] via-[#0b2453] to-[#0b3b6a] py-12 text-white sm:py-16 lg:py-24"
     >
       <div

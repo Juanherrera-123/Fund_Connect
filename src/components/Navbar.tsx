@@ -19,6 +19,7 @@ export function Navbar({ floating = false }: NavbarProps) {
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const { strings } = useLanguage();
   const pathname = usePathname();
+  const toHash = (hash: string) => (pathname === "/" ? hash : `/${hash}`);
   const positionClassName = floating ? "fixed top-4" : "sticky top-0";
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuPanelRef = useRef<HTMLDivElement | null>(null);
@@ -121,7 +122,7 @@ export function Navbar({ floating = false }: NavbarProps) {
             <Link href="/gestores-verificados" data-i18n="navVerifiedManagers">
               Gestores Verificados
             </Link>
-            <Link href="/#contact" data-i18n="navContact">
+            <Link href={toHash("#contact")} data-i18n="navContact">
               Contact
             </Link>
           </nav>
@@ -182,7 +183,11 @@ export function Navbar({ floating = false }: NavbarProps) {
               >
                 Gestores Verificados
               </Link>
-              <Link href="/#contact" data-i18n="navContact" onClick={() => setIsMenuOpen(false)}>
+              <Link
+                href={toHash("#contact")}
+                data-i18n="navContact"
+                onClick={() => setIsMenuOpen(false)}
+              >
                 Contact
               </Link>
             </nav>
