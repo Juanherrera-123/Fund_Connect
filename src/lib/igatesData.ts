@@ -3676,58 +3676,6 @@ export const STRATEGY_OPTIONS = [
 ];
 
 export const SURVEY_DEFINITIONS = {
-  Investor: [
-    {
-      id: "objective",
-      label: "Investment Objective",
-      type: "single",
-      options: [
-        { label: "Preservación de capital", value: "Preservación de capital" },
-        { label: "Crecimiento moderado", value: "Crecimiento moderado" },
-        { label: "Crecimiento agresivo", value: "Crecimiento agresivo" },
-        { label: "Diversificación patrimonial", value: "Diversificación patrimonial" },
-        { label: "Generación de ingresos", value: "Generación de ingresos" },
-      ],
-    },
-    {
-      id: "horizon",
-      label: "Investment Horizon",
-      type: "single",
-      options: [
-        { label: "Menos de 6 meses", value: "Menos de 6 meses" },
-        { label: "Entre 6 meses y 1 año", value: "Entre 6 meses y 1 año" },
-        { label: "1 a 3 años", value: "1 a 3 años" },
-        { label: "Más de 3 años", value: "Más de 3 años" },
-      ],
-    },
-    {
-      id: "riskLevel",
-      label: "Risk Tolerance",
-      type: "single",
-      options: [
-        { label: "Conservador", value: "Conservador" },
-        { label: "Moderado", value: "Moderado" },
-        { label: "Balanceado", value: "Balanceado" },
-        { label: "Agresivo", value: "Agresivo" },
-      ],
-    },
-    {
-      id: "strategyPreferences",
-      label: "Preferred Strategy / Assets",
-      type: "multi",
-      options: STRATEGY_OPTIONS,
-    },
-    {
-      id: "reportingFrequency",
-      label: "Reporting Frequency",
-      type: "single",
-      options: [
-        { label: "Mensual", value: "Mensual" },
-        { label: "Trimestral", value: "Trimestral" },
-        { label: "Solo eventos relevantes", value: "Solo eventos relevantes" },
-      ],
-    },
-  ],
   "Fund Manager": [
     {
       id: "strategyType",
@@ -3769,54 +3717,6 @@ export const SURVEY_DEFINITIONS = {
         { label: "Managed Account (MAM / PAMM)", value: "Managed Account (MAM / PAMM)" },
         { label: "Vehículo privado (SPV / fondo privado)", value: "Vehículo privado (SPV / fondo privado)" },
         { label: "En proceso de estructuración", value: "En proceso de estructuración" },
-      ],
-    },
-  ],
-  "Family Office": [
-    {
-      id: "managementRole",
-      label: "Desired Role in Investment Management",
-      type: "single",
-      options: [
-        { label: "Supervisión estratégica", value: "Supervisión estratégica" },
-        { label: "Selección activa de gestores", value: "Selección activa de gestores" },
-        { label: "Delegación con reporting periódico", value: "Delegación con reporting periódico" },
-      ],
-    },
-    {
-      id: "diversificationLevel",
-      label: "Desired Diversification Level",
-      type: "single",
-      options: [
-        { label: "1–2 fondos", value: "1–2 fondos" },
-        { label: "3–5 fondos", value: "3–5 fondos" },
-        { label: "Más de 5 fondos", value: "Más de 5 fondos" },
-      ],
-    },
-    {
-      id: "strategyPreferences",
-      label: "Preferred Strategy / Assets",
-      type: "multi",
-      options: STRATEGY_OPTIONS,
-    },
-    {
-      id: "interactionLevel",
-      label: "Interaction Level with Managers",
-      type: "single",
-      options: [
-        { label: "Reportes únicamente", value: "Reportes únicamente" },
-        { label: "Comunicación ocasional", value: "Comunicación ocasional" },
-        { label: "Acceso directo y recurrente", value: "Acceso directo y recurrente" },
-      ],
-    },
-    {
-      id: "reportingCustomization",
-      label: "Reporting Customization Level",
-      type: "single",
-      options: [
-        { label: "Básico", value: "Básico" },
-        { label: "Personalizado", value: "Personalizado" },
-        { label: "Totalmente a medida", value: "Totalmente a medida" },
       ],
     },
   ],

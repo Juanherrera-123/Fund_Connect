@@ -37,7 +37,7 @@ export async function POST(request: Request, context: { params: { id: string } }
     const protocol = request.headers.get("x-forwarded-proto") ?? "https";
     const baseUrl = origin ?? (host ? `${protocol}://${host}` : "");
     const fundUrl = baseUrl
-      ? `${baseUrl}/funds-explore?fund=${encodeURIComponent(waitlistRequest.fundName)}`
+      ? `${baseUrl}/gestores-verificados?fund=${encodeURIComponent(waitlistRequest.fundName)}`
       : null;
 
     await updateWaitlistStatus({

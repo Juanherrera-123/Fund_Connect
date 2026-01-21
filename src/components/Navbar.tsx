@@ -42,10 +42,6 @@ export function Navbar({ floating = false }: NavbarProps) {
       };
     }
 
-    if (authRole === "investor") {
-      return { label: strings.navAuthProfile, href: "/dashboard/investor", key: "navAuthProfile" };
-    }
-
     return { label: strings.navAuthProfile, href: "/profile", key: "navAuthProfile" };
   })();
 
@@ -125,9 +121,6 @@ export function Navbar({ floating = false }: NavbarProps) {
             <Link href="/gestores-verificados" data-i18n="navVerifiedManagers">
               Gestores Verificados
             </Link>
-            <Link href="/family-offices" data-i18n="navFamily">
-              Family Offices
-            </Link>
             <Link href="/#contact" data-i18n="navContact">
               Contact
             </Link>
@@ -188,9 +181,6 @@ export function Navbar({ floating = false }: NavbarProps) {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Gestores Verificados
-              </Link>
-              <Link href="/family-offices" data-i18n="navFamily" onClick={() => setIsMenuOpen(false)}>
-                Family Offices
               </Link>
               <Link href="/#contact" data-i18n="navContact" onClick={() => setIsMenuOpen(false)}>
                 Contact

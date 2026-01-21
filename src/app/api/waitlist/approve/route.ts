@@ -38,7 +38,9 @@ export async function POST(request: Request) {
     const host = forwardedHost ?? request.headers.get("host");
     const protocol = request.headers.get("x-forwarded-proto") ?? "https";
     const baseUrl = origin ?? (host ? `${protocol}://${host}` : "");
-    const fundUrl = baseUrl ? `${baseUrl}/funds-explore?fund=${encodeURIComponent(fundName)}` : null;
+    const fundUrl = baseUrl
+      ? `${baseUrl}/gestores-verificados?fund=${encodeURIComponent(fundName)}`
+      : null;
     const trimmedRequesterName = requesterName?.trim();
 
     await sendWaitlistStatusEmail({
