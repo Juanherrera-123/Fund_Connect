@@ -134,6 +134,7 @@ export default function DashboardShell({
   const [authUid, setAuthUid] = useState<string | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const isLoggingOutRef = useRef(false);
 
   useEffect(() => {
     const auth = getFirebaseAuth();
@@ -163,6 +164,9 @@ export default function DashboardShell({
 
     const guard = async () => {
       if (!authUid) {
+        if (isLoggingOutRef.current) {
+          return;
+        }
         logRedirect("unauthenticated", authRole, session?.status ?? null, pathname);
         if (isProtectedPath(pathname)) {
           router.push("/auth");
@@ -173,6 +177,9 @@ export default function DashboardShell({
       if (!isMounted) return;
 
       if (!claims) {
+        if (isLoggingOutRef.current) {
+          return;
+        }
         logRedirect("unauthenticated", authRole, session?.status ?? null, pathname);
         if (isProtectedPath(pathname)) {
           router.push("/auth");
@@ -291,6 +298,7 @@ export default function DashboardShell({
 
   const handleLogout = async () => {
     setIsMenuOpen(false);
+    isLoggingOutRef.current = true;
     setSession(null);
     const auth = getFirebaseAuth();
     if (auth) {
