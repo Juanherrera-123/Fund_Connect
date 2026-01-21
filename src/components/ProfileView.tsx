@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 
 import { normalizeRole } from "@/lib/auth/claims";
-import { isProtectedPath } from "@/lib/auth/protectedPaths";
 import { STORAGE_KEYS } from "@/lib/igatesData";
 import { useLocalStorage } from "@/lib/useLocalStorage";
 import { useUserProfiles } from "@/lib/useUserProfiles";

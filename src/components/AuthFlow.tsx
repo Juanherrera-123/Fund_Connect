@@ -209,7 +209,7 @@ export function AuthFlow() {
     [fundDetails, fundLinks, kycAnswers, role, surveyAnswers]
   );
   const steps = useMemo<SignupStep[]>(() => {
-    const surveyQuestions = role ? SURVEY_DEFINITIONS[role] : [];
+    const surveyQuestions = SURVEY_DEFINITIONS[role];
     const groups: SurveyQuestion[][] = [];
     for (let index = 0; index < surveyQuestions.length; index += 2) {
       groups.push(surveyQuestions.slice(index, index + 2));
