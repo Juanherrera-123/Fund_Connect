@@ -10,6 +10,7 @@ import { useLanguage } from "@/components/LanguageProvider";
 import { normalizeRole } from "@/lib/auth/claims";
 import { getFirebaseAuth } from "@/lib/firebase";
 import { STORAGE_KEYS } from "@/lib/igatesData";
+import { toHomeHash } from "@/lib/navigation";
 import { useLocalStorage } from "@/lib/useLocalStorage";
 import type { Session } from "@/lib/types";
 
@@ -21,10 +22,7 @@ export function Navbar({ floating = false }: NavbarProps) {
   const [session, setSession] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const { strings } = useLanguage();
   const pathname = usePathname();
-  const toHash = (hash: string) => {
-    if (pathname === "/auth") return "/";
-    return pathname === "/" ? hash : `/${hash}`;
-  };
+  const toHash = (hash: string) => toHomeHash(pathname, hash);
   const positionClassName = floating ? "fixed top-4" : "sticky top-0";
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuPanelRef = useRef<HTMLDivElement | null>(null);

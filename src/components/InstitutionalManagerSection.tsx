@@ -1,4 +1,9 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+import { toHomeHash } from "@/lib/navigation";
 
 const standardSignals = [
   {
@@ -56,6 +61,8 @@ const standardSignals = [
 ];
 
 export function InstitutionalManagerSection() {
+  const pathname = usePathname();
+
   return (
     <section className="pb-12 pt-6 sm:pb-16 lg:pb-24">
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
@@ -102,7 +109,7 @@ export function InstitutionalManagerSection() {
                   Iniciar evaluación institucional
                 </Link>
                 <Link
-                  href="/#contact"
+                  href={toHomeHash(pathname, "#contact")}
                   className="inline-flex items-center justify-center text-sm font-semibold text-slate-600 transition hover:text-slate-900"
                   data-i18n="managersInstitutionalSecondaryCta"
                 >
