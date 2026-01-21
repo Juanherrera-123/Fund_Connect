@@ -9,7 +9,7 @@ export default function AuthPage() {
       <main className="relative">
         <section className="py-8">
           <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
-            <div className="mb-6 flex items-center">
+            <div className="relative z-10 mb-6 flex items-center pointer-events-auto">
               <Link
                 href="/"
                 className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-600 transition hover:border-slate-300 hover:bg-slate-50"
