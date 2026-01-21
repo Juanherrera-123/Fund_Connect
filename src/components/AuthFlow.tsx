@@ -378,8 +378,8 @@ export function AuthFlow() {
   const validateSurvey = (questions: SurveyQuestion[]) => {
     const isValid = questions.every((question) => {
       const answer = surveyAnswers[question.id];
-      if (question.type === "multi") {
-        return Array.isArray(answer) && answer.length > 0;
+      if (Array.isArray(answer)) {
+        return answer.length > 0;
       }
       return typeof answer === "string" && answer.trim().length > 0;
     });
