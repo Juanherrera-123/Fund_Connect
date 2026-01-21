@@ -47,6 +47,7 @@ const iconClasses = "h-4 w-4";
 export function Why() {
   return (
     <section id="why" className="bg-white py-12 sm:py-16 lg:py-24">
+      <div id="funds" className="scroll-mt-24" aria-hidden="true" />
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="mx-auto max-w-3xl space-y-4 text-center">
           <p
