@@ -14,6 +14,11 @@ service cloud.firestore {
       return signedIn() && request.auth.token.status in ["active", "approved"];
     }
 
+    function isAdmin() {
+      return isActive()
+        && request.auth.token.role in ["master", "masteruser", "admin", "manager"];
+    }
+
     function isMaster() {
       return hasRole("master") && isActive();
     }
@@ -52,14 +57,14 @@ service cloud.firestore {
 
     match /waitlistRequests/{requestId} {
       allow create: if true;
-      allow read: if isMaster()
+      allow read: if isAdmin()
         || (signedIn() && resource.data.requesterUid == request.auth.uid);
-      allow update, delete: if isMaster();
+      allow update, delete: if isAdmin();
     }
 
     match /contactRequests/{requestId} {
       allow create: if true;
-      allow read, update, delete: if isMaster();
+      allow read, update, delete: if isAdmin();
     }
 
     match /appStorage/{documentId} {
