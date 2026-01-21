@@ -18,7 +18,7 @@ const cardClass = "rounded-2xl border border-slate-200 bg-white p-5 shadow-sm";
 export default function InvestorDashboard() {
   const { language, options, strings } = useLanguage();
   const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
-  const [profiles, setProfiles] = useUserProfiles({ uid: session?.id ?? session?.uid });
+  const [profiles] = useUserProfiles({ uid: session?.id ?? session?.uid });
   const waitlistRequests = useWaitlistCollection();
   const [capitalAllocations] = useFirebaseStorage<Record<string, number>>(
     STORAGE_KEYS.capitalAllocations,
@@ -120,16 +120,6 @@ export default function InvestorDashboard() {
       console.error("Unable to create waitlist request.", error);
       return;
     }
-    setProfiles((prev) =>
-      prev.map((item) =>
-        item.id === profile.id
-          ? {
-              ...item,
-              waitlistFunds: Array.from(new Set([...(item.waitlistFunds ?? []), activeFund.name])),
-            }
-          : item
-      )
-    );
     setActiveFund(null);
     setRequestNotes("");
   };

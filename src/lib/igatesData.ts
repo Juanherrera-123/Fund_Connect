@@ -494,7 +494,7 @@ export const translations = {
     verifiedManagersWaitlistPhoneLabel: "Phone",
     verifiedManagersWaitlistInvestmentLabel: "Investment amount",
     verifiedManagersWaitlistInvestmentPlaceholder: "E.g. 2000",
-    verifiedManagersWaitlistInvestmentNote: "Minimum amount: USD 2,000.",
+    verifiedManagersWaitlistInvestmentNote: "Optional field. Any amount is accepted.",
     verifiedManagersWaitlistQualifiedLabel:
       "I understand the requirements of this fund and the investment risks.",
     verifiedManagersWaitlistNoteLabel: "Note (optional)",
@@ -1227,7 +1227,7 @@ export const translations = {
     verifiedManagersWaitlistPhoneLabel: "Celular",
     verifiedManagersWaitlistInvestmentLabel: "Monto destinado a invertir",
     verifiedManagersWaitlistInvestmentPlaceholder: "Ej. 2000",
-    verifiedManagersWaitlistInvestmentNote: "Monto mínimo: USD 2,000.",
+    verifiedManagersWaitlistInvestmentNote: "Campo opcional. Se acepta cualquier monto.",
     verifiedManagersWaitlistQualifiedLabel:
       "Declaro que entiendo los requisitos de este fondo y los riesgos de inversión.",
     verifiedManagersWaitlistNoteLabel: "Nota (opcional)",
@@ -1962,7 +1962,7 @@ export const translations = {
     verifiedManagersWaitlistPhoneLabel: "Celular",
     verifiedManagersWaitlistInvestmentLabel: "Valor destinado a investir",
     verifiedManagersWaitlistInvestmentPlaceholder: "Ex.: 2000",
-    verifiedManagersWaitlistInvestmentNote: "Valor mínimo: USD 2.000.",
+    verifiedManagersWaitlistInvestmentNote: "Campo opcional. Aceitamos qualquer valor.",
     verifiedManagersWaitlistQualifiedLabel:
       "Declaro que entendo os requisitos deste fundo e os riscos de investimento.",
     verifiedManagersWaitlistNoteLabel: "Nota (opcional)",
@@ -2696,7 +2696,7 @@ export const translations = {
     verifiedManagersWaitlistPhoneLabel: "Cellulare",
     verifiedManagersWaitlistInvestmentLabel: "Importo da investire",
     verifiedManagersWaitlistInvestmentPlaceholder: "Es. 2000",
-    verifiedManagersWaitlistInvestmentNote: "Importo minimo: USD 2.000.",
+    verifiedManagersWaitlistInvestmentNote: "Campo facoltativo. Si accetta qualsiasi importo.",
     verifiedManagersWaitlistQualifiedLabel:
       "Dichiaro di comprendere i requisiti di questo fondo e i rischi d'investimento.",
     verifiedManagersWaitlistNoteLabel: "Nota (opzionale)",
@@ -3413,7 +3413,7 @@ export const translations = {
     verifiedManagersWaitlistPhoneLabel: "手机",
     verifiedManagersWaitlistInvestmentLabel: "拟投资金额",
     verifiedManagersWaitlistInvestmentPlaceholder: "例如：2000",
-    verifiedManagersWaitlistInvestmentNote: "最低金额：USD 2,000.",
+    verifiedManagersWaitlistInvestmentNote: "可选字段。接受任何金额。",
     verifiedManagersWaitlistQualifiedLabel: "我确认了解该基金的要求及投资风险。",
     verifiedManagersWaitlistNoteLabel: "备注（可选）",
     verifiedManagersWaitlistNotePlaceholder: "如有需要，请补充背景信息。",

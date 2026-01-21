@@ -63,7 +63,6 @@ export type UserProfile = {
   investorPreferences?: InvestorPreferences;
   fundManagerProfile?: FundManagerProfile;
   familyOfficePreferences?: FamilyOfficePreferences;
-  waitlistFunds?: string[];
 };
 
 export type WaitlistStatus = "PENDING" | "APPROVED" | "REJECTED";
