@@ -40,6 +40,7 @@ export type UserProfile = {
   country: string;
   role: Exclude<Role, "MasterUser">;
   password: string;
+  status?: string;
   org?: string;
   onboardingCompleted: boolean;
   onboarding: Record<string, unknown>;
