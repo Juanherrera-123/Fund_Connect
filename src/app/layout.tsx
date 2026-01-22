@@ -3,6 +3,7 @@ import "@/styles/globals.css";
 import type { Metadata } from "next";
 
 import AuthDebugBridge from "@/components/AuthDebugBridge";
+import CanonicalHostRedirect from "@/components/CanonicalHostRedirect";
 import HashScrollHandler from "@/components/HashScrollHandler";
 import { LanguageProvider } from "@/components/LanguageProvider";
 
@@ -31,6 +32,7 @@ export default function RootLayout({
         <link rel="icon" href="/IGATESLOGO.png" sizes="any" />
       </head>
       <body className="overflow-x-hidden">
+        <CanonicalHostRedirect />
         <AuthDebugBridge />
         <LanguageProvider>
           <HashScrollHandler />
