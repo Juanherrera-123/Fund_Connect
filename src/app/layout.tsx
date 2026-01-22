@@ -6,6 +6,7 @@ import AuthDebugBridge from "@/components/AuthDebugBridge";
 import CanonicalHostRedirect from "@/components/CanonicalHostRedirect";
 import HashScrollHandler from "@/components/HashScrollHandler";
 import { LanguageProvider } from "@/components/LanguageProvider";
+import NavigationClickDebugger from "@/components/NavigationClickDebugger";
 
 export const metadata: Metadata = {
   title: "IGATES · Institutional Fund Gateway",
@@ -20,6 +21,8 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const isClickDebugEnabled = process.env.NEXT_PUBLIC_CLICK_DEBUG === "true";
+
   return (
     <html lang="es">
       <head>
@@ -36,6 +39,7 @@ export default function RootLayout({
         <AuthDebugBridge />
         <LanguageProvider>
           <HashScrollHandler />
+          {isClickDebugEnabled ? <NavigationClickDebugger /> : null}
           {children}
         </LanguageProvider>
       </body>
