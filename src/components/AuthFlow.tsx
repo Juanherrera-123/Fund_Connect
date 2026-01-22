@@ -150,12 +150,13 @@ export function AuthFlow() {
   const [presentationFile, setPresentationFile] = useState<File | null>(null);
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreviewUrl, setLogoPreviewUrl] = useState<string | null>(null);
+  const defaultNotifications = useMemo<MasterNotification[]>(() => [], []);
 
   const [profiles, setProfiles] = useUserProfiles();
   const [, setSession] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
   const [notifications, setNotifications] = useFirebaseStorage<MasterNotification[]>(
     STORAGE_KEYS.notifications,
-    []
+    defaultNotifications
   );
 
   useEffect(() => {
