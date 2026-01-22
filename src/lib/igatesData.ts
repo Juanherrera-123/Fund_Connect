@@ -1245,7 +1245,7 @@ export const translations = {
     pendingReviewTitle: "Estado de revisión",
     pendingReviewBadge: "Pendiente de revisión",
     pendingReviewLead:
-      "Tu solicitud está en revisión por el MasterUser. Te avisaremos cuando esté aprobada.",
+      "Tu solicitud está en revisión, en las próximas 24 horas nos pondremos en contacto contigo.",
     pendingReviewProfileTitle: "Perfil",
     pendingReviewOnboardingStatus: "Estado de onboarding",
     pendingReviewMasterNote: "Revisión por MasterUser.",

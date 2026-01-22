@@ -25,7 +25,8 @@ export default function PendingReviewPage() {
                 </div>
               </div>
               <p className="mt-3 max-w-2xl text-sm text-slate-600" data-i18n="pendingReviewLead">
-                Tu solicitud está en revisión por el MasterUser. Te avisaremos cuando esté aprobada.
+                Tu solicitud está en revisión, en las próximas 24 horas nos pondremos en contacto
+                contigo.
               </p>
             </div>
           </div>

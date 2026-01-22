@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { useRouter } from "next/navigation";
 
 import { normalizeRole } from "@/lib/auth/claims";
 import { getFirebaseAuth } from "@/lib/firebase";
@@ -12,6 +13,7 @@ export function PendingReviewView() {
   const [authUid, setAuthUid] = useState<string | null>(null);
   const [profiles] = useUserProfiles({ uid: authUid });
   const fundApplications = useFundsCollection({ userUid: authUid ?? undefined });
+  const router = useRouter();
 
   useEffect(() => {
     const auth = getFirebaseAuth();
@@ -60,6 +62,14 @@ export function PendingReviewView() {
     rejected: "Rechazado",
   };
 
+  const handleSignOut = async () => {
+    const auth = getFirebaseAuth();
+    if (auth) {
+      await signOut(auth);
+    }
+    router.push("/");
+  };
+
   if (!myApplications.length) {
     return (
       <div className="rounded-2xl border border-slate-200 bg-white p-5 text-sm text-slate-600 shadow-sm">
@@ -96,12 +106,13 @@ export function PendingReviewView() {
           ¡Tu solicitud fue enviada a revisión con éxito! Un miembro de nuestro equipo estará en
           contacto contigo en las siguientes 24 horas.
         </p>
-        <a
+        <button
           className="mt-4 inline-flex items-center rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700"
-          href="/"
+          type="button"
+          onClick={handleSignOut}
         >
-          Volver al inicio
-        </a>
+          Cerrar sesión
+        </button>
       </div>
       <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <h3 className="text-lg font-semibold text-slate-900" data-i18n="pendingReviewFundsTitle">
