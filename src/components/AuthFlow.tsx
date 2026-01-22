@@ -8,6 +8,7 @@ import {
   sendEmailVerification,
   signInWithEmailAndPassword,
 } from "firebase/auth";
+import type { User } from "firebase/auth";
 
 import { useLanguage } from "@/components/LanguageProvider";
 import { isActiveStatus, normalizeRole, refreshClaims, setManagerPendingClaims } from "@/lib/auth/claims";
@@ -704,11 +705,17 @@ export function AuthFlow() {
       emailVerified: user.emailVerified,
     });
 
+    try {
+      await refreshClaims();
+    } catch (error) {
+      console.warn("refreshClaims failed after onboarding", error);
+    }
+
     if (resolvedRole === "Fund Manager") {
-      router.push("/pending-review");
+      router.replace("/pending-review");
       return;
     }
-    router.push("/profile");
+    router.replace("/profile");
   };
 
   const resolveLoginErrorMessage = (error: unknown) => {
@@ -732,6 +739,64 @@ export function AuthFlow() {
     }
 
     return "Unable to sign in. Please try again.";
+  };
+
+  const resolveLoginRedirect = async (user: User, identifier: string) => {
+    let claims = null as Awaited<ReturnType<typeof refreshClaims>> | null;
+    try {
+      claims = await refreshClaims();
+    } catch (error) {
+      console.warn("refreshClaims failed after login", error);
+    }
+
+    let normalizedRole = claims?.role ?? "unknown";
+    let status = claims?.status ?? null;
+    if (normalizedRole === "unknown") {
+      try {
+        const userProfile = await getUserProfile(user.uid);
+        if (userProfile) {
+          normalizedRole = normalizeRole(userProfile.role);
+          status = userProfile.status ?? null;
+        }
+      } catch (error) {
+        console.warn("Unable to load user profile after login", error);
+      }
+    }
+
+    const sessionRole: Role | "user" =
+      normalizedRole === "master"
+        ? "MasterUser"
+        : normalizedRole === "manager"
+          ? "Fund Manager"
+          : "user";
+
+    setSession({
+      id: user.uid,
+      uid: user.uid,
+      email: user.email ?? identifier,
+      role: sessionRole,
+      authRole: normalizedRole,
+      status: status ?? undefined,
+      emailVerified: user.emailVerified,
+      authenticatedAt: new Date().toISOString(),
+    });
+
+    if (normalizedRole === "manager") {
+      if (!isActiveStatus(status)) {
+        return "/pending-review";
+      }
+      return "/dashboard/manager/overview";
+    }
+
+    if (!isActiveStatus(status)) {
+      return "/profile";
+    }
+
+    if (normalizedRole === "master") {
+      return "/dashboard/master";
+    }
+
+    return "/profile";
   };
 
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -767,62 +832,12 @@ export function AuthFlow() {
           emailVerified: credential.user.emailVerified,
           authenticatedAt: new Date().toISOString(),
         });
-        router.push("/verify-email");
+        router.replace("/verify-email");
         return;
       }
 
-      const claims = await refreshClaims();
-      if (!claims) {
-        setLoginStatus("Unable to validate your session. Please try again.");
-        return;
-      }
-      let normalizedRole = claims.role;
-      let status = claims.status ?? null;
-      if (normalizedRole === "unknown") {
-        const userProfile = await getUserProfile(credential.user.uid);
-        if (userProfile) {
-          normalizedRole = normalizeRole(userProfile.role);
-          status = userProfile.status ?? null;
-        }
-      }
-      const sessionRole: Role | "user" =
-        normalizedRole === "master"
-          ? "MasterUser"
-          : normalizedRole === "manager"
-            ? "Fund Manager"
-            : "user";
-
-      setSession({
-        id: credential.user.uid,
-        uid: credential.user.uid,
-        email: credential.user.email ?? identifier,
-        role: sessionRole,
-        authRole: normalizedRole,
-        status: status ?? undefined,
-        emailVerified: credential.user.emailVerified,
-        authenticatedAt: new Date().toISOString(),
-      });
-
-      if (normalizedRole === "manager") {
-        if (!isActiveStatus(status)) {
-          router.push("/pending-review");
-          return;
-        }
-        router.push("/dashboard/manager/overview");
-        return;
-      }
-
-      if (!isActiveStatus(status)) {
-        router.push("/profile");
-        return;
-      }
-
-      if (normalizedRole === "master") {
-        router.push("/dashboard/master");
-        return;
-      }
-
-      router.push("/profile");
+      const target = await resolveLoginRedirect(credential.user, identifier);
+      router.replace(target);
     } catch (error) {
       setLoginStatus(resolveLoginErrorMessage(error));
     }

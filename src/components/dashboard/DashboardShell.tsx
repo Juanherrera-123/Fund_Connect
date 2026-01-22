@@ -152,8 +152,7 @@ export default function DashboardShell({
 
   useEffect(() => {
     if (!pathname?.startsWith("/dashboard")) return;
-    const guardEnabled = false;
-    // Temporarily disable dashboard auth redirects to prevent navigation loops.
+    const guardEnabled = true;
     if (!guardEnabled) {
       return;
     }
@@ -178,23 +177,21 @@ export default function DashboardShell({
         }
         return;
       }
-      const claims = await refreshClaims();
+      let claims: Awaited<ReturnType<typeof refreshClaims>> | null = null;
+      try {
+        claims = await refreshClaims();
+      } catch (error) {
+        console.warn("refreshClaims failed in dashboard guard", error);
+      }
       if (!isMounted) return;
 
-      if (!claims) {
-        if (isLoggingOutRef.current) {
-          return;
-        }
-        logRedirect("unauthenticated", authRole, session?.status ?? null, pathname);
-        if (isProtectedPath(pathname)) {
-          router.push("/auth");
-        }
-        return;
-      }
-
-      const normalizedRole = claims.role;
-      const status = claims.status;
+      const profile = profiles.find((item) => item.id === (session?.id ?? authUid));
+      const normalizedRole =
+        claims?.role ??
+        normalizeRole(session?.authRole ?? session?.role ?? profile?.role);
+      const status = claims?.status ?? session?.status ?? profile?.status ?? null;
       const active = isActiveStatus(status);
+      const emailVerified = claims?.emailVerified ?? session?.emailVerified ?? true;
 
       const mappedRole =
         normalizedRole === "master"
@@ -203,45 +200,46 @@ export default function DashboardShell({
             ? "Fund Manager"
             : "user";
 
-      if (session) {
-        const needsUpdate =
-          session.authRole !== normalizedRole ||
-          session.status !== status ||
-          session.uid !== claims.uid ||
-          session.email !== claims.email ||
-          session.role !== mappedRole ||
-          session.emailVerified !== claims.emailVerified;
-        if (needsUpdate) {
+      if (claims) {
+        if (session) {
+          const needsUpdate =
+            session.authRole !== normalizedRole ||
+            session.status !== status ||
+            session.uid !== claims.uid ||
+            session.email !== claims.email ||
+            session.role !== mappedRole ||
+            session.emailVerified !== claims.emailVerified;
+          if (needsUpdate) {
+            setSession({
+              ...session,
+              uid: claims.uid,
+              email: claims.email,
+              authRole: normalizedRole,
+              status: status ?? undefined,
+              role: mappedRole,
+              emailVerified: claims.emailVerified,
+            });
+          }
+        } else {
           setSession({
-            ...session,
+            id: claims.uid,
             uid: claims.uid,
             email: claims.email,
+            role: mappedRole,
             authRole: normalizedRole,
             status: status ?? undefined,
-            role: mappedRole,
             emailVerified: claims.emailVerified,
+            authenticatedAt: new Date().toISOString(),
           });
         }
-      } else {
-        setSession({
-          id: claims.uid,
-          uid: claims.uid,
-          email: claims.email,
-          role: mappedRole,
-          authRole: normalizedRole,
-          status: status ?? undefined,
-          emailVerified: claims.emailVerified,
-          authenticatedAt: new Date().toISOString(),
-        });
       }
 
-      if (!claims.emailVerified) {
+      if (emailVerified === false) {
         logRedirect("email-unverified", normalizedRole, status, pathname);
-        router.push("/verify-email");
+        router.replace("/verify-email");
         return;
       }
 
-      const profile = profiles.find((item) => item.id === session?.id);
       if (normalizedRole !== "master" && profile?.onboardingCompleted === false) {
         logRedirect("onboarding-incomplete", normalizedRole, status, pathname);
         if (isProtectedPath(pathname)) {
@@ -252,34 +250,53 @@ export default function DashboardShell({
 
       if (normalizedRole === "manager" && !active) {
         logRedirect("pending", normalizedRole, status, pathname);
-        router.push("/pending-review");
+        if (pathname !== "/pending-review") {
+          router.replace("/pending-review");
+        }
         return;
       }
 
       if (!active) {
         logRedirect("inactive", normalizedRole, status, pathname);
-        router.push("/profile");
+        router.replace("/profile");
         return;
       }
 
       const isManagerRoute = pathname?.startsWith("/dashboard/manager");
       const isMasterRoute = pathname?.startsWith("/dashboard/master");
 
+      if (pathname === "/dashboard") {
+        if (normalizedRole === "master") {
+          router.replace("/dashboard/master");
+          return;
+        }
+        if (normalizedRole === "manager" && active) {
+          router.replace("/dashboard/manager/overview");
+          return;
+        }
+        if (normalizedRole === "manager" && !active) {
+          router.replace("/pending-review");
+          return;
+        }
+        router.replace("/profile");
+        return;
+      }
+
       if (normalizedRole === "master" && !isMasterRoute) {
         logRedirect("role-mismatch", normalizedRole, status, pathname);
-        router.push("/dashboard/master");
+        router.replace("/dashboard/master");
         return;
       }
 
       if (normalizedRole === "manager" && !isManagerRoute) {
         logRedirect("role-mismatch", normalizedRole, status, pathname);
-        router.push("/dashboard/manager/overview");
+        router.replace("/dashboard/manager/overview");
         return;
       }
 
       if (normalizedRole === "unknown") {
         logRedirect("unknown-role", normalizedRole, status, pathname);
-        router.push("/profile");
+        router.replace("/profile");
       }
     };
 

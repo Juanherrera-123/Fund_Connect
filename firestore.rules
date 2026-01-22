@@ -2,77 +2,12 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    function signedIn() {
-      return request.auth != null;
-    }
-
-    function hasRole(role) {
-      return signedIn() && request.auth.token.role == role;
-    }
-
-    function isActive() {
-      return signedIn() && request.auth.token.status in ["active", "approved"];
-    }
-
-    function isAdmin() {
-      return isActive()
-        && request.auth.token.role in ["master", "masteruser", "admin", "manager"];
-    }
-
-    function isMaster() {
-      return hasRole("master") && isActive();
-    }
-
-    function isManager() {
-      return hasRole("manager") && isActive();
-    }
-
-    match /users/{uid} {
-      allow read: if isMaster() || (signedIn() && request.auth.uid == uid);
-      allow create: if signedIn() && request.auth.uid == uid;
-      allow update: if isMaster()
-        || (signedIn()
-          && request.auth.uid == uid
-          && request.resource.data.status == resource.data.status);
-      allow delete: if isMaster();
-    }
-
-    match /fundApplications/{id} {
-      allow create: if signedIn() && request.resource.data.user.uid == request.auth.uid;
-      allow read: if isMaster()
-        || (signedIn() && resource.data.user.uid == request.auth.uid)
-        || resource.data.status == "approved";
-      allow update: if isMaster()
-        || (signedIn()
-          && resource.data.user.uid == request.auth.uid
-          && resource.data.status == "pending"
-          && request.resource.data.status == "pending");
-      allow delete: if false;
-    }
-
-    match /funds/{fundId} {
-      allow read: if true;
-      allow write: if isMaster();
-    }
-
-    match /waitlistRequests/{requestId} {
-      allow create: if true;
-      allow read: if isAdmin()
-        || (signedIn() && resource.data.requesterUid == request.auth.uid);
-      allow update, delete: if isAdmin();
-    }
-
-    match /contactRequests/{requestId} {
-      allow create: if true;
-      allow read, update, delete: if isAdmin();
-    }
-
-    match /appStorage/{documentId} {
-      allow read, write: if isMaster();
-    }
-
+    // ================================================
+    // DEV ONLY: Open Firestore rules for onboarding.
+    // TODO: Reinstate claim-based rules before prod.
+    // ================================================
     match /{document=**} {
-      allow read, write: if false;
+      allow read, write: if true;
     }
   }
 }
