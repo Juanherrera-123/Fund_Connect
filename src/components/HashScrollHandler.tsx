@@ -84,6 +84,9 @@ export default function HashScrollHandler() {
       const isHashOnly = rawHref.startsWith("#");
       const isHomeHash = rawHref.startsWith("/#");
       const isOriginHash = rawHref.startsWith(`${window.location.origin}/#`);
+      const isHashNavigation = isHashOnly || isHomeHash || isOriginHash;
+      if (!isHashNavigation) return;
+
       const isSamePath = resolvedUrl.pathname === window.location.pathname;
 
       if (isSamePath && (isHashOnly || isHomeHash || isOriginHash)) {
