@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { collection, doc, onSnapshot, serverTimestamp, setDoc } from "firebase/firestore";
@@ -16,6 +16,8 @@ type UserProfilesOptions = {
   initialValue?: UserProfile[];
 };
 
+const DEFAULT_PROFILES: UserProfile[] = [];
+
 const hydrateProfile = (data: Partial<UserProfile> | undefined, id: string): UserProfile | null => {
   if (!data) return null;
   return {
@@ -24,22 +26,53 @@ const hydrateProfile = (data: Partial<UserProfile> | undefined, id: string): Use
   } as UserProfile;
 };
 
+const areProfilesEqual = (prevProfiles: UserProfile[], nextProfiles: UserProfile[]): boolean => {
+  if (prevProfiles === nextProfiles) return true;
+  if (prevProfiles.length !== nextProfiles.length) return false;
+  if (prevProfiles.length === 0) return true;
+
+  const nextById = new Map(nextProfiles.map((profile) => [profile.id, profile]));
+  for (const prevProfile of prevProfiles) {
+    const nextProfile = nextById.get(prevProfile.id);
+    if (!nextProfile) return false;
+    const prevKeys = Object.keys(prevProfile) as Array<keyof UserProfile>;
+    const nextKeys = Object.keys(nextProfile) as Array<keyof UserProfile>;
+    if (prevKeys.length !== nextKeys.length) return false;
+    for (const key of prevKeys) {
+      if (prevProfile[key] !== nextProfile[key]) return false;
+    }
+  }
+  return true;
+};
+
 export function useUserProfiles({
   uid,
   isMaster = false,
-  initialValue = [],
+  initialValue = DEFAULT_PROFILES,
 }: UserProfilesOptions = {}): [UserProfile[], SetValue<UserProfile[]>] {
   const [profiles, setProfilesState] = useState<UserProfile[]>(initialValue);
   const [authUid, setAuthUid] = useState<string | null>(null);
+  const initialValueRef = useRef(initialValue);
+
+  const setProfilesStateSafe = useCallback((nextProfiles: UserProfile[]) => {
+    setProfilesState((prevProfiles) =>
+      areProfilesEqual(prevProfiles, nextProfiles) ? prevProfiles : nextProfiles
+    );
+  }, []);
+
+  useEffect(() => {
+    initialValueRef.current = initialValue;
+  }, [initialValue]);
 
   useEffect(() => {
     const auth = getFirebaseAuth();
     if (!auth) {
-      setAuthUid(null);
+      setAuthUid((prev) => (prev === null ? prev : null));
       return;
     }
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setAuthUid(user?.uid ?? null);
+      const nextUid = user?.uid ?? null;
+      setAuthUid((prev) => (prev === nextUid ? prev : nextUid));
     });
     return () => unsubscribe();
   }, []);
@@ -57,7 +90,7 @@ export function useUserProfiles({
 
     if (isMaster) {
       if (!authUid) {
-        setProfilesState(initialValue);
+        setProfilesStateSafe(initialValueRef.current);
         return () => unsubscribe();
       }
       const collectionRef = collection(db, "users");
@@ -67,7 +100,7 @@ export function useUserProfiles({
           const nextProfiles = snapshot.docs
             .map((docSnapshot) => hydrateProfile(docSnapshot.data() as UserProfile, docSnapshot.id))
             .filter(Boolean) as UserProfile[];
-          setProfilesState(nextProfiles);
+          setProfilesStateSafe(nextProfiles);
         },
         (error) => {
           console.error("Unable to subscribe to user profiles", error);
@@ -76,7 +109,7 @@ export function useUserProfiles({
     } else {
       const resolvedUid = uid ?? authUid;
       if (!resolvedUid || !authUid || authUid !== resolvedUid) {
-        setProfilesState(initialValue);
+        setProfilesStateSafe(initialValueRef.current);
         return () => unsubscribe();
       }
       const docRef = doc(db, "users", resolvedUid);
@@ -84,11 +117,11 @@ export function useUserProfiles({
         docRef,
         (snapshot) => {
           if (!snapshot.exists()) {
-            setProfilesState([]);
+            setProfilesStateSafe([]);
             return;
           }
           const profile = hydrateProfile(snapshot.data() as UserProfile, snapshot.id);
-          setProfilesState(profile ? [profile] : []);
+          setProfilesStateSafe(profile ? [profile] : []);
         },
         (error) => {
           console.error("Unable to subscribe to user profile", error);
@@ -97,7 +130,7 @@ export function useUserProfiles({
     }
 
     return () => unsubscribe();
-  }, [authUid, initialValue, isMaster, uid]);
+  }, [authUid, isMaster, setProfilesStateSafe, uid]);
 
   const setProfiles: SetValue<UserProfile[]> = useCallback(
     (value) => {
