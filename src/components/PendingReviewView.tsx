@@ -1,26 +1,38 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
 
 import { normalizeRole } from "@/lib/auth/claims";
-import { STORAGE_KEYS } from "@/lib/igatesData";
+import { getFirebaseAuth } from "@/lib/firebase";
 import { useFundsCollection } from "@/lib/funds";
-import { useLocalStorage } from "@/lib/useLocalStorage";
 import { useUserProfiles } from "@/lib/useUserProfiles";
-import type { Session } from "@/lib/types";
 
 export function PendingReviewView() {
-  const [session] = useLocalStorage<Session>(STORAGE_KEYS.session, null);
-  const [profiles] = useUserProfiles({ uid: session?.id ?? session?.uid });
-  const fundApplications = useFundsCollection({ userUid: session?.id ?? session?.uid });
-  const authRole = session?.authRole ?? normalizeRole(session?.role);
+  const [authUid, setAuthUid] = useState<string | null>(null);
+  const [profiles] = useUserProfiles({ uid: authUid });
+  const fundApplications = useFundsCollection({ userUid: authUid ?? undefined });
+
+  useEffect(() => {
+    const auth = getFirebaseAuth();
+    if (!auth) {
+      setAuthUid(null);
+      return;
+    }
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setAuthUid(user?.uid ?? null);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const profile = useMemo(() => {
-    if (!session || authRole !== "manager") return null;
-    return profiles.find((item) => item.id === session.id) ?? null;
-  }, [authRole, profiles, session]);
+    if (!authUid) return null;
+    return profiles.find((item) => item.id === authUid) ?? null;
+  }, [authUid, profiles]);
 
-  if (!profile) {
+  const authRole = profile?.role ? normalizeRole(profile.role) : null;
+
+  if (!authUid) {
     return (
       <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
         <span data-i18n="dashboardManagerLoginPrompt">
@@ -30,12 +42,41 @@ export function PendingReviewView() {
     );
   }
 
-  const myApplications = fundApplications.filter((item) => item.user.id === profile.id);
+  if (authRole !== "manager") {
+    return (
+      <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
+        <span data-i18n="dashboardManagerLoginPrompt">
+          Inicia sesión como gestor para ver este panel.
+        </span>
+      </div>
+    );
+  }
+
+  const myApplications = fundApplications.filter((item) => item.user.uid === authUid);
   const statusLabels: Record<string, string> = {
     pending: "Pendiente",
-    approved: "Aprobado",
+    approved: "Verificado",
+    verified: "Verificado",
     rejected: "Rechazado",
   };
+
+  if (!myApplications.length) {
+    return (
+      <div className="rounded-2xl border border-slate-200 bg-white p-5 text-sm text-slate-600 shadow-sm">
+        <p className="font-semibold text-slate-900">Submitting...</p>
+        <p className="mt-2">
+          Aún no encontramos tu solicitud. Si el problema persiste, vuelve al formulario para
+          enviarlo nuevamente.
+        </p>
+        <a
+          className="mt-4 inline-flex items-center rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700"
+          href="/dashboard/manager/fund-details"
+        >
+          Volver al formulario
+        </a>
+      </div>
+    );
+  }
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
@@ -48,12 +89,19 @@ export function PendingReviewView() {
         </p>
         <span className="mt-2 inline-flex rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">
           <span data-i18n="dashboardStatusPending">
-            {profile.fundManagerProfile?.status || "Pendiente"}
+            {statusLabels[myApplications[0]?.status ?? "pending"] ?? "Pendiente"}
           </span>
         </span>
         <p className="mt-2 text-xs text-slate-500" data-i18n="pendingReviewMasterNote">
-          Revisión por el usuario maestro.
+          ¡Tu solicitud fue enviada a revisión con éxito! Un miembro de nuestro equipo estará en
+          contacto contigo en las siguientes 24 horas.
         </p>
+        <a
+          className="mt-4 inline-flex items-center rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700"
+          href="/"
+        >
+          Volver al inicio
+        </a>
       </div>
       <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <h3 className="text-lg font-semibold text-slate-900" data-i18n="pendingReviewFundsTitle">

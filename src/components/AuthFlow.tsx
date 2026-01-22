@@ -532,7 +532,7 @@ export function AuthFlow() {
         await persistOnboardingDraft(user.uid);
       }
       if (stepIndex === steps.length - 1) {
-        void completeSignup();
+        await completeSignup();
         return;
       }
       setStepIndex((prev) => Math.min(prev + 1, steps.length - 1));
@@ -546,7 +546,7 @@ export function AuthFlow() {
       if (user) {
         await persistOnboardingDraft(user.uid);
       }
-      void completeSignup();
+      await completeSignup();
       return;
     }
   };
@@ -705,15 +705,21 @@ export function AuthFlow() {
       emailVerified: user.emailVerified,
     });
 
+    if (resolvedRole === "Fund Manager") {
+      void (async () => {
+        try {
+          await refreshClaims();
+        } catch (error) {
+          console.warn("refreshClaims failed after onboarding", error);
+        }
+      })();
+      router.replace("/pending-review");
+      return;
+    }
     try {
       await refreshClaims();
     } catch (error) {
       console.warn("refreshClaims failed after onboarding", error);
-    }
-
-    if (resolvedRole === "Fund Manager") {
-      router.replace("/pending-review");
-      return;
     }
     router.replace("/profile");
   };
