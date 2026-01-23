@@ -1,7 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type FormEvent,
+} from "react";
 import { AnimatePresence, MotionConfig, motion } from "framer-motion";
 
 import { useLanguage } from "@/components/LanguageProvider";
@@ -66,6 +74,13 @@ const initialFilters: FilterState = {
 const transition = {
   duration: 1,
   ease: [0.22, 1, 0.36, 1],
+};
+
+const descriptionClampStyle: CSSProperties = {
+  display: "-webkit-box",
+  WebkitLineClamp: 3,
+  WebkitBoxOrient: "vertical",
+  overflow: "hidden",
 };
 
 const waitlistNetworkErrorMessage =
@@ -674,7 +689,9 @@ export function VerifiedManagers() {
                                   </div>
                                 </div>
                               </div>
-                              <p className="text-sm text-slate-600">{fund.description}</p>
+                              <p className="text-sm text-slate-600" style={descriptionClampStyle}>
+                                {fund.description}
+                              </p>
                               <div className="mt-auto grid gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-3 text-xs font-semibold text-slate-600 sm:grid-cols-2">
                                 <div className="flex items-center justify-between">
                                   <span data-i18n="verifiedManagersMetricProfitYear">Profit último año</span>
