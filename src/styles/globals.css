@@ -28,6 +28,10 @@ a {
     @apply bg-clip-text text-transparent;
   }
 
+  .text-gradient-brand {
+    @apply bg-gradient-to-r from-blue-600 via-indigo-500 to-sky-500 bg-clip-text text-transparent;
+  }
+
   .igates-gradient {
     background: linear-gradient(90deg, #1e3a8a 0%, #2563eb 50%, #38bdf8 100%);
   }
