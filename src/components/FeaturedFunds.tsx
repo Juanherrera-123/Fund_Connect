@@ -139,15 +139,15 @@ export function FeaturedFunds() {
             <div className="grid gap-2 text-sm text-slate-600">
               <div className="flex items-center justify-between">
                 <span data-i18n="fundsLabelAum">AUM</span>
-                <strong className="text-slate-900">{fund.aum}</strong>
+                <strong className="text-gradient-brand">{fund.aum}</strong>
               </div>
               <div className="flex items-center justify-between">
                 <span data-i18n="fundsLabelYtd">YTD</span>
-                <strong className="text-slate-900">{fund.performance}</strong>
+                <strong className="text-gradient-brand">{fund.performance}</strong>
               </div>
               <div className="flex items-center justify-between">
                 <span data-i18n="fundsLabelRisk">Risk</span>
-                <strong className="text-slate-900">{fund.risk}</strong>
+                <strong className="text-gradient-brand">{fund.risk}</strong>
               </div>
             </div>
             <div className="flex flex-wrap gap-2">

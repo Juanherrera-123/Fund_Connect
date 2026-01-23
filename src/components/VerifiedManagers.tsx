@@ -678,11 +678,11 @@ export function VerifiedManagers() {
                               <div className="mt-auto grid gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-3 text-xs font-semibold text-slate-600 sm:grid-cols-2">
                                 <div className="flex items-center justify-between">
                                   <span data-i18n="verifiedManagersMetricProfitYear">Profit último año</span>
-                                  <span className="text-sm font-semibold text-slate-900">{yearlyProfit}</span>
+                                  <span className="text-sm font-semibold text-gradient-brand">{yearlyProfit}</span>
                                 </div>
                                 <div className="flex items-center justify-between">
                                   <span data-i18n="verifiedManagersMetricMaxDrawdown">Max drawdown</span>
-                                  <span className="text-sm font-semibold text-slate-900">{maxDrawdown}</span>
+                                  <span className="text-sm font-semibold text-gradient-brand">{maxDrawdown}</span>
                                 </div>
                               </div>
                             </motion.button>
@@ -736,11 +736,11 @@ export function VerifiedManagers() {
                                 <div className="grid gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-600">
                                   <div className="flex items-center justify-between">
                                     <span data-i18n="verifiedManagersMetricProfitYear">Profit último año</span>
-                                    <span className="text-sm font-semibold text-slate-900">{yearlyProfit}</span>
+                                    <span className="text-sm font-semibold text-gradient-brand">{yearlyProfit}</span>
                                   </div>
                                   <div className="flex items-center justify-between">
                                     <span data-i18n="verifiedManagersMetricMaxDrawdown">Max drawdown</span>
-                                    <span className="text-sm font-semibold text-slate-900">{maxDrawdown}</span>
+                                    <span className="text-sm font-semibold text-gradient-brand">{maxDrawdown}</span>
                                   </div>
                                 </div>
                               )}
@@ -785,11 +785,11 @@ export function VerifiedManagers() {
                             <div className="mt-4 grid gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 sm:grid-cols-2">
                               <div className="flex items-center justify-between">
                                 <span data-i18n="verifiedManagersMetricProfitYear">Profit último año</span>
-                                <span className="text-sm font-semibold text-slate-900">{formattedYearProfit}</span>
+                                <span className="text-sm font-semibold text-gradient-brand">{formattedYearProfit}</span>
                               </div>
                               <div className="flex items-center justify-between">
                                 <span data-i18n="verifiedManagersMetricMaxDrawdown">Max drawdown</span>
-                                <span className="text-sm font-semibold text-slate-900">
+                                <span className="text-sm font-semibold text-gradient-brand">
                                   {formattedMaxDrawdown}
                                 </span>
                               </div>
@@ -815,7 +815,7 @@ export function VerifiedManagers() {
                             <p className="text-xs uppercase tracking-[0.2em] text-slate-500" data-i18n={item.labelKey}>
                               {item.label}
                             </p>
-                            <p className={`mt-2 text-lg font-semibold ${item.highlight ? "text-slate-900" : "text-slate-700"}`}>
+                            <p className="mt-2 text-lg font-semibold text-gradient-brand">
                               {item.value}
                             </p>
                           </div>
