@@ -211,7 +211,7 @@ export default function FundDetailsPage() {
           strategyLabel:
             existingApplication?.fundData?.strategyLabel ?? strategyLabel ?? "Multi-Strategy",
           description,
-          yearProfit: parseNumericValue(formData.get("monthlyProfit")),
+          yearProfit: parseNumericValue(formData.get("yearProfit")),
           monthlyProfit: parseNumericValue(formData.get("monthlyProfit")),
           drawdownTarget: parseNumericValue(formData.get("drawdownTarget")),
           maxDrawdown: parseNumericValue(formData.get("maxDrawdown")),
@@ -392,7 +392,7 @@ export default function FundDetailsPage() {
 
           <label className="flex flex-col gap-2 text-xs font-medium">
             <span className="text-slate-600" data-i18n="dashboardMonthlyProfitLabel">
-              Profit mensual (último año)
+              Profit mensual últimos meses
             </span>
             <div className="flex items-center rounded-lg border border-slate-200 px-3 py-2 text-sm">
               <input
@@ -401,6 +401,24 @@ export default function FundDetailsPage() {
                 name="monthlyProfit"
                 defaultValue={existingFundData?.monthlyProfit ?? existingFundData?.yearProfit ?? ""}
                 placeholder="Ej: 2.4"
+                data-i18n-placeholder="dashboardExamplePercent"
+                className="w-full bg-transparent text-sm outline-none"
+              />
+              <span className="ml-2 text-slate-500">%</span>
+            </div>
+          </label>
+
+          <label className="flex flex-col gap-2 text-xs font-medium">
+            <span className="text-slate-600" data-i18n="dashboardAnnualProfitLabel">
+              Profit anual último año
+            </span>
+            <div className="flex items-center rounded-lg border border-slate-200 px-3 py-2 text-sm">
+              <input
+                type="number"
+                step="0.01"
+                name="yearProfit"
+                defaultValue={existingFundData?.yearProfit ?? ""}
+                placeholder="Ej: 28"
                 data-i18n-placeholder="dashboardExamplePercent"
                 className="w-full bg-transparent text-sm outline-none"
               />

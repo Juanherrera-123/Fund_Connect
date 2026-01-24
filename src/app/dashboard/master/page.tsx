@@ -205,6 +205,10 @@ export default function MasterDashboard() {
         editableFundData.monthlyProfit !== undefined && editableFundData.monthlyProfit !== null
           ? editableFundData.monthlyProfit
           : parseNumericValue(String(editableFundData.yearProfit ?? ""));
+      const yearProfit =
+        editableFundData.yearProfit !== undefined && editableFundData.yearProfit !== null
+          ? editableFundData.yearProfit
+          : parseNumericValue(String(editableFundData.monthlyProfit ?? ""));
       const nextFundData: FundApplication["fundData"] = {
         ...baseFundData,
         fundName: editableFundData.fundName ?? baseFundData.fundName,
@@ -212,7 +216,7 @@ export default function MasterDashboard() {
         description: editableFundData.description ?? baseFundData.description,
         operatingTime: editableFundData.operatingTime ?? baseFundData.operatingTime,
         monthlyProfit,
-        yearProfit: monthlyProfit,
+        yearProfit,
         drawdownTarget:
           editableFundData.drawdownTarget ?? baseFundData.drawdownTarget ?? null,
         maxDrawdown: editableFundData.maxDrawdown ?? baseFundData.maxDrawdown ?? null,
@@ -423,7 +427,7 @@ export default function MasterDashboard() {
                     </label>
 
                     <label className="flex flex-col gap-2 text-xs font-medium">
-                      <span className="text-slate-600">Profit mensual (%)</span>
+                      <span className="text-slate-600">Profit mensual últimos meses (%)</span>
                       <input
                         name="monthlyProfit"
                         value={editableFundData?.monthlyProfit ?? ""}
@@ -431,6 +435,21 @@ export default function MasterDashboard() {
                           const parsed = parseNumericValue(event.target.value);
                           setEditableFundData((prev) =>
                             prev ? { ...prev, monthlyProfit: parsed } : prev
+                          );
+                        }}
+                        className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                      />
+                    </label>
+
+                    <label className="flex flex-col gap-2 text-xs font-medium">
+                      <span className="text-slate-600">Profit anual último año (%)</span>
+                      <input
+                        name="yearProfit"
+                        value={editableFundData?.yearProfit ?? ""}
+                        onChange={(event) => {
+                          const parsed = parseNumericValue(event.target.value);
+                          setEditableFundData((prev) =>
+                            prev ? { ...prev, yearProfit: parsed } : prev
                           );
                         }}
                         className="rounded-lg border border-slate-200 px-3 py-2 text-sm"
