@@ -425,6 +425,7 @@ export function VerifiedManagers() {
     ? `${selectedFund.operatingTime} ${strings.verifiedManagersYearsSuffix}`
     : "—";
   const formattedYearProfit = formatNumber(selectedFund?.yearProfit ?? null, "%");
+  const formattedMonthlyProfit = formatNumber(selectedFund?.monthlyProfit ?? null, "%");
   const formattedDrawdownTarget = formatNumber(selectedFund?.drawdownTarget ?? null, "%");
   const formattedMaxDrawdown = formatNumber(selectedFund?.maxDrawdown ?? null, "%");
   const formattedTrades = formatNumber(selectedFund?.tradesPerMonth ?? null, "", 0);
@@ -458,7 +459,13 @@ export function VerifiedManagers() {
     },
     {
       labelKey: "verifiedManagersMetricMonthlyProfit",
-      label: "Profit mensual (último año)",
+      label: "Profit mensual últimos meses",
+      value: formattedMonthlyProfit,
+      highlight: true,
+    },
+    {
+      labelKey: "verifiedManagersMetricAnnualProfit",
+      label: "Profit anual último año",
       value: formattedYearProfit,
       highlight: true,
     },
@@ -662,7 +669,7 @@ export function VerifiedManagers() {
                     )}
                     {filteredFunds.map((fund) => {
                       const isActive = fund.id === selectedFundId;
-                      const yearlyProfit = formatNumber(fund.yearProfit, "%");
+                      const recentProfit = formatNumber(fund.monthlyProfit ?? fund.yearProfit, "%");
                       const maxDrawdown = formatNumber(fund.maxDrawdown, "%");
 
                       if (!selectedFund) {
@@ -694,8 +701,8 @@ export function VerifiedManagers() {
                               </p>
                               <div className="mt-auto grid gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-3 text-xs font-semibold text-slate-600 sm:grid-cols-2">
                                 <div className="flex items-center justify-between">
-                                  <span data-i18n="verifiedManagersMetricProfitYear">Profit último año</span>
-                                  <span className="text-sm font-semibold text-gradient-brand">{yearlyProfit}</span>
+                                  <span data-i18n="verifiedManagersMetricProfitYear">Profit últimos meses</span>
+                                  <span className="text-sm font-semibold text-gradient-brand">{recentProfit}</span>
                                 </div>
                                 <div className="flex items-center justify-between">
                                   <span data-i18n="verifiedManagersMetricMaxDrawdown">Max drawdown</span>
@@ -752,8 +759,8 @@ export function VerifiedManagers() {
                               {selectedFund && (
                                 <div className="grid gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-600">
                                   <div className="flex items-center justify-between">
-                                    <span data-i18n="verifiedManagersMetricProfitYear">Profit último año</span>
-                                    <span className="text-sm font-semibold text-gradient-brand">{yearlyProfit}</span>
+                                    <span data-i18n="verifiedManagersMetricProfitYear">Profit últimos meses</span>
+                                    <span className="text-sm font-semibold text-gradient-brand">{recentProfit}</span>
                                   </div>
                                   <div className="flex items-center justify-between">
                                     <span data-i18n="verifiedManagersMetricMaxDrawdown">Max drawdown</span>
@@ -801,8 +808,8 @@ export function VerifiedManagers() {
                             <p className="mt-2 text-sm text-slate-600">{selectedFund.description}</p>
                             <div className="mt-4 grid gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 sm:grid-cols-2">
                               <div className="flex items-center justify-between">
-                                <span data-i18n="verifiedManagersMetricProfitYear">Profit último año</span>
-                                <span className="text-sm font-semibold text-gradient-brand">{formattedYearProfit}</span>
+                                <span data-i18n="verifiedManagersMetricProfitYear">Profit últimos meses</span>
+                                <span className="text-sm font-semibold text-gradient-brand">{formattedMonthlyProfit}</span>
                               </div>
                               <div className="flex items-center justify-between">
                                 <span data-i18n="verifiedManagersMetricMaxDrawdown">Max drawdown</span>

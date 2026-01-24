@@ -143,6 +143,7 @@ export function AuthFlow() {
     description: "",
     operatingTime: "",
     monthlyProfit: "",
+    yearProfit: "",
     winRate: "",
     winRatio: "",
     drawdownTarget: "",
@@ -662,7 +663,7 @@ export function AuthFlow() {
             managerProfile.strategyDescription ||
             "Pendiente de completar.",
           monthlyProfit: parseNumericValue(fundDetails.monthlyProfit),
-          yearProfit: parseNumericValue(fundDetails.monthlyProfit),
+          yearProfit: parseNumericValue(fundDetails.yearProfit),
           winRate: parseNumericValue(fundDetails.winRate),
           winRatio: fundDetails.winRatio || null,
           drawdownTarget: parseNumericValue(fundDetails.drawdownTarget),
@@ -1333,7 +1334,7 @@ export function AuthFlow() {
                   </div>
                 </label>
                 <label className="grid gap-2 text-sm font-medium text-slate-600">
-                  <span data-i18n="dashboardMonthlyProfitLabel">Profit mensual (último año)</span>
+                  <span data-i18n="dashboardMonthlyProfitLabel">Profit mensual últimos meses</span>
                   <div className="flex items-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
                     <input
                       className="w-full bg-transparent text-sm text-slate-900 focus:outline-none"
@@ -1350,7 +1351,24 @@ export function AuthFlow() {
                   </div>
                 </label>
                 <label className="grid gap-2 text-sm font-medium text-slate-600">
-                  <span data-i18n="dashboardWinRateLabel">{strings.dashboardWinRateLabel}</span>
+                  <span data-i18n="dashboardAnnualProfitLabel">Profit anual último año</span>
+                  <div className="flex items-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
+                    <input
+                      className="w-full bg-transparent text-sm text-slate-900 focus:outline-none"
+                      type="number"
+                      step="0.01"
+                      placeholder="Ej: 28"
+                      data-i18n-placeholder="dashboardExamplePercent"
+                      value={fundDetails.yearProfit}
+                      onChange={(event) =>
+                        setFundDetails((prev) => ({ ...prev, yearProfit: event.target.value }))
+                      }
+                    />
+                    <span className="ml-2 text-slate-500">%</span>
+                  </div>
+                </label>
+                <label className="grid gap-2 text-sm font-medium text-slate-600">
+                  <span>Win rate</span>
                   <div className="flex items-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
                     <input
                       className="w-full bg-transparent text-sm text-slate-900 focus:outline-none"
