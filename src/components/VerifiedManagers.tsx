@@ -471,13 +471,13 @@ export function VerifiedManagers() {
     },
     {
       labelKey: "verifiedManagersMetricDrawdownTarget",
-      label: "Drawdown target",
+      label: "Max risk",
       value: formattedDrawdownTarget,
       highlight: true,
     },
     {
       labelKey: "verifiedManagersMetricMaxDrawdown",
-      label: "Max drawdown",
+      label: "Historical max drawdown",
       value: formattedMaxDrawdown,
       highlight: true,
     },
@@ -562,7 +562,7 @@ export function VerifiedManagers() {
               </div>
               <div className="grid gap-2 text-sm font-medium text-slate-600">
                 <label htmlFor="drawdown" data-i18n="verifiedManagersFilterDrawdownLabel">
-                  Max Drawdown (%)
+                  Historical max drawdown (%)
                 </label>
                 <input
                   className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"

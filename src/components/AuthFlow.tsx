@@ -50,6 +50,7 @@ type SurveyQuestion =
   | {
       id: string;
       label: string;
+      labelKey?: string;
       type: "text";
       prompt?: string;
     };
@@ -113,6 +114,13 @@ const countryIsoAliases: Record<string, string> = {
 export function AuthFlow() {
   const router = useRouter();
   const { strings, language } = useLanguage();
+  const resolveSurveyLabel = useCallback(
+    (label: string, labelKey?: string) => {
+      if (!labelKey) return label;
+      return (strings as Record<string, string>)[labelKey] ?? label;
+    },
+    [strings]
+  );
   const [activeTab, setActiveTab] = useState<"signup" | "login">("signup");
   const [stepIndex, setStepIndex] = useState(0);
   const [signupStatus, setSignupStatus] = useState("");
@@ -1123,7 +1131,9 @@ export function AuthFlow() {
                   className="grid gap-3 rounded-xl border border-slate-200 bg-white p-4"
                   key={question.id}
                 >
-                  <span className="text-sm font-semibold text-slate-700">{question.label}</span>
+                  <span className="text-sm font-semibold text-slate-700">
+                    {resolveSurveyLabel(question.label, "labelKey" in question ? question.labelKey : undefined)}
+                  </span>
                   {question.type === "text" && question.prompt ? (
                     <p className="text-xs text-slate-500">{question.prompt}</p>
                   ) : null}
@@ -1144,6 +1154,10 @@ export function AuthFlow() {
                           ? Array.isArray(surveyAnswers[question.id]) &&
                             (surveyAnswers[question.id] as string[]).includes(option.value)
                           : surveyAnswers[question.id] === option.value;
+                        const optionLabel = resolveSurveyLabel(
+                          option.label,
+                          "labelKey" in option ? option.labelKey : undefined
+                        );
                         return (
                           <label
                             className={`flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition ${
@@ -1176,7 +1190,7 @@ export function AuthFlow() {
                                 }
                               }}
                             />
-                            <span>{option.label}</span>
+                            <span>{optionLabel}</span>
                           </label>
                         );
                       })}
@@ -1187,15 +1201,15 @@ export function AuthFlow() {
             {currentStep.type === "verify-email" && (
               <div className="md:col-span-2 grid gap-4 rounded-xl border border-slate-200 bg-white p-4">
                 <div className="grid gap-2">
-                  <span className="text-sm font-semibold text-slate-700">
-                    Verifica tu correo para continuar
+                  <span className="text-sm font-semibold text-slate-700" data-i18n="authVerifyEmailTitle">
+                    {strings.authVerifyEmailTitle}
                   </span>
                   <p className="text-xs text-slate-500">
-                    Enviamos un link de verificación a{" "}
+                    {strings.authVerifyEmailBodyPrefix}{" "}
                     <span className="font-semibold text-slate-700">
-                      {kycAnswers.email || "tu correo"}
+                      {kycAnswers.email || strings.authVerifyEmailFallback}
                     </span>
-                    . Abre el enlace y vuelve aquí para continuar con el onboarding.
+                    . {strings.authVerifyEmailBodySuffix}
                   </p>
                   {verificationStatus ? (
                     <p className="text-xs text-slate-500">{verificationStatus}</p>
@@ -1208,7 +1222,7 @@ export function AuthFlow() {
                     onClick={() => void sendVerificationEmail()}
                     disabled={isSendingVerification}
                   >
-                    {isSendingVerification ? "Enviando..." : "Reenviar verificación"}
+                    {isSendingVerification ? strings.authVerifyEmailSending : strings.authVerifyEmailResend}
                   </button>
                 </div>
               </div>
@@ -1263,13 +1277,17 @@ export function AuthFlow() {
                   />
                 </label>
                 <div className="md:col-span-2 grid gap-3 rounded-xl border border-slate-200 bg-white p-4">
-                  <p className="text-xs font-semibold text-slate-600">Logo del fondo</p>
+                  <p className="text-xs font-semibold text-slate-600" data-i18n="dashboardLogoLabel">
+                    {strings.dashboardLogoLabel}
+                  </p>
                   <div className="flex flex-wrap items-center gap-4">
                     <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-slate-50 text-xs font-semibold text-slate-500">
                       {logoPreviewUrl ? (
                         <img src={logoPreviewUrl} alt="Logo del fondo" className="h-full w-full object-cover" />
                       ) : (
-                        <span className="text-center">Sin logo</span>
+                        <span className="text-center" data-i18n="dashboardLogoEmpty">
+                          {strings.dashboardLogoEmpty}
+                        </span>
                       )}
                     </div>
                     <div className="flex flex-1 flex-col gap-2">
@@ -1288,8 +1306,9 @@ export function AuthFlow() {
                           type="button"
                           onClick={() => setLogoFile(null)}
                           className="text-left text-xs font-semibold text-rose-500"
+                          data-i18n="dashboardLogoRemove"
                         >
-                          Quitar logo
+                          {strings.dashboardLogoRemove}
                         </button>
                       )}
                     </div>
@@ -1365,7 +1384,7 @@ export function AuthFlow() {
                   </div>
                 </label>
                 <label className="grid gap-2 text-sm font-medium text-slate-600">
-                  <span>Win ratio</span>
+                  <span data-i18n="dashboardWinRatioLabel">{strings.dashboardWinRatioLabel}</span>
                   <input
                     className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-igates-500/30"
                     type="text"
@@ -1377,7 +1396,7 @@ export function AuthFlow() {
                   />
                 </label>
                 <label className="grid gap-2 text-sm font-medium text-slate-600">
-                  <span data-i18n="dashboardDrawdownTargetLabel">Drawdown target</span>
+                  <span data-i18n="dashboardDrawdownTargetLabel">Max risk</span>
                   <div className="flex items-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
                     <input
                       className="w-full bg-transparent text-sm text-slate-900 focus:outline-none"
@@ -1394,7 +1413,7 @@ export function AuthFlow() {
                   </div>
                 </label>
                 <label className="grid gap-2 text-sm font-medium text-slate-600">
-                  <span data-i18n="dashboardMaxDrawdownLabel">Max drawdown</span>
+                  <span data-i18n="dashboardMaxDrawdownLabel">Historical max drawdown</span>
                   <div className="flex items-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
                     <input
                       className="w-full bg-transparent text-sm text-slate-900 focus:outline-none"
@@ -1466,7 +1485,9 @@ export function AuthFlow() {
                   ))}
                 </div>
                 <div className="md:col-span-2 grid gap-3 rounded-xl border border-slate-200 bg-white p-4">
-                  <p className="text-xs font-semibold text-slate-600">Presentación (PDF opcional)</p>
+                  <p className="text-xs font-semibold text-slate-600" data-i18n="dashboardPresentationLabel">
+                    {strings.dashboardPresentationLabel}
+                  </p>
                   <input
                     type="file"
                     accept="application/pdf"
@@ -1484,8 +1505,9 @@ export function AuthFlow() {
                         type="button"
                         onClick={() => setPresentationFile(null)}
                         className="text-xs font-semibold text-rose-500"
+                        data-i18n="dashboardRemoveFile"
                       >
-                        Quitar
+                        {strings.dashboardRemoveFile}
                       </button>
                     </div>
                   )}

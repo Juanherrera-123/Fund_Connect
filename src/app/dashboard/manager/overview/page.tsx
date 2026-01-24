@@ -66,7 +66,7 @@ export default function FundManagerOverview() {
       ),
     },
     {
-      label: "Max drawdown",
+      label: "Historical max drawdown",
       labelKey: "dashboardManagerMaxDrawdown",
       value:
         fundSnapshot?.maxDrawdown !== null && fundSnapshot?.maxDrawdown !== undefined
