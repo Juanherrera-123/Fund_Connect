@@ -1567,7 +1567,7 @@ export const translations = {
     navAuthManager: "Painel do gestor",
     navAuthProfile: "Meu perfil",
     heroEyebrow: "Acesso institucional",
-    heroTitle: "Conectando capital institucional con fundos de hedge privados",
+    heroTitle: "Conectando capital institucional com fundos de hedge privados",
     heroLead: "Infraestrutura institucional para acessar fundos geridos com padrões profissionais.",
     heroCtaInvestor: "Solicitar acesso institucional",
     heroCtaManager: "Candidatar-se como gestor",
