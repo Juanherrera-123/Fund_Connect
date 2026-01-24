@@ -329,13 +329,17 @@ export default function FundDetailsPage() {
           </label>
 
           <div className="md:col-span-2 grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4">
-            <p className="text-xs font-semibold text-slate-600">Logo del fondo</p>
+            <p className="text-xs font-semibold text-slate-600" data-i18n="dashboardLogoLabel">
+              {strings.dashboardLogoLabel}
+            </p>
             <div className="flex flex-wrap items-center gap-4">
               <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-white text-xs font-semibold text-slate-600">
                 {logoUrl ? (
                   <img src={logoUrl} alt="Logo del fondo" className="h-full w-full object-cover" />
                 ) : (
-                  <span className="text-center">Sin logo</span>
+                  <span className="text-center" data-i18n="dashboardLogoEmpty">
+                    {strings.dashboardLogoEmpty}
+                  </span>
                 )}
               </div>
               <div className="flex flex-1 flex-col gap-2">
@@ -362,8 +366,9 @@ export default function FundDetailsPage() {
                       setLogoRemoved(true);
                     }}
                     className="text-left text-xs font-semibold text-rose-500"
+                    data-i18n="dashboardLogoRemove"
                   >
-                    Quitar logo
+                    {strings.dashboardLogoRemove}
                   </button>
                 )}
               </div>
@@ -409,7 +414,9 @@ export default function FundDetailsPage() {
           </label>
 
           <label className="flex flex-col gap-2 text-xs font-medium">
-            <span className="text-slate-600">Win rate</span>
+            <span className="text-slate-600" data-i18n="dashboardWinRateLabel">
+              {strings.dashboardWinRateLabel}
+            </span>
             <div className="flex items-center rounded-lg border border-slate-200 px-3 py-2 text-sm">
               <input
                 type="number"
@@ -424,7 +431,9 @@ export default function FundDetailsPage() {
           </label>
 
           <label className="flex flex-col gap-2 text-xs font-medium">
-            <span className="text-slate-600">Win ratio</span>
+            <span className="text-slate-600" data-i18n="dashboardWinRatioLabel">
+              {strings.dashboardWinRatioLabel}
+            </span>
             <input
               type="text"
               name="winRatio"
@@ -436,7 +445,7 @@ export default function FundDetailsPage() {
 
           <label className="flex flex-col gap-2 text-xs font-medium">
             <span className="text-slate-600" data-i18n="dashboardDrawdownTargetLabel">
-              Drawdown target
+              Max risk
             </span>
             <div className="flex items-center rounded-lg border border-slate-200 px-3 py-2 text-sm">
               <input
@@ -454,7 +463,7 @@ export default function FundDetailsPage() {
 
           <label className="flex flex-col gap-2 text-xs font-medium">
             <span className="text-slate-600" data-i18n="dashboardMaxDrawdownLabel">
-              Max drawdown
+              Historical max drawdown
             </span>
             <div className="flex items-center rounded-lg border border-slate-200 px-3 py-2 text-sm">
               <input
@@ -529,7 +538,9 @@ export default function FundDetailsPage() {
           </div>
 
           <div className="md:col-span-2 grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4">
-            <p className="text-xs font-semibold text-slate-600">Presentación / operativa</p>
+            <p className="text-xs font-semibold text-slate-600" data-i18n="dashboardPresentationLabel">
+              {strings.dashboardPresentationLabel}
+            </p>
             <input
               type="file"
               accept="application/pdf,video/mp4"
@@ -555,8 +566,9 @@ export default function FundDetailsPage() {
                     setPresentationRemoved(true);
                   }}
                   className="text-xs font-semibold text-rose-500"
+                  data-i18n="dashboardRemoveFile"
                 >
-                  Quitar
+                  {strings.dashboardRemoveFile}
                 </button>
               </div>
             )}
